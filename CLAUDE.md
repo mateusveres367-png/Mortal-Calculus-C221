@@ -30,6 +30,7 @@ What that means in practice:
 - `src/engine/` is pure simulation with no Phaser: it runs at a fixed 60 steps per second and can be tested in Node. Keep rendering, sound and input reading out of it.
 - `src/data/fighters.js` holds each move's frame data. Startup counts the press frame as frame 1, so a 10-frame move hits on the 10th frame. Block and hit values are frame advantage, and the engine derives stun from them.
 - `src/engine/combat.js` resolves contact (strikes, juggles, bounds, wall and ground hits, throws, guard pressure). Per-combo limits (one bound, one wall splat, ground hits) live on the fighter and reset when it is free again.
+- `src/engine/dummy.js` is the training dummy: it produces raw inputs from its settings, like a keyboard would. Training UI (menu, input display) lives in `src/render/` and training options on the fight scene.
 - `src/render/` draws from simulation state; `src/scenes/fightScene.js` reads the keyboard, steps the match and renders.
 
 ## Checks before committing

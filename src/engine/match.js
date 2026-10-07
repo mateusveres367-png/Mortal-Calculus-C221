@@ -10,10 +10,16 @@
     this.reset();
   }
 
-  Match.prototype.reset = function () {
-    var mid = C.WORLD_W / 2;
-    this.fighters[0].reset(mid - 90, 1);
-    this.fighters[1].reset(mid + 90, -1);
+  // where: 'center' (default), 'left' or 'right' (P2 starts with its back to that wall).
+  Match.prototype.reset = function (where) {
+    where = where || this.startPos || 'center';
+    this.startPos = where;
+    var mid = C.WORLD_W / 2, gap = 90;
+    if (where === 'left') mid = C.WALL_L + 30 + gap;
+    if (where === 'right') mid = C.WALL_R - 30 - gap;
+    var p2Left = where === 'left';
+    this.fighters[0].reset(p2Left ? mid + gap : mid - gap, p2Left ? -1 : 1);
+    this.fighters[1].reset(p2Left ? mid - gap : mid + gap, p2Left ? 1 : -1);
     this.buffers = [new FG.InputBuffer(), new FG.InputBuffer()];
     this.frame = 0;
     this.hitstop = 0;

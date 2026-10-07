@@ -5,7 +5,7 @@ var fs = require('fs'), path = require('path'), vm = require('vm');
 var ctx = { console: console, Math: Math };
 ctx.window = ctx; vm.createContext(ctx);
 ['src/fg.js', 'src/engine/input.js', 'src/data/poses.js', 'src/data/fighters.js',
- 'src/engine/fighter.js', 'src/engine/match.js', 'src/engine/combat.js', 'src/engine/dummy.js'].forEach(function (f) {
+ 'src/engine/fighter.js', 'src/engine/match.js', 'src/engine/combat.js', 'src/engine/dummy.js', 'src/render/inputDisplay.js'].forEach(function (f) {
   vm.runInContext(fs.readFileSync(path.join(__dirname, '..', f), 'utf8'), ctx, { filename: f });
 });
 var FG = ctx.FG, failures = 0, passes = 0;
@@ -411,6 +411,97 @@ var LAUNCH = { h: true, down: true };
   var r = play(S, D, 70, { 0: { up: true, right: true }, 14: { k: true } }, function (i) { return i >= 2 ? { right: true } : {}; }, 80);
   check('jump-in kick is blocked standing', has(r, 'block'), types(r));
   check('air attacker lands', r.m.fighters[0].y === 0 && r.m.fighters[0].state !== 'air', r.m.fighters[0].state);
+})();
+
+// =========================== Phase 3 =========================================
+
+// Run P1's plan against the training dummy with the given settings (option ids).
+function vsDummy(settings, plan1, frames, setupFn) {
+  var dm = new FG.Dummy();
+  for (var key in settings) {
+    var opts = FG.Dummy.OPTIONS[key];
+    for (var i = 0; i < opts.length; i++) if (opts[i].id === settings[key]) dm.settings[key] = i;
+  }
+  return play(S, D, 40, plan1, function (i, m) { return dm.input(m.fighters[1], m.fighters[0], m); }, frames, setupFn);
+}
+function count(r, type, attacker) {
+  return r.events.filter(function (e) { return e.type === type && (attacker == null || e.attacker === attacker); }).length;
+}
+
+(function () {
+  // BLOCK ALL reads the attack: mids and highs standing, lows crouching, without walking away.
+  [['jab', { p: true }], ['mid', { k: true }], ['low', { k: true, down: true }], ['heavy', { h: true }], ['sweep', { k: true, down: true, left: true }]].forEach(function (t) {
+    var x0;
+    var r = vsDummy({ stance: 'block' }, { 0: t[1] }, 60, function (m) { x0 = m.fighters[1].x; });
+    check('dummy BLOCK ALL blocks ' + t[0], count(r, 'block') === 1 && count(r, 'hit') === 0, types(r));
+  });
+  var x1;
+  var r = vsDummy({ stance: 'block' }, { 0: { k: true } }, 14, function (m) { x1 = m.fighters[1].x; });
+  check('dummy guards in place', Math.abs(r.m.fighters[1].x - x1) < 0.5, r.m.fighters[1].x - x1);
+  // STAND gets hit; CROUCH ducks a jab.
+  r = vsDummy({ stance: 'stand' }, { 0: { p: true } }, 40);
+  check('dummy STAND gets hit', count(r, 'hit') === 1, types(r));
+  r = vsDummy({ stance: 'crouch' }, { 0: { p: true } }, 40);
+  check('dummy CROUCH ducks highs', count(r, 'hit') === 0 && count(r, 'block') === 0, types(r));
+  // STAND GUARD loses to lows; CROUCH GUARD loses to mids.
+  r = vsDummy({ stance: 'sguard' }, { 0: { k: true, down: true } }, 40);
+  check('dummy STAND GUARD hit by low', count(r, 'hit') === 1, types(r));
+  r = vsDummy({ stance: 'cguard' }, { 0: { k: true } }, 40);
+  check('dummy CROUCH GUARD hit by mid', count(r, 'hit') === 1, types(r));
+  // RANDOM: a mix of hits and blocks over many jabs.
+  var hits = 0, blocks = 0;
+  for (var n = 0; n < 40; n++) {
+    r = vsDummy({ stance: 'random' }, { 0: { k: true } }, 40);
+    hits += count(r, 'hit'); blocks += count(r, 'block');
+  }
+  check('dummy RANDOM mixes hits and blocks', hits > 5 && blocks > 5, { hits: hits, blocks: blocks });
+  // Actions.
+  r = vsDummy({ stance: 'stand', action: 'jab' }, {}, 80);
+  check('dummy action JAB', r.events.some(function (e) { return e.type === 'whiff' && e.fighter === 1 && e.move.id === 'jab'; }), types(r));
+  r = vsDummy({ stance: 'stand', action: 'throw' }, {}, 120);
+  check('dummy action THROW', count(r, 'grab', 1) === 1, types(r));
+  // Throw breaks.
+  r = vsDummy({ breaks: 'on' }, { 0: { p: true, k: true } }, 60);
+  check('dummy breaks front throw', count(r, 'break') === 1, types(r));
+  r = vsDummy({ breaks: 'on' }, { 0: { p: true, k: true, left: true } }, 60);
+  check('dummy breaks reverse throw', count(r, 'break') === 1, types(r));
+  r = vsDummy({ breaks: 'off' }, { 0: { p: true, k: true } }, 60);
+  check('dummy without breaks gets thrown', count(r, 'break') === 0 && count(r, 'grab') === 1, types(r));
+  // Knockdown recovery.
+  r = vsDummy({ recovery: 'tech' }, { 0: LAUNCH }, 120);
+  check('dummy techs', count(r, 'tech') === 1, types(r));
+  r = vsDummy({ recovery: 'none' }, { 0: LAUNCH }, 120);
+  var landed = r.events.some(function (e) { return e.type === 'land' && e.fighter === 1; });
+  check('dummy stays down (no tech)', count(r, 'tech') === 0 && landed, types(r));
+})();
+
+// Input history: rows per change, frame counts, directions relative to facing.
+(function () {
+  var h = new FG.InputHistory();
+  for (var i = 0; i < 5; i++) h.record(raw({ right: true }), 1);
+  for (i = 0; i < 3; i++) h.record(raw({ right: true, down: true, k: true }), 1);
+  h.record(raw({}), 1);
+  check('input history rows', h.rows.length === 3 && h.rows[2].dir === 6 && h.rows[2].frames === 5 &&
+    h.rows[1].dir === 3 && h.rows[1].btns === 'K' && h.rows[1].frames === 3 && h.rows[0].dir === 5, h.rows);
+  check('direction is relative to facing', FG.InputHistory.direction(raw({ left: true }), -1) === 6 &&
+    FG.InputHistory.direction(raw({ left: true, up: true }), 1) === 7, null);
+  check('throw shows both buttons', FG.InputHistory.buttons(raw({ p: true, k: true })) === 'P+K');
+})();
+
+// Reset positions: center, or with player 2 against either wall.
+(function () {
+  var m = new FG.Match(S, D);
+  m.reset('left');
+  var a = m.fighters[0], d = m.fighters[1];
+  check('reset left wall', d.x < a.x && d.x - FG.C.WALL_L < 60 && d.facing === 1 && a.facing === -1, [a.x, d.x]);
+  m.reset('right');
+  check('reset right wall', d.x > a.x && FG.C.WALL_R - d.x < 60, [a.x, d.x]);
+  m.reset('center');
+  check('reset center', Math.abs((a.x + d.x) / 2 - FG.C.WORLD_W / 2) < 1, [a.x, d.x]);
+  m.reset('left'); a.health = 10;
+  for (var i = 0; i < 3; i++) m.step([raw({}), raw({})]);
+  m.koTimer = 1; m.step([raw({}), raw({})]);
+  check('round reset keeps the chosen start position', d.x < a.x && a.health === S.health, [a.x, d.x]);
 })();
 
 console.log(passes + ' passed, ' + failures + ' failed');

@@ -15,7 +15,6 @@
     this.names = [T(16, 4, '', 'w'), T(C.VIEW_W - 16, 4, '', 'w').setOrigin(1, 0)];
     this.vs = T(C.VIEW_W / 2, 13, 'VS', 'y', 2).setOrigin(0.5, 0);
     this.mode = T(C.VIEW_W / 2, 34, '', 'c').setOrigin(0.5, 0);
-    this.hint = T(C.VIEW_W / 2, 44, 'C: CONTROLS', 'g').setOrigin(0.5, 0);
 
     this.combo = [T(16, 64, '', 'y', 2), T(C.VIEW_W - 16, 64, '', 'y', 2).setOrigin(1, 0)];
     this.comboDmg = [T(16, 84, '', 'w'), T(C.VIEW_W - 16, 84, '', 'w').setOrigin(1, 0)];
@@ -66,8 +65,8 @@
     ['THROW   P+K (BREAK WITH P)   B+P+K (BREAK WITH K)', 'y'],
     ['DOWN    UP RISE  BACK/FWD ROLL  SIDESTEP ROLL  K/P WAKE KICKS', 'y'],
     ['        TECH: PRESS P/K/H JUST BEFORE YOU LAND', 'y'],
-    ['1 P2 MODE   2 HITBOXES   3 FRAME DATA   4 SLOW-MO   5 SWAP', 'g'],
-    ['R RESET   M MUTE   C HIDE THIS', 'g']
+    ['ESC TRAINING MENU   1 DUMMY STANCE   2 HITBOXES   3 FRAME DATA', 'g'],
+    ['4 SLOW-MO   5 SWAP   6 INPUTS   R RESET   M MUTE   C HIDE THIS', 'g']
   ];
 
   Hud.prototype.setOverlay = function (on) {

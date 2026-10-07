@@ -4,7 +4,7 @@ A retro, Tekken-inspired 2D/2.5D fighting game themed around the El Camino Real 
 
 ## Status
 
-**Phase 2 — combo and knockdown systems (playable).** Two placeholder fighters on a placeholder classroom stage.
+**Phase 3 — training mode (playable).** Two placeholder fighters on a placeholder classroom stage.
 
 Phase 1, the fighting engine:
 
@@ -24,6 +24,15 @@ Phase 2, combos, knockdowns, throws:
 - **Wake-up options:** stay down, get up, roll back / forward / sideways, wake-up low or mid kick, or tech roll by pressing a button just before landing
 - **Throws and throw breaks:** P+K front throw (break with P), back+P+K reverse throw (break with K); crouching ducks throws
 - **Guard pressure meter:** blocking fills it, not blocking drains it, and a full meter breaks your guard
+
+Phase 3, training mode:
+
+- **Practice dummy** with a stance (stand, crouch, block all, random, stand guard, crouch guard), an optional action (jab, launcher, throw), a knockdown behaviour (stay down, tech, random wake-up) and throw breaks on or off. The blocking dummy guards in place instead of walking away.
+- **Frame data display:** each move's data plus the frame advantage the engine actually measured
+- **Input display:** both players' recent inputs with how many frames each was held
+- **Hitbox view:** hitboxes, hurtboxes and pushboxes
+- **Reset button** on screen (and `R`), with start positions in the center or against either wall
+- Training menu (`Esc`), health refill, slow motion, and player 2 can be the dummy or a second human
 
 Combos only connect when the timing and spacing are right. Strings and cancels need the hit to land, juggle hits need the opponent at the right height, and bounds and wall splats can each happen only once per combo.
 
@@ -72,22 +81,45 @@ Things to try:
 
 - **SIGMA air combo:** launcher, up, air P, air K, air H (bound), then K after the bounce.
 - **DELTA air route:** launcher, up, air K, air H.
-- **Wall combo:** heavy next to the wall, jab, jab, launcher.
-- **Punish practice:** block the dummy's launcher and punish it.
-- **Throw breaks:** set the dummy to throw you and break its throws.
+- **Wall combo:** set the start position to a wall, then heavy, jab, jab, launcher.
+- **Punish practice:** set the dummy action to Launcher, block it, and punish it.
+- **Throw breaks:** set the dummy action to Throw and break its throws.
 
-### Training keys
+### Training mode
+
+The game starts in training mode. Press `Esc`, or click **MENU** at the top of the screen, to open the training menu. The fight pauses while the menu is open. Use up/down to pick a row, left/right to change it, and `Esc` to close. You can also click a row.
+
+| Setting | Options |
+| --- | --- |
+| Player 2 | Dummy, or Human (second player on the keyboard) |
+| Dummy stance | Stand, Crouch, Block all (reads high/mid/low), Random (hit, stand guard or crouch guard per attack), Stand guard, Crouch guard |
+| Dummy action | None, Jab, Launcher (punish it), Throw (break it) |
+| Dummy knockdown | Stay down, Tech, Random wake-up |
+| Dummy throw breaks | Off, On |
+| Health | Refill a moment after each combo, or Normal (K.O. resets) |
+| Frame data / Input display / Hitboxes / Slow motion | On, Off |
+| Start position | Center, Left wall, Right wall (for wall combos) |
+| Fighters | Swap who plays which fighter |
+| Reset | Reset positions, health and meters (also `R`, or the **RESET** button) |
+
+**Frame data panel:** each move's startup, active and recovery frames, its frame advantage, and properties (tracks, bound, splat, hits downed opponents). The `LAST` line is the advantage the engine measured for your last hit or block: blue for plus, red for minus. It shows the kind of hit for launches, wall splats and throws.
+
+**Input display:** the newest input is at the top. Arrows are relative to the way you face (→ is always forward), with buttons and the number of frames each was held. Sidesteps show as `SI` / `SO`.
+
+Hotkeys:
 
 | Key | Action |
 | --- | --- |
-| `1` | Cycle P2: human, or a dummy (stand, crouch, stand guard, crouch guard, random guard, jab every second, launcher, guard + tech + break throws, random wake-up, throws you) |
-| `2` | Show hitboxes (red), hurtboxes (green) and pushboxes (yellow) |
-| `3` | Show / hide the frame data panel. "LAST" is the frame advantage the engine measured for your last hit or block |
+| `Esc` | Training menu |
+| `1` | Next dummy stance |
+| `2` | Hitboxes (red), hurtboxes (green), pushboxes (yellow) |
+| `3` | Frame data panel |
 | `4` | Slow motion |
 | `5` | Swap fighters |
-| `R` | Reset positions and health |
+| `6` | Input display |
+| `R` | Reset |
 | `M` | Mute |
-| `C` | Show / hide the controls overlay |
+| `C` | Controls overlay |
 
 ## Project layout
 
@@ -98,7 +130,8 @@ src/fg.js               global namespace and tuning constants
 src/engine/             pure simulation, no Phaser: input buffer, fighter state machine, match loop and walls,
                         combat (hits, juggles, bounds, wall hits, throws, guard meter), dummy
 src/data/               fighter definitions with frame data, and skeleton poses
-src/render/             fighter drawing, stage, effects and sound, HUD, pixel font
+src/render/             fighter drawing, stage, effects and sound, HUD, pixel font,
+                        input display, training menu
 src/scenes/             the Phaser scene that ties input, simulation and rendering together
 tests/sim.test.js       headless engine tests (node tests/sim.test.js)
 tests/smoke.js          optional browser smoke test over file:// (needs Playwright)

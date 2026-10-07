@@ -52,7 +52,7 @@ try { playwright = require('playwright'); } catch (e) {
   var hits = await page.evaluate(function () { return window.HITS.slice(); });
 
   // Real keyboard input: walk P1 forward then jab into a standing-guard dummy.
-  await page.evaluate(function () { var s = window.FG_SCENE; s.forceInput = null; s.newMatch(); while (s.dummy.mode().id !== 'guard') s.dummy.cycle(); s.showBoxes = false; });
+  await page.evaluate(function () { var s = window.FG_SCENE; s.forceInput = null; s.newMatch(); s.dummy.settings.stance = 4; s.training.showBoxes = false; });
   await page.keyboard.down('KeyD');
   await page.waitForFunction(function () { var f = window.FG_SCENE.match.fighters; return f[1].x - f[0].x < 45; }, null, { timeout: 8000 });
   await page.keyboard.up('KeyD');
@@ -61,10 +61,32 @@ try { playwright = require('playwright'); } catch (e) {
   await page.screenshot({ path: path.join(out, '4-block.png') });
   var p1 = await page.evaluate(function () { var m = window.FG_SCENE.match; var r = m.lastResult[0]; return { x: m.fighters[0].x, last: r && { move: r.move.id, kind: r.kind, adv: r.adv }, hp2: m.fighters[1].health }; });
 
+  // Training menu: Esc opens it and pauses the fight; arrows change a setting; Esc closes.
+  await page.keyboard.press('Escape');
+  var menu1 = await page.evaluate(function () { var s = window.FG_SCENE; return { open: s.menu.open, tick: s.tickCount, stance: s.dummy.label('stance') }; });
+  await page.waitForTimeout(250);
+  await page.keyboard.press('ArrowDown');
+  await page.keyboard.press('ArrowRight');
+  await page.screenshot({ path: path.join(out, '5-menu.png') });
+  var menu2 = await page.evaluate(function () { var s = window.FG_SCENE; return { tick: s.tickCount, stance: s.dummy.label('stance') }; });
+  await page.keyboard.press('Escape');
+  var menuOk = menu1.open && menu2.tick === menu1.tick && menu2.stance !== menu1.stance &&
+    !(await page.evaluate(function () { return window.FG_SCENE.menu.open; }));
+
+  // On-screen RESET button: move P1, click it, and P1 is back at the start.
+  await page.evaluate(function () { window.FG_SCENE.match.fighters[0].x = 300; });
+  var box = await page.locator('canvas').boundingBox();
+  var sx = box.width / 640, sy = box.height / 360;
+  await page.mouse.click(box.x + (320 + 66) * sx, box.y + 51 * sy);
+  await page.waitForTimeout(100);
+  var resetX = await page.evaluate(function () { return window.FG_SCENE.match.fighters[0].x; });
+  var resetOk = Math.abs(resetX - (1040 / 2 - 90)) < 5;
+  await page.screenshot({ path: path.join(out, '6-training.png') });
+
   await browser.close();
-  console.log(JSON.stringify({ renderer: renderer, hits: hits, p1: p1, errors: errors }, null, 1));
+  console.log(JSON.stringify({ renderer: renderer, hits: hits, p1: p1, menuOk: menuOk, resetX: resetX, errors: errors }, null, 1));
   var ok = !errors.length && hits.join() === 'launcher,airP,airK,airH,mid' &&
-    p1.last && p1.last.kind === 'BLOCK' && p1.last.adv === 1;
+    p1.last && p1.last.kind === 'BLOCK' && p1.last.adv === 1 && menuOk && resetOk;
   console.log(ok ? 'SMOKE OK' : 'SMOKE FAILED');
   if (!ok) process.exit(1);
 })().catch(function (e) { console.error(e); process.exit(1); });

@@ -1,91 +1,140 @@
-// Training dummy behaviours for player 2. Each returns a raw input object.
+// Training dummy for player 2. Behaviour comes from four settings:
+//   stance:   what it does when attacked (stand, crouch, block all, random, fixed guards)
+//   action:   what it does on its own (nothing, jab, launcher, throw)
+//   recovery: what it does after a knockdown (nothing, tech, random wake-up)
+//   breaks:   whether it breaks throws
+// input() returns a raw input object, like a keyboard would.
 (function () {
-  var MODES = [
-    { id: 'human', label: 'PLAYER 2 (HUMAN)' },
-    { id: 'stand', label: 'DUMMY: STAND' },
-    { id: 'crouch', label: 'DUMMY: CROUCH' },
-    { id: 'guard', label: 'DUMMY: STAND GUARD' },
-    { id: 'cguard', label: 'DUMMY: CROUCH GUARD' },
-    { id: 'rguard', label: 'DUMMY: RANDOM GUARD' },
-    { id: 'jab', label: 'DUMMY: JAB EVERY SECOND' },
-    { id: 'launcher', label: 'DUMMY: LAUNCHER (PUNISH IT)' },
-    { id: 'tech', label: 'DUMMY: GUARD, TECH, BREAK THROWS' },
-    { id: 'wake', label: 'DUMMY: RANDOM WAKE-UP' },
-    { id: 'throw', label: 'DUMMY: THROWS (BREAK THEM)' }
-  ];
+  var OPTIONS = {
+    stance: [
+      { id: 'stand', label: 'STAND' },
+      { id: 'crouch', label: 'CROUCH' },
+      { id: 'block', label: 'BLOCK ALL' },
+      { id: 'random', label: 'RANDOM' },
+      { id: 'sguard', label: 'STAND GUARD' },
+      { id: 'cguard', label: 'CROUCH GUARD' }
+    ],
+    action: [
+      { id: 'none', label: 'NONE' },
+      { id: 'jab', label: 'JAB' },
+      { id: 'launcher', label: 'LAUNCHER' },
+      { id: 'throw', label: 'THROW' }
+    ],
+    recovery: [
+      { id: 'none', label: 'STAY DOWN' },
+      { id: 'tech', label: 'TECH' },
+      { id: 'wake', label: 'RANDOM WAKE-UP' }
+    ],
+    breaks: [
+      { id: 'off', label: 'OFF' },
+      { id: 'on', label: 'ON' }
+    ]
+  };
   var WAKE_CHOICES = [{}, { up: true }, { back: true }, { fwd: true }, { ssIn: true }, { k: true }, { p: true }];
+  var ACTION_EVERY = 70;
 
   function Dummy() {
-    this.modeIndex = 1;
-    this.crouchGuard = false;
+    this.settings = { stance: 0, action: 0, recovery: 0, breaks: 0 };
     this.timer = 0;
-    this.wasStunned = false;
+    this.guardChoice = null; // random stance: 'hit' | 'stand' | 'crouch' for the current attack
+    this.seenMove = null;
+    this.wake = null;
   }
 
-  Dummy.prototype.mode = function () { return MODES[this.modeIndex]; };
-  Dummy.prototype.cycle = function () { this.modeIndex = (this.modeIndex + 1) % MODES.length; this.timer = 0; };
+  Dummy.OPTIONS = OPTIONS;
+
+  Dummy.prototype.get = function (key) { return OPTIONS[key][this.settings[key]].id; };
+  Dummy.prototype.label = function (key) { return OPTIONS[key][this.settings[key]].label; };
+  Dummy.prototype.change = function (key, delta) {
+    var n = OPTIONS[key].length;
+    this.settings[key] = (this.settings[key] + (delta || 1) + n) % n;
+    this.timer = 0;
+  };
+
+  // True while the opponent has an attack coming (startup or active frames).
+  function threat(opp) {
+    return opp.state === 'attack' && !opp.move.throw && opp.moveFrame <= opp.move.startup + opp.move.active - 1;
+  }
 
   Dummy.prototype.input = function (self, opp, match) {
     var raw = FG.emptyRaw();
     var backKey = self.facing > 0 ? 'left' : 'right';
     var fwdKey = self.facing > 0 ? 'right' : 'left';
-    var id = this.mode().id;
+    var C = FG.C;
     this.timer++;
+    // The dummy guards in place instead of walking backwards while holding back.
+    self.holdGuard = true;
 
-    switch (id) {
+    // --- Stance / guard ---------------------------------------------------------
+    var stance = this.get('stance');
+    var guarding = threat(opp) || self.state === 'blockstun';
+    switch (stance) {
       case 'crouch':
         raw.down = true;
         break;
-      case 'guard':
+      case 'block':
+        // Reads the incoming attack and blocks it correctly (lows crouching).
+        if (guarding) {
+          raw[backKey] = true;
+          raw.down = opp.state === 'attack' ? opp.move.level === 'low' : self.guardCrouch;
+        }
+        break;
+      case 'random':
+        // A fresh coin flip for every attack: get hit, stand guard, or crouch guard.
+        if (opp.state === 'attack' && opp.move !== this.seenMove) {
+          this.seenMove = opp.move;
+          this.guardChoice = ['hit', 'stand', 'crouch'][Math.floor(Math.random() * 3)];
+        }
+        if (opp.state !== 'attack') this.seenMove = null;
+        if (guarding && this.guardChoice !== 'hit') {
+          raw[backKey] = true;
+          raw.down = this.guardChoice === 'crouch';
+        }
+        break;
+      case 'sguard':
         raw[backKey] = true;
         break;
       case 'cguard':
         raw[backKey] = true; raw.down = true;
         break;
-      case 'rguard': {
-        // Pick a new stance each time the dummy recovers from being hit or blocking.
-        var stunned = self.state === 'hitstun' || self.state === 'blockstun';
-        if ((this.wasStunned && !stunned) || this.timer % 50 === 0) this.crouchGuard = Math.random() < 0.5;
-        this.wasStunned = stunned;
-        raw[backKey] = true; raw.down = this.crouchGuard;
-        break;
+    }
+
+    // --- Own action -------------------------------------------------------------
+    var action = this.get('action');
+    if (action !== 'none' && this.timer % ACTION_EVERY === 0 && self.actionable !== false) {
+      var close = Math.abs(opp.x - self.x) < (action === 'throw' ? 50 : 80);
+      if (action === 'jab') raw.p = true;
+      else if (action === 'launcher' && close) { raw.down = true; raw.h = true; }
+      else if (action === 'throw' && close) {
+        raw.p = true; raw.k = true; raw.down = false;
+        raw[backKey] = Math.random() < 0.5;
       }
-      case 'jab':
-        if (this.timer % 60 === 0) raw.p = true;
-        break;
-      case 'launcher':
-        if (this.timer % 90 === 0 && Math.abs(opp.x - self.x) < 80) { raw.down = true; raw.h = true; }
-        break;
-      case 'tech': {
-        raw[backKey] = true;
-        // Break throws with the right button after a human-ish reaction time.
-        var t = match && match.throwState;
-        if (t && t.d === self.index && match.frame - t.start === 8) { raw[backKey] = false; raw[t.move.breakBtn] = true; }
-        // Tech right before landing.
-        if (self.state === 'juggle' && self.vy < 0 && self.y < 14) raw.p = true;
-        break;
+    }
+
+    // --- Throw breaks -----------------------------------------------------------
+    var t = match && match.throwState;
+    if (this.get('breaks') === 'on' && t && t.d === self.index && match.frame - t.start === 8) {
+      raw.p = false; raw.k = false;
+      raw[t.move.breakBtn] = true;
+    }
+
+    // --- Knockdown recovery -----------------------------------------------------
+    var recovery = this.get('recovery');
+    if (recovery === 'tech' && self.state === 'juggle' && self.vy < 0 && self.y < 14) raw.p = true;
+    if (self.state === 'down') {
+      raw.down = false; raw[backKey] = false;
+      if (recovery === 'wake') {
+        if (self.stateFrame === 1) this.wake = WAKE_CHOICES[Math.floor(Math.random() * WAKE_CHOICES.length)];
+        var w = this.wake || {};
+        if (self.stateFrame >= C.QUICK_RISE_FROM - 1) {
+          raw.up = !!w.up; raw.k = !!w.k; raw.p = !!w.p; raw.ssIn = !!w.ssIn;
+          if (w.back) raw[backKey] = true;
+          if (w.fwd) raw[fwdKey] = true;
+        }
       }
-      case 'wake':
-        if (self.state === 'down') {
-          if (self.stateFrame === 1) this.wake = WAKE_CHOICES[Math.floor(Math.random() * WAKE_CHOICES.length)];
-          var w = this.wake || {};
-          if (self.stateFrame >= FG.C.QUICK_RISE_FROM - 1) {
-            raw.up = !!w.up; raw.k = !!w.k; raw.p = !!w.p; raw.ssIn = !!w.ssIn;
-            if (w.back) raw[backKey] = true;
-            if (w.fwd) raw[fwdKey] = true;
-          }
-        }
-        break;
-      case 'throw':
-        if (this.timer % 80 === 0 && Math.abs(opp.x - self.x) < 50) {
-          raw.p = true; raw.k = true;
-          if (Math.random() < 0.5) raw[backKey] = true;
-        }
-        break;
     }
     return raw;
   };
 
   FG.Dummy = Dummy;
-  FG.DUMMY_MODES = MODES;
 })();

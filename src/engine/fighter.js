@@ -41,6 +41,7 @@
     this.rollDir = 'back';
     this.guard = 0;        // guard pressure meter
     this.guardDelay = 0;
+    this.holdGuard = false; // set by the training dummy
     this.clearComboFlags();
   };
 
@@ -339,6 +340,12 @@
       return;
     }
     if (buf.back(this.facing)) {
+      if (this.holdGuard) {
+        // Training dummy: guard in place rather than walking away.
+        if (this.state !== 'idle') this.setState('idle');
+        this.vx = 0;
+        return;
+      }
       if (this.state !== 'walkB') this.setState('walkB');
       this.vx = -d.walkB * this.facing;
       return;
