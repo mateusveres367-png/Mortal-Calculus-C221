@@ -5,6 +5,7 @@
 (function () {
   var C = FG.C;
   var BUTTONS = ['p', 'k', 'h', 'ssIn', 'ssOut', 'up', 't'];
+  var DIR_SLOP = 2; // frames after a button press in which a direction still joins it
 
   function emptyRaw() {
     return { left: false, right: false, up: false, down: false, p: false, k: false, h: false, ssIn: false, ssOut: false, t: false };
@@ -14,7 +15,8 @@
     this.held = emptyRaw();
     this.prev = emptyRaw();
     this.pressed = {};
-    for (var i = 0; i < BUTTONS.length; i++) this.pressed[BUTTONS[i]] = -9999;
+    this.pressDirs = {}; // directions held when each button was pressed
+    for (var i = 0; i < BUTTONS.length; i++) { this.pressed[BUTTONS[i]] = -9999; this.pressDirs[BUTTONS[i]] = emptyRaw(); }
     // Last two press frames for each horizontal direction, for dash detection.
     this.leftTaps = [-9999, -9999];
     this.rightTaps = [-9999, -9999];
@@ -26,7 +28,14 @@
     this.held = raw;
     for (var i = 0; i < BUTTONS.length; i++) {
       var b = BUTTONS[i];
-      if (raw[b] && !this.prev[b]) this.pressed[b] = frame;
+      if (raw[b] && !this.prev[b]) {
+        this.pressed[b] = frame;
+        this.pressDirs[b] = { left: raw.left, right: raw.right, up: raw.up, down: raw.down };
+      } else if (frame - this.pressed[b] <= DIR_SLOP) {
+        // A direction that arrives a frame or two after the button still counts.
+        var d = this.pressDirs[b];
+        d.left = d.left || raw.left; d.right = d.right || raw.right; d.up = d.up || raw.up; d.down = d.down || raw.down;
+      }
     }
     if (raw.left && !this.prev.left) { this.leftTaps[0] = this.leftTaps[1]; this.leftTaps[1] = frame; }
     if (raw.right && !this.prev.right) { this.rightTaps[0] = this.rightTaps[1]; this.rightTaps[1] = frame; }
@@ -34,6 +43,14 @@
 
   InputBuffer.prototype.wasPressed = function (btn, frame, window) {
     return frame - this.pressed[btn] <= (window == null ? C.BUFFER_FRAMES : window);
+  };
+
+  // Directions for a (possibly buffered) button press: what was held when it was
+  // pressed, so an early D+H still launches after down is let go.
+  InputBuffer.prototype.dirsFor = function (btn, frame) {
+    var d = this.pressDirs[btn];
+    if (!d || this.pressed[btn] === frame) return this.held;
+    return d;
   };
 
   InputBuffer.prototype.consume = function (btn) {
@@ -50,9 +67,11 @@
     return best;
   };
 
-  // Directions relative to facing (1 = facing right).
-  InputBuffer.prototype.forward = function (facing) { return facing > 0 ? this.held.right && !this.held.left : this.held.left && !this.held.right; };
-  InputBuffer.prototype.back = function (facing) { return facing > 0 ? this.held.left && !this.held.right : this.held.right && !this.held.left; };
+  // Directions relative to facing (1 = facing right), from the held state or a press snapshot.
+  function fwd(h, facing) { return facing > 0 ? h.right && !h.left : h.left && !h.right; }
+  function bck(h, facing) { return facing > 0 ? h.left && !h.right : h.right && !h.left; }
+  InputBuffer.prototype.forward = function (facing, dirs) { return fwd(dirs || this.held, facing); };
+  InputBuffer.prototype.back = function (facing, dirs) { return bck(dirs || this.held, facing); };
 
   // Double tap of a direction: the second tap must be very recent.
   InputBuffer.prototype.doubleTap = function (dir, facing, frame) {

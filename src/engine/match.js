@@ -57,6 +57,7 @@
     // (they could have guarded) starts a new one.
     for (i = 0; i < 2; i++) if (f[i].actionable) this.combo[i] = { hits: 0, damage: 0 };
     for (i = 0; i < 2; i++) {
+      if (f[i].cancelled) { this.events.push({ type: 'cancel', fighter: i, into: f[i].cancelled, x: f[i].x }); f[i].cancelled = null; }
       if (f[i].startedMove) { this.events.push({ type: 'whiff', fighter: i, move: f[i].startedMove }); f[i].startedMove = null; }
       // MIYASHIRO's Calculated: an opponent's whiff makes his next hit stronger.
       var opp = f[1 - i];

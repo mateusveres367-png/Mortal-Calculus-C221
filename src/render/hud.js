@@ -288,7 +288,13 @@
       } else if (m.air) {
         lines[2].setText('HITSTUN ' + m.stunHit + '  BLOCKSTUN ' + m.stunBlock + '  LANDING ' + m.landLag);
       } else {
-        lines[2].setText('BLOCK ' + fmt(m.block) + '  HIT ' + resultText(m.hit) + '  CH ' + resultText(m.ch));
+        // Cancel windows: which buttons chain from this move, and on which frames.
+        var chain = '';
+        if (m.cancels && m.cancels.length) {
+          var btns = m.cancels.map(function (c) { return c.btn === 'up' ? 'UP' : c.btn === 'throw' ? 'P+K' : c.btn.toUpperCase(); });
+          chain = '  CHAIN ' + btns.filter(function (b, k) { return btns.indexOf(b) === k; }).join('/') + ' ' + m.cancels[0].from + '-' + m.cancels[0].to;
+        }
+        lines[2].setText('BLOCK ' + fmt(m.block) + '  HIT ' + resultText(m.hit) + '  CH ' + resultText(m.ch) + chain);
       }
       if (res && res.move === m) {
         var txt = res.adv === null ? res.kind : res.kind + ' ' + fmt(res.adv);

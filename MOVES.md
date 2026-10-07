@@ -167,7 +167,7 @@ Sarcastic and funny. Taunts mid-combo. Relentless pressure.
 
 - **Arithmetic Sequence:** P, P, P, P (frames: P @0, P @11, P @22, P @32)
 - **Recursive Rush:** F+P, P, P (frames: F+P @0, P @13, P @26)
-- **Fibonacci Juggle:** D+H, P, P, D+K on the ground (frames: D+H @0, P @37, P @50, D+K @90)
+- **Fibonacci Juggle:** D+H, P, P, P, D+K on the ground (frames: D+H @0, P @37, P @50, P @57, D+K @99)
 - **Fibonacci Spike:** D+H, up, air P, air K, air H, K (frames: D+H @0, UP @16, P @31, K @40, H @50, K @79)
 
 ## LOPEZ — Defensive — Statistics

@@ -17,6 +17,7 @@
   FightScene.prototype.create = function () {
     FG.makeFonts(this);
     this.stage = new FG.Stage(this, { home: FG.fighterById(this.ids.p2) });
+    this.ghosts = this.add.graphics().setDepth(-1).setAlpha(0.45); // cancel afterimages
     this.world = this.add.graphics().setDepth(0);
     this.screenFlash = this.add.graphics().setScrollFactor(0).setDepth(40); // impact flashes over the world
     this.hud = new FG.Hud(this);
@@ -359,6 +360,11 @@
         dfn._react = ev.type === 'block' ? { kind: 'block', t: 0 } : { kind: ev.impact, t: 0, scale: ev.ch ? 1.3 : 1 };
       }
       FG.Sfx.play(ev);
+      // A cancel leaves an afterimage of the move it came out of.
+      if (ev.type === 'cancel' && f[ev.fighter]._pose) {
+        var cf = f[ev.fighter];
+        cf._ghost = { pose: cf._pose.slice(), x: cf.x, y: cf.y, facing: cf.facing, t: 0 };
+      }
       if (ev.type !== 'whiff') this.effects.spawn(ev);
       if (ev.type === 'hit') this.bigMoment(ev);
       else if (ev.shake) this.effects.shake(ev.shake);
@@ -388,6 +394,7 @@
     if (this.training.refill) this.refillHealth();
     for (var g = 0; g < 2; g++) {
       if (f[g]._tag && --f[g]._tag.t <= 0) f[g]._tag = null;
+      if (f[g]._ghost && ++f[g]._ghost.t > 10) f[g]._ghost = null;
       // Start a queued gesture once the fighter is back to neutral.
       var pg = f[g]._pending;
       if (pg && (f[g].state === 'idle' || --pg.ttl <= 0)) {
@@ -554,6 +561,14 @@
     g.clear();
     this.drawCars(g);
     this.effects.drawBack(g);
+    this.ghosts.clear();
+    for (var gi = 0; gi < 2; gi++) {
+      var gh = f[gi]._ghost;
+      if (!gh) continue;
+      this.ghosts.setAlpha(0.5 * (1 - gh.t / 10));
+      FG.drawFighter(this.ghosts, { def: f[gi].def, x: gh.x, y: gh.y, z: f[gi].z, facing: gh.facing, _pose: gh.pose, _twist: 0 },
+        { flash: 0x9fdcff, noShadow: true });
+    }
     // Draw the fighter further into the background first.
     var order = f[0].z > f[1].z ? [0, 1] : f[1].z > f[0].z ? [1, 0] : (f[0].state === 'attack' ? [1, 0] : [0, 1]);
     for (var i = 0; i < 2; i++) {

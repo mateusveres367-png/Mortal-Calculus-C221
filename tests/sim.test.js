@@ -869,5 +869,58 @@ check('all eight fighters', FG.ROSTER.length === 8, FG.ROSTER.length);
   check('then slides down the wall', d.y < y0, d.y);
 })();
 
+// Input feel: an 8-frame buffer, directions read from when the button was pressed,
+// and routes that forgive slightly early or late presses.
+(function () {
+  check('buffer is 6-8 frames', FG.C.BUFFER_FRAMES >= 6 && FG.C.BUFFER_FRAMES <= 8, FG.C.BUFFER_FRAMES);
+  // A kick pressed during a whiffed jab's recovery comes out on the first free frame.
+  function afterJab(early) {
+    var m = setup(S, D, 200), at = S.moves.jab.total - early, start = null;
+    for (var i = 0; i < 80; i++) {
+      m.step([raw(i === 0 ? { p: true } : i === at ? { k: true } : {}), raw({})]);
+      var a = m.fighters[0];
+      if (start === null && a.state === 'attack' && a.move.id === 'mid') start = i;
+    }
+    return start;
+  }
+  check('early press within the buffer comes out on the first free frame', afterJab(6) !== null && afterJab(6) === afterJab(0), [afterJab(6), afterJab(0)]);
+  check('press too early is dropped', afterJab(12) === null, afterJab(12));
+  // D+H pressed during recovery, down let go before it comes out: still a launcher.
+  var m = setup(S, D, 200), got = null;
+  for (var i = 0; i < 60; i++) {
+    var r = {};
+    if (i === 0) r = { p: true };
+    if (i === S.moves.jab.total - 3) r = { h: true, down: true };
+    m.step([raw(r), raw({})]);
+    var a = m.fighters[0];
+    if (a.state === 'attack' && a.move.id !== 'jab' && !got) got = a.move.id;
+  }
+  check('buffered D+H keeps its direction', got === 'launcher', got);
+
+  defs.forEach(function (d) {
+    var tiers = {};
+    d.combos.forEach(function (c) { (tiers[c.difficulty] = tiers[c.difficulty] || []).push(c); });
+    check(d.name + ' has easy, medium and hard routes', tiers.easy && tiers.medium && tiers.hard, Object.keys(tiers));
+    function best(list) { return Math.max.apply(null, list.map(function (c) { return FG.runCombo(d, D, c).damage; })); }
+    check(d.name + ' damage rises with difficulty', best(tiers.easy) < best(tiers.medium) && best(tiers.medium) < best(tiers.hard),
+      [best(tiers.easy), best(tiers.medium), best(tiers.hard)]);
+    // Forgiving timing: every follow-up still works 3 frames early or 3 frames late.
+    d.combos.forEach(function (c) {
+      if (!c.plan) return;
+      var keys = Object.keys(c.plan).map(Number).sort(function (x, y) { return x - y; });
+      keys.slice(1).forEach(function (k) {
+        if (/^[FB]$/.test(c.plan[k])) return; // dash taps
+        [-3, 3].forEach(function (dt) {
+          var plan = {};
+          keys.forEach(function (kk) { plan[kk === k ? k + dt : kk] = c.plan[kk]; });
+          var r2 = FG.runCombo(d, D, Object.assign({}, c, { plan: plan }));
+          check(d.name + ' ' + c.name + ': ' + c.plan[k] + ' ' + (dt < 0 ? 'early' : 'late') + ' by 3 still combos',
+            r2.hits.join() === c.hits.join(), r2.hits);
+        });
+      });
+    });
+  });
+})();
+
 console.log(passes + ' passed, ' + failures + ' failed');
 process.exit(failures ? 1 : 0);

@@ -33,6 +33,7 @@
   Effects.prototype.spawn = function (ev) {
     var x = ev.x, y = C.GROUND_Y - (ev.y || 0);
     switch (ev.type) {
+      case 'cancel': return;
       case 'land': this.dust(x, 6, 1.5); return;
       case 'tech': this.dust(x, 8, 2.5); return;
       case 'bounce':
@@ -425,6 +426,10 @@
         break;
       case 'grab':
         burst(0.05, 1500, 2, 0.2, 'bandpass');
+        break;
+      case 'cancel': // a string flowing into its next hit
+        burst(0.05, 3400, 2.5, 0.12, 'bandpass');
+        sweep(0.06, 700, 1300, 0.04);
         break;
       case 'parry':
         thump(0.15, 1400, 900, 0.25);

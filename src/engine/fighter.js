@@ -282,10 +282,11 @@
     return buf.wasPressed('p', frame) && buf.wasPressed('k', frame) && Math.abs(buf.pressed.p - buf.pressed.k) <= 2;
   }
 
-  Fighter.prototype.startThrow = function (buf) {
+  Fighter.prototype.startThrow = function (buf, frame) {
+    var dirs = buf.dirsFor('p', frame);
     buf.consume('p'); buf.consume('k');
     this.stance = 'A';
-    this.startMove(buf.back(this.facing) ? 'throwB' : this.pick(buf.forward(this.facing) ? ['cmdGrab', 'throw'] : ['throw']));
+    this.startMove(buf.back(this.facing, dirs) ? 'throwB' : this.pick(buf.forward(this.facing, dirs) ? ['cmdGrab', 'throw'] : ['throw']));
   };
 
   // Pick the first move this fighter has from a list of candidates.
@@ -297,7 +298,9 @@
   // Which move a button press means right now, from the directions held and the
   // fighter's state. Missing directional moves fall back to the plain one.
   Fighter.prototype.resolveMove = function (btn, buf, frame) {
-    var down = buf.held.down, back = buf.back(this.facing), fwd = buf.forward(this.facing);
+    // Directions as they were when the button was pressed (it may have been buffered).
+    var dirs = buf.dirsFor(btn, frame);
+    var down = dirs.down, back = buf.back(this.facing, dirs), fwd = buf.forward(this.facing, dirs);
     var B = btn.toUpperCase();
     // Right after blocking (LOPEZ's Confidence Interval).
     if (btn === 'p' && this.def.moves.postBlockP && frame - this.blockEndFrame <= this.def.postBlockWindow) return 'postBlockP';
@@ -318,7 +321,7 @@
   };
 
   Fighter.prototype.tryAttack = function (buf, frame) {
-    if (throwPressed(buf, frame)) { this.startThrow(buf); return true; }
+    if (throwPressed(buf, frame)) { this.startThrow(buf, frame); return true; }
     if (buf.wasPressed('t', frame) && this.def.moves.taunt && this.state !== 'sidestep') {
       buf.consume('t');
       this.stance = 'A';
@@ -341,7 +344,7 @@
     var m = this.move;
     if (this.moveFrame > 3) return false;
     if ((m.id === 'jab' && buf.wasPressed('k', frame, 3)) || (m.id === 'mid' && buf.wasPressed('p', frame, 3))) {
-      this.startThrow(buf);
+      this.startThrow(buf, frame);
       return true;
     }
     return false;
@@ -372,6 +375,7 @@
         if (!buf.wasPressed(c.btn, frame)) continue;
         buf.consume(c.btn);
       }
+      this.cancelled = c.into; // read (and cleared) by the match for the cancel event
       if (c.into === 'jump') {
         // Jump cancel: chase the launched opponent into the air.
         this.setState('air');
