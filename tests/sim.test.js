@@ -1006,5 +1006,84 @@ defs.forEach(function (d) {
   check('pedersen fights in the faculty parking lot', FG.fighterById('pedersen').homeStage === 'parking' && FG.stageById('parking').outdoor);
 })();
 
+// Trades: both jabs land on the same frame; both get hit, nothing breaks.
+(function () {
+  var r = play(S, S, 40, { 0: { p: true } }, { 0: { p: true } }, 40);
+  var hits = r.events.filter(function (e) { return e.type === 'hit'; });
+  check('a trade hits both fighters', hits.length === 2 && hits[0].attacker !== hits[1].attacker, hits.map(function (e) { return e.attacker; }));
+})();
+
+// =========================== Phase 7 =========================================
+
+// CPU opponents: every level finishes fights, harder levels win more, guard, and combo.
+(function () {
+  function fight(d0, d1, l0, l1, seed) {
+    var m = new FG.Match(d0, d1), ai = [new FG.AI(l0, seed), new FG.AI(l1, seed * 31 + 7)], st = { blocks: [0, 0], combo: [0, 0] };
+    m.autoReset = false;
+    for (var i = 0; i < 60 * 120 && m.winner === null; i++) {
+      var f = m.fighters;
+      m.step([ai[0].input(f[0], f[1], m), ai[1].input(f[1], f[0], m)]);
+      m.events.forEach(function (e) {
+        if (e.type === 'block') st.blocks[e.defender]++;
+        if (e.type === 'hit') st.combo[e.attacker] = Math.max(st.combo[e.attacker], e.hits || 1);
+      });
+    }
+    st.winner = m.winner; st.frames = i;
+    return st;
+  }
+  function series(l0, l1) {
+    var w = [0, 0], ends = 0, blocks = [0, 0], combo = [0, 0];
+    for (var a = 0; a < defs.length; a++) for (var k = 1; k <= 2; k++) {
+      var r = fight(defs[a], defs[(a + k) % defs.length], l0, l1, a * 10 + k);
+      if (r.winner !== null) { w[r.winner]++; ends++; }
+      blocks[0] += r.blocks[0]; blocks[1] += r.blocks[1];
+      combo[0] = Math.max(combo[0], r.combo[0]); combo[1] = Math.max(combo[1], r.combo[1]);
+    }
+    return { wins: w, ends: ends, n: defs.length * 2, blocks: blocks, combo: combo };
+  }
+  var hn = series('hard', 'normal'), ne = series('normal', 'easy'), hh = series('hard', 'hard');
+  check('AI fights always end in a K.O.', hn.ends === hn.n && ne.ends === ne.n && hh.ends === hh.n, [hn.ends, ne.ends, hh.ends]);
+  check('hard beats normal most of the time', hn.wins[0] >= hn.n * 0.65, hn.wins);
+  check('normal beats easy most of the time', ne.wins[0] >= ne.n * 0.65, ne.wins);
+  check('hard AI guards a lot', hh.blocks[0] > 40 && hh.blocks[1] > 40, hh.blocks);
+  check('hard AI lands real combos', Math.max(hh.combo[0], hh.combo[1]) >= 5, hh.combo);
+  check('every level is defined', FG.AI_ORDER.every(function (l) { return !!FG.AI_LEVELS[l]; }));
+  // The same CPU keeps fighting into the next round (a new match).
+  var ai = new FG.AI('normal', 3), acted = 0;
+  [0, 1].forEach(function (round) {
+    var m = setup(S, D, 160);
+    for (var i = 0; i < (round ? 300 : 900); i++) {
+      var r = ai.input(m.fighters[1], m.fighters[0], m);
+      if (round && (r.left || r.right || r.p || r.k || r.h)) acted++;
+      m.step([raw({}), r]);
+    }
+  });
+  check('CPU keeps fighting in the next round', acted > 10, acted);
+})();
+
+// Round rules: best of three, timer, time out by health share, perfect rounds.
+(function () {
+  var R = new FG.Rounds({ seconds: 2, toWin: 2 }), m = setup(S, D, 100);
+  check('timer starts full', R.timeLeft() === 2, R.timeLeft());
+  m.fighters[1].health = D.health - 20;
+  for (var i = 0; i < 2 * FG.C.FPS && !R.result; i++) R.tick(m);
+  check('time out goes to the fighter with more health', R.result && R.result.winner === 0 && R.result.how === 'time', R.result);
+  check('a round with no damage taken is perfect', R.result.perfect === true);
+  check('no match winner after one round', R.matchWinner() === null);
+  R.next();
+  check('round 2', R.round === 2 && R.timeLeft() === 2);
+  m.fighters[0].health = 10;
+  R.end(1, 'ko', m);
+  check('one round each: final round next', R.wins.join() === '1,1' && (R.next(), R.isFinal()), R.wins);
+  R.end(0, 'ko', m);
+  check('two wins take the match', R.matchWinner() === 0, R.wins);
+  var tie = new FG.Rounds({ seconds: 1 }), m2 = setup(S, S, 100);
+  for (i = 0; i < FG.C.FPS; i++) tie.tick(m2);
+  check('equal health at time is a draw', tie.result.winner === -1 && tie.wins.join() === '0,0', tie.result);
+  var none = new FG.Rounds({ seconds: 0 });
+  for (i = 0; i < 99 * 60; i++) none.tick(m2);
+  check('no timer: never times out', none.result === null && none.timeLeft() === null);
+})();
+
 console.log(passes + ' passed, ' + failures + ' failed');
 process.exit(failures ? 1 : 0);

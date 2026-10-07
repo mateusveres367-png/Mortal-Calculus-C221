@@ -4,7 +4,7 @@ A retro, Tekken-inspired 2D/2.5D fighting game themed around the El Camino Real 
 
 ## Status
 
-**Phase 6 — stages (playable).** All eight fighters from [`ROSTER.md`](ROSTER.md): **PEDERSEN** (power, exponents; the cover fighter), **BRINKHUS** (balanced, limits), **CHAI** (technical, geometry), **DALSASS** (tricky, functions), **LEE** (rushdown, sequences), **LOPEZ** (defensive, statistics), **MIYASHIRO** (spacing, vectors) and **RAMOS** (grappler, matrices).
+**Phase 7 — modes and screens (playable).** All eight fighters from [`ROSTER.md`](ROSTER.md): **PEDERSEN** (power, exponents; the cover fighter), **BRINKHUS** (balanced, limits), **CHAI** (technical, geometry), **DALSASS** (tricky, functions), **LEE** (rushdown, sequences), **LOPEZ** (defensive, statistics), **MIYASHIRO** (spacing, vectors) and **RAMOS** (grappler, matrices).
 
 What's in the game so far:
 
@@ -33,6 +33,14 @@ What's in the game so far:
   - **Department Office:** bookshelves, filing cabinets, a turning ceiling fan, a printer that never stops, screensavers
   - **Faculty Parking:** PEDERSEN's stage; his red sports car sits in his reserved spot, cars pass on the road behind
   - each fighter has a home stage (player 2's is used); PEDERSEN drives in only on outdoor stages and walks in indoors
+- **Modes and screens (phase 7):**
+  - title screen with PEDERSEN and his car, and a menu: **Arcade**, **Versus**, **Training**, **Options**; leave it alone and an attract demo plays (two CPU fighters), any key comes back
+  - character select with pixel portraits (both players pick at the same time in versus), then stage select with a live, panning preview of each stage (or RANDOM)
+  - **Arcade:** fight the whole department, one CPU opponent at a time on their home stage, PEDERSEN last; win to see who's next, lose and you get a 10-second CONTINUE?; beat everyone for the ending
+  - **Versus:** player 1 against player 2 on one keyboard
+  - best of three rounds with ROUND 1 / READY / FIGHT, a round timer (time out goes to whoever has more health left), round markers, K.O., TIME, PERFECT and FINAL ROUND, and a victory screen with the score
+  - CPU opponents at three levels (Options: Easy, Normal, Hard): they react with a delay, guard and read lows, punish whiffs and blocked moves, run real combo routes, tech, break throws and pick wake-up options; harder levels do each of these more often and faster
+  - Options also set the round time (30, 60, 99 or none) and sound, and are remembered in your browser
 - **Combo feel pass:**
   - hit feel: hitstop scales with strength (jabs tiny, heavies longer, launchers and combo finishers longest); each hit in a combo sounds a little higher than the last and throws bigger sparks; counter hits get a bright flash, a big COUNTER! and an extra-heavy sound
   - self-check: tests play every route against every fighter, mash buttons at random to make sure nothing is infinite or too easy, and check damage rises with difficulty; see [`COMBOS.md`](COMBOS.md)
@@ -46,7 +54,16 @@ The full vision lives in [`GAME_DESIGN.md`](GAME_DESIGN.md); the game is built i
 
 ## Running the game
 
-Open `index.html` directly in a modern browser (double-click it, or drag it into a browser window). No install, build step, or server is needed, and it works offline. On the title screen, press `Enter` (or click), then pick your fighter and your opponent on the character select screen (arrows to move, `Enter` to confirm, `Esc` to go back). Pressing a key also turns on sound.
+Open `index.html` directly in a modern browser (double-click it, or drag it into a browser window). No install, build step, or server is needed, and it works offline. Pressing a key also turns on sound.
+
+On the title screen, press `Enter` (or click) for the menu, then up/down and `Enter`:
+
+- **Arcade:** pick your fighter (arrows or WASD, `Enter` or `J`), then fight the CPU ladder.
+- **Versus:** both players pick at once: player 1 with `WASD` and `J` (`K` to undo), player 2 with the arrows and `Numpad 1` or `,` (`Numpad 2` or `.` to undo). Then pick a stage.
+- **Training:** pick your fighter, then the opponent, then a stage.
+- **Options:** CPU difficulty, round time and sound (left/right to change).
+
+`Esc` goes back a screen. In a fight, `Esc` pauses (arcade and versus) or opens the training menu. After a match: `Enter` for a rematch (or the next arcade fight), `Esc` for character select.
 
 ## Controls
 
@@ -136,7 +153,7 @@ The fighters:
 
 ### Training mode
 
-After character select the game goes into training mode, starting with both fighters' round intros (any button skips). The stage is player 2's home stage: the outdoor campus for PEDERSEN, the classroom for everyone else. A K.O. shows the win screen: `Enter` for a rematch, `Esc` for character select. Press `Esc`, or click **MENU** at the top of the screen, to open the training menu. The fight pauses while the menu is open. Use up/down to pick a row, left/right to change it, and `Esc` to close. You can also click a row.
+Training starts with both fighters' round intros (any button skips) on the stage you picked. There are no rounds or timer. A K.O. shows the win screen: `Enter` for a rematch, `Esc` for character select. Press `Esc`, or click **MENU** at the top of the screen, to open the training menu. The fight pauses while the menu is open. Use up/down to pick a row, left/right to change it, and `Esc` to close. You can also click a row.
 
 | Setting | Options |
 | --- | --- |
@@ -180,11 +197,13 @@ index.html              loads every script in order (no modules, no build)
 lib/phaser.min.js       Phaser 3.90, vendored
 src/fg.js               global namespace and tuning constants
 src/engine/             pure simulation, no Phaser: input buffer, fighter state machine, match loop and walls,
-                        combat (hits, juggles, bounds, wall hits, throws, guard meter), dummy
+                        combat (hits, juggles, bounds, wall hits, throws, guard meter), training dummy,
+                        CPU opponent (ai.js) and round rules (rounds.js)
 src/data/               poses, the fighter kit (kit.js), the stage list (stages.js) and one file per fighter in fighters/
 src/render/             fighter drawing, procedural motion (motion.js), stage, effects and sound,
                         HUD, pixel font, input display, training menu
-src/scenes/             title, character select, and the fight scene that ties input, simulation and rendering together
+src/scenes/             title (menu, options, attract demo), character select, stage select, the fight scene
+                        (training, arcade, versus, attract) and the arcade ending
 tools/movelist.js       regenerates MOVES.md from the fighter data
 tests/sim.test.js       headless engine tests (node tests/sim.test.js)
 tests/smoke.js          optional browser smoke test over file:// (needs Playwright)

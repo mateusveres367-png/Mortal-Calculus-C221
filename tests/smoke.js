@@ -23,12 +23,21 @@ try { playwright = require('playwright'); } catch (e) {
   await page.waitForFunction(function () { return window.FG_TITLE && window.FG_TITLE.t > 10; }, null, { timeout: 15000 });
   var title = await page.title();
   await page.screenshot({ path: path.join(out, '0-title.png') });
+  await page.keyboard.press('Enter');      // PRESS ENTER: the main menu
+  await page.keyboard.press('ArrowDown');  // ARCADE > VERSUS
+  await page.keyboard.press('ArrowDown');  // > TRAINING
+  await page.screenshot({ path: path.join(out, '0-menu.png') });
   await page.keyboard.press('Enter');
   // Character select: the first two fighters on the roster.
-  await page.waitForFunction(function () { return window.FG_SELECT && window.FG_SELECT.t > 10; }, null, { timeout: 15000 });
+  await page.waitForFunction(function () { return window.FG_SELECT && window.FG_SELECT.sys.isActive() && window.FG_SELECT.t > 10; }, null, { timeout: 15000 });
   await page.screenshot({ path: path.join(out, '0-select.png') });
   await page.keyboard.press('Enter'); // P1: the cursor starts on the first fighter
   await page.keyboard.press('Enter'); // opponent: the cursor starts on the second
+  // Stage select: player 2's home stage is highlighted.
+  await page.waitForFunction(function () { return window.FG_STAGE && window.FG_STAGE.sys.isActive() && window.FG_STAGE.t > 10; }, null, { timeout: 15000 });
+  await page.screenshot({ path: path.join(out, '0-stage.png') });
+  var stagePick = await page.evaluate(function () { return window.FG_STAGE.current(); });
+  await page.keyboard.press('Enter');
   // Round intro, then skip the rest of it.
   await page.waitForFunction(function () { return window.FG_SCENE && window.FG_SCENE.intro && window.FG_SCENE.intro.t > 30; }, null, { timeout: 15000 });
   await page.screenshot({ path: path.join(out, '0-intro.png') });
@@ -153,10 +162,52 @@ try { playwright = require('playwright'); } catch (e) {
   await page.waitForTimeout(150);
   await page.screenshot({ path: path.join(out, '8-ko.png') });
 
+  // Arcade: a CPU opponent, ROUND 1 / READY / FIGHT, a timer, best of three.
+  var arcade = await page.evaluate(function () {
+    var s = window.FG_SCENE;
+    s.scene.start('fight', FG.arcadeStart(FG.ROSTER[1].id));
+    return true;
+  });
+  await page.waitForFunction(function () { var s = window.FG_SCENE; return s && s.sys.isActive() && s.mode === 'arcade' && s.intro; }, null, { timeout: 15000 });
+  arcade = await page.evaluate(function () {
+    var s = window.FG_SCENE, out = {};
+    s.sys.sceneUpdate = function () { s.render(); };
+    s.endIntro();
+    out.announce = s.phase;
+    for (var i = 0; i < 100; i++) s.tick();
+    out.phase = s.phase;
+    out.timer = s.hud.vs.text;
+    var x0 = s.match.fighters[1].x, st0 = s.match.fighters[1].state, moved = false;
+    for (i = 0; i < 240; i++) { s.tick(); if (s.match.fighters[1].x !== x0 || s.match.fighters[1].state !== st0) moved = true; }
+    out.cpuMoves = moved;
+    // Win round 1 by K.O.
+    s.match.dealDamage(0, 1, 9999); // K.O.
+    for (i = 0; i < 400 && s.rounds.round === 1; i++) s.tick();
+    out.round = s.rounds.round; out.wins = s.rounds.wins.slice();
+    s.render();
+    return out;
+  });
+  await page.screenshot({ path: path.join(out, '9-arcade.png') });
+  var arcadeOk = arcade.announce === 'announce' && arcade.phase === 'fight' && /^\d+$/.test(arcade.timer) && arcade.cpuMoves && arcade.round === 2 && arcade.wins.join() === '1,0';
+
+  // The attract demo from the title: two CPU fighters; a key press goes back.
+  await page.evaluate(function () { window.FG_SCENE.scene.start('title'); });
+  await page.waitForFunction(function () { return window.FG_TITLE && window.FG_TITLE.sys.isActive() && window.FG_TITLE.t > 5; }, null, { timeout: 15000 });
+  await page.evaluate(function () { window.FG_TITLE.demo(); });
+  await page.waitForFunction(function () { var s = window.FG_SCENE; return s && s.sys.isActive() && s.mode === 'attract' && s.tickCount > 30; }, null, { timeout: 15000 });
+  await page.keyboard.press('KeyX');
+  await page.waitForFunction(function () { return window.FG_TITLE && window.FG_TITLE.sys.isActive(); }, null, { timeout: 15000 });
+  var attractOk = true;
+
+  // The arcade ending.
+  await page.evaluate(function () { window.FG_TITLE.scene.start('ending', { p1: 'pedersen', ladder: ['a', 'b'], continues: 1, started: Date.now() - 65000 }); });
+  await page.waitForFunction(function () { return window.FG_ENDING && window.FG_ENDING.sys.isActive() && window.FG_ENDING.t > 30; }, null, { timeout: 15000 });
+  await page.screenshot({ path: path.join(out, '10-ending.png') });
+
   await browser.close();
-  console.log(JSON.stringify({ title: title, matchup: matchup, renderer: renderer, hits: hits, counter: counterText, p1: p1, menuOk: menuOk, resetX: resetX, trial: trial, ko: ko, errors: errors }, null, 1));
+  console.log(JSON.stringify({ title: title, matchup: matchup, renderer: renderer, hits: hits, counter: counterText, p1: p1, menuOk: menuOk, resetX: resetX, trial: trial, ko: ko, stage: stagePick, arcade: arcade, errors: errors }, null, 1));
   var ok = !errors.length && title === 'Mortal Calculus: C221' && matchup === expectMatchup && hits.join() === expectHits && counterText === String(hits.length) &&
-    p1.last && p1.last.kind === 'BLOCK' && p1.last.adv === p1.jabBlock && menuOk && resetOk && trialOk && koOk;
+    p1.last && p1.last.kind === 'BLOCK' && p1.last.adv === p1.jabBlock && menuOk && resetOk && trialOk && koOk && stagePick === 'classroom' && arcadeOk && attractOk;
   console.log(ok ? 'SMOKE OK' : 'SMOKE FAILED');
   if (!ok) process.exit(1);
 })().catch(function (e) { console.error(e); process.exit(1); });

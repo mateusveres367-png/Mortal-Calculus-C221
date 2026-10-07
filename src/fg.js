@@ -103,3 +103,15 @@ FG.C = {
 
   KO_RESET_FRAMES: 180
 };
+
+// Player settings (title screen OPTIONS), remembered in this browser when possible.
+(function () {
+  FG.settings = { difficulty: 'normal', time: 60, sound: true };
+  try {
+    var saved = JSON.parse(window.localStorage.getItem('mc221.settings') || 'null');
+    if (saved) for (var k in FG.settings) if (saved[k] !== undefined) FG.settings[k] = saved[k];
+  } catch (e) { /* storage unavailable: defaults */ }
+  FG.saveSettings = function () {
+    try { window.localStorage.setItem('mc221.settings', JSON.stringify(FG.settings)); } catch (e) { /* not saved */ }
+  };
+})();

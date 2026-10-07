@@ -23,6 +23,8 @@
     this.t = 0;
     this.cheerT = 0; this.cheerAmp = 0; this.cheerFav = false;
     this.flinchT = 0; this.koT = 0;
+    this.objects = [];  // every game object the stage made
+    this.visible = true;
     this.crowds = [];   // { g, people }
     this.anims = [];    // { g, fn } redrawn every tick
     BUILD[this.id].call(this, scene);
@@ -31,7 +33,14 @@
   // --- Building blocks ----------------------------------------------------------------
 
   Stage.prototype.layer = function (scene, sf, depth) {
-    return scene.add.graphics().setScrollFactor(sf, 1).setDepth(depth);
+    var g = scene.add.graphics().setScrollFactor(sf, 1).setDepth(depth);
+    this.objects.push(g);
+    return g;
+  };
+  // Show or hide the whole stage (stage select keeps every stage and shows one).
+  Stage.prototype.setVisible = function (on) {
+    this.visible = on;
+    for (var i = 0; i < this.objects.length; i++) this.objects[i].setVisible(on);
   };
   // An animated layer: fn(g, t) redraws it every tick.
   Stage.prototype.anim = function (scene, sf, depth, fn) {
@@ -46,7 +55,9 @@
   };
   // Text painted on the scenery (posters, signs).
   Stage.prototype.label = function (scene, x, y, text, color, sf, depth, scale) {
-    return FG.text(scene, x, y, text, color || 'k', scale || 1).setScrollFactor(sf, 1).setDepth(depth + 0.5).setOrigin(0.5, 0);
+    var t = FG.text(scene, x, y, text, color || 'k', scale || 1).setScrollFactor(sf, 1).setDepth(depth + 0.5).setOrigin(0.5, 0);
+    this.objects.push(t);
+    return t;
   };
 
   var SKINS = [0xc99a6e, 0xa8774f, 0xe0b48a, 0x8a5a3a, 0xd6a77a];
@@ -86,7 +97,7 @@
   // Indoor floor: tiles or carpet in perspective.
   Stage.prototype.floor = function (scene, top, bottom, line, opts) {
     opts = opts || {};
-    var g = scene.add.graphics().setDepth(-10), horizon = this.horizon;
+    var g = this.layer(scene, 1, -10), horizon = this.horizon;
     g.fillGradientStyle(top, top, bottom, bottom, 1);
     g.fillRect(0, horizon, W, H - horizon);
     g.lineStyle(1, line, 1);
@@ -220,8 +231,8 @@
       self.label(scene, bb[0] + 50, 40, bb[1], 'k', 0.3, -30);
     });
     // Exit sign and the vending machine (lit, animated below).
-    far.fillStyle(0x3a3a3a, 1); far.fillRect(318, 10, 40, 14);
-    this.label(scene, 338, 13, 'EXIT', 'r', 0.3, -30);
+    far.fillStyle(0x3a3a3a, 1); far.fillRect(930, horizon - 142, 40, 14);
+    this.label(scene, 950, horizon - 139, 'EXIT', 'r', 0.3, -30);
     far.fillStyle(0x7a1f2a, 1); far.fillRect(980, horizon - 110, 54, 110);
     far.fillStyle(0x1a1a22, 1); far.fillRect(986, horizon - 100, 34, 70);
     var rndv = mulberry(5);
@@ -374,7 +385,7 @@
   }
 
   function asphalt(stage, scene, horizon, rnd, spaces) {
-    var floor = scene.add.graphics().setDepth(-10);
+    var floor = stage.layer(scene, 1, -10);
     floor.fillGradientStyle(0x5a5660, 0x5a5660, 0x34313a, 0x34313a, 1);
     floor.fillRect(0, horizon, W, H - horizon);
     if (spaces) { floor.lineStyle(2, 0xd8d2b8, 0.55); for (var sx = 10; sx < W; sx += 90) floor.lineBetween(sx, horizon + 2, sx - 8, horizon + 26); }
@@ -608,6 +619,7 @@
   };
 
   Stage.prototype.update = function () {
+    if (!this.visible) return;
     this.t++;
     if (this.cheerT > 0 && --this.cheerT === 0) { this.cheerAmp = 0; this.cheerFav = false; }
     if (this.flinchT > 0) this.flinchT--;

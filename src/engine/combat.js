@@ -26,7 +26,9 @@
       for (var j = 0; j < hurts.length; j++) if (FG.overlap(hb, hurts[j])) { touching = true; break; }
       if (!touching) continue;
       // Snapshot the defender's guard and counter-hit state before anything changes (trades).
-      var c = { a: i, d: 1 - i, guard: d.guardStance(this.buffers[1 - i]), ch: d.inCounterHitWindow(), punish: d.inRecovery() };
+      var c = { a: i, d: 1 - i, guard: d.guardStance(this.buffers[1 - i]), ch: d.inCounterHitWindow(), punish: d.inRecovery(),
+        // The attacker's move as it is now: in a trade, the other hit lands first and changes their state.
+        move: m, moveFrame: a.moveFrame, hb: hb, charge: a.chargeLevel() };
       // A parry catches strikes of the levels it covers (never throws).
       var pr = !m.throw && d.parryWindow();
       if (pr && pr.levels.indexOf(m.level) >= 0) { parries.push(c); continue; }
@@ -77,7 +79,7 @@
   // --- Strikes ------------------------------------------------------------------
 
   Match.prototype.applyContact = function (c) {
-    var a = this.fighters[c.a], d = this.fighters[c.d], m = a.move;
+    var a = this.fighters[c.a], d = this.fighters[c.d], m = c.move;
     // Neither side is free on a frame where contact happens.
     a.actionable = false;
     d.actionable = false;
@@ -86,8 +88,8 @@
       ((m.level === 'low' && c.guard === 'crouch') || (m.level !== 'low' && c.guard === 'stand'));
 
     // Frames until the attacker can act again, counted from this frame.
-    var attackerLeft = m.total - a.moveFrame + 1;
-    var hb = a.hitbox(0);
+    var attackerLeft = m.total - c.moveFrame + 1;
+    var hb = c.hb;
     var ev = { type: blocked ? 'block' : 'hit', attacker: c.a, defender: c.d, move: m, level: m.level,
       x: (Math.max(hb.x1, d.x - 16) + Math.min(hb.x2, d.x + 16)) / 2,
       y: (hb.y1 + hb.y2) / 2, facing: a.facing };
@@ -95,7 +97,7 @@
     // Air attacks hang the attacker in the air a moment so they can chain.
     if (m.air) a.vy = Math.max(a.vy, m.stall || 2.5);
 
-    var charge = a.chargeLevel();
+    var charge = c.charge;
     if (blocked) {
       a.contact = 'block';
       this.events.push(ev);
@@ -254,7 +256,7 @@
       this.push(a, d, m.push * 0.5);
       this.hitstop = Math.max(this.hitstop, 18);
       this.startMeasure(c.a, c.d, m, 'GUARD BREAK');
-      this.events.push({ type: 'guardbreak', attacker: c.a, defender: c.d, x: d.x, y: 60, shake: 0.01, charge: a.chargeLevel() });
+      this.events.push({ type: 'guardbreak', attacker: c.a, defender: c.d, x: d.x, y: 60, shake: 0.01, charge: c.charge });
       return;
     }
 
@@ -281,7 +283,7 @@
   // button (P for the front throw, K for the reverse throw) to break it.
 
   Match.prototype.startGrab = function (c) {
-    var a = this.fighters[c.a], d = this.fighters[c.d], m = a.move;
+    var a = this.fighters[c.a], d = this.fighters[c.d], m = c.move || a.move;
     a.actionable = false; d.actionable = false;
     a.contact = 'hit';
     a.setState('throwing');

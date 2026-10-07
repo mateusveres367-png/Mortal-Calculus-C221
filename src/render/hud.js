@@ -141,7 +141,7 @@
     else if (ev.ground) text = 'GROUND HIT';
     else if (ev.launch) text = 'LAUNCH!';
     if (text) this.setLabel(i, text);
-    if (ev.ko) this.showBanner('K.O.', (ev.attacker === 0 ? 'P1 ' : 'P2 ') + 'WINS', C.KO_RESET_FRAMES);
+    if (ev.ko) this.showBanner('K.O.', this.roundMode ? '' : (ev.attacker === 0 ? 'P1 ' : 'P2 ') + 'WINS', this.roundMode ? 120 : C.KO_RESET_FRAMES, this.roundMode ? { scale: 5, y: 116 } : null);
   };
 
   // Called once per display tick.
@@ -257,6 +257,20 @@
       this.drawCounter(i);
     }
 
+    // Rounds: the timer replaces VS, and won rounds light up under the health bars.
+    var r = opts.rounds;
+    if (r) {
+      this.vs.setText(r.time == null ? '--' : String(r.time)).setScale(3).setY(6).setFont(r.low && this.blink % 20 < 10 ? 'pf_r' : 'pf_y');
+      for (var side = 0; side < 2; side++) {
+        for (var k = 0; k < r.toWin; k++) {
+          var mx = side === 0 ? 16 + k * 14 : C.VIEW_W - 26 - k * 14, my = BAR_Y + BAR_H + 12;
+          g.fillStyle(0x000000, 1); g.fillRect(mx - 1, my - 1, 12, 8);
+          g.fillStyle(k < r.wins[side] ? 0xffd23f : 0x3a3440, 1); g.fillRect(mx, my, 10, 6);
+        }
+      }
+    } else {
+      this.vs.setText('VS').setScale(2).setY(13).setFont('pf_y');
+    }
     this.mode.setText(opts.modeLabel);
     this.slowText.setText(opts.slow ? 'SLOW-MO' : '');
 

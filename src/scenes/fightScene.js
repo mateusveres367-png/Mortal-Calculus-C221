@@ -1,4 +1,9 @@
-// The fight scene: reads the keyboard, runs the fixed-step simulation, and draws.
+// The fight scene: reads the keyboard (or a CPU), runs the fixed-step simulation, and draws.
+// Modes:
+//   training  practice with the dummy, frame data, combo trials (no rounds)
+//   arcade    player 1 against a ladder of CPU opponents, best of three each
+//   versus    player 1 against player 2, best of three
+//   attract   the title screen's demo: two CPU fighters; any key goes back
 (function () {
   var C = FG.C;
   var STEP_MS = 1000 / C.FPS;
@@ -7,9 +12,11 @@
   FightScene.prototype = Object.create(Phaser.Scene.prototype);
   FightScene.prototype.constructor = FightScene;
 
-  // data: { p1, p2 } fighter ids from the select screen.
+  // data: { mode, p1, p2, stage, arcade } (arcade: the run, see FG.arcadeStart).
   FightScene.prototype.init = function (data) {
     data = data || {};
+    this.mode = data.mode || 'training';
+    this.arcade = data.arcade || null;
     var roster = FG.ROSTER;
     this.ids = { p1: data.p1 || roster[0].id, p2: data.p2 || roster[Math.min(1, roster.length - 1)].id };
     // The stage: picked on stage select, or player 2's home stage.
@@ -28,6 +35,15 @@
     this.hud = new FG.Hud(this);
     this.effects = new FG.Effects();
     this.dummy = new FG.Dummy();
+    // CPU players (arcade: player 2; attract: both).
+    this.ai = [null, null];
+    var seed = Math.floor(Math.random() * 100000);
+    if (this.mode === 'arcade') this.ai[1] = new FG.AI(this.cpuLevel(), seed);
+    if (this.mode === 'attract') { this.ai[0] = new FG.AI('normal', seed); this.ai[1] = new FG.AI('normal', seed + 1); }
+    // Rounds: best of three with a timer, outside training.
+    this.rounds = this.mode === 'training' ? null : new FG.Rounds({ seconds: this.mode === 'attract' ? 60 : FG.settings.time, toWin: 2 });
+    this.phase = 'fight'; // round modes: 'announce' | 'fight' | 'roundEnd'
+    this.phaseT = 0;
     this.intro = null;   // round intro animation in progress
     this.win = null;     // win screen after a K.O.
     // Training mode options (changed from the training menu or hotkeys).
@@ -35,6 +51,7 @@
       p2Human: false, refill: true, showData: true, showInputs: true,
       showBoxes: false, slow: false, startPos: 'center'
     };
+    if (this.mode !== 'training') { this.training.showData = false; this.training.showInputs = false; this.training.refill = false; }
     this.histories = [new FG.InputHistory(), new FG.InputHistory()];
     this.inputDisplays = [new FG.InputDisplay(this, 0), new FG.InputDisplay(this, 1)];
     this.refillTimer = [0, 0];
@@ -50,7 +67,8 @@
     this.newMatch({ intro: true });
     this.setupKeys();
     this.setupButtons();
-    this.menu = new FG.TrainingMenu(this, this.menuItems());
+    this.menu = this.mode === 'training' ? new FG.TrainingMenu(this, this.menuItems()) : new FG.TrainingMenu(this, this.pauseItems(), { title: 'PAUSED' });
+    this.hud.roundMode = !!this.rounds;
     // The world camera zooms on big moments; a second camera draws the HUD, unzoomed.
     this.uiCam = this.cameras.add(0, 0, C.VIEW_W, C.VIEW_H);
     this.sortCameras();
@@ -150,22 +168,119 @@
     this.intro = null;
     this.speech.hide();
     this.updateCars();
+    if (this.rounds) { this.startRound(); return; }
     this.hud.showBanner('FIGHT!', '', 50);
     // Show the controls once per session, after the first intro.
     if (!FG.seenControls) { FG.seenControls = true; this.hud.setOverlay(true); }
   };
 
+  // --- Rounds (arcade, versus, attract) -------------------------------------------
+
+  // How hard the CPU fights: the OPTIONS setting, a notch easier for the first
+  // two arcade opponents.
+  FightScene.prototype.cpuLevel = function () {
+    var order = FG.AI_ORDER, base = order.indexOf(FG.settings.difficulty);
+    if (this.arcade && this.arcade.index < 2) base = Math.max(0, base - 1);
+    return order[Math.max(0, base)];
+  };
+
+  // ROUND n (or FINAL ROUND), READY, FIGHT.
+  FightScene.prototype.startRound = function () {
+    this.phase = 'announce';
+    this.phaseT = 0;
+    var r = this.rounds;
+    this.hud.showBanner(r.isFinal() ? 'FINAL ROUND' : 'ROUND ' + r.round, '', 48, { scale: 4, y: 120 });
+    FG.Sfx.ui('confirm');
+  };
+
+  // Called every tick in round modes, after the match steps.
+  FightScene.prototype.roundTick = function (advanced) {
+    var r = this.rounds, m = this.match;
+    this.phaseT++;
+    if (this.phase === 'announce') {
+      if (this.phaseT === 50) this.hud.showBanner('READY', '', 34, { scale: 4, y: 120 });
+      if (this.phaseT >= 86) { this.phase = 'fight'; this.phaseT = 0; this.hud.showBanner('FIGHT!', '', 40, { scale: 5, y: 116 }); FG.Sfx.ui('confirm'); }
+      return;
+    }
+    if (this.phase === 'fight') {
+      if (m.winner !== null) r.end(m.winner, 'ko', m);
+      else if (advanced) {
+        r.tick(m);
+        if (r.result) {
+          this.hud.showBanner(r.result.winner < 0 ? 'DRAW' : 'TIME', r.result.winner < 0 ? '' : m.fighters[r.result.winner].def.name + ' WINS THE ROUND', 120, { scale: 4, y: 120 });
+          FG.Sfx.ui('confirm');
+        }
+      }
+      if (r.result) { this.phase = 'roundEnd'; this.phaseT = 0; }
+      return;
+    }
+    if (this.phase === 'roundEnd') {
+      if (this.phaseT === 80 && r.result.perfect) { this.hud.showBanner('PERFECT', '', 60, { scale: 4, y: 160 }); this.stage.cheer(3, true); }
+      if (this.phaseT >= 170) {
+        var mw = r.matchWinner();
+        if (mw !== null) { this.startWin(mw); return; }
+        r.next();
+        this.newMatch({ quiet: true });
+        this.startRound();
+      }
+    }
+  };
+
+  // Rows of the pause menu (arcade, versus).
+  FightScene.prototype.pauseItems = function () {
+    var self = this;
+    var items = [{ label: 'RESUME', value: function () { return ''; }, change: function () { self.menu.setOpen(false); } }];
+    if (this.mode === 'versus') items.push({ label: 'RESTART MATCH', value: function () { return ''; }, change: function () { self.menu.setOpen(false); self.rematch(); } });
+    items.push({ label: 'SOUND', value: function () { return FG.Sfx.muted ? 'OFF' : 'ON'; }, change: function () { FG.Sfx.muted = !FG.Sfx.muted; FG.settings.sound = !FG.Sfx.muted; FG.saveSettings(); } });
+    items.push({ label: 'CHARACTER SELECT', value: function () { return ''; }, change: function () { self.toSelect(); } });
+    items.push({ label: 'QUIT TO TITLE', value: function () { return ''; }, change: function () { self.toTitle(); } });
+    return items;
+  };
+
+  FightScene.prototype.rematch = function () {
+    if (this.rounds) this.rounds = new FG.Rounds({ seconds: this.rounds.seconds, toWin: this.rounds.toWin });
+    this.newMatch({ intro: true });
+  };
+
+  FightScene.prototype.toTitle = function () {
+    this.scene.start('title', { menu: this.mode !== 'attract' });
+  };
+
+  // Arcade: on to the next opponent, or the ending after the last one.
+  FightScene.prototype.nextArcade = function () {
+    var run = this.arcade;
+    run.index++;
+    if (run.index >= run.ladder.length) { this.scene.start('ending', run); return; }
+    this.scene.start('fight', FG.arcadeFight(run));
+  };
+
+  // Arcade: lost the match. Continue (same opponent) or game over.
+  FightScene.prototype.continueArcade = function () {
+    this.arcade.continues++;
+    this.scene.start('fight', FG.arcadeFight(this.arcade));
+  };
+
   // Win screen: the winner's victory animation and a random victory line.
-  FightScene.prototype.startWin = function () {
-    var m = this.match, w = m.fighters[m.winner], l = m.fighters[1 - m.winner];
+  FightScene.prototype.startWin = function (winner) {
+    var m = this.match;
+    if (winner == null) winner = m.winner;
+    var w = m.fighters[winner], l = m.fighters[1 - winner];
     var lines = w.def.victoryLines;
-    this.win = { winner: m.winner, t: 0 };
+    this.win = { winner: winner, t: 0 };
     w._override = { anim: w.def.victory, t: 0, loop: true };
     l._override = { anim: l.def.defeat, t: 0, loop: true };
     w._gesture = null; w._face = null;
     this.speech.show(w.def.name, lines[Math.floor(Math.random() * lines.length)]);
     this.bubbles[0].hide(); this.bubbles[1].hide();
-    this.hud.showBanner(w.def.name + ' WINS', 'ENTER: REMATCH   ESC: CHARACTER SELECT', 100000, { scale: 3, y: 150 });
+    var sub = 'ENTER: REMATCH   ESC: CHARACTER SELECT', score = this.rounds ? '  ' + this.rounds.wins[winner] + '-' + this.rounds.wins[1 - winner] : '';
+    if (this.mode === 'arcade') {
+      var last = this.arcade.index + 1 >= this.arcade.ladder.length;
+      if (winner === 0) sub = last ? 'ENTER: CONTINUE' : 'NEXT: ' + FG.fighterById(this.arcade.ladder[this.arcade.index + 1]).name + '   ENTER: FIGHT';
+      else { sub = ''; this.win.cont = 10 * 60; } // the continue countdown
+    }
+    if (this.mode === 'attract') sub = 'PRESS ENTER';
+    this.hud.showBanner(w.def.name + ' WINS' + score, sub, 100000, { scale: 3, y: 150 });
+    if (this.rounds) this.stage.react('ko');
   };
 
   // --- Combo trials ---------------------------------------------------------------
@@ -200,7 +315,7 @@
   };
 
   FightScene.prototype.toSelect = function () {
-    this.scene.start('select', { p1: this.ids.p1, p2: this.ids.p2, stage: this.stageId });
+    this.scene.start('select', { mode: this.mode === 'attract' ? 'training' : this.mode, p1: this.ids.p1, p2: this.ids.p2, stage: this.stageId });
   };
 
   // Rows of the training menu. Each has a label, a value() and change(delta).
@@ -289,6 +404,7 @@
     var self = this, t = this.training;
     kb.on('keydown', function (e) {
       FG.Sfx.unlock();
+      if (self.mode === 'attract') { self.toTitle(); return; } // any key ends the demo
       if (self.menu.open) { self.menu.key(e.code); return; }
       if (self.intro) {
         if (['Enter', 'Space', 'Escape', 'KeyJ', 'KeyK', 'KeyL'].indexOf(e.code) >= 0) self.endIntro();
@@ -296,8 +412,19 @@
       }
       if (self.win) {
         if (self.win.t < 20) return;
-        if (e.code === 'Enter' || e.code === 'Space' || e.code === 'KeyJ') self.newMatch({ intro: true });
-        else if (e.code === 'Escape' || e.code === 'KeyK') self.toSelect();
+        var ok = e.code === 'Enter' || e.code === 'Space' || e.code === 'KeyJ', esc = e.code === 'Escape' || e.code === 'KeyK';
+        if (self.mode === 'arcade') {
+          if (self.win.winner === 0) { if (ok) self.nextArcade(); }
+          else if (self.win.cont > 0) { if (ok) self.continueArcade(); else if (esc) self.win.cont = 1; }
+          return;
+        }
+        if (ok) self.rematch();
+        else if (esc) self.toSelect();
+        return;
+      }
+      if (self.mode !== 'training') {
+        if (e.code === 'Escape') self.menu.setOpen(true);
+        if (e.code === 'KeyM') FG.Sfx.muted = !FG.Sfx.muted;
         return;
       }
       switch (e.code) {
@@ -316,6 +443,16 @@
         case 'KeyC': self.hud.setOverlay(!self.hud.overlayOn); break;
       }
     });
+  };
+
+  // Raw input for player i this tick: keyboard, the training dummy, or the CPU.
+  FightScene.prototype.inputFor = function (i) {
+    var f = this.match.fighters, m = this.match;
+    if (this.ai[i]) return this.ai[i].input(f[i], f[1 - i], m);
+    if (i === 0) return this.readP1();
+    if (this.mode === 'versus' || (this.mode === 'training' && this.training.p2Human)) { f[1].holdGuard = false; return this.readP2(); }
+    f[1].holdGuard = false;
+    return this.dummy.input(f[1], f[0], m);
   };
 
   FightScene.prototype.readP1 = function () {
@@ -372,7 +509,20 @@
       if (this.intro.t >= this.intro.len) this.endIntro();
     }
     this.speech.tick();
-    if (this.win) this.win.t++;
+    if (this.win) {
+      this.win.t++;
+      // Arcade continue countdown, then GAME OVER and back to the title.
+      if (this.win.cont > 0) {
+        this.win.cont--;
+        var secs = Math.ceil(this.win.cont / 60);
+        this.hud.showBanner('CONTINUE? ' + secs, 'ENTER: CONTINUE   ESC: GIVE UP', 100000, { scale: 3, y: 150 });
+        if (this.win.cont === 0) { this.win.over = 150; this.hud.showBanner('GAME OVER', '', 100000, { scale: 4, y: 140 }); }
+      } else if (this.win.over && --this.win.over === 0) {
+        this.toTitle();
+        return;
+      }
+      if (this.mode === 'attract' && this.win.t > 200) { this.toTitle(); return; }
+    }
     this.bubbles[0].tick(); this.bubbles[1].tick();
     this.effects.update();
     this.stage.update();
@@ -382,17 +532,18 @@
   FightScene.prototype.tick = function () {
     if (this.intro || this.win) { this.presentationTick(); return; }
     var m = this.match, f = m.fighters;
-    var raw1 = this.readP1();
-    var human = this.training.p2Human;
-    f[1].holdGuard = false;
-    var raw2 = human ? this.readP2() : this.dummy.input(f[1], f[0], m);
+    var raw1 = this.inputFor(0), raw2 = this.inputFor(1);
+    // Nobody moves until FIGHT!, or after the round is over.
+    if (this.rounds && this.phase !== 'fight') { raw1 = FG.emptyRaw(); raw2 = FG.emptyRaw(); }
     if (this.forceInput) { var fi = this.forceInput(this.tickCount); if (fi) { raw1 = fi[0] || raw1; raw2 = fi[1] || raw2; } }
     this.histories[0].record(raw1, f[0].facing);
     this.histories[1].record(raw2, f[1].facing);
 
-    var wasKo = m.koTimer > 0;
+    var wasKo = m.koTimer > 0, frameBefore = m.frame;
     m.step([raw1, raw2]);
-    if (wasKo && m.koTimer === 0) { this.hud.clear(); this.hud.showBanner('FIGHT!', '', 50); }
+    if (wasKo && m.koTimer === 0 && !this.rounds) { this.hud.clear(); this.hud.showBanner('FIGHT!', '', 50); }
+    if (this.rounds) this.roundTick(m.frame > frameBefore);
+    if (this.win || m !== this.match) return; // the match just ended, or the next round just started
 
     for (var i = 0; i < m.events.length; i++) {
       var ev = m.events[i];
@@ -427,7 +578,8 @@
     if (this.slowmo && --this.slowmo.frames <= 0) this.slowmo = null;
     this.trials.tick(m);
     if (this.zoom) this.zoom.t++;
-    if (m.over && !this.win) this.startWin();
+    if (m.over && !this.win && !this.rounds) this.startWin();
+    if (this.mode === 'attract' && this.tickCount > 60 * 75) { this.toTitle(); return; }
     this.chargeFeedback();
     this.bubbles[0].tick(); this.bubbles[1].tick();
     // A big combo just ended: the attacker may say something.
@@ -628,6 +780,7 @@
         opts.jitter = (this.tickCount % 2 ? 1 : -1) * (fi.state === 'blockstun' ? 1 : 2);
       }
       if (fi._hidden) continue;
+      if (!fi._pose) FG.updatePose(fi, this.tickCount);
       if (fi._drawX != null) opts.x = fi._drawX;
       FG.drawFighter(g, fi, opts);
     }
@@ -652,15 +805,27 @@
     if (spoken) { var sp = f[spoken.speaker]; this.speech.draw(sp, camX, onScreen(sp._drawX != null ? sp._drawX : sp.x)); }
     for (var bi = 0; bi < 2; bi++) this.bubbles[bi].draw(f[bi], camX, onScreen(f[bi].x));
 
-    var modeLabel = this.trials.active ? 'TRAINING   COMBO TRIALS' : 'TRAINING   P2: ' + (t.p2Human ? 'HUMAN' : this.dummy.label('stance') +
-      (this.dummy.get('action') !== 'none' ? ' + ' + this.dummy.label('action') : ''));
+    var modeLabel = this.modeLabel();
     var clean = !!(this.intro || this.win);
-    this.hud.draw(m, { modeLabel: clean ? '' : modeLabel, showData: t.showData && !clean, slow: t.slow });
+    var r = this.rounds;
+    this.hud.draw(m, { modeLabel: clean && this.mode === 'training' ? '' : modeLabel, showData: t.showData && !clean, slow: t.slow,
+      rounds: r ? { wins: r.wins, toWin: r.toWin, time: r.timeLeft(), low: r.seconds && r.frames < 10 * 60 && this.phase === 'fight' } : null });
     // The intro and win screen hide the training clutter.
     this.inputDisplays[0].draw(this.histories[0], t.showInputs && !clean);
     this.inputDisplays[1].draw(this.histories[1], t.showInputs && !clean && !this.trials.active); // the trial panel sits there
-    this.drawButtons(clean);
+    this.drawButtons(clean || this.mode !== 'training');
     if (clean) this.trials.hide(); else this.trials.draw();
+  };
+
+  FightScene.prototype.modeLabel = function () {
+    var t = this.training;
+    switch (this.mode) {
+      case 'arcade': return 'ARCADE   ' + (this.arcade.index + 1) + '/' + this.arcade.ladder.length + '   CPU ' + FG.AI_LEVELS[this.ai[1].level].name;
+      case 'versus': return 'VERSUS';
+      case 'attract': return this.tickCount % 60 < 40 ? 'DEMO PLAY   PRESS ENTER' : 'DEMO PLAY';
+    }
+    if (this.trials.active) return 'TRAINING   COMBO TRIALS';
+    return 'TRAINING   P2: ' + (t.p2Human ? 'HUMAN' : this.dummy.label('stance') + (this.dummy.get('action') !== 'none' ? ' + ' + this.dummy.label('action') : ''));
   };
 
   FG.FightScene = FightScene;

@@ -5,13 +5,15 @@
   var C = FG.C;
   var X = 150, Y = 62, W = C.VIEW_W - 300, ROW = 13;
 
-  function TrainingMenu(scene, items) {
+  // opts.title: heading (default TRAINING MENU).
+  function TrainingMenu(scene, items, opts) {
+    opts = opts || {};
     this.scene = scene;
     this.items = items;
     this.index = 0;
     this.open = false;
     this.g = scene.add.graphics().setScrollFactor(0).setDepth(70);
-    this.title = FG.text(scene, C.VIEW_W / 2, Y - 2, 'TRAINING MENU', 'y', 2).setOrigin(0.5, 0).setDepth(71);
+    this.title = FG.text(scene, C.VIEW_W / 2, Y - 2, opts.title || 'TRAINING MENU', 'y', 2).setOrigin(0.5, 0).setDepth(71);
     this.labels = [];
     this.values = [];
     var self = this;
