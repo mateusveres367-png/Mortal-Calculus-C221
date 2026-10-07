@@ -71,6 +71,28 @@
     if (m.shake == null) m.shake = 0;
   }
 
+  // --- Combo trial steps ------------------------------------------------------------
+  // Splits a route's notation into one step per hit, for combo trials:
+  //   'D+H, UP, AIR P, AIR K' -> ['D+H', 'UP, AIR P', 'AIR K'] (UP, dash taps join the next hit)
+  // and pulls out a setup condition ('AT THE WALL', 'BLOCK THEIR JAB', ...).
+  // A route can also list its own `steps` and `setup`.
+  var SETUPS = [/^AT THE WALL:\s*/, /^BLOCK THEIR JAB,\s*/, /^THEY WHIFF A JAB,\s*/];
+  FG.comboSteps = function (combo) {
+    if (combo.steps) return { setup: combo.setup || '', steps: combo.steps.slice() };
+    var text = combo.notation, setup = '';
+    SETUPS.forEach(function (re) {
+      var m = text.match(re);
+      if (m) { setup = m[0].replace(/[:,]\s*$/, ''); text = text.slice(m[0].length); }
+    });
+    var tokens = text.split(/,\s*/), steps = [], carry = '';
+    tokens.forEach(function (t) {
+      if (/^(UP|F|B)$/.test(t)) { carry += t + ', '; return; }
+      steps.push(carry + t);
+      carry = '';
+    });
+    return { setup: setup, steps: steps };
+  };
+
   // --- Shared move templates ------------------------------------------------------
   // Each returns fresh move objects; fighters pass names and tweaks.
 

@@ -79,7 +79,8 @@
     ['DOWN    UP RISE  BACK/FWD ROLL  SIDESTEP ROLL  K/P WAKE KICKS', 'y'],
     ['        TECH: PRESS P/K/H JUST BEFORE YOU LAND', 'y'],
     ['ESC TRAINING MENU   1 DUMMY STANCE   2 HITBOXES   3 FRAME DATA', 'g'],
-    ['4 SLOW-MO   5 SWAP SIDES   6 INPUTS   R RESET   M MUTE   C HIDE', 'g']
+    ['4 SLOW-MO   5 SWAP SIDES   6 INPUTS   R RESET   M MUTE   C HIDE', 'g'],
+    ['7 COMBO TRIALS   8/9 PREVIOUS/NEXT TRIAL', 'g']
   ];
 
   Hud.prototype.setOverlay = function (on) {

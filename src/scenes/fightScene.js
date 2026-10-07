@@ -41,6 +41,7 @@
     this.speech = new FG.SpeechBox(this, { mode: 'top' });                            // pre-round lines, win screen
     this.bubbles = [new FG.SpeechBox(this, { mode: 'head' }), new FG.SpeechBox(this, { mode: 'head' })]; // taunts, quips
     this.prevCombo = [0, 0];
+    this.trials = new FG.ComboTrials(this);
     this.newMatch({ intro: true });
     this.setupKeys();
     this.setupButtons();
@@ -80,7 +81,7 @@
       f[c]._hidden = false;
     }
     if (opts.intro) this.startIntro();
-    else { this.intro = null; this.hud.showBanner('FIGHT!', '', 50); }
+    else { this.intro = null; if (!opts.quiet) this.hud.showBanner('FIGHT!', '', 50); }
   };
 
   // The car intro: drive in, stop, open the door, PEDERSEN steps out, door closes.
@@ -162,6 +163,37 @@
     this.hud.showBanner(w.def.name + ' WINS', 'ENTER: REMATCH   ESC: CHARACTER SELECT', 100000, { scale: 3, y: 150 });
   };
 
+  // --- Combo trials ---------------------------------------------------------------
+
+  FightScene.prototype.toggleTrials = function () {
+    var t = this.training;
+    if (this.trials.active) {
+      this.trials.stop();
+      // Put the dummy and start position back the way they were.
+      if (this.trialSaved) { this.dummy.settings = this.trialSaved.dummy; t.startPos = this.trialSaved.startPos; t.refill = this.trialSaved.refill; }
+      this.trialSaved = null;
+      this.newMatch();
+      return;
+    }
+    this.trialSaved = { dummy: Object.assign({}, this.dummy.settings), startPos: t.startPos, refill: t.refill };
+    this.trials.start(this.match.fighters[0].def);
+  };
+
+  // Set the scene up for a trial: a dummy that just stands there (or jabs, for routes
+  // that start from the opponent's jab), at the wall for wall routes.
+  FightScene.prototype.setupTrial = function (c) {
+    var d = this.dummy, t = this.training;
+    d.settings = { stance: 0, action: c.oppPlan ? 1 : 0, recovery: 0, breaks: 0 };
+    d.timer = 0;
+    t.refill = true;
+    t.startPos = c.wall ? 'right' : 'center';
+    this.newMatch({ quiet: true });
+    if (c.dist) {
+      var f = this.match.fighters, mid = (f[0].x + f[1].x) / 2;
+      f[0].x = mid - c.dist / 2; f[1].x = mid + c.dist / 2;
+    }
+  };
+
   FightScene.prototype.toSelect = function () {
     this.scene.start('select', { p1: this.ids.p1, p2: this.ids.p2 });
   };
@@ -189,6 +221,9 @@
       toggle('slow', 'SLOW MOTION'),
       { label: 'START POSITION', value: function () { return posLabel[t.startPos]; },
         change: function (delta) { t.startPos = positions[(positions.indexOf(t.startPos) + delta + 3) % 3]; self.newMatch(); } },
+      { label: 'COMBO TRIALS (7)', value: function () { return self.trials.active ? 'ON' : 'OFF'; }, change: function () { self.toggleTrials(); } },
+      { label: 'TRIAL (8/9)', value: function () { var c = self.trials.active && self.trials.current(); return c ? (self.trials.index + 1) + '/' + self.trials.list.length + ' ' + c.name : '-'; },
+        change: function (delta) { if (self.trials.active) self.trials.select(self.trials.index + delta); } },
       { label: 'SWAP SIDES', value: function () { var f = self.match.fighters; return f[0].def.name + ' VS ' + f[1].def.name; },
         change: function () { self.swapSides(); } },
       { label: 'CHARACTER SELECT', value: function () { return ''; }, change: function () { self.toSelect(); } },
@@ -232,7 +267,7 @@
   FightScene.prototype.swapSides = function () {
     var p1 = this.ids.p1;
     this.ids.p1 = this.ids.p2; this.ids.p2 = p1;
-    this.newMatch();
+    if (this.trials.active) this.trials.start(FG.fighterById(this.ids.p1)); else this.newMatch();
   };
 
   FightScene.prototype.setupKeys = function () {
@@ -268,7 +303,10 @@
         case 'Digit4': t.slow = !t.slow; break;
         case 'Digit5': self.swapSides(); break;
         case 'Digit6': t.showInputs = !t.showInputs; break;
-        case 'KeyR': self.newMatch(); break;
+        case 'Digit7': self.toggleTrials(); break;
+        case 'Digit8': if (self.trials.active) self.trials.select(self.trials.index - 1); break;
+        case 'Digit9': if (self.trials.active) self.trials.select(self.trials.index + 1); break;
+        case 'KeyR': if (self.trials.active) self.trials.select(self.trials.index); else self.newMatch(); break;
         case 'KeyM': FG.Sfx.muted = !FG.Sfx.muted; break;
         case 'KeyC': self.hud.setOverlay(!self.hud.overlayOn); break;
       }
@@ -373,6 +411,7 @@
       if (ev.type === 'guardbreak') this.impact = { who: ev.defender, frames: 4, color: 0x5fd7ff };
       this.personality(ev);
       this.hud.onEvent(ev);
+      this.trials.onEvent(ev);
     }
 
     // A big juggle combo that just ended: the landing plays in slow motion.
@@ -381,6 +420,7 @@
       if (le.type === 'land' && f[le.fighter].state === 'down' && this.prevCombo[1 - le.fighter] >= C.BIG_COMBO) this.startSlowmo(20, 0.4);
     }
     if (this.slowmo && --this.slowmo.frames <= 0) this.slowmo = null;
+    this.trials.tick(m);
     if (this.zoom) this.zoom.t++;
     if (m.over && !this.win) this.startWin();
     this.chargeFeedback();
@@ -604,14 +644,15 @@
     if (spoken) { var sp = f[spoken.speaker]; this.speech.draw(sp, camX, onScreen(sp._drawX != null ? sp._drawX : sp.x)); }
     for (var bi = 0; bi < 2; bi++) this.bubbles[bi].draw(f[bi], camX, onScreen(f[bi].x));
 
-    var modeLabel = 'TRAINING   P2: ' + (t.p2Human ? 'HUMAN' : this.dummy.label('stance') +
+    var modeLabel = this.trials.active ? 'TRAINING   COMBO TRIALS' : 'TRAINING   P2: ' + (t.p2Human ? 'HUMAN' : this.dummy.label('stance') +
       (this.dummy.get('action') !== 'none' ? ' + ' + this.dummy.label('action') : ''));
     var clean = !!(this.intro || this.win);
     this.hud.draw(m, { modeLabel: clean ? '' : modeLabel, showData: t.showData && !clean, slow: t.slow });
     // The intro and win screen hide the training clutter.
     this.inputDisplays[0].draw(this.histories[0], t.showInputs && !clean);
-    this.inputDisplays[1].draw(this.histories[1], t.showInputs && !clean);
+    this.inputDisplays[1].draw(this.histories[1], t.showInputs && !clean && !this.trials.active); // the trial panel sits there
     this.drawButtons(clean);
+    if (clean) this.trials.hide(); else this.trials.draw();
   };
 
   FG.FightScene = FightScene;

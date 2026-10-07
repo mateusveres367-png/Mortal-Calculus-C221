@@ -2,7 +2,7 @@
 // with how many frames each was held. Directions are relative to the fighter's
 // facing in numpad notation (6 = forward, 4 = back, 2 = down, 8 = up, 5 = neutral).
 (function () {
-  var MAX_ROWS = 14, ROW_H = 12, TOP = 124;
+  var MAX_ROWS = 10, ROW_H = 12, TOP = 170;
 
   // Pure history logic (no Phaser), so it can be tested in Node.
   function InputHistory() { this.rows = []; }

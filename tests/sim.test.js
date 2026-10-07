@@ -922,5 +922,14 @@ check('all eight fighters', FG.ROSTER.length === 8, FG.ROSTER.length);
   });
 })();
 
+// Combo trials show one input step per hit of every route.
+defs.forEach(function (d) {
+  d.combos.forEach(function (c) {
+    var st = FG.comboSteps(c);
+    check(d.name + ' ' + c.name + ' trial steps match its hits', st.steps.length === c.hits.length, st.steps);
+    check(d.name + ' ' + c.name + ' has a difficulty', ['easy', 'medium', 'hard'].indexOf(c.difficulty) >= 0, c.difficulty);
+  });
+});
+
 console.log(passes + ' passed, ' + failures + ' failed');
 process.exit(failures ? 1 : 0);
