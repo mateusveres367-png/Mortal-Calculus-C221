@@ -29,6 +29,8 @@
     axe_x: P('idle', { lean: 6, fk: [26, 50], ff: [44, 40] })
   };
 
+  poses.taunt = poses['smile'];
+
   FG.defineFighter({
     id: 'chai', order: 2,
     name: 'CHAI', archetype: 'TECHNICAL', theme: 'GEOMETRY',
@@ -136,7 +138,8 @@
     },
     FG.kit.air(['TANGENT JAB', 'CHORD KICK', 'VERTEX SPIKE']),
     FG.kit.throws('TRANSFORMATION', 'ROTATION', { throw: { damage: 28 }, throwB: { damage: 32 } }),
-    FG.kit.wake()),
+    FG.kit.wake(),
+    FG.kit.taunt()),
 
     combos: [
       { name: 'RIGHT TRIANGLE', notation: 'P, K', plan: { 0: 'P', 14: 'K' }, hits: ['jab', 'jabK'] },
@@ -151,6 +154,15 @@
     victory: [[1, 'stand'], [16, 'offer'], [40, 'offer2'], [64, 'offer'], [80, 'smile'], [100, 'offer']],
     defeat: [[1, 'kneel'], [40, 'kneel2'], [80, 'kneel']],
     gestures: { sorry: [[1, 'idle'], [8, 'sorry'], [32, 'sorry'], [42, 'idle']] },
+    // Smack talk: pre-round and taunt lines, and short lines after a big combo or counter hit.
+    talk: {
+      lines: [
+        'I\'m sorry in advance. Really.',
+        'I believe in you! Just... not right now.',
+        'This won\'t be on the test, but it will hurt.'
+      ],
+      quips: ['Sorry! Sorry!', 'Oh no, are you okay?', 'That was a right angle.']
+    },
     victoryLines: [
       "Don't worry, I curve fights too.",
       'That was acute attempt. Mine was just more right.',

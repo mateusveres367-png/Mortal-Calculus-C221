@@ -15,7 +15,7 @@ function sentence(s) { return s.toLowerCase().replace(/(^|[.!?]\s+)([a-z])/g, fu
 function title(s) { return s.toLowerCase().replace(/(^|[\s-])([a-z])/g, function (m, a, b) { return a + b.toUpperCase(); }).replace("L'hopital", "L'Hopital"); }
 
 var ORDER = ['jab', 'jab2', 'fP', 'bP', 'dP', 'dashP', 'ssP', 'ssK', 'mid', 'fK', 'bK', 'low', 'dfK', 'sweep',
-  'heavy', 'fH', 'bH', 'launcher', 'throw', 'throwB', 'cmdGrab', 'airP', 'airK', 'airH', 'wakeLow', 'wakeMid'];
+  'heavy', 'fH', 'bH', 'launcher', 'throw', 'throwB', 'cmdGrab', 'airP', 'airK', 'airH', 'wakeLow', 'wakeMid', 'taunt'];
 
 var out = [];
 out.push('# Mortal Calculus: C221 — Move lists');
@@ -55,6 +55,7 @@ FG.ROSTER.forEach(function (d) {
     if (m.stanceSwitch) notes.push('switches stance');
     if (m.parry) notes.push('parry');
     if (m.charge) notes.push('hold to charge');
+    if (m.taunt) notes.push('says a taunt line; counter-hittable the whole time');
     if (m.throw) notes.push(m.breakBtn ? 'break with ' + m.breakBtn.toUpperCase() : 'unbreakable');
     if (m.cancels) m.cancels.forEach(function (c) { if (c.into === 'jump') notes.push('jump cancel on hit (UP)'); });
     if (m.air) notes.push('hitstun ' + m.stunHit + ', blockstun ' + m.stunBlock + ', landing ' + m.landLag);

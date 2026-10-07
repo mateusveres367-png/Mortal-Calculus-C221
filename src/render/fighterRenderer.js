@@ -180,6 +180,9 @@
       case 'textured':
         R(-7, -8, 13, 3, col); R(-8, -6, 3, 5, col); R(-6, -9, 2, 1, col); R(-2, -9, 2, 1, col); R(2, -9, 2, 1, col); R(5, -9, 1, 1, col);
         break;
+      case 'longBouncy': // the cap; the long part is simulated in drawLongHair
+        R(-7, -8, 13, 4, col); R(-8, -6, 4, 7, col); R(-9, -3, 3, 6, col); R(4, -7, 3, 2, col); R(-2, -9, 5, 1, shade(col, 1.6));
+        break;
       default: // neat
         R(-7, -8, 13, 3, col); R(-8, -6, 4, 6, col); R(5, -6, 1, 1, col);
     }
@@ -228,6 +231,40 @@
       case 'flat': R(3, 3, 4, 1, 0x3a1010); R(4, 4, 1, 1, 0x3a1010); break;
       default: R(3, 3, 3, 1, 0x3a1010); R(6, 2, 1, 1, 0x3a1010); R(2, 2, 1, 1, 0x3a1010);
     }
+  }
+
+  // Long hair that swings (RAMOS): a chain of points hanging from the back of the
+  // head, simulated each frame so dashes, jumps and throws make it bounce.
+  var HAIR_SEGS = 6;
+  function drawLongHair(g, f, hx, hy, s, dir, color) {
+    var rootX = hx - dir * 6 * s, rootY = hy - 2 * s, seg = 5.5 * s;
+    var pts = f._hairPts;
+    if (!pts || Math.abs(pts[0].x - rootX) > 60 || Math.abs(pts[0].y - rootY) > 60) {
+      pts = f._hairPts = [];
+      for (var k = 0; k <= HAIR_SEGS; k++) pts.push({ x: rootX - dir * k * 2 * s, y: rootY + k * seg, px: rootX - dir * k * 2 * s, py: rootY + k * seg });
+    }
+    pts[0].x = rootX; pts[0].y = rootY;
+    for (var i = 1; i < pts.length; i++) {
+      var p = pts[i], vx = (p.x - p.px) * 0.9, vy = (p.y - p.py) * 0.9;
+      p.px = p.x; p.py = p.y;
+      p.x += vx; p.y += vy + 0.5 * s;
+    }
+    for (var it = 0; it < 3; it++) {
+      for (var j = 1; j < pts.length; j++) {
+        var a = pts[j - 1], b = pts[j];
+        // A little springiness back toward hanging down-and-behind, so it bounces.
+        b.x += (a.x - dir * seg * 0.3 - b.x) * 0.05;
+        var dx = b.x - a.x, dy = b.y - a.y, d = Math.sqrt(dx * dx + dy * dy) || 1;
+        b.x = a.x + dx / d * seg; b.y = a.y + dy / d * seg;
+      }
+    }
+    for (var w = 1; w < pts.length; w++) {
+      g.lineStyle(Math.max(2, Math.round((7 - w * 0.7) * s)), color, 1);
+      g.lineBetween(pts[w - 1].x, pts[w - 1].y, pts[w].x, pts[w].y);
+      g.fillStyle(color, 1); g.fillCircle(pts[w].x, pts[w].y, Math.max(1, (3.2 - w * 0.35) * s));
+    }
+    g.lineStyle(1, shade(color, 2.2), 0.8);
+    for (var h2 = 2; h2 < pts.length - 1; h2++) g.lineBetween(pts[h2 - 1].x + dir * s, pts[h2 - 1].y, pts[h2].x + dir * s, pts[h2].y);
   }
 
   // --- Body ---------------------------------------------------------------------
@@ -286,6 +323,9 @@
       if (sleeves === 'long') { limb(1, e, 7, sl); limb(e, h, 6, sl); }
       else if (sleeves === 'rolled') { limb(1, e, 7, sl); limb(e, h, 6, sk); part(e, h, 0, 0.3, 7, shade(sl, 0.9)); }
       else { limb(e, h, 6, sk); part(1, e, 0, 0.62, 8, sl); }
+      if (look.wristband) { // red-white-red band at the wrist
+        part(e, h, 0.68, 0.76, 7, look.wristband[0]); part(e, h, 0.76, 0.83, 7, look.wristband[1]); part(e, h, 0.83, 0.9, 7, look.wristband[0]);
+      }
       block(h, 7, 7, sk);
     }
     var shoeW = look.flats ? 9 : 11, shoeH = look.flats ? 3 : 5;
@@ -379,8 +419,9 @@
     g.fillStyle(c(shade(look.legs, 0.55)), 1);
     g.fillRect(Math.round(hx - 8 * s * build.torso), Math.round(hy - 2 * s), Math.round(16 * s * build.torso), Math.round(2 * s));
 
-    // Neck and head.
+    // Neck and head (long hair hangs behind the head).
     var hdx = X(2), hdy = Y(2);
+    if (look.hair.style === 'longBouncy') drawLongHair(g, f, hdx, hdy, s, dir, c(look.hair.color));
     g.lineStyle(Math.round(5 * s), c(skin), 1);
     g.lineBetween(cx, cy, Math.round((cx + hdx) / 2), Math.round((cy + hdy) / 2));
     g.fillStyle(c(skin), 1);

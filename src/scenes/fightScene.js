@@ -36,7 +36,9 @@
     this.impact = null;
     // Labels that float over a fighter (alternate stance, taunts).
     this.tags = [0, 1].map(function () { return FG.text(this, 0, 0, '', 'y').setOrigin(0.5, 1).setScrollFactor(1).setDepth(20); }, this);
-    this.speech = new FG.SpeechBox(this);
+    this.speech = new FG.SpeechBox(this, { mode: 'top' });                            // pre-round lines, win screen
+    this.bubbles = [new FG.SpeechBox(this, { mode: 'head' }), new FG.SpeechBox(this, { mode: 'head' })]; // taunts, quips
+    this.prevCombo = [0, 0];
     this.newMatch({ intro: true });
     this.setupKeys();
     this.setupButtons();
@@ -55,6 +57,8 @@
     this.impact = null;
     this.win = null;
     this.speech.hide();
+    this.bubbles[0].hide(); this.bubbles[1].hide();
+    this.prevCombo = [0, 0];
     this.histories[0].clear(); this.histories[1].clear();
     this.hud.clear();
     var f = this.match.fighters;
@@ -99,7 +103,8 @@
     }
   };
 
-  // Round intro: each fighter's intro animation, then READY / FIGHT. Any button skips it.
+  // Round intro: each fighter's intro animation while they trade lines in speech
+  // boxes (rivalry exchanges where they apply), then FIGHT. Any button skips it.
   FightScene.prototype.startIntro = function () {
     var f = this.match.fighters, len = 0;
     for (var c = 0; c < this.cars.length; c++) this.cars[c].x = this.cars[c].parkX - this.cars[c].facing * 420;
@@ -107,14 +112,30 @@
       f[i]._override = { anim: f[i].def.intro, t: 0 };
       len = Math.max(len, FG.animLength(f[i].def.intro));
     }
-    this.intro = { t: 0, len: len + 10 };
-    this.hud.showBanner(f[0].def.name + ' VS ' + f[1].def.name, '', len - 20);
+    // Schedule the dialogue. PEDERSEN talks once he's out of the car.
+    var t = this.cars.length ? 66 : 36, lines = FG.preRoundLines(f[0].def, f[1].def);
+    var dialogue = lines.map(function (l) {
+      var d = { at: t, speaker: l.speaker, text: l.text, dur: FG.SpeechBox.readTime(l.text) };
+      t += d.dur;
+      return d;
+    });
+    this.intro = { t: 0, len: Math.max(len + 10, t + 6), dialogue: dialogue };
+    this.hud.showBanner(f[0].def.name + ' VS ' + f[1].def.name, '', 34);
+  };
+
+  // The line being spoken at intro frame t, if any.
+  FightScene.prototype.introLine = function () {
+    var d = this.intro && this.intro.dialogue;
+    if (!d) return null;
+    for (var i = 0; i < d.length; i++) if (this.intro.t >= d[i].at && this.intro.t < d[i].at + d[i].dur) return d[i];
+    return null;
   };
 
   FightScene.prototype.endIntro = function () {
     var f = this.match.fighters;
     for (var i = 0; i < 2; i++) { f[i]._override = null; f[i]._blazer = false; }
     this.intro = null;
+    this.speech.hide();
     this.updateCars();
     this.hud.showBanner('FIGHT!', '', 50);
     // Show the controls once per session, after the first intro.
@@ -130,6 +151,7 @@
     l._override = { anim: l.def.defeat, t: 0, loop: true };
     w._gesture = null; w._face = null;
     this.speech.show(w.def.name, lines[Math.floor(Math.random() * lines.length)]);
+    this.bubbles[0].hide(); this.bubbles[1].hide();
     this.hud.showBanner(w.def.name + ' WINS', 'ENTER: REMATCH   ESC: CHARACTER SELECT', 100000, { scale: 3, y: 150 });
   };
 
@@ -209,11 +231,12 @@
   FightScene.prototype.setupKeys = function () {
     var K = Phaser.Input.Keyboard.KeyCodes;
     var kb = this.input.keyboard;
-    this.keys1 = kb.addKeys({ left: K.A, right: K.D, up: K.W, down: K.S, p: K.J, k: K.K, h: K.L, ssIn: K.Q, ssOut: K.E });
+    this.keys1 = kb.addKeys({ left: K.A, right: K.D, up: K.W, down: K.S, p: K.J, k: K.K, h: K.L, ssIn: K.Q, ssOut: K.E, t: K.T });
     this.keys2 = kb.addKeys({
       left: K.LEFT, right: K.RIGHT, up: K.UP, down: K.DOWN,
       p: K.NUMPAD_ONE, k: K.NUMPAD_TWO, h: K.NUMPAD_THREE, ssIn: K.NUMPAD_FOUR, ssOut: K.NUMPAD_FIVE,
-      p2: K.COMMA, k2: K.PERIOD, h2: K.FORWARD_SLASH, ssIn2: K.SEMICOLON, ssIn3: K.SEMICOLON_FIREFOX, ssOut2: K.QUOTES
+      p2: K.COMMA, k2: K.PERIOD, h2: K.FORWARD_SLASH, ssIn2: K.SEMICOLON, ssIn3: K.SEMICOLON_FIREFOX, ssOut2: K.QUOTES,
+      t: K.NUMPAD_SIX, t2: K.CLOSED_BRACKET
     });
     kb.addCapture([K.ESC, K.ENTER, K.SPACE]);
     var self = this, t = this.training;
@@ -226,7 +249,7 @@
       }
       if (self.win) {
         if (self.win.t < 20) return;
-        if (e.code === 'Enter' || e.code === 'Space' || e.code === 'KeyJ') self.newMatch();
+        if (e.code === 'Enter' || e.code === 'Space' || e.code === 'KeyJ') self.newMatch({ intro: true });
         else if (e.code === 'Escape' || e.code === 'KeyK') self.toSelect();
         return;
       }
@@ -248,14 +271,14 @@
   FightScene.prototype.readP1 = function () {
     var k = this.keys1;
     return { left: k.left.isDown, right: k.right.isDown, up: k.up.isDown, down: k.down.isDown,
-      p: k.p.isDown, k: k.k.isDown, h: k.h.isDown, ssIn: k.ssIn.isDown, ssOut: k.ssOut.isDown };
+      p: k.p.isDown, k: k.k.isDown, h: k.h.isDown, ssIn: k.ssIn.isDown, ssOut: k.ssOut.isDown, t: k.t.isDown };
   };
 
   FightScene.prototype.readP2 = function () {
     var k = this.keys2;
     return { left: k.left.isDown, right: k.right.isDown, up: k.up.isDown, down: k.down.isDown,
       p: k.p.isDown || k.p2.isDown, k: k.k.isDown || k.k2.isDown, h: k.h.isDown || k.h2.isDown,
-      ssIn: k.ssIn.isDown || k.ssIn2.isDown || k.ssIn3.isDown, ssOut: k.ssOut.isDown || k.ssOut2.isDown };
+      ssIn: k.ssIn.isDown || k.ssIn2.isDown || k.ssIn3.isDown, ssOut: k.ssOut.isDown || k.ssOut2.isDown, t: k.t.isDown || k.t2.isDown };
   };
 
   // Test hook: override inputs for the next ticks (used by the headless smoke test).
@@ -293,9 +316,13 @@
         }
       }
       this.updateCars();
+      var line = this.introLine();
+      if (line && line.at === this.intro.t) this.speech.show(f[line.speaker].def.name, line.text, line.dur);
       if (this.intro.t >= this.intro.len) this.endIntro();
     }
+    this.speech.tick();
     if (this.win) this.win.t++;
+    this.bubbles[0].tick(); this.bubbles[1].tick();
     this.effects.update();
     this.stage.update();
     this.hud.tick(m);
@@ -330,6 +357,13 @@
 
     if (m.over && !this.win) this.startWin();
     this.chargeFeedback();
+    this.bubbles[0].tick(); this.bubbles[1].tick();
+    // A big combo just ended: the attacker may say something.
+    for (var q = 0; q < 2; q++) {
+      var hits = m.combo[q].hits;
+      if (this.prevCombo[q] >= 4 && hits === 0 && !m.koTimer) this.quip(1 - q, 0.7);
+      this.prevCombo[q] = hits;
+    }
     if (this.training.refill) this.refillHealth();
     for (var g = 0; g < 2; g++) {
       if (f[g]._tag && --f[g]._tag.t <= 0) f[g]._tag = null;
@@ -368,6 +402,14 @@
     }
   };
 
+  // A short line after a big combo or counter hit, `chance` of the time.
+  FightScene.prototype.quip = function (i, chance) {
+    var fi = this.match.fighters[i], b = this.bubbles[i];
+    if (b.visible || Math.random() > chance || !fi.def.talk) return;
+    var q = fi.def.talk.quips;
+    b.show(fi.def.name, q[Math.floor(Math.random() * q.length)], 80);
+  };
+
   // Personality reactions to match events: gestures, expressions, the crowd.
   FightScene.prototype.personality = function (ev) {
     var f = this.match.fighters;
@@ -386,10 +428,14 @@
           if (a.def.bigHit.gesture) a._pending = { name: a.def.bigHit.gesture, ttl: 120 };
           if (a.def.bigHit.face) a._face = { type: a.def.bigHit.face, t: 50 };
         }
-        // LEE taunts once a combo reaches three hits.
-        var hits = this.match.combo[ev.defender].hits;
-        if (a.def.taunts && hits === 3) a._tag = { text: a.def.taunts[Math.floor(Math.random() * a.def.taunts.length)], t: 70 };
+        // Counter hits sometimes get a word in.
+        if (ev.ch) this.quip(ev.attacker, 0.5);
       }
+    }
+    // Taunt: say one of their lines.
+    if (ev.type === 'whiff' && ev.move.taunt) {
+      var tf = f[ev.fighter], tl = tf.def.talk.lines;
+      this.bubbles[ev.fighter].show(tf.def.name, tl[Math.floor(Math.random() * tl.length)], 120);
     }
     if (ev.type === 'calculated') {
       f[ev.fighter]._tag = { text: 'CALCULATED', t: 60 };
@@ -450,7 +496,11 @@
       tag.setText(this.win ? '' : fk._tag ? fk._tag.text : fk.stance === 'B' ? 'PIECEWISE' : '');
       tag.setPosition(Math.round(fk.x), Math.round(C.GROUND_Y - fk.y - 104 * fk.def.scale));
     }
-    if (this.win) this.speech.draw(f[this.win.winner], this.cameras.main.scrollX);
+    var camX = this.cameras.main.scrollX;
+    if (this.win) this.speech.draw(f[this.win.winner], camX);
+    var spoken = this.introLine();
+    if (spoken) this.speech.draw(f[spoken.speaker], camX, f[spoken.speaker]._drawX);
+    for (var bi = 0; bi < 2; bi++) this.bubbles[bi].draw(f[bi], camX);
 
     var modeLabel = 'TRAINING   P2: ' + (t.p2Human ? 'HUMAN' : this.dummy.label('stance') +
       (this.dummy.get('action') !== 'none' ? ' + ' + this.dummy.label('action') : ''));

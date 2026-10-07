@@ -27,6 +27,8 @@
     throw_slam: P('throw_slam', { all: [4, -6], lean: 10 })
   };
 
+  poses.taunt = poses['tie'];
+
   FG.defineFighter({
     id: 'pedersen', order: 0, // the cover fighter: first on character select
     name: 'PEDERSEN', archetype: 'POWER', theme: 'EXPONENTS',
@@ -120,7 +122,8 @@
     FG.kit.air(['EXPONENT DROP', 'POWER KICK', 'TOWER OF POWERS'], { slow: 2, chain: { airP: ['h'], airK: ['h'] } }),
     // Long Division: a slam throw.
     FG.kit.throws('LONG DIVISION', 'SYNTHETIC DIVISION', { throw: { damage: 40, shake: 0.013, recovery: 28 }, throwB: { damage: 38, recovery: 28 } }),
-    FG.kit.wake()),
+    FG.kit.wake(),
+    FG.kit.taunt()),
 
     combos: [
       { name: 'SQUARED', notation: 'P, P', plan: { 0: 'P', 18: 'P' }, hits: ['jab', 'jab2'] },
@@ -134,10 +137,25 @@
     intro: [[1, 'stand'], [62, 'stand'], [72, 'tie'], [82, 'tie2'], [92, 'tie'], [102, 'calm'], [118, 'idle']],
     victory: [[1, 'stand'], [14, 'tie'], [30, 'tie2'], [44, 'calm'], [70, 'wave'], [90, 'calm'], [110, 'calm']],
     defeat: [[1, 'sit'], [40, 'sit2'], [80, 'sit']],
+    // Smack talk: pre-round and taunt lines, and short lines after a big combo or counter hit.
+    talk: {
+      lines: [
+        'You can lead a horse to water, but you can\'t make them drink.',
+        'Vicky sent you, didn\'t she?',
+        'Don\'t make me loosen the tie.',
+        'Vicky would\'ve blocked that. Barely.',
+        'Don\'t tell Vicky about this.'
+      ],
+      quips: ['Exponential.', 'That\'s a lot of zeros.', 'Vicky could never.'],
+      // His signature line: he says it in his round intro (and it's a victory line).
+      introLine: "You can lead a horse to water, but you can't make them drink."
+    },
     victoryLines: [
       "That's exponential growth. Of your bruises.",
       'Long division. Short fight.',
-      "Raised to a power you weren't ready for."
+      "Raised to a power you weren't ready for.",
+      "You can lead a horse to water, but you can't make them drink.",
+      'Even Vicky lasted longer than that.'
     ]
   });
 })();

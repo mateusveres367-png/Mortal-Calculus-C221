@@ -22,6 +22,7 @@
 //   H: heavy, fH, bH, launcher (D)         P+K: throw, throwB (back), cmdGrab (forward)
 //   air: airP, airK, airH      knocked down: wakeLow (K), wakeMid (P/H)
 //   from a dash: dashP; from a sidestep: ssP, ssK; stance B: pwP, pwK, pwH
+//   T: taunt
 (function () {
   FG.ROSTER = [];
   FG.FIGHTERS = FG.ROSTER; // older name
@@ -159,6 +160,17 @@
           startup: 12, active: 2, recovery: 26, damage: 34, hitbox: { x: 12, w: 26, y: 40, h: 40 },
           push: 0, juggle: 0, hitstop: 0, shake: 0.009, anim: grab
         }, o.throwB)
+      };
+    },
+
+    // Taunt (T): about a second of showing off. Counter-hittable the whole time.
+    taunt: function (o) {
+      return {
+        taunt: merge({
+          name: 'Taunt', label: 'TAUNT', cmd: 'T', level: 'mid', strength: 'light', taunt: true,
+          startup: 60, active: 1, recovery: 1,
+          anim: [[1, 'idle'], [10, 'taunt'], [52, 'taunt'], [61, 'idle']]
+        }, o)
       };
     },
 

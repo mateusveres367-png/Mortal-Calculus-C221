@@ -27,6 +27,11 @@ Every fighter needs unique normals, launcher, throw, combo routes, stance, idle 
 
 **Personality:** Nice, easygoing and a good sport. Nods respectfully before rounds. Best for new players.
 
+**Intro / taunt lines:**
+- "I'll go easy. Like, homework-pass easy."
+- "Stretch first. I'm not carrying you to the nurse."
+- "Let's keep it clean. Mostly."
+
 **Victory lines:**
 - "As you approach me, your chances approach zero."
 - "Good hustle. Tryouts are next week."
@@ -39,6 +44,11 @@ Every fighter needs unique normals, launcher, throw, combo routes, stance, idle 
 **Look:** Slim and agile. Long wavy brown hair with blonde highlights, tied back to fight. Bright smile, small stud earrings and a small purple heart pendant. Wears a rust-orange blouse, practical slacks and flats.
 
 **Personality:** Very kind. Bows before fights, winces apologetically after big hits, and offers a hand up after winning. Precise and graceful.
+
+**Intro / taunt lines:**
+- "I'm sorry in advance. Really."
+- "I believe in you! Just... not right now."
+- "This won't be on the test, but it will hurt."
 
 **Victory lines:**
 - "Don't worry, I curve fights too."
@@ -53,6 +63,11 @@ Every fighter needs unique normals, launcher, throw, combo routes, stance, idle 
 
 **Personality:** Happy, sassy, everyone's favorite. Fakes you out with a grin and does a finger-wag taunt after you fall for a feint. Background students cheer louder for him.
 
+**Intro / taunt lines:**
+- "Oh, you brought a strategy? Cute."
+- "Pop quiz, sweetie. You're not ready."
+- "I'd say good luck, but I don't lie to students."
+
 **Victory lines:**
 - "That's a ten out of ten, no partial credit."
 - "Oh honey, that was not on the study guide."
@@ -65,6 +80,11 @@ Every fighter needs unique normals, launcher, throw, combo routes, stance, idle 
 **Look:** Messy wavy dark hair with a few grays, thin wire-frame glasses, light stubble and a slight smirk. Wears a black athletic polo.
 
 **Personality:** Sarcastic and funny. Taunts mid-combo and adjusts his glasses after big hits. Relentless pressure.
+
+**Intro / taunt lines:**
+- "Wow. Bold of you to show up."
+- "I've seen better form in a group project."
+- "Take notes. You'll need them for the retake."
 
 **Victory lines:**
 - "Show your work next time. Oh wait, you didn't have any."
@@ -79,6 +99,11 @@ Every fighter needs unique normals, launcher, throw, combo routes, stance, idle 
 
 **Personality:** Very suspicious: narrowed eyes, always watching. Waits for you to commit, then punishes.
 
+**Intro / taunt lines:**
+- "I already know what you're going to do."
+- "Go ahead. Make the first move. I'll wait."
+- "Interesting. Very... interesting."
+
 **Victory lines:**
 - "I knew you'd do that."
 - "Statistically, you never had a chance."
@@ -91,6 +116,11 @@ Every fighter needs unique normals, launcher, throw, combo routes, stance, idle 
 **Look:** Sturdy. Short, neat black hair, clean-shaven, with a calm smile. Wears a blue checkered button-up with the sleeves rolled.
 
 **Personality:** Very smart. Reads opponents, keeps perfect distance and punishes every mistake. Calm and calculating.
+
+**Intro / taunt lines:**
+- "I ran the numbers. You should forfeit."
+- "Every move you make, I've already graphed."
+- "Your odds are rounding down to zero."
 
 **Victory lines:**
 - "I calculated this outcome before the bell rang."
@@ -107,29 +137,63 @@ Every fighter needs unique normals, launcher, throw, combo routes, stance, idle 
 
 **Round intro:** Pulls up in his red sports car, steps out, and loosens his tie. The car sits parked in the background of his stage.
 
+**Signature line:** "You can lead a horse to water, but you can't make them drink." He says it in his round intro, and it's one of his victory lines.
+
+**Arch-nemesis:** Vicky. He grumbles about her in taunts.
+
+**Intro / taunt lines:**
+- "You can lead a horse to water, but you can't make them drink."
+- "Vicky sent you, didn't she?"
+- "Don't make me loosen the tie."
+
 **Victory lines:**
 - "That's exponential growth. Of your bruises."
 - "Long division. Short fight."
 - "Raised to a power you weren't ready for."
+- "You can lead a horse to water, but you can't make them drink."
+- "Even Vicky lasted longer than that."
 
 ## RAMOS — Grappler — Matrices
 
 **Moves:** Matrix Lock, Determinant Slam, Identity (command grab), Transpose Toss (launcher).
 
-**Look:** Lean and athletic. Short textured dark hair, light stubble and an easy smile. Wears an olive-brown heathered polo.
+**Look:** Lean and athletic. Long, bouncy black hair that swings on every dash, jump and throw. Light stubble and an easy smile. Wears an olive-brown heathered polo and a red-and-white wristband (he's Peruvian).
 
-**Personality:** A fast, explosive grappler who closes distance quickly. Confident and focused.
+**Personality:** A fast, explosive grappler who closes distance quickly. Confident and focused. A cardio machine: never gets tired, and dashes faster than any other grappler.
+
+**Intro / taunt lines:**
+- "I did cardio before this. Did you?"
+- "Forty-five minutes on the stair climber. This is my cooldown."
+- "Try to keep up. My hair can."
 
 **Victory lines:**
 - "Matrix Lock: no inverse, no escape."
 - "Your determinant was zero. So was your chance."
-- "Identity confirmed: loser."
+- "Cardio wins again."
 
 ---
 
 ## Win screen
 
 Show one victory line at random on the win screen, in a pixel-art speech box.
+
+## Smack talk
+
+Fighters talk a lot:
+
+- **Before every round,** both fighters trade lines in pixel-art speech boxes. Each uses their intro / taunt lines, unless the matchup has a rivalry exchange (below).
+- **Taunt button,** one per player. It plays a random taunt line, takes about 1 second, and leaves you open.
+- **After a big combo or a counter hit,** fighters occasionally say a short line.
+
+### Rivalry exchanges
+
+Pre-fight intro lines for these matchups. The first fighter listed speaks first.
+
+- **LEE vs CHAI** — LEE: "You gonna apologize every time you hit me?" / CHAI: "Only the first ten times."
+- **LOPEZ vs DALSASS** — LOPEZ: "I know all your tricks." / DALSASS: "Oh honey, you know some of them."
+- **RAMOS vs PEDERSEN** — RAMOS: "When's the last time you did cardio?" / PEDERSEN: "I drove here. Fast. That counts."
+- **MIYASHIRO vs BRINKHUS** — MIYASHIRO: "I calculated your reach." / BRINKHUS: "Did you calculate my height?"
+- **PEDERSEN vs anyone else** — PEDERSEN: "You're not Vicky, but you'll do."
 
 ## Build order
 

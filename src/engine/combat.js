@@ -258,7 +258,7 @@
     for (var i = 0; i < 2; i++) {
       var f = this.fighters[i];
       if (f.guardDelay > 0) f.guardDelay--;
-      else if (f.guard > 0) f.guard = Math.max(0, f.guard - C.GUARD_REGEN);
+      else if (f.guard > 0) f.guard = Math.max(0, f.guard - C.GUARD_REGEN * (f.def.guardRegenRate || 1));
     }
   };
 

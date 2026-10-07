@@ -26,6 +26,8 @@
     throw_lift: P('throw_lift', { fe: [16, 70], fh: [26, 66], be: [12, 70], bh: [24, 64] }) // bear hug squeeze
   };
 
+  poses.taunt = poses['thumb'];
+
   FG.defineFighter({
     id: 'brinkhus', order: 1,
     name: 'BRINKHUS', archetype: 'BALANCED', theme: 'LIMITS',
@@ -119,7 +121,8 @@
     },
     FG.kit.air(['LEFT LIMIT', 'RIGHT LIMIT', 'LIMIT AT INFINITY']),
     FG.kit.throws('SQUEEZE THEOREM', 'DIRECT SUBSTITUTION'),
-    FG.kit.wake()),
+    FG.kit.wake(),
+    FG.kit.taunt()),
 
     // Combo routes: inputs on sim frames counted from the first press (tested in tests/sim.test.js).
     combos: [
@@ -134,6 +137,15 @@
     intro: [[1, 'idle'], [16, 'stand'], [30, 'nod'], [40, 'stand'], [52, 'nod'], [60, 'stand'], [84, 'idle']],
     victory: [[1, 'stand'], [14, 'thumb'], [50, 'thumb'], [62, 'wave'], [74, 'thumb'], [100, 'thumb']],
     defeat: [[1, 'kneel'], [40, 'kneel2'], [80, 'kneel']],
+    // Smack talk: pre-round and taunt lines, and short lines after a big combo or counter hit.
+    talk: {
+      lines: [
+        'I\'ll go easy. Like, homework-pass easy.',
+        'Stretch first. I\'m not carrying you to the nurse.',
+        'Let\'s keep it clean. Mostly.'
+      ],
+      quips: ['Good rep!', 'Nice try, though.', 'Keep that guard up.']
+    },
     victoryLines: [
       'As you approach me, your chances approach zero.',
       'Good hustle. Tryouts are next week.',

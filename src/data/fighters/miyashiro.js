@@ -28,6 +28,8 @@
     xprod_x: P('up_x', { fe: [22, 88], fh: [30, 104] })
   };
 
+  poses.taunt = poses['nod'];
+
   FG.defineFighter({
     id: 'miyashiro', order: 6,
     name: 'MIYASHIRO', archetype: 'SPACING', theme: 'VECTORS',
@@ -133,7 +135,8 @@
     },
     FG.kit.air(['COMPONENT JAB', 'DIRECTION KICK', 'PROJECTION SPIKE']),
     FG.kit.throws('PROJECTION', 'REFLECTION MATRIX', { throw: { damage: 30 }, throwB: { damage: 33 } }),
-    FG.kit.wake()),
+    FG.kit.wake(),
+    FG.kit.taunt()),
 
     combos: [
       { name: 'CROSS PRODUCT JUGGLE', notation: 'D+H, P, K', plan: { 0: 'D+H', 54: 'P', 81: 'K' }, hits: ['launcher', 'jab', 'mid'] },
@@ -147,6 +150,15 @@
     intro: [[1, 'stand'], [12, 'sleeve'], [26, 'sleeve'], [34, 'sleeve2'], [48, 'sleeve2'], [58, 'bow'], [70, 'stand'], [86, 'idle']],
     victory: [[1, 'stand'], [16, 'behind'], [46, 'behind'], [56, 'nod'], [64, 'behind'], [100, 'behind']],
     defeat: [[1, 'kneel'], [40, 'kneel2'], [80, 'kneel']],
+    // Smack talk: pre-round and taunt lines, and short lines after a big combo or counter hit.
+    talk: {
+      lines: [
+        'I ran the numbers. You should forfeit.',
+        'Every move you make, I\'ve already graphed.',
+        'Your odds are rounding down to zero.'
+      ],
+      quips: ['As calculated.', 'Within tolerance.', 'Another data point.']
+    },
     victoryLines: [
       'I calculated this outcome before the bell rang.',
       'Your vector was correct. Your magnitude, however...',

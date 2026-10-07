@@ -59,6 +59,7 @@
     ['PUNCH  P     J                NUM1 / ,', 'w'],
     ['KICK   K     K                NUM2 / .', 'w'],
     ['HEAVY  H     L                NUM3 / /', 'w'],
+    ['TAUNT        T                NUM6 / ]   (TAKES 1 SEC, LEAVES YOU OPEN)', 'w'],
     ['MOVES   P JAB  K MID  H HEAVY  D+K LOW  D/B+K SWEEP  D+H LAUNCHER', 'y'],
     ['        F/B + BUTTON: SPECIALS (SEE MOVES.MD)  UP ON LAUNCH: AIR CHASE', 'y'],
     ['AIR     P / K / H IN THE AIR, CHAIN ON HIT. AIR H BOUNDS', 'y'],
@@ -212,7 +213,10 @@
       lines[0].setText('P' + (p + 1) + ' ' + m.label + ' [' + m.cmd + ']');
       var props = (m.tracks ? '  TRACKS' : '') + (m.bound ? '  BOUND' : '') + (m.wallSplat ? '  SPLAT' : '') + (m.otg ? '  OTG' : '');
       lines[1].setText((m.throw ? 'THROW' : m.level.toUpperCase()) + '  I' + m.startup + '  ACT ' + m.active + '  REC ' + m.recovery + '  TOT ' + m.total + props);
-      if (m.throw) {
+      if (m.taunt) {
+        lines[1].setText('TAUNT  ' + m.total + ' FRAMES');
+        lines[2].setText('COUNTER-HITTABLE THE WHOLE TIME');
+      } else if (m.throw) {
         lines[2].setText('DAMAGE ' + m.damage + (m.breakBtn ? '  BREAK WITH ' + m.breakBtn.toUpperCase() : '  UNBREAKABLE'));
       } else if (m.air) {
         lines[2].setText('HITSTUN ' + m.stunHit + '  BLOCKSTUN ' + m.stunBlock + '  LANDING ' + m.landLag);

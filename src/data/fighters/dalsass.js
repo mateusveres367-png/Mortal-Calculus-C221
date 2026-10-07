@@ -27,6 +27,8 @@
     slide: P('sweep_x', { all: [0, -6], lean: -20, fk: [24, 8], ff: [50, 4] })
   };
 
+  poses.taunt = poses['wag'];
+
   FG.defineFighter({
     id: 'dalsass', order: 3,
     name: 'DALSASS', archetype: 'TRICKY', theme: 'FUNCTIONS',
@@ -156,7 +158,8 @@
     },
     FG.kit.air(['IMAGE JAB', 'PREIMAGE KICK', 'INVERSE SPIKE'], { chain: { airP: ['h'], airK: ['h'] } }),
     FG.kit.throws('CONTRADICTION', 'COUNTEREXAMPLE', { throwB: { damage: 33 } }),
-    FG.kit.wake()),
+    FG.kit.wake(),
+    FG.kit.taunt()),
 
     combos: [
       { name: 'DISCONTINUITY JUGGLE', notation: 'D+H, P, K', plan: { 0: 'D+H', 50: 'P', 84: 'K' }, hits: ['launcher', 'jab', 'mid'] },
@@ -172,6 +175,15 @@
     victory: [[1, 'shrug'], [16, 'guns'], [30, 'guns2'], [44, 'guns'], [58, 'guns2'], [76, 'shrug'], [100, 'shrug']],
     defeat: [[1, 'sit'], [40, 'sit2'], [80, 'sit']],
     gestures: { wag: [[1, 'idle'], [6, 'wag'], [12, 'wag2'], [18, 'wag'], [24, 'wag2'], [30, 'wag'], [40, 'idle']] },
+    // Smack talk: pre-round and taunt lines, and short lines after a big combo or counter hit.
+    talk: {
+      lines: [
+        'Oh, you brought a strategy? Cute.',
+        'Pop quiz, sweetie. You\'re not ready.',
+        'I\'d say good luck, but I don\'t lie to students.'
+      ],
+      quips: ['Gotcha!', 'Too easy, sweetie.', 'Ooh, partial credit.']
+    },
     victoryLines: [
       "That's a ten out of ten, no partial credit.",
       'Oh honey, that was not on the study guide.',

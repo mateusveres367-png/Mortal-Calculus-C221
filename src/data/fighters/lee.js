@@ -29,6 +29,8 @@
     fib_x: P('up_x', { fe: [20, 92], fh: [26, 110] })
   };
 
+  poses.taunt = poses['glasses2'];
+
   FG.defineFighter({
     id: 'lee', order: 4,
     name: 'LEE', archetype: 'RUSHDOWN', theme: 'SEQUENCES',
@@ -37,7 +39,6 @@
     scale: 1.0, health: 165,
     walkF: 2.3, walkB: 1.5, dashSpeed: 9.0, backdashSpeed: 8.0,
     bigHit: { gesture: 'glasses' }, // pushes his glasses up after a big hit
-    taunts: ['KEEP UP.', 'THIS IS REVIEW.', 'NEXT QUESTION.', 'TAKING NOTES?'],
     look: {
       skin: 0xd8a578,
       hair: { style: 'messy', color: 0x1e1814, gray: 0x9a9a9a },
@@ -143,7 +144,8 @@
     },
     FG.kit.air(['FIRST DIFFERENCE', 'SECOND DIFFERENCE', 'SUMMATION SPIKE']),
     FG.kit.throws('SERIES EXPANSION', 'TELESCOPING TOSS', { throw: { damage: 28 }, throwB: { damage: 32 } }),
-    FG.kit.wake()),
+    FG.kit.wake(),
+    FG.kit.taunt()),
 
     combos: [
       { name: 'ARITHMETIC SEQUENCE', notation: 'P, P, P, P', plan: { 0: 'P', 12: 'P', 26: 'P', 40: 'P' }, hits: ['jab', 'seq2', 'seq3', 'seqP'] },
@@ -158,6 +160,15 @@
     victory: [[1, 'stand'], [16, 'folded'], [50, 'folded'], [60, 'glasses2'], [76, 'glasses2'], [90, 'folded'], [110, 'folded']],
     defeat: [[1, 'hands'], [40, 'hands2'], [80, 'hands']],
     gestures: { glasses: [[1, 'idle'], [8, 'glasses'], [26, 'glasses'], [36, 'idle']] },
+    // Smack talk: pre-round and taunt lines, and short lines after a big combo or counter hit.
+    talk: {
+      lines: [
+        'Wow. Bold of you to show up.',
+        'I\'ve seen better form in a group project.',
+        'Take notes. You\'ll need them for the retake.'
+      ],
+      quips: ['Keep up.', 'This is review.', 'Next question.', 'Taking notes?']
+    },
     victoryLines: [
       "Show your work next time. Oh wait, you didn't have any.",
       "I've graded better fights on a Friday at 11 PM.",

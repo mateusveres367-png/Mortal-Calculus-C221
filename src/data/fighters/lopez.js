@@ -30,6 +30,8 @@
     reg_x: P('sk_x', { lean: -10, fk: [24, 50], ff: [52, 52] })
   };
 
+  poses.taunt = poses['point'];
+
   FG.defineFighter({
     id: 'lopez', order: 5,
     name: 'LOPEZ', archetype: 'DEFENSIVE', theme: 'STATISTICS',
@@ -133,7 +135,8 @@
     },
     FG.kit.air(['SAMPLE DROP', 'VARIANCE KICK', 'NORMAL DISTRIBUTION'], { slow: 1 }),
     FG.kit.throws('REGRESSION', 'RESIDUAL', { throw: { damage: 32 }, throwB: { damage: 34 } }),
-    FG.kit.wake()),
+    FG.kit.wake(),
+    FG.kit.taunt()),
 
     combos: [
       { name: 'SAMPLE MEAN', notation: 'P, P', plan: { 0: 'P', 16: 'P' }, hits: ['jab', 'jab2'] },
@@ -149,6 +152,15 @@
     introEvents: [{ t: 38, blazerOff: true }],
     victory: [[1, 'stand'], [14, 'crossed'], [40, 'crossed'], [50, 'nod'], [58, 'crossed'], [80, 'point'], [96, 'crossed'], [110, 'crossed']],
     defeat: [[1, 'kneel'], [40, 'kneel2'], [80, 'kneel']],
+    // Smack talk: pre-round and taunt lines, and short lines after a big combo or counter hit.
+    talk: {
+      lines: [
+        'I already know what you\'re going to do.',
+        'Go ahead. Make the first move. I\'ll wait.',
+        'Interesting. Very... interesting.'
+      ],
+      quips: ['Predictable.', 'As expected.', 'Significant.']
+    },
     victoryLines: [
       "I knew you'd do that.",
       'Statistically, you never had a chance.',

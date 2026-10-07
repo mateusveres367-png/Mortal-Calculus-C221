@@ -90,7 +90,9 @@ defs.forEach(function (d) {
   ['jab', 'mid', 'low', 'sweep', 'heavy', 'launcher', 'throw', 'throwB', 'airP', 'airK', 'airH', 'wakeLow', 'wakeMid'].forEach(function (id) {
     check(d.name + ' has ' + id, !!d.moves[id]);
   });
-  check(d.name + ' has victory lines', d.victoryLines && d.victoryLines.length === 3);
+  check(d.name + ' has victory lines', d.victoryLines && d.victoryLines.length >= 3);
+  check(d.name + ' has smack talk', d.talk && d.talk.lines.length >= 3 && d.talk.quips.length >= 3);
+  check(d.name + ' has a taunt', d.moves.taunt && d.moves.taunt.taunt);
   check(d.name + ' has intro, victory and defeat animations', d.intro && d.victory && d.defeat);
   check(d.name + ' has a stance', !!d.poses.idle);
   // Every pose a move, intro or victory uses exists.
@@ -719,6 +721,58 @@ function count(r, type, attacker) {
 // PEDERSEN is the cover fighter: first on the roster.
 check('pedersen is first on character select', FG.ROSTER[0].id === 'pedersen', FG.ROSTER.map(function (d) { return d.id; }));
 check('all eight fighters', FG.ROSTER.length === 8, FG.ROSTER.length);
+
+// =========================== Smack talk ======================================
+
+// Taunt: about a second, and counter-hittable the whole time.
+(function () {
+  var r = play(S, D, 40, { 0: { t: true } }, {}, 70);
+  var tauntLen = S.moves.taunt.total;
+  check('taunt lasts about a second', tauntLen >= 55 && tauntLen <= 65, tauntLen);
+  check('taunt starts', r.events.some(function (e) { return e.type === 'whiff' && e.move.taunt; }), types(r));
+  // Hit during the taunt: counter hit.
+  r = play(S, D, 40, { 0: { t: true } }, { 30: { p: true } }, 70);
+  var hit = r.events.filter(function (e) { return e.type === 'hit' && e.attacker === 1; })[0];
+  check('taunt leaves you open (counter hit)', hit && hit.ch, hit);
+})();
+
+// Pre-round lines: rivalries (either side, first-listed speaks first), PEDERSEN, everyone else.
+(function () {
+  function by(id) { return FG.fighterById(id); }
+  function texts(a, b) { return FG.preRoundLines(by(a), by(b), function () { return 0; }); }
+  FG.RIVALRIES.forEach(function (rv) {
+    [[rv.a, rv.b], [rv.b, rv.a]].forEach(function (pair) {
+      var lines = texts(pair[0], pair[1]).filter(function (l) { return l.text !== by(pair[0]).talk.introLine && l.text !== by(pair[1]).talk.introLine; });
+      var who = lines.map(function (l) { return (l.speaker === 0 ? pair[0] : pair[1]); });
+      check('rivalry ' + pair.join(' vs '), lines.length === 2 && who[0] === rv.a && who[1] === rv.b && lines[0].text === rv.lines[0][1], lines);
+    });
+  });
+  var pb = texts('pedersen', 'brinkhus');
+  check('pedersen says his signature line first', pb[0].speaker === 0 && /horse to water/.test(pb[0].text), pb);
+  check('pedersen vs anyone else', pb[1].speaker === 0 && pb[1].text === "You're not Vicky, but you'll do." && pb[2].speaker === 1, pb);
+  var bp = texts('brinkhus', 'pedersen');
+  check('pedersen line from either side', bp[0].speaker === 1 && bp[1].speaker === 1 && bp[2].speaker === 0, bp);
+  var rp = texts('ramos', 'pedersen').map(function (l) { return l.text; });
+  check('ramos vs pedersen uses the rivalry', rp.indexOf("When's the last time you did cardio?") >= 0 && rp.indexOf("You're not Vicky, but you'll do.") < 0, rp);
+  var gen = texts('lee', 'dalsass');
+  check('everyone else trades their own lines', gen.length === 2 && gen[0].speaker === 0 && by('lee').talk.lines.indexOf(gen[0].text) >= 0 &&
+    by('dalsass').talk.lines.indexOf(gen[1].text) >= 0, gen);
+  check('pedersen victory lines include the new ones', by('pedersen').victoryLines.indexOf('Even Vicky lasted longer than that.') >= 0 &&
+    by('pedersen').victoryLines.some(function (l) { return /horse to water/.test(l); }));
+  check('ramos new victory line', by('ramos').victoryLines.indexOf('Cardio wins again.') >= 0 &&
+    by('ramos').victoryLines.every(function (l) { return !/loser/.test(l); }));
+})();
+
+// RAMOS: cardio. Dashes chain back to back, and his guard meter recovers twice as fast.
+(function () {
+  var RM = FG.fighterById('ramos');
+  function dist(def, plan) { var x0, r = play(def, D, 400, plan, {}, 26, function (m) { x0 = m.fighters[0].x; }); return r.m.fighters[0].x - x0; }
+  var chain = { 0: { right: true }, 2: { right: true }, 8: { right: true }, 10: { right: true } };
+  check('ramos chains dashes', dist(RM, chain) > dist(RM, { 0: { right: true }, 2: { right: true } }) + 25, [dist(RM, chain)]);
+  check('others cannot chain dashes', dist(S, chain) < dist(S, { 0: { right: true }, 2: { right: true } }) + 10, [dist(S, chain)]);
+  function regen(def) { var m = setup(def, D, 200); m.fighters[0].guard = 60; run(m, 30); return 60 - m.fighters[0].guard; }
+  check('ramos guard recovers twice as fast', Math.abs(regen(RM) - 2 * regen(S)) < 0.01, [regen(RM), regen(S)]);
+})();
 
 console.log(passes + ' passed, ' + failures + ' failed');
 process.exit(failures ? 1 : 0);

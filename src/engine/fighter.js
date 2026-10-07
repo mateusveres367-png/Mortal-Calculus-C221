@@ -182,6 +182,13 @@
         return;
       case 'dash':
         this.vx *= 0.86;
+        // Cardio: some fighters (RAMOS) can chain straight into another dash.
+        if (this.def.dashChainFrom && this.stateFrame >= this.def.dashChainFrom && buf.doubleTap('forward', this.facing, frame)) {
+          buf.clearTaps();
+          this.setState('dash');
+          this.vx = this.def.dashSpeed * this.facing;
+          return;
+        }
         if (this.stateFrame >= DASH_FRAMES) { this.setState('idle'); break; }
         if (this.stateFrame >= (this.def.dashAttackFrom || DASH_ACT_FROM) && this.tryAttack(buf, frame)) return;
         return;
@@ -311,6 +318,12 @@
 
   Fighter.prototype.tryAttack = function (buf, frame) {
     if (throwPressed(buf, frame)) { this.startThrow(buf); return true; }
+    if (buf.wasPressed('t', frame) && this.def.moves.taunt && this.state !== 'sidestep') {
+      buf.consume('t');
+      this.stance = 'A';
+      this.startMove('taunt');
+      return true;
+    }
     var btn = buf.latest(['p', 'k', 'h'], frame);
     if (!btn) return false;
     buf.consume(btn);

@@ -41,8 +41,19 @@ Open `index.html` directly in a modern browser (double-click it, or drag it into
 | Kick (K) | `K` | `Numpad 2` (or `.`) |
 | Heavy (H) | `L` | `Numpad 3` (or `/`) |
 | Throw | `J`+`K` (with back: reverse throw) | `Num1`+`Num2` |
+| Taunt | `T` | `Numpad 6` (or `]`) |
 
 Standing guard blocks highs and mids. Crouching guard (down + back) blocks lows, and highs whiff over anyone crouching. Mids beat crouching guard; lows beat standing guard.
+
+### Smack talk
+
+Fighters talk:
+
+- **Before every round** (after character select, and on every rematch), both fighters trade lines in pixel-art speech boxes. Some matchups have rivalry exchanges: LEE vs CHAI, LOPEZ vs DALSASS, RAMOS vs PEDERSEN, and MIYASHIRO vs BRINKHUS. PEDERSEN has a line for everyone else, and he says his signature line as he steps out of his car.
+- **Taunt** (`T`): about a second of showing off with a random taunt line. You can be counter-hit the whole time.
+- **After a big combo or a counter hit,** fighters sometimes get a short line in.
+
+Lines are in [`ROSTER.md`](ROSTER.md). The fighters' short post-combo lines live in each fighter's `talk.quips`.
 
 ### Moves
 
@@ -67,7 +78,7 @@ Every fighter uses the same input layout. What each input does, and its frame da
 
 The fighters:
 
-- **PEDERSEN** (power, exponents) — the cover fighter. Slow, with huge damage:
+- **PEDERSEN** (power, exponents) — the cover fighter. Slow, with huge damage. His arch-nemesis is Vicky:
   - **Exponential Haymaker** (forward + `H`) splats the wall.
   - **Order of Magnitude** (back + `H`, hold `H` to charge) knocks down at half charge. At full charge it does over double damage and breaks the guard if blocked.
   - **Power Rule** (down + `H`) is his launcher, and **Long Division** (`P`+`K`) is a slam throw.
@@ -96,7 +107,7 @@ The fighters:
   - **Vector Rush** (dash, then `P`) comes out early in a dash.
   - **Unit Circle** (back + `K`) is a tracking spin kick.
   - **Calculated:** when you whiff near him, his next hit within 2.5 seconds does 30% more damage.
-- **RAMOS** (grappler, matrices) — the fastest dash in the game:
+- **RAMOS** (grappler, matrices) — the fastest dash in the game, and a cardio machine. He can chain dashes back to back, and his guard meter recovers twice as fast. Long, bouncy hair that swings when he moves:
   - **Matrix Lock** (`P`+`K`) has a short break window (8 frames instead of 15).
   - **Determinant Slam** (back + `P`+`K`) is his reverse throw.
   - **Identity** (forward + `P`+`K`) is a command grab: slower, but it can't be broken and takes crouching opponents too.

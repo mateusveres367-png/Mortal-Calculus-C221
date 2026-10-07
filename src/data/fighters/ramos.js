@@ -1,7 +1,8 @@
 // RAMOS — Grappler — Matrices. Fast and explosive: closes distance with the
 // quickest dash in the game, then grabs. Matrix Lock has a short break
 // window, Determinant Slam is his reverse throw, and Identity is a command
-// grab that can't be broken and takes crouching opponents too.
+// grab that can't be broken and takes crouching opponents too. A cardio
+// machine: he never gets tired.
 (function () {
   var P = FG.pose;
 
@@ -30,6 +31,8 @@
     throw_back: P('throw_back', { lean: -10 })
   };
 
+  poses.taunt = poses['stretch'];
+
   FG.defineFighter({
     id: 'ramos', order: 7,
     name: 'RAMOS', archetype: 'GRAPPLER', theme: 'MATRICES',
@@ -38,9 +41,12 @@
     scale: 1.02, health: 178,
     walkF: 2.3, walkB: 1.6, dashSpeed: 10, backdashSpeed: 8.2,
     dashAttackFrom: 5,
+    // Cardio machine: chains dashes back to back, and his guard meter recovers twice as fast.
+    dashChainFrom: 7, guardRegenRate: 2,
     look: {
       skin: 0xc28a5c,
-      hair: { style: 'textured', color: 0x1a1410 },
+      hair: { style: 'longBouncy', color: 0x0e0c0c }, // long, bouncy, swings when he moves
+      wristband: [0xd01c28, 0xffffff],                 // red and white (he's Peruvian)
       beard: { style: 'stubble', color: 0x2a1e16 },
       mouth: 'smile',
       top: { style: 'polo', color: 0x6b5f3a, pattern: 'heather', sleeves: 'short' },
@@ -126,7 +132,8 @@
     FG.kit.air(['PIVOT DROP', 'EIGEN KICK', 'RANK SPIKE']),
     // Matrix Lock has a short break window (8 frames instead of 15).
     FG.kit.throws('MATRIX LOCK', 'DETERMINANT SLAM', { throw: { damage: 34, breakWindow: 8 }, throwB: { damage: 38, shake: 0.012 } }),
-    FG.kit.wake()),
+    FG.kit.wake(),
+    FG.kit.taunt()),
 
     combos: [
       { name: 'ROW AND COLUMN', notation: 'P, P', plan: { 0: 'P', 16: 'P' }, hits: ['jab', 'jab2'] },
@@ -139,10 +146,19 @@
     intro: [[1, 'stand'], [12, 'knuckles'], [28, 'knuckles'], [38, 'stretch'], [56, 'stretch'], [66, 'stand'], [84, 'idle']],
     victory: [[1, 'stand'], [12, 'pump'], [24, 'pump2'], [36, 'pump'], [48, 'pump2'], [62, 'stand'], [100, 'stand']],
     defeat: [[1, 'kneel'], [40, 'kneel2'], [80, 'kneel']],
+    // Smack talk: pre-round and taunt lines, and short lines after a big combo or counter hit.
+    talk: {
+      lines: [
+        'I did cardio before this. Did you?',
+        'Forty-five minutes on the stair climber. This is my cooldown.',
+        'Try to keep up. My hair can.'
+      ],
+      quips: ['Cardio!', 'Not even winded.', 'Keep up!']
+    },
     victoryLines: [
       'Matrix Lock: no inverse, no escape.',
       'Your determinant was zero. So was your chance.',
-      'Identity confirmed: loser.'
+      'Cardio wins again.'
     ]
   });
 })();
