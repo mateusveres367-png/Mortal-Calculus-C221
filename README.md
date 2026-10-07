@@ -4,14 +4,28 @@ A retro, Tekken-inspired 2D/2.5D fighting game themed around the El Camino Real 
 
 ## Status
 
-**Phase 1 — fighting engine (playable).** Two placeholder fighters on a placeholder classroom stage, with the core combat systems in place:
+**Phase 2 — combo and knockdown systems (playable).** Two placeholder fighters on a placeholder classroom stage.
+
+Phase 1, the fighting engine:
 
 - Frame data for every move (startup / active / recovery, advantage on block, hit and counter hit)
 - Hitboxes and hurtboxes (extended limbs can be hit, so whiffs can be punished)
-- Hitstun, blockstun, high / mid / low hit levels, counter hits, launchers and juggles
+- Hitstun, blockstun, high / mid / low hit levels, counter hits, launchers
 - Hitstop, screen shake, hit sparks and synthesized impact sounds
 - Walk, dash, backdash, crouch, jump, and sidestep (linear attacks miss a sidestepping opponent; tracking attacks don't)
-- Training tools: P2 dummy modes, hitbox display, frame data panel with measured frame advantage, slow motion
+
+Phase 2, combos, knockdowns, throws:
+
+- **Juggles** with rising gravity and shrinking pops per hit, so every juggle ends on its own
+- **Air combos:** jump-cancel a launcher that hits (press up), then chain air attacks; air H bounds
+- **Bounds:** a bound slams an airborne opponent into the floor for a bounce, once per combo
+- **Wall splats and wall combos:** a heavy next to the wall, or a juggle carried into it, pins the opponent; each wall hit gives less time, and a heavy or launcher blasts them off
+- **Knockdowns:** sweeps, throws and juggles; lows can hit a downed opponent once
+- **Wake-up options:** stay down, get up, roll back / forward / sideways, wake-up low or mid kick, or tech roll by pressing a button just before landing
+- **Throws and throw breaks:** P+K front throw (break with P), back+P+K reverse throw (break with K); crouching ducks throws
+- **Guard pressure meter:** blocking fills it, not blocking drains it, and a full meter breaks your guard
+
+Combos only connect when the timing and spacing are right. Strings and cancels need the hit to land, juggle hits need the opponent at the right height, and bounds and wall splats can each happen only once per combo.
 
 The full vision lives in [`GAME_DESIGN.md`](GAME_DESIGN.md); the game is built in phases, and each phase stays playable.
 
@@ -32,6 +46,7 @@ Open `index.html` directly in a modern browser (double-click it, or drag it into
 | Punch (P) | `J` | `Numpad 1` (or `,`) |
 | Kick (K) | `K` | `Numpad 2` (or `.`) |
 | Heavy (H) | `L` | `Numpad 3` (or `/`) |
+| Throw | `J`+`K` (with back: reverse throw) | `Num1`+`Num2` |
 
 Standing guard blocks highs and mids. Crouching guard (down + back) blocks lows, and highs whiff over anyone crouching. Mids beat crouching guard; lows beat standing guard.
 
@@ -44,15 +59,28 @@ Standing guard blocks highs and mids. Crouching guard (down + back) blocks lows,
 | `K` | Vector Kick, i14 | Normal Force, i16 | mid |
 | down + `K` | Floor Function, i16 (tracks) | Floor Stomp, i18 | low |
 | `H` | Prime Impact, i19 (launches on counter hit) | Quadratic Hammer, i22, +2 on block (launches on counter hit) | mid |
-| down + `H` | Parabola Launcher, i15, −15 on block | Limit Break, i16, −17 on block | mid |
+| down + `H` | Parabola Launcher, i15, −15 on block; press up on hit to jump after them | Limit Break, i16, −17 on block; same jump cancel | mid |
+| down-back + `K` | Integral Sweep, i20, knockdown, −18 on block | Root Sweep, i22, knockdown, −20 on block | low |
+| forward + `H` | Derivative Drop, i21, bounds airborne opponents | Vertical Asymptote, i24, bounds | mid |
+| in the air: `P` / `K` / `H` | Tangent Jab → Secant Kick → Asymptote Spike (bound) | Delta Drop Jab / Falling Normal → Terminal Velocity (bound) | mid |
+| `P`+`K` / back+`P`+`K` | Function Toss (break: P) / Inverse Throw (break: K) | Body Slam / Inverse Function | throw |
+| while down: `K` / `P` or `H` | Rolling Zero (low) / Spring Theorem (mid) wake-up kicks | same | low / mid |
 
-Things to try: launcher → jab → heavy as a juggle; block the dummy's launcher and punish it with a jab; sidestep the jabbing dummy and counter-hit it.
+**Knocked down:** up gets up, back or forward rolls, a sidestep key rolls sideways, and `K` or `P` does a wake-up kick. Doing nothing leaves you open to a ground hit. To **tech roll**, press `P`, `K` or `H` just before you land from a juggle. Sweeps, bounds and wall splats can't be teched.
+
+Things to try:
+
+- **SIGMA air combo:** launcher, up, air P, air K, air H (bound), then K after the bounce.
+- **DELTA air route:** launcher, up, air K, air H.
+- **Wall combo:** heavy next to the wall, jab, jab, launcher.
+- **Punish practice:** block the dummy's launcher and punish it.
+- **Throw breaks:** set the dummy to throw you and break its throws.
 
 ### Training keys
 
 | Key | Action |
 | --- | --- |
-| `1` | Cycle P2: human, or a dummy (stand, crouch, stand guard, crouch guard, random guard, jab every second, launcher) |
+| `1` | Cycle P2: human, or a dummy (stand, crouch, stand guard, crouch guard, random guard, jab every second, launcher, guard + tech + break throws, random wake-up, throws you) |
 | `2` | Show hitboxes (red), hurtboxes (green) and pushboxes (yellow) |
 | `3` | Show / hide the frame data panel. "LAST" is the frame advantage the engine measured for your last hit or block |
 | `4` | Slow motion |
@@ -67,7 +95,8 @@ Things to try: launcher → jab → heavy as a juggle; block the dummy's launche
 index.html              loads every script in order (no modules, no build)
 lib/phaser.min.js       Phaser 3.90, vendored
 src/fg.js               global namespace and tuning constants
-src/engine/             pure simulation, no Phaser: input buffer, fighter state machine, match (hits, hitstop, combos), dummy
+src/engine/             pure simulation, no Phaser: input buffer, fighter state machine, match loop and walls,
+                        combat (hits, juggles, bounds, wall hits, throws, guard meter), dummy
 src/data/               fighter definitions with frame data, and skeleton poses
 src/render/             fighter drawing, stage, effects and sound, HUD, pixel font
 src/scenes/             the Phaser scene that ties input, simulation and rendering together

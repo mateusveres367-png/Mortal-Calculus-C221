@@ -5,6 +5,7 @@
   var BAR_W = 262, BAR_H = 10, BAR_Y = 16;
 
   function fmt(n) { return (n > 0 ? '+' : '') + n; }
+  function resultText(r) { return r.launch ? 'LAUNCH' : r.knockdown ? 'KND' : fmt(r.adv); }
 
   function Hud(scene) {
     this.scene = scene;
@@ -36,6 +37,7 @@
 
     this.trail = [null, null];
     this.trailDelay = [0, 0];
+    this.blink = 0;
 
     // Controls overlay.
     this.overlayG = scene.add.graphics().setScrollFactor(0).setDepth(60);
@@ -49,22 +51,23 @@
 
   Hud.CONTROLS = [
     ['CONTROLS', 'y'],
-    ['', 'w'],
     ['             PLAYER 1         PLAYER 2', 'c'],
     ['MOVE         A D              LEFT RIGHT', 'w'],
-    ['JUMP         W                UP', 'w'],
-    ['CROUCH       S                DOWN', 'w'],
+    ['JUMP/CROUCH  W / S            UP / DOWN', 'w'],
     ['GUARD        HOLD BACK  (CROUCH + BACK BLOCKS LOWS)', 'w'],
     ['DASH/BACK    TAP FORWARD/BACK TWICE', 'w'],
     ['SIDESTEP     Q (IN)  E (OUT)  NUM4 / ;  NUM5 / \'', 'w'],
     ['PUNCH  P     J                NUM1 / ,', 'w'],
     ['KICK   K     K                NUM2 / .', 'w'],
     ['HEAVY  H     L                NUM3 / /', 'w'],
-    ['', 'w'],
-    ['MOVES   P JAB   P,P STRING   K MID   D+K LOW   H HEAVY   D+H LAUNCHER', 'y'],
-    ['', 'w'],
-    ['1 P2 MODE (HUMAN / DUMMIES)   2 HITBOXES   3 FRAME DATA   4 SLOW-MO', 'g'],
-    ['5 SWAP FIGHTERS   R RESET   M MUTE   C HIDE THIS', 'g']
+    ['MOVES   P JAB  P,P STRING  K MID  D+K LOW  D/B+K SWEEP', 'y'],
+    ['        H HEAVY  F+H SLAM (BOUND)  D+H LAUNCHER (UP ON HIT: AIR CHASE)', 'y'],
+    ['AIR     P / K / H IN THE AIR, CHAIN ON HIT. AIR H BOUNDS', 'y'],
+    ['THROW   P+K (BREAK WITH P)   B+P+K (BREAK WITH K)', 'y'],
+    ['DOWN    UP RISE  BACK/FWD ROLL  SIDESTEP ROLL  K/P WAKE KICKS', 'y'],
+    ['        TECH: PRESS P/K/H JUST BEFORE YOU LAND', 'y'],
+    ['1 P2 MODE   2 HITBOXES   3 FRAME DATA   4 SLOW-MO   5 SWAP', 'g'],
+    ['R RESET   M MUTE   C HIDE THIS', 'g']
   ];
 
   Hud.prototype.setOverlay = function (on) {
@@ -95,13 +98,28 @@
     this.bannerTimer = frames;
   };
 
+  Hud.prototype.setLabel = function (i, text) {
+    this.label[i].setText(text);
+    this.labelTimer[i] = 70;
+  };
+
   Hud.prototype.onEvent = function (ev) {
-    if (ev.type !== 'hit') return;
+    switch (ev.type) {
+      case 'wallsplat': this.setLabel(1 - ev.fighter, 'WALL SPLAT!'); return;
+      case 'guardbreak': this.setLabel(ev.attacker, 'GUARD BREAK!'); return;
+      case 'break': this.setLabel(ev.defender, ev.clash ? 'THROW CLASH' : 'THROW BREAK!'); return;
+      case 'tech': this.setLabel(ev.fighter, 'TECH ROLL'); return;
+      case 'hit': break;
+      default: return;
+    }
     var i = ev.attacker, text = null;
-    if (ev.ch) text = 'COUNTER HIT!';
+    if (ev.throw) text = 'THROW!';
+    else if (ev.ch) text = 'COUNTER HIT!';
     else if (ev.punish) text = 'PUNISH!';
+    else if (ev.bound) text = 'BOUND!';
+    else if (ev.ground) text = 'GROUND HIT';
     else if (ev.launch) text = 'LAUNCH!';
-    if (text) { this.label[i].setText(text); this.labelTimer[i] = 70; }
+    if (text) this.setLabel(i, text);
     if (ev.ko) this.showBanner('K.O.', (ev.attacker === 0 ? 'P1 ' : 'P2 ') + 'WINS', C.KO_RESET_FRAMES);
   };
 
@@ -147,6 +165,12 @@
       g.fillStyle(low ? 0xff8a1f : 0xffd23f, 1); g.fillRect(hx, BAR_Y, hw, BAR_H);
       g.fillStyle(0xffffff, 0.35); g.fillRect(hx, BAR_Y + 1, hw, 2);
       g.lineStyle(1, 0xd8c79a, 1); g.strokeRect(x - 1, BAR_Y - 1, BAR_W + 2, BAR_H + 2);
+      // Guard pressure meter: fills as you block, breaks your guard when full.
+      var gw = Math.round(BAR_W * 0.6 * f.guard / C.GUARD_MAX), gx = i === 0 ? x + BAR_W - Math.round(BAR_W * 0.6) : x;
+      g.fillStyle(0x000000, 1); g.fillRect(gx - 1, BAR_Y + BAR_H + 3, Math.round(BAR_W * 0.6) + 2, 5);
+      var danger = f.guard > C.GUARD_MAX * 0.7;
+      g.fillStyle(danger ? (this.blink++ % 16 < 8 ? 0xff8a1f : 0xffd23f) : 0x5fd7ff, 1);
+      g.fillRect(i === 0 ? gx + Math.round(BAR_W * 0.6) - gw : gx, BAR_Y + BAR_H + 4, gw, 3);
 
       this.names[i].setText((i === 0 ? 'P1 ' : 'P2 ') + f.def.name + '  ' + f.def.archetype);
 
@@ -181,10 +205,15 @@
         continue;
       }
       lines[0].setText('P' + (p + 1) + ' ' + m.label + ' [' + m.cmd + ']');
-      lines[1].setText(m.level.toUpperCase() + '  I' + m.startup + '  ACT ' + m.active + '  REC ' + m.recovery + '  TOT ' + m.total + (m.tracks ? '  TRACKS' : ''));
-      var onHit = m.hit.launch ? 'LAUNCH' : fmt(m.hit.adv);
-      var onCh = m.ch.launch ? 'LAUNCH' : fmt(m.ch.adv);
-      lines[2].setText('BLOCK ' + fmt(m.block) + '  HIT ' + onHit + '  CH ' + onCh);
+      var props = (m.tracks ? '  TRACKS' : '') + (m.bound ? '  BOUND' : '') + (m.wallSplat ? '  SPLAT' : '') + (m.otg ? '  OTG' : '');
+      lines[1].setText((m.throw ? 'THROW' : m.level.toUpperCase()) + '  I' + m.startup + '  ACT ' + m.active + '  REC ' + m.recovery + '  TOT ' + m.total + props);
+      if (m.throw) {
+        lines[2].setText('DAMAGE ' + m.damage + '  BREAK WITH ' + m.breakBtn.toUpperCase());
+      } else if (m.air) {
+        lines[2].setText('HITSTUN ' + m.stunHit + '  BLOCKSTUN ' + m.stunBlock + '  LANDING ' + m.landLag);
+      } else {
+        lines[2].setText('BLOCK ' + fmt(m.block) + '  HIT ' + resultText(m.hit) + '  CH ' + resultText(m.ch));
+      }
       if (res && res.move === m) {
         var txt = res.adv === null ? res.kind : res.kind + ' ' + fmt(res.adv);
         lines[3].setText('LAST: ' + txt);

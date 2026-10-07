@@ -54,6 +54,27 @@
         return f.stun < 6 ? lerp(POSES.idle, hp, f.stun / 6) : hp;
       }
       case 'juggle': return POSES.juggle;
+      case 'wallsplat': return POSES.wall;
+      case 'guardbreak': return f.stun < 6 ? lerp(POSES.idle, POSES.gbreak, f.stun / 6) : POSES.gbreak;
+      case 'roll':
+      case 'techroll': {
+        var n = s === 'roll' ? C.ROLL_FRAMES : C.TECH_FRAMES;
+        var r = f.stateFrame / n;
+        return r < 0.75 ? POSES.roll : lerp(POSES.roll, POSES.idle, ease((r - 0.75) * 4));
+      }
+      case 'throwbreak': return f.stateFrame < 10 ? POSES.backdash : lerp(POSES.backdash, POSES.idle, (f.stateFrame - 10) / 6);
+      case 'throwing': {
+        var tf = f.stateFrame, hold = C.THROW_BREAK_WINDOW, slam = C.THROW_SLAM_FRAME;
+        var reverse = f.lastMove && f.lastMove.reverse;
+        if (tf <= hold) return POSES.grab_x;
+        if (tf < slam) {
+          var u = (tf - hold) / (slam - hold);
+          return u < 0.5 ? lerp(POSES.grab_x, POSES.throw_lift, ease(u * 2)) :
+            lerp(POSES.throw_lift, reverse ? POSES.throw_back : POSES.throw_slam, ease((u - 0.5) * 2));
+        }
+        return lerp(reverse ? POSES.throw_back : POSES.throw_slam, POSES.idle, Math.min(1, (tf - slam) / (C.THROW_END_FRAME - slam)));
+      }
+      case 'thrown': return f.stateFrame <= C.THROW_BREAK_WINDOW ? POSES.hit_mid : POSES.juggle;
       case 'down':
       case 'ko': return POSES.down;
       case 'getup': {
@@ -73,7 +94,8 @@
   // Smoothly blend toward the target, except during attacks and on fresh hits (snap for impact).
   FG.updatePose = function (f, t) {
     var target = targetPose(f, t);
-    var snap = f.state === 'attack' || (f.state === 'hitstun' && f.stateFrame <= 1) || f.state === 'juggle';
+    var snap = f.state === 'attack' || f.state === 'juggle' || f.state === 'thrown' || f.state === 'wallsplat' ||
+      ((f.state === 'hitstun' || f.state === 'guardbreak') && f.stateFrame <= 1);
     if (!f._pose || snap) f._pose = target.slice();
     else f._pose = lerp(f._pose, target, 0.45);
   };

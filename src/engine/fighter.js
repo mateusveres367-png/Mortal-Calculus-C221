@@ -4,8 +4,8 @@
 
   // States in which the fighter is free to act (and can guard).
   var NEUTRAL = { idle: 1, walkF: 1, walkB: 1, crouch: 1 };
-  // States with no hurtbox at all.
-  var INVULNERABLE = { down: 1, getup: 1, ko: 1 };
+  // States that a throw can grab.
+  var THROWABLE = { idle: 1, walkF: 1, walkB: 1, dash: 1, backdash: 1, sidestep: 1, land: 1, attack: 1, guardbreak: 1, prejump: 1 };
 
   var DASH_FRAMES = 16, DASH_ACT_FROM = 9;
   var BACKDASH_FRAMES = 22, BACKDASH_ACT_FROM = 17;
@@ -31,12 +31,28 @@
     this.stun = 0;
     this.reaction = 'high'; // hit reaction pose
     this.guardCrouch = false;
-    this.juggleHits = 0;
     this.sideDir = 1;
     this.ko = false;
     this.actionable = true;
     this.lastMove = null;
     this.prevX = x;
+    this.landLag = LAND_FRAMES;
+    this.airActions = 0;
+    this.rollDir = 'back';
+    this.guard = 0;        // guard pressure meter
+    this.guardDelay = 0;
+    this.clearComboFlags();
+  };
+
+  // Per-combo limits, cleared whenever the fighter is free again.
+  Fighter.prototype.clearComboFlags = function () {
+    this.juggleHits = 0;
+    this.wallUsed = false;
+    this.wallHits = 0;
+    this.boundUsed = false;
+    this.bounding = false;
+    this.groundHits = 0;
+    this.noTech = false;
   };
 
   Fighter.prototype.setState = function (s) {
@@ -46,7 +62,7 @@
   };
 
   Fighter.prototype.isAirborne = function () {
-    return this.state === 'air' || this.state === 'juggle';
+    return this.state === 'air' || this.state === 'juggle' || (this.state === 'attack' && this.move.air);
   };
 
   Fighter.prototype.isCrouching = function () {
@@ -54,6 +70,10 @@
     if (this.state === 'blockstun' && this.guardCrouch) return true;
     if (this.state === 'attack' && this.move.crouching) return true;
     return false;
+  };
+
+  Fighter.prototype.isThrowable = function () {
+    return !!THROWABLE[this.state] && !this.isCrouching() && !this.isAirborne();
   };
 
   Fighter.prototype.inCounterHitWindow = function () {
@@ -78,7 +98,7 @@
     this.move = m;
     this.moveFrame = 1;
     this.contact = null;
-    this.vx = 0;
+    if (!m.air) this.vx = 0;
     this.lastMove = m;
     this.startedMove = m; // read (and cleared) by the match for whiff sounds
   };
@@ -98,19 +118,30 @@
       case 'attack': {
         var m = this.move;
         this.moveFrame++;
-        this.vx = (m.step && this.moveFrame >= m.step[0] && this.moveFrame <= m.step[1]) ? m.step[2] * this.facing : 0;
+        if (!m.air) this.vx = (m.step && this.moveFrame >= m.step[0] && this.moveFrame <= m.step[1]) ? m.step[2] * this.facing : 0;
+        if (this.tryThrowConversion(buf, frame)) return;
         if (this.tryCancel(buf, frame)) return;
         if (this.moveFrame <= m.total) return;
+        if (m.air) { this.setState('air'); return; }
         this.setState('idle');
         break;
       }
       case 'hitstun':
       case 'blockstun':
+      case 'guardbreak':
         this.vx = 0;
         if (s === 'blockstun') this.guardCrouch = buf.held.down;
         if (--this.stun > 0) return;
         this.setState(buf.held.down ? 'crouch' : 'idle');
         break;
+      case 'wallsplat':
+        this.vx = 0;
+        if (--this.stun > 0) return;
+        // Slump to the floor; there's no teching out of a wall splat.
+        this.y = 0;
+        this.setState('down');
+        this.groundHits = 0;
+        return;
       case 'dash':
         this.vx *= 0.86;
         if (this.stateFrame >= DASH_FRAMES) { this.setState('idle'); break; }
@@ -131,45 +162,115 @@
           this.setState('air');
           this.vy = JUMP_VY;
           this.vx = this.jumpDir * JUMP_VX * this.facing;
+          this.airActions = 0;
         }
         return;
       case 'air':
+        if (this.airActions < C.AIR_ACTIONS && this.tryAirAttack(buf, frame)) return;
+        return;
       case 'juggle':
       case 'ko':
+      case 'throwing':
+      case 'thrown':
         return;
       case 'land':
         this.vx = 0;
-        if (this.stateFrame < LAND_FRAMES) return;
+        if (this.stateFrame < this.landLag) return;
         this.setState('idle');
         break;
       case 'down':
         this.vx = 0;
-        if (this.stateFrame >= C.DOWN_FRAMES ||
-            (this.stateFrame >= C.QUICK_RISE_FROM && buf.latest(['p', 'k', 'h', 'up'], frame))) {
-          buf.consume('p'); buf.consume('k'); buf.consume('h'); buf.consume('up');
-          this.setState('getup');
-        }
+        if (this.ko) return;
+        if (this.stateFrame === 1) this.faceOpponent(opp);
+        if (this.stateFrame >= C.DOWN_FRAMES) { this.setState('getup'); return; }
+        if (this.stateFrame >= C.QUICK_RISE_FROM) this.wakeUp(buf, frame);
         return;
       case 'getup':
         if (this.stateFrame < C.GETUP_FRAMES) return;
+        this.setState('idle');
+        break;
+      case 'roll':
+        this.vx = this.rollDir === 'back' ? -2.6 * this.facing : this.rollDir === 'fwd' ? 2.6 * this.facing : 0;
+        if (this.stateFrame < C.ROLL_FRAMES) return;
+        this.vx = 0;
+        this.setState('idle');
+        break;
+      case 'techroll':
+        this.vx = -1.0 * this.facing;
+        if (this.stateFrame < C.TECH_FRAMES) return;
+        this.vx = 0;
+        this.setState('idle');
+        break;
+      case 'throwbreak':
+        if (this.stateFrame < C.THROW_BREAK_FRAMES) return;
         this.setState('idle');
         break;
     }
 
     // Neutral: free to act this frame.
     this.actionable = true;
-    this.juggleHits = 0;
+    this.clearComboFlags();
     this.faceOpponent(opp);
     this.neutral(buf, frame);
   };
 
+  // Wake-up options from a knockdown.
+  Fighter.prototype.wakeUp = function (buf, frame) {
+    var btn = buf.latest(['p', 'k', 'h'], frame);
+    if (btn) { buf.consume(btn); this.startMove(btn === 'k' ? 'wakeLow' : 'wakeMid'); return; }
+    if (buf.wasPressed('ssIn', frame) || buf.wasPressed('ssOut', frame)) {
+      this.sideDir = buf.wasPressed('ssIn', frame) ? 1 : -1;
+      buf.consume('ssIn'); buf.consume('ssOut');
+      this.rollDir = 'side'; this.setState('roll');
+      return;
+    }
+    if (buf.back(this.facing)) { this.rollDir = 'back'; this.setState('roll'); return; }
+    if (buf.forward(this.facing)) { this.rollDir = 'fwd'; this.setState('roll'); return; }
+    if (buf.held.up) { buf.consume('up'); this.setState('getup'); }
+  };
+
+  // P and K pressed together throws (back + P + K is the reverse throw).
+  function throwPressed(buf, frame) {
+    return buf.wasPressed('p', frame) && buf.wasPressed('k', frame) && Math.abs(buf.pressed.p - buf.pressed.k) <= 2;
+  }
+
+  Fighter.prototype.startThrow = function (buf) {
+    buf.consume('p'); buf.consume('k');
+    this.startMove(buf.back(this.facing) ? 'throwB' : 'throw');
+  };
+
   Fighter.prototype.tryAttack = function (buf, frame) {
+    if (throwPressed(buf, frame)) { this.startThrow(buf); return true; }
     var btn = buf.latest(['p', 'k', 'h'], frame);
     if (!btn) return false;
     buf.consume(btn);
-    var down = buf.held.down;
-    var id = btn === 'p' ? 'jab' : btn === 'k' ? (down ? 'low' : 'mid') : (down ? 'launcher' : 'heavy');
+    var down = buf.held.down, back = buf.back(this.facing), fwd = buf.forward(this.facing);
+    var id;
+    if (btn === 'p') id = 'jab';
+    else if (btn === 'k') id = down ? (back ? 'sweep' : 'low') : 'mid';
+    else id = down ? 'launcher' : (fwd ? 'slam' : 'heavy');
     this.startMove(id);
+    return true;
+  };
+
+  // The second throw button can arrive a frame or two after the first: turn the
+  // jab or kick that just started into the throw.
+  Fighter.prototype.tryThrowConversion = function (buf, frame) {
+    var m = this.move;
+    if (this.moveFrame > 3) return false;
+    if ((m.id === 'jab' && buf.wasPressed('k', frame, 3)) || (m.id === 'mid' && buf.wasPressed('p', frame, 3))) {
+      this.startThrow(buf);
+      return true;
+    }
+    return false;
+  };
+
+  Fighter.prototype.tryAirAttack = function (buf, frame) {
+    var btn = buf.latest(['p', 'k', 'h'], frame);
+    if (!btn) return false;
+    buf.consume(btn);
+    this.startMove(btn === 'p' ? 'airP' : btn === 'k' ? 'airK' : 'airH');
+    this.airActions++;
     return true;
   };
 
@@ -180,9 +281,20 @@
       var c = cancels[i];
       if (this.moveFrame < c.from || this.moveFrame > c.to) continue;
       if (c.onContact && !this.contact) continue;
+      if (c.onHit && this.contact !== 'hit') continue;
       if (!buf.wasPressed(c.btn, frame)) continue;
       buf.consume(c.btn);
-      this.startMove(c.into);
+      if (c.into === 'jump') {
+        // Jump cancel: chase the launched opponent into the air.
+        this.setState('air');
+        this.vy = C.SUPER_JUMP_VY;
+        this.vx = C.SUPER_JUMP_VX * this.facing;
+        this.airActions = 0;
+        this.superJump = true;
+      } else {
+        if (this.move.air) this.airActions++;
+        this.startMove(c.into);
+      }
       return true;
     }
     return false;
@@ -237,15 +349,38 @@
 
   Fighter.prototype.physics = function (opp) {
     this.prevX = this.x;
-    if (this.isAirborne()) {
-      this.vy -= this.state === 'juggle' ? C.JUGGLE_GRAVITY : C.GRAVITY;
+    if (this.state === 'throwing' || this.state === 'thrown') {
+      // Positions are driven by the throw script in the match.
+      this.slide = 0;
+    } else if (this.isAirborne()) {
+      var juggled = this.state === 'juggle';
+      this.vy -= juggled ? C.JUGGLE_GRAVITY * (1 + C.JUGGLE_GRAVITY_SCALE * this.juggleHits) : C.GRAVITY;
       this.y += this.vy;
       this.x += this.vx;
       if (this.y <= 0) {
-        this.y = 0; this.vy = 0; this.vx = 0;
-        if (this.state === 'air') { this.setState('land'); this.faceOpponent(opp); }
-        else { this.setState(this.ko ? 'ko' : 'down'); this.landed = true; }
+        this.y = 0;
+        if (juggled && this.bounding) {
+          // Bound: bounce off the floor back into a juggle.
+          this.bounding = false;
+          this.vy = C.BOUNCE_VY;
+          this.vx *= 0.5;
+          this.bounced = true;
+        } else if (juggled) {
+          this.vy = 0; this.vx = 0;
+          this.setState(this.ko ? 'ko' : 'down');
+          this.groundHits = 0;
+          this.landed = true;
+        } else {
+          // Jump or air attack landing; air attacks have their own landing lag.
+          this.landLag = this.state === 'attack' ? this.move.landLag : LAND_FRAMES;
+          this.vy = 0; this.vx = 0;
+          this.setState('land');
+          this.superJump = false;
+          this.faceOpponent(opp);
+        }
       }
+    } else if (this.state === 'wallsplat') {
+      this.y = Math.max(0, this.y - 1.5); // slide down the wall
     } else {
       this.x += this.vx;
     }
@@ -254,8 +389,11 @@
       this.slide *= 0.8;
       if (Math.abs(this.slide) < 0.1) this.slide = 0;
     }
-    if (this.state === 'sidestep') {
-      this.z = this.sideDir * C.SIDESTEP_DEPTH * Math.sin(Math.PI * this.stateFrame / C.SIDESTEP_FRAMES);
+    var depthFrames = this.state === 'sidestep' ? C.SIDESTEP_FRAMES :
+      this.state === 'techroll' ? C.TECH_FRAMES :
+      (this.state === 'roll' && this.rollDir === 'side') ? C.ROLL_FRAMES : 0;
+    if (depthFrames) {
+      this.z = this.sideDir * C.SIDESTEP_DEPTH * Math.sin(Math.PI * Math.min(1, this.stateFrame / depthFrames));
     } else {
       this.z *= 0.7;
       if (Math.abs(this.z) < 0.2) this.z = 0;
@@ -268,14 +406,28 @@
     return { x1: Math.min(x1, x2), x2: Math.max(x1, x2), y1: y1, y2: y2 };
   }
 
+  Fighter.prototype.isInvulnerable = function () {
+    switch (this.state) {
+      case 'getup': case 'ko': case 'thrown': case 'throwing': return true;
+      case 'roll': return this.stateFrame <= C.ROLL_INVULN;
+      case 'techroll': return this.stateFrame <= C.TECH_INVULN;
+      case 'throwbreak': return this.stateFrame <= 6;
+    }
+    return false;
+  };
+
   Fighter.prototype.hurtboxes = function () {
-    if (INVULNERABLE[this.state]) return [];
+    if (this.isInvulnerable()) return [];
     var s = this.def.scale, x = this.x, y = this.y, f = this.facing;
     var boxes;
-    if (this.state === 'juggle') {
+    if (this.state === 'down') {
+      boxes = [rect(x - 34 * s, x + 34 * s, 0, 14 * s)];
+    } else if (this.state === 'juggle') {
       boxes = [rect(x - 30 * s * f, x + 20 * s * f, Math.max(0, y - 8 * s), y + 50 * s)];
-    } else if (this.state === 'air') {
+    } else if (this.isAirborne()) {
       boxes = [rect(x - 16 * s, x + 16 * s, y + 8 * s, y + 86 * s)];
+    } else if (this.state === 'wallsplat') {
+      boxes = [rect(x - 16 * s, x + 16 * s, y, y + 80 * s)];
     } else if (this.isCrouching()) {
       boxes = [rect(x - 18 * s, x + 18 * s, 0, 60 * s)];
     } else {
@@ -302,8 +454,6 @@
     return this.state === 'attack' && this.moveFrame >= this.move.startup &&
       this.moveFrame <= this.move.startup + this.move.active - 1;
   };
-
-  Fighter.prototype.isInvulnerable = function () { return !!INVULNERABLE[this.state]; };
 
   FG.Fighter = Fighter;
   FG.rect = rect;

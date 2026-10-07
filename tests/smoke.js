@@ -23,7 +23,8 @@ try { playwright = require('playwright'); } catch (e) {
   var renderer = await page.evaluate(function () { return FG.game.renderer.type === Phaser.WEBGL ? 'WEBGL' : 'CANVAS'; });
   await page.screenshot({ path: path.join(out, '1-start.png') });
 
-  // Hide the overlay, show hitboxes, and run a scripted launcher combo through the real scene.
+  // Hide the overlay, show hitboxes, and run a scripted air combo through the real scene:
+  // launcher, jump cancel, air P > air K > air H (bound), then a mid kick after the bounce.
   await page.keyboard.press('KeyC');
   await page.keyboard.press('Digit2');
   await page.evaluate(function () {
@@ -31,7 +32,7 @@ try { playwright = require('playwright'); } catch (e) {
     s.newMatch();
     s.match.fighters[0].x = 500; s.match.fighters[1].x = 540;
     var start = s.tickCount;
-    var plan = { 0: { h: true, down: true }, 48: { p: true }, 76: { h: true } };
+    var plan = { 0: { h: true, down: true }, 16: { up: true }, 28: { p: true }, 34: { k: true }, 44: { h: true }, 102: { k: true } };
     window.HITS = [];
     s.forceInput = function (t) {
       var i = t - start, r = FG.emptyRaw(), p = plan[i];
@@ -44,9 +45,10 @@ try { playwright = require('playwright'); } catch (e) {
   await page.waitForFunction(function () { return window.HITS.length >= 1; }, null, { timeout: 5000 });
   await page.waitForTimeout(60);
   await page.screenshot({ path: path.join(out, '2-launch.png') });
-  await page.waitForFunction(function () { return window.HITS.length >= 3; }, null, { timeout: 8000 });
+  await page.waitForFunction(function () { return window.HITS.length >= 4; }, null, { timeout: 8000 });
   await page.waitForTimeout(30);
-  await page.screenshot({ path: path.join(out, '3-juggle.png') });
+  await page.screenshot({ path: path.join(out, '3-air-combo.png') });
+  await page.waitForFunction(function () { return window.HITS.length >= 5; }, null, { timeout: 8000 });
   var hits = await page.evaluate(function () { return window.HITS.slice(); });
 
   // Real keyboard input: walk P1 forward then jab into a standing-guard dummy.
@@ -61,7 +63,7 @@ try { playwright = require('playwright'); } catch (e) {
 
   await browser.close();
   console.log(JSON.stringify({ renderer: renderer, hits: hits, p1: p1, errors: errors }, null, 1));
-  var ok = !errors.length && hits.join() === 'launcher,jab,heavy' &&
+  var ok = !errors.length && hits.join() === 'launcher,airP,airK,airH,mid' &&
     p1.last && p1.last.kind === 'BLOCK' && p1.last.adv === 1;
   console.log(ok ? 'SMOKE OK' : 'SMOKE FAILED');
   if (!ok) process.exit(1);

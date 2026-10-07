@@ -89,7 +89,7 @@
   FightScene.prototype.tick = function () {
     var m = this.match, f = m.fighters;
     var raw1 = this.readP1();
-    var raw2 = this.dummy.mode().id === 'human' ? this.readP2() : this.dummy.input(f[1], f[0]);
+    var raw2 = this.dummy.mode().id === 'human' ? this.readP2() : this.dummy.input(f[1], f[0], m);
     if (this.forceInput) { var fi = this.forceInput(this.tickCount); if (fi) { raw1 = fi[0] || raw1; raw2 = fi[1] || raw2; } }
 
     var wasKo = m.koTimer > 0;
@@ -99,13 +99,11 @@
     for (var i = 0; i < m.events.length; i++) {
       var ev = m.events[i];
       FG.Sfx.play(ev);
-      if (ev.type === 'hit' || ev.type === 'block') {
-        this.effects.spawn(ev);
-        if (ev.shake) this.effects.shake(ev.shake);
-        if (ev.type === 'hit') this.impact = { who: ev.defender, frames: ev.ch ? 4 : 2, color: ev.ch ? 0xffb347 : 0xffffff };
-      } else if (ev.type === 'land') {
-        this.effects.shake(0.003);
-      }
+      if (ev.type !== 'whiff') this.effects.spawn(ev);
+      if (ev.shake) this.effects.shake(ev.shake);
+      if (ev.type === 'land' || ev.type === 'bounce') this.effects.shake(ev.type === 'bounce' ? 0.006 : 0.003);
+      if (ev.type === 'hit' && !ev.ground) this.impact = { who: ev.defender, frames: ev.ch ? 4 : 2, color: ev.ch ? 0xffb347 : 0xffffff };
+      if (ev.type === 'guardbreak') this.impact = { who: ev.defender, frames: 4, color: 0x5fd7ff };
       this.hud.onEvent(ev);
     }
 
