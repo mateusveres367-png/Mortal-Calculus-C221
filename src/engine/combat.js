@@ -17,6 +17,8 @@
       if (!m.tracks && Math.abs(a.z - d.z) > C.SIDESTEP_EVADE_Z) continue;
       // Highs (and throws) go over crouching opponents.
       if (m.level === 'high' && d.isCrouching()) continue;
+      // A backdash that evades lows early on (LOPEZ's Standard Deviation).
+      if (m.level === 'low' && d.state === 'backdash' && d.stateFrame <= (d.def.backdashLowInvuln || 0)) continue;
       // Only ground-hitting moves reach a fighter who is lying down.
       if (d.state === 'down' && (!m.otg || d.groundHits >= C.GROUND_HITS_MAX)) continue;
       if (m.throw && !d.isThrowable()) continue;
@@ -106,6 +108,7 @@
     var result = ch ? m.ch : m.hit;
     var state = d.state;
     var mult = (ch ? 1.2 : 1) * (state === 'down' ? 0.6 : 1) * (state === 'wallsplat' ? 0.85 : 1);
+    if (a.calculated > 0) { mult *= C.CALCULATED_BONUS; a.calculated = 0; ev.calculated = true; }
     var dmg = this.dealDamage(c.a, c.d, m.damage, mult);
     var hitstop = m.hitstop + (ch ? 4 : 0);
     ev.ch = ch; ev.punish = c.punish; ev.damage = dmg;

@@ -55,6 +55,12 @@
     f[1].think(b[1], f[0], this.frame);
     for (i = 0; i < 2; i++) {
       if (f[i].startedMove) { this.events.push({ type: 'whiff', fighter: i, move: f[i].startedMove }); f[i].startedMove = null; }
+      // MIYASHIRO's Calculated: an opponent's whiff makes his next hit stronger.
+      var opp = f[1 - i];
+      if (f[i].whiffed && opp.def.passive === 'calculated' && !opp.ko) {
+        opp.calculated = C.CALCULATED_FRAMES;
+        this.events.push({ type: 'calculated', fighter: 1 - i, x: opp.x });
+      }
     }
 
     this.updateThrow();
@@ -197,6 +203,30 @@
       this.lastResult[ms.att] = { move: ms.move, kind: ms.kind, adv: ms.defFrame - ms.attFrame, ch: ms.ch };
       this.measure = null;
     }
+  };
+
+  // Play a documented combo route (see the fighter files) and return what happened.
+  // Timed `plan` inputs fire on their frame, `queue` inputs fire as soon as the
+  // attacker is free, `hold` inputs are held over a frame range, and `oppPlan`
+  // is the opponent's script. Starts at `dist` apart, or next to the wall.
+  FG.runCombo = function (atk, dfn, combo, frames) {
+    var m = new Match(atk, dfn), i;
+    for (i = 0; i < 2; i++) m.step([FG.emptyRaw(), FG.emptyRaw()]);
+    var dist = combo.dist || 40;
+    if (combo.wall) { var w = C.WALL_R - 18 * dfn.scale - 10; m.fighters[1].x = w; m.fighters[0].x = w - 44; }
+    else { m.fighters[0].x = 500 - dist / 2; m.fighters[1].x = 500 + dist / 2; }
+    var hits = [], damage = 0, next = 0;
+    function merge(r, notation) { var add = FG.parseInput(notation); for (var k in add) if (add[k]) r[k] = true; }
+    for (i = 0; i < (frames || 320); i++) {
+      var r1 = FG.emptyRaw(), r2 = FG.emptyRaw();
+      if (combo.plan && combo.plan[i]) merge(r1, combo.plan[i]);
+      (combo.hold || []).forEach(function (h) { if (i >= h[0] && i <= h[1]) merge(r1, h[2]); });
+      if (combo.queue && next < combo.queue.length && m.fighters[0].state === 'idle' && m.hitstop === 0) merge(r1, combo.queue[next++]);
+      if (combo.oppPlan && combo.oppPlan[i]) merge(r2, combo.oppPlan[i]);
+      m.step([r1, r2]);
+      m.events.forEach(function (e) { if (e.type === 'hit' && e.attacker === 0) { hits.push(e.move.id); damage += e.damage; } });
+    }
+    return { hits: hits, damage: damage, match: m };
   };
 
   FG.Match = Match;

@@ -4,7 +4,7 @@ A retro, Tekken-inspired 2D/2.5D fighting game themed around the El Camino Real 
 
 ## Status
 
-**Phase 4 — the roster (in progress, playable).** The eight fighters from [`ROSTER.md`](ROSTER.md) are being built two at a time. Available now: **BRINKHUS** (balanced, limits), **CHAI** (technical, geometry), **DALSASS** (tricky, functions) and **LEE** (rushdown, sequences).
+**Phase 4 — the roster (in progress, playable).** The eight fighters from [`ROSTER.md`](ROSTER.md) are being built two at a time. Available now: **BRINKHUS** (balanced, limits), **CHAI** (technical, geometry), **DALSASS** (tricky, functions), **LEE** (rushdown, sequences), **LOPEZ** (defensive, statistics) and **MIYASHIRO** (spacing, vectors).
 
 What's in the game so far:
 
@@ -53,7 +53,9 @@ Every fighter uses the same input layout. What each input does, and its frame da
 | `P, P` and other strings | follow-ups, often only if the first hit connects |
 | down + `K` / down-back + `K` | low kick / knockdown sweep |
 | down + `H` | launcher; press up when it hits to jump after them |
-| forward or back + a button | fighter-specific moves (for example DALSASS's Function Feint, CHAI's parry, LEE's Recursive Rush) |
+| forward or back + a button | fighter-specific moves (for example DALSASS's Function Feint, CHAI's parry, LEE's Recursive Rush, MIYASHIRO's Dot Product) |
+| dash, then `P` | dash attack (MIYASHIRO's Vector Rush) |
+| `P` right after blocking | LOPEZ's Confidence Interval punisher |
 | sidestep, then a button | sidestep attack (CHAI's Tangent Step comes out early) |
 | `P` / `K` / `H` in the air | air attacks that chain on hit; air `H` bounds |
 | `P`+`K` / back + `P`+`K` | front throw (break with `P`) / reverse throw (break with `K`) |
@@ -76,6 +78,16 @@ Fighters available now:
   - **Arithmetic Sequence** (`P, P, P`, then `P` for a mid or `K` for a low) gets faster with every hit.
   - **Recursive Rush** (forward + `P`) repeats on hit when you press `P` again, up to three times.
   - His normals are plus on block. He taunts mid-combo and pushes up his glasses after big hits.
+- **LOPEZ** (defensive, statistics):
+  - **Standard Deviation:** his backdash goes further, recovers sooner, and lows can't touch it early on.
+  - **Confidence Interval:** `P` within 10 frames of blocking is a fast, heavy punisher.
+  - **Null Hypothesis** (back + `H`) parries mids and lows; he squints, then counters. Highs and throws beat it.
+  - He takes his blazer off during his intro.
+- **MIYASHIRO** (spacing, vectors):
+  - **Dot Product** (forward + `K`) is the longest mid in the game.
+  - **Vector Rush** (dash, then `P`) comes out early in a dash.
+  - **Unit Circle** (back + `K`) is a tracking spin kick.
+  - **Calculated:** when you whiff near him, his next hit within 2.5 seconds does 30% more damage.
 
 ### Training mode
 

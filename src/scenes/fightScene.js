@@ -58,7 +58,8 @@
     this.histories[0].clear(); this.histories[1].clear();
     this.hud.clear();
     var f = this.match.fighters;
-    for (var i = 0; i < 2; i++) { f[i]._blazer = !!f[i].def.look.blazer; f[i]._pending = null; }
+    // Only intros start with LOPEZ's blazer on; he takes it off during his.
+    for (var i = 0; i < 2; i++) { f[i]._blazer = !!(opts.intro && f[i].def.look.blazer); f[i]._pending = null; }
     if (opts.intro) this.startIntro();
     else { this.intro = null; this.hud.showBanner('FIGHT!', '', 50); }
   };
@@ -242,8 +243,19 @@
       FG.updatePose(f[i], this.tickCount);
     }
     if (this.intro) {
-      // LOPEZ-style intros take something off partway through.
-      if (++this.intro.t >= this.intro.len) this.endIntro();
+      this.intro.t++;
+      // Intro events, e.g. LOPEZ taking off his blazer.
+      for (var e = 0; e < 2; e++) {
+        var evs = f[e].def.introEvents || [];
+        for (var k = 0; k < evs.length; k++) {
+          if (evs[k].t !== this.intro.t) continue;
+          if (evs[k].blazerOff && f[e]._blazer) {
+            f[e]._blazer = false;
+            this.effects.spawn({ type: 'blazer', x: f[e].x, y: 70, facing: f[e].facing, color: f[e].def.look.blazer });
+          }
+        }
+      }
+      if (this.intro.t >= this.intro.len) this.endIntro();
     }
     if (this.win) this.win.t++;
     this.effects.update();
@@ -321,6 +333,10 @@
         if (a.def.taunts && hits === 3) a._tag = { text: a.def.taunts[Math.floor(Math.random() * a.def.taunts.length)], t: 70 };
       }
     }
+    if (ev.type === 'calculated') {
+      f[ev.fighter]._tag = { text: 'CALCULATED', t: 60 };
+    }
+    if (ev.type === 'hit' && ev.calculated) this.hud.setLabel(ev.attacker, 'CALCULATED!');
     if (ev.type === 'parry') {
       this.hud.setLabel(ev.attacker, ev.label || 'PARRY!');
       if (f[ev.attacker].def.parryFace) f[ev.attacker]._face = { type: f[ev.attacker].def.parryFace, t: 30 };

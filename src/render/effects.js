@@ -15,6 +15,7 @@
     this.parts = [];
     this.flashes = [];
     this.cracks = [];
+    this.props = []; // tumbling objects (LOPEZ's blazer)
     this.shakeMag = 0;
   }
 
@@ -57,6 +58,9 @@
         return;
       case 'grab':
         this.flashes.push({ x: x, y: y, r: 8, life: 5, max: 5, color: 0xffffff, star: true });
+        return;
+      case 'blazer': // LOPEZ tosses his blazer off behind him
+        this.props.push({ x: x, y: y, vx: -ev.facing * 2.6, vy: -3.2, rot: 0, vr: -ev.facing * 0.18, life: 70, w: 14, h: 18, color: ev.color });
         return;
       case 'parry':
         this.flashes.push({ x: x, y: y, r: 22, life: 10, max: 10, color: 0xdff6ff, star: true });
@@ -110,6 +114,12 @@
     for (var j = this.flashes.length - 1; j >= 0; j--) {
       if (--this.flashes[j].life <= 0) this.flashes.splice(j, 1);
     }
+    for (var q = this.props.length - 1; q >= 0; q--) {
+      var pr = this.props[q];
+      pr.x += pr.vx; pr.y += pr.vy; pr.vy += 0.18; pr.rot += pr.vr;
+      if (pr.y > C.GROUND_Y - 3) { pr.y = C.GROUND_Y - 3; pr.vy = 0; pr.vx *= 0.8; pr.vr = 0; pr.rot = Math.PI / 2; }
+      if (--pr.life <= 0) this.props.splice(q, 1);
+    }
     for (var k = this.cracks.length - 1; k >= 0; k--) {
       if (--this.cracks[k].life <= 0) this.cracks.splice(k, 1);
     }
@@ -123,6 +133,13 @@
   };
 
   Effects.prototype.draw = function (g) {
+    for (var pi = 0; pi < this.props.length; pi++) {
+      var o = this.props[pi], cs = Math.cos(o.rot), sn = Math.sin(o.rot), hw = o.w / 2, hh = o.h / 2;
+      g.fillStyle(o.color, Math.min(1, o.life / 15));
+      g.fillPoints([[-hw, -hh], [hw, -hh], [hw, hh], [-hw, hh]].map(function (p) {
+        return { x: o.x + p[0] * cs - p[1] * sn, y: o.y + p[0] * sn + p[1] * cs };
+      }), true);
+    }
     // Wall cracks: jagged lines radiating from the impact point.
     for (var c = 0; c < this.cracks.length; c++) {
       var cr = this.cracks[c], alpha = Math.min(1, cr.life / 30);

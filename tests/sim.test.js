@@ -189,20 +189,10 @@ var S = FG.fighterById('brinkhus'), D = FG.fighterById('dalsass');
 // Every fighter's documented combo routes connect exactly as listed, against every opponent.
 // Timed routes press each input on its frame; queued routes press the next input
 // on the first frame the attacker is free. Wall routes start next to the wall.
+// Optional route fields: dist (start distance), hold ([[from, to, 'B'], ...] held inputs),
+// oppPlan (the opponent's inputs, for routes that start from their attack).
 function runCombo(atk, combo, dfn) {
-  var m = new FG.Match(atk, dfn);
-  run(m, 2);
-  if (combo.wall) { var w = FG.C.WALL_R - 18 * dfn.scale - 10; m.fighters[1].x = w; m.fighters[0].x = w - 44; }
-  else { m.fighters[0].x = 480; m.fighters[1].x = 520; }
-  var hits = [], next = 0;
-  for (var i = 0; i < 320; i++) {
-    var r1 = FG.emptyRaw();
-    if (combo.plan && combo.plan[i]) r1 = FG.parseInput(combo.plan[i]);
-    if (combo.queue && next < combo.queue.length && m.fighters[0].state === 'idle' && m.hitstop === 0) r1 = FG.parseInput(combo.queue[next++]);
-    m.step([r1, FG.emptyRaw()]);
-    m.events.forEach(function (e) { if (e.type === 'hit' && e.attacker === 0) hits.push(e.move.id); });
-  }
-  return hits;
+  return FG.runCombo(atk, dfn, combo).hits;
 }
 defs.forEach(function (d) {
   check(d.name + ' has combo routes', d.combos.length >= 3, d.combos.length);
@@ -629,6 +619,53 @@ function count(r, type, attacker) {
   r = play(L, S, 40, { 0: FG.parseInput('F+P'), 15: { p: true } }, function (i) { return i >= 3 ? { right: true } : {}; }, 60);
   var ids = r.events.filter(function (e) { return e.type === 'whiff' && e.fighter === 0; }).map(function (e) { return e.move.id; });
   check('recursive rush only repeats on hit', ids.join() === 'fP,jab' || ids.join() === 'fP', ids);
+})();
+
+// LOPEZ: Standard Deviation backdash, Confidence Interval, Null Hypothesis.
+(function () {
+  var LZ = FG.fighterById('lopez');
+  // His backdash goes further than BRINKHUS's.
+  function backdashDist(def) {
+    var x0, r = play(def, D, 200, { 0: { left: true }, 2: { left: true } }, {}, 30, function (m) { x0 = m.fighters[0].x; });
+    return x0 - r.m.fighters[0].x;
+  }
+  check('standard deviation goes further', backdashDist(LZ) > backdashDist(S) + 15, [backdashDist(LZ), backdashDist(S)]);
+  // Lows can't touch it early on; a normal backdash gets hit.
+  var r = play(LZ, S, 40, { 0: { left: true }, 2: { left: true } }, { 0: { k: true, down: true } }, 30);
+  check('standard deviation evades a low', count(r, 'hit', 1) === 0, types(r));
+  // Confidence Interval only right after blocking.
+  r = play(LZ, S, 40, { 25: { p: true } }, { 0: { p: true } }, 60, null);
+  var plan = { 25: { p: true } };
+  r = play(LZ, S, 40, function (i) { return i <= 14 ? { left: true } : plan[i] || {}; }, { 0: { p: true } }, 60);
+  var ids = r.events.filter(function (e) { return e.type === 'whiff' && e.fighter === 0; }).map(function (e) { return e.move.id; });
+  check('confidence interval after block', ids.join() === 'postBlockP', ids);
+  r = play(LZ, S, 40, { 0: { p: true } }, {}, 30);
+  ids = r.events.filter(function (e) { return e.type === 'whiff' && e.fighter === 0; }).map(function (e) { return e.move.id; });
+  check('plain jab otherwise', ids.join() === 'jab', ids);
+  // Null Hypothesis parries mids and lows but not highs.
+  r = play(LZ, S, 40, { 6: FG.parseInput('B+H') }, { 0: { k: true, down: true } }, 60);
+  check('null hypothesis parries a low', count(r, 'parry') === 1, types(r));
+  r = play(LZ, S, 40, { 4: FG.parseInput('B+H') }, { 0: { p: true } }, 60);
+  check('null hypothesis loses to a high', count(r, 'parry') === 0 && count(r, 'hit', 1) === 1, types(r));
+})();
+
+// MIYASHIRO: Calculated bonus after the opponent whiffs; Vector Rush out of a dash; Dot Product range.
+(function () {
+  var MY = FG.fighterById('miyashiro');
+  var route = MY.combos.filter(function (c) { return c.name === 'CALCULATED RUSH'; })[0];
+  var res = FG.runCombo(MY, S, route);
+  check('calculated: whiff, then a bonus hit', res.hits.join() === 'dashP' && res.damage === Math.round(MY.moves.dashP.damage * FG.C.CALCULATED_BONUS), res);
+  // Without the whiff there's no bonus.
+  var plain = Object.assign({}, route, { oppPlan: null });
+  res = FG.runCombo(MY, S, plain);
+  check('no whiff, no bonus', res.damage === MY.moves.dashP.damage, res);
+  // Dot Product outranges every other fighter's mid.
+  var reach = MY.moves.fK.box.x + MY.moves.fK.box.w;
+  var others = FG.ROSTER.filter(function (d) { return d !== MY; }).map(function (d) { return d.moves.mid.box.x + d.moves.mid.box.w; });
+  check('dot product is the longest mid', others.every(function (o) { return reach > o; }), [reach, others]);
+  // Unit Circle tracks a sidestep.
+  var r = play(MY, S, 44, { 0: FG.parseInput('B+K') }, { 2: { ssIn: true } }, 40);
+  check('unit circle tracks', count(r, 'hit') === 1, types(r));
 })();
 
 console.log(passes + ' passed, ' + failures + ' failed');

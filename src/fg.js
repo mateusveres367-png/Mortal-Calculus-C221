@@ -63,6 +63,11 @@ FG.C = {
   THROW_END_FRAME: 46,
   THROW_BREAK_FRAMES: 16,
 
+  // MIYASHIRO's Calculated: after an opponent whiffs, his next hit within this
+  // many frames does extra damage.
+  CALCULATED_FRAMES: 150,
+  CALCULATED_BONUS: 1.3,
+
   // Parries: how long a parried attacker staggers.
   PARRY_STUN: 30,
 

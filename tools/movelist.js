@@ -69,6 +69,7 @@ FG.ROSTER.forEach(function (d) {
   out.push('');
   d.combos.forEach(function (c) {
     var how = c.plan ? 'frames: ' + Object.keys(c.plan).map(function (f) { return c.plan[f] + ' @' + f; }).join(', ') : 'each input as soon as you can act';
+    if (c.hold) how += '; hold ' + c.hold.map(function (h) { return h[2] + ' @' + h[0] + '-' + h[1]; }).join(', ');
     out.push('- **' + title(c.name) + ':** ' + c.notation.replace(/\b([A-Z]{2,})\b/g, function (w) { return ['UP', 'AIR'].indexOf(w) >= 0 ? w.toLowerCase() : w === 'AT' || w === 'THE' || w === 'WALL' || w === 'ON' || w === 'GROUND' || w === 'BOUND' ? w.toLowerCase() : w; }) + ' (' + how + ')');
   });
   out.push('');

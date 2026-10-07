@@ -135,3 +135,67 @@ Sarcastic and funny. Taunts mid-combo. Relentless pressure.
 - **Recursive Rush:** F+P, P, P (frames: F+P @0, P @15, P @33)
 - **Fibonacci Spike:** D+H, up, air P, air K, air H, K (frames: D+H @0, UP @16, P @42, K @54, H @67, K @123)
 - **Fibonacci Juggle:** D+H, P, P, D+K on the ground (frames: D+H @0, P @53, P @65, D+K @115)
+
+## LOPEZ — Defensive — Statistics
+
+Very suspicious. Always watching. Waits for you to commit, then punishes.
+
+| Input | Move | Level | i | Active | Recovery | Block | Hit | Counter hit | Damage | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| P | Sample Jab | high | 10 | 2 | 14 | 0 | +7 | +10 | 8 |  |
+| P,P | Mean Straight | high | 10 | 2 | 16 | -3 | +6 | +9 | 10 |  |
+| K | Regression Kick | mid | 15 | 3 | 18 | -5 | +4 | +9 | 15 |  |
+| D+K | Lower Quartile | low | 16 | 3 | 20 | -12 | 0 | +6 | 11 | hits downed opponents, ducks highs |
+| D/B+K | Bell Curve Sweep | low | 21 | 3 | 26 | -18 | knockdown | knockdown | 16 | ducks highs |
+| H | Significant Figure | mid | 19 | 3 | 21 | -4 | +6 | launch | 22 | wall splats |
+| F+H | Median Drop | mid | 22 | 3 | 21 | -7 | +3 | knockdown | 19 | bounds |
+| B+H | Null Hypothesis | — | 33 total |  |  |  |  |  |  | parry |
+| D+H | Outlier | mid | 16 | 4 | 22 | -15 | launch | launch | 17 | jump cancel on hit (UP) |
+| P+K | Regression | throw | 12 | 2 | 26 |  |  |  | 32 | break with P |
+| B+P+K | Residual | throw | 12 | 2 | 26 |  |  |  | 34 | break with K |
+| AIR P | Sample Drop | mid | 8 | 4 | 10 |  |  |  | 10 | hitstun 16, blockstun 10, landing 5 |
+| AIR K | Variance Kick | mid | 10 | 5 | 12 |  |  |  | 13 | hitstun 18, blockstun 12, landing 7 |
+| AIR H | Normal Distribution | mid | 13 | 4 | 16 |  |  |  | 19 | bounds, hitstun 22, blockstun 14, landing 11 |
+| K (DOWN) | Rolling Zero | low | 14 | 3 | 22 | -14 | -2 | +1 | 10 | ducks highs |
+| P/H (DOWN) | Spring Theorem | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
+| P AFTER BLOCK | Confidence Interval | mid | 8 | 2 | 20 | -10 | knockdown | knockdown | 18 | wall splats |
+| PARRY | Rejection | mid | 7 | 3 | 18 | -6 | knockdown | knockdown | 22 |  |
+
+**Combo routes** (tested in `tests/sim.test.js`):
+
+- **Sample Mean:** P, P (frames: P @0, P @16)
+- **Outlier Juggle:** D+H, P, P (frames: D+H @0, P @54, P @72)
+- **Normal Distribution:** D+H, up, air P, air K, air H, D+K on the ground (frames: D+H @0, UP @17, P @45, K @58, H @72, D+K @147)
+- **Confidence Interval:** BLOCK THEIR JAB, P, D+K on the ground (frames: P @25, D+K @79; hold B @0-14)
+
+## MIYASHIRO — Spacing — Vectors
+
+Very smart. Reads opponents, keeps perfect distance, punishes every mistake.
+
+| Input | Move | Level | i | Active | Recovery | Block | Hit | Counter hit | Damage | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| P | Unit Vector | high | 10 | 3 | 13 | 0 | +7 | +10 | 7 |  |
+| P,P | Scalar | high | 10 | 2 | 16 | -3 | +6 | +9 | 9 |  |
+| F,F+P | Vector Rush | mid | 12 | 3 | 18 | -4 | +6 | launch | 16 | wall splats |
+| K | Magnitude Kick | mid | 14 | 3 | 18 | -5 | +4 | +9 | 13 |  |
+| F+K | Dot Product | mid | 16 | 3 | 18 | -6 | +3 | +8 | 12 |  |
+| B+K | Unit Circle | high | 17 | 4 | 20 | -7 | knockdown | knockdown | 18 | tracks |
+| D+K | Component Low | low | 15 | 3 | 19 | -11 | 0 | +6 | 9 | hits downed opponents, ducks highs |
+| D/B+K | Orthogonal Sweep | low | 20 | 3 | 26 | -18 | knockdown | knockdown | 16 | ducks highs |
+| H | Resultant | mid | 18 | 3 | 22 | -5 | +5 | launch | 20 | wall splats |
+| F+H | Normal Vector | mid | 21 | 3 | 21 | -6 | +3 | knockdown | 18 | bounds |
+| D+H | Cross Product | mid | 15 | 4 | 23 | -15 | launch | launch | 16 | jump cancel on hit (UP) |
+| P+K | Projection | throw | 12 | 2 | 26 |  |  |  | 30 | break with P |
+| B+P+K | Reflection Matrix | throw | 12 | 2 | 26 |  |  |  | 33 | break with K |
+| AIR P | Component Jab | mid | 7 | 4 | 10 |  |  |  | 8 | hitstun 16, blockstun 10, landing 4 |
+| AIR K | Direction Kick | mid | 9 | 5 | 12 |  |  |  | 11 | hitstun 18, blockstun 12, landing 6 |
+| AIR H | Projection Spike | mid | 12 | 4 | 16 |  |  |  | 16 | bounds, hitstun 22, blockstun 14, landing 10 |
+| K (DOWN) | Rolling Zero | low | 14 | 3 | 22 | -14 | -2 | +1 | 10 | ducks highs |
+| P/H (DOWN) | Spring Theorem | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
+
+**Combo routes** (tested in `tests/sim.test.js`):
+
+- **Cross Product Juggle:** D+H, P, K (frames: D+H @0, P @54, K @81)
+- **Projection Spike:** D+H, up, air P, air K, air H, K (frames: D+H @0, UP @16, P @43, K @55, H @68, K @123)
+- **Calculated Rush:** THEY WHIFF A JAB, F, F+P (CALCULATED BONUS) (frames: F @18, F @20, P @27)
+- **Vector Space:** at the wall: H, F+K, D+H (each input as soon as you can act)

@@ -125,6 +125,8 @@
 
   // Smoothly blend toward the target, except during attacks and on fresh hits (snap for impact).
   FG.updatePose = function (f, t) {
+    // LOPEZ squints while his parry is up, before he counters.
+    if (f.state === 'attack' && f.move && f.move.parry && f.def.parryFace) f._face = { type: f.def.parryFace, t: 2 };
     if (f._gesture && (f.state !== 'idle' || ++f._gesture.t > FG.animLength(f._gesture.anim))) f._gesture = null;
     if (f._face && --f._face.t <= 0) f._face = null;
     var target = targetPose(f, t);

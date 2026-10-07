@@ -44,6 +44,9 @@
     this.holdGuard = false; // set by the training dummy
     this.stance = 'A';      // 'B' = alternate stance (e.g. DALSASS's Piecewise)
     this.fromFeint = false; // current move was cancelled out of a feint
+    this.blockEndFrame = -999; // last frame this fighter came out of blockstun
+    this.whiffed = false;      // an attack just ended without touching anything (read by the match)
+    this.calculated = 0;       // MIYASHIRO's Calculated: frames left of the damage bonus
     this.clearComboFlags();
   };
 
@@ -125,6 +128,8 @@
   // One frame of decision making. Sets this.actionable when the fighter is free.
   Fighter.prototype.think = function (buf, opp, frame) {
     this.actionable = false;
+    this.whiffed = false;
+    if (this.calculated > 0) this.calculated--;
     this.stateFrame++;
     var s = this.state;
 
@@ -136,6 +141,7 @@
         if (this.tryThrowConversion(buf, frame)) return;
         if (this.tryCancel(buf, frame)) return;
         if (this.moveFrame <= m.total) return;
+        if (!this.contact && m.box) this.whiffed = true;
         if (m.air) { this.setState('air'); return; }
         if (m.stanceSwitch) this.stance = this.stance === 'B' ? 'A' : 'B';
         this.setState('idle');
@@ -147,6 +153,7 @@
         this.vx = 0;
         if (s === 'blockstun') this.guardCrouch = buf.held.down;
         if (--this.stun > 0) return;
+        if (s === 'blockstun') this.blockEndFrame = frame;
         this.setState(buf.held.down ? 'crouch' : 'idle');
         break;
       case 'wallsplat':
@@ -160,12 +167,13 @@
       case 'dash':
         this.vx *= 0.86;
         if (this.stateFrame >= DASH_FRAMES) { this.setState('idle'); break; }
-        if (this.stateFrame >= DASH_ACT_FROM && this.tryAttack(buf, frame)) return;
+        if (this.stateFrame >= (this.def.dashAttackFrom || DASH_ACT_FROM) && this.tryAttack(buf, frame)) return;
         return;
       case 'backdash':
-        this.vx *= 0.87;
-        if (this.stateFrame >= BACKDASH_FRAMES) { this.setState('idle'); break; }
-        if (this.stateFrame >= BACKDASH_ACT_FROM && this.tryAttack(buf, frame)) return;
+        // Fighters can have their own backdash (LOPEZ's Standard Deviation).
+        this.vx *= this.def.backdashDecay || 0.87;
+        if (this.stateFrame >= (this.def.backdashFrames || BACKDASH_FRAMES)) { this.setState('idle'); break; }
+        if (this.stateFrame >= (this.def.backdashActFrom || BACKDASH_ACT_FROM) && this.tryAttack(buf, frame)) return;
         return;
       case 'sidestep':
         this.vx = 0;
@@ -264,9 +272,11 @@
 
   // Which move a button press means right now, from the directions held and the
   // fighter's state. Missing directional moves fall back to the plain one.
-  Fighter.prototype.resolveMove = function (btn, buf) {
+  Fighter.prototype.resolveMove = function (btn, buf, frame) {
     var down = buf.held.down, back = buf.back(this.facing), fwd = buf.forward(this.facing);
     var B = btn.toUpperCase();
+    // Right after blocking (LOPEZ's Confidence Interval).
+    if (btn === 'p' && this.def.moves.postBlockP && frame - this.blockEndFrame <= this.def.postBlockWindow) return 'postBlockP';
     if (this.stance === 'B') {
       if (btn === 'p' && back && this.def.moves.bP) return 'bP'; // switch back
       var st = this.pick(['pw' + B]);
@@ -288,7 +298,7 @@
     var btn = buf.latest(['p', 'k', 'h'], frame);
     if (!btn) return false;
     buf.consume(btn);
-    var id = this.resolveMove(btn, buf);
+    var id = this.resolveMove(btn, buf, frame);
     var wasStance = this.stance === 'B' && id && id.indexOf('pw') === 0;
     if (wasStance) this.stance = 'A'; // stance attacks leave the stance
     this.startMove(id);
