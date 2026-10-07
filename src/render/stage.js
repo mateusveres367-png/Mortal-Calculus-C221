@@ -3,7 +3,8 @@
 (function () {
   var C = FG.C;
 
-  function Stage(scene) {
+  // opts.home: the home fighter (decides stage details).
+  function Stage(scene, opts) {
     var W = C.WORLD_W, H = C.VIEW_H, GY = C.GROUND_Y;
     var horizon = GY - 46;
 
@@ -42,19 +43,20 @@
     this.lightXs = [];
     for (var lxp = 20; lxp < W; lxp += 150) this.lightXs.push(lxp);
 
-    // Mid layer: rows of desks and student silhouettes.
+    // Mid layer: rows of desks, with student silhouettes behind them (animated).
+    this.crowd = scene.add.graphics().setScrollFactor(0.7, 1).setDepth(-21);
     var mid = scene.add.graphics().setScrollFactor(0.7, 1).setDepth(-20);
     var rnd2 = mulberry(42);
+    this.students = [];
+    this.horizon = horizon;
     for (var dx = -20; dx < W; dx += 64) {
-      var heads = rnd2() < 0.7;
-      if (heads) {
-        mid.fillStyle(0x15131f, 1);
-        mid.fillCircle(dx + 24, horizon - 30, 7);
-        mid.fillRect(dx + 14, horizon - 24, 20, 18);
-      }
+      if (rnd2() < 0.8) this.students.push({ x: dx + 24, phase: rnd2() * 6.28, shirt: [0x15131f, 0x1d1a2b, 0x221c2e][Math.floor(rnd2() * 3)] });
       mid.fillStyle(0x4a3a2c, 1); mid.fillRect(dx, horizon - 12, 48, 6);
       mid.fillStyle(0x2f251c, 1); mid.fillRect(dx + 4, horizon - 6, 4, 8); mid.fillRect(dx + 40, horizon - 6, 4, 8);
     }
+    this.cheerT = 0;
+    this.cheerAmp = 0;
+    this.cheerFav = false;
 
     // Floor (moves with the fighters).
     var floor = scene.add.graphics().setDepth(-10);
@@ -81,8 +83,38 @@
     this.t = 0;
   }
 
+  // The students react to big moments. favorite: louder, arms up (DALSASS).
+  Stage.prototype.cheer = function (amount, favorite) {
+    this.cheerT = Math.max(this.cheerT, 40 + amount * 15);
+    this.cheerAmp = Math.min(6, Math.max(this.cheerAmp, amount * 1.5));
+    this.cheerFav = this.cheerFav || favorite;
+    if (amount >= 2) FG.Sfx.cheer(favorite ? 1 : 0.5);
+  };
+
+  Stage.prototype.drawCrowd = function () {
+    var g = this.crowd, hz = this.horizon;
+    g.clear();
+    var cheering = this.cheerT > 0;
+    for (var i = 0; i < this.students.length; i++) {
+      var st = this.students[i];
+      var bounce = cheering ? Math.abs(Math.sin(this.t * 0.35 + st.phase)) * this.cheerAmp : Math.sin(this.t * 0.02 + st.phase) * 0.6;
+      var y = Math.round(hz - 30 - bounce);
+      g.fillStyle(st.shirt, 1);
+      g.fillCircle(st.x, y, 7);
+      g.fillRect(st.x - 10, y + 6, 20, 18);
+      // Arms up when the crowd goes wild.
+      if (cheering && (this.cheerFav || i % 3 === 0) && this.cheerAmp > 2) {
+        var up = Math.sin(this.t * 0.5 + st.phase) > 0 ? 2 : 0;
+        g.fillRect(st.x - 13, y - 8 - up, 3, 14);
+        g.fillRect(st.x + 10, y - 8 - (2 - up), 3, 14);
+      }
+    }
+  };
+
   Stage.prototype.update = function () {
     this.t++;
+    if (this.cheerT > 0 && --this.cheerT === 0) { this.cheerAmp = 0; this.cheerFav = false; }
+    this.drawCrowd();
     var g = this.lights;
     g.clear();
     for (var i = 0; i < this.lightXs.length; i++) {

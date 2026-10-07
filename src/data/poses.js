@@ -77,3 +77,36 @@
     wake_mid: P([0, 40, -6, 64, -8, 76, 6, 56, 10, 68, -10, 54, -4, 64, 22, 48, 44, 56, -6, 20, -10, 0])
   };
 })();
+
+// Pose builder for fighter-specific poses. Starts from a base pose (name or array)
+// and applies, in order:
+//   all:   [dx, dy]  shift every joint
+//   lean:  degrees   rotate the upper body about the hip (positive leans forward)
+//   upper: [dx, dy]  shift chest, head and arms
+//   <joint>: [x, y]  set a joint outright (hip, chest, head, fe, fh, be, bh, fk, ff, bk, bf)
+(function () {
+  var JOINTS = ['hip', 'chest', 'head', 'fe', 'fh', 'be', 'bh', 'fk', 'ff', 'bk', 'bf'];
+  var UPPER = [1, 2, 3, 4, 5, 6];
+  FG.POSE_JOINTS = JOINTS;
+
+  FG.pose = function (base, mods) {
+    var p = (typeof base === 'string' ? FG.POSES[base] : base).slice();
+    mods = mods || {};
+    var i;
+    if (mods.all) for (i = 0; i < 11; i++) { p[i * 2] += mods.all[0]; p[i * 2 + 1] += mods.all[1]; }
+    if (mods.lean) {
+      var a = mods.lean * Math.PI / 180, cs = Math.cos(a), sn = Math.sin(a), hx = p[0], hy = p[1];
+      for (i = 0; i < UPPER.length; i++) {
+        var j = UPPER[i], dx = p[j * 2] - hx, dy = p[j * 2 + 1] - hy;
+        p[j * 2] = Math.round((hx + dx * cs + dy * sn) * 10) / 10;
+        p[j * 2 + 1] = Math.round((hy - dx * sn + dy * cs) * 10) / 10;
+      }
+    }
+    if (mods.upper) for (i = 0; i < UPPER.length; i++) { p[UPPER[i] * 2] += mods.upper[0]; p[UPPER[i] * 2 + 1] += mods.upper[1]; }
+    for (i = 0; i < 11; i++) {
+      var v = mods[JOINTS[i]];
+      if (v) { p[i * 2] = v[0]; p[i * 2 + 1] = v[1]; }
+    }
+    return p;
+  };
+})();

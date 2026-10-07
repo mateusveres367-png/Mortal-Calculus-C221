@@ -4,43 +4,27 @@ A retro, Tekken-inspired 2D/2.5D fighting game themed around the El Camino Real 
 
 ## Status
 
-**Phase 3 — training mode (playable).** Two placeholder fighters on a placeholder classroom stage.
+**Phase 4 — the roster (in progress, playable).** The eight fighters from [`ROSTER.md`](ROSTER.md) are being built two at a time. Available now: **BRINKHUS** (balanced, limits) and **DALSASS** (tricky, functions).
 
-Phase 1, the fighting engine:
+What's in the game so far:
 
-- Frame data for every move (startup / active / recovery, advantage on block, hit and counter hit)
-- Hitboxes and hurtboxes (extended limbs can be hit, so whiffs can be punished)
-- Hitstun, blockstun, high / mid / low hit levels, counter hits, launchers
-- Hitstop, screen shake, hit sparks and synthesized impact sounds
-- Walk, dash, backdash, crouch, jump, and sidestep (linear attacks miss a sidestepping opponent; tracking attacks don't)
-
-Phase 2, combos, knockdowns, throws:
-
-- **Juggles** with rising gravity and shrinking pops per hit, so every juggle ends on its own
-- **Air combos:** jump-cancel a launcher that hits (press up), then chain air attacks; air H bounds
-- **Bounds:** a bound slams an airborne opponent into the floor for a bounce, once per combo
-- **Wall splats and wall combos:** a heavy next to the wall, or a juggle carried into it, pins the opponent; each wall hit gives less time, and a heavy or launcher blasts them off
-- **Knockdowns:** sweeps, throws and juggles; lows can hit a downed opponent once
-- **Wake-up options:** stay down, get up, roll back / forward / sideways, wake-up low or mid kick, or tech roll by pressing a button just before landing
-- **Throws and throw breaks:** P+K front throw (break with P), back+P+K reverse throw (break with K); crouching ducks throws
-- **Guard pressure meter:** blocking fills it, not blocking drains it, and a full meter breaks your guard
-
-Phase 3, training mode:
-
-- **Practice dummy** with a stance (stand, crouch, block all, random, stand guard, crouch guard), an optional action (jab, launcher, throw), a knockdown behaviour (stay down, tech, random wake-up) and throw breaks on or off. The blocking dummy guards in place instead of walking away.
-- **Frame data display:** each move's data plus the frame advantage the engine actually measured
-- **Input display:** both players' recent inputs with how many frames each was held
-- **Hitbox view:** hitboxes, hurtboxes and pushboxes
-- **Reset button** on screen (and `R`), with start positions in the center or against either wall
-- Training menu (`Esc`), health refill, slow motion, and player 2 can be the dummy or a second human
-
-Combos only connect when the timing and spacing are right. Strings and cancels need the hit to land, juggle hits need the opponent at the right height, and bounds and wall splats can each happen only once per combo.
+- **Fighting engine (phase 1):** frame data, hitboxes and hurtboxes, high/mid/low, counter hits, hitstop, screen shake, and full movement including sidesteps.
+- **Combo systems (phase 2):**
+  - juggles, air combos, bounds, and wall splats with wall combos
+  - knockdowns, ground hits, wake-up options and tech rolls
+  - throws and throw breaks, and a guard pressure meter
+  - combos only connect with the right timing and spacing
+- **Training mode (phase 3):** a practice dummy, frame data, input display, hitbox view, and a reset button.
+- **Roster (phase 4):**
+  - each fighter is drawn from their described look and has their own stance, idle animation, normals, launcher, throws, combo routes, and intro, victory and defeat animations
+  - character select, round intros, and a win screen with a random victory line in a speech box
+  - full move lists with frame data are in [`MOVES.md`](MOVES.md)
 
 The full vision lives in [`GAME_DESIGN.md`](GAME_DESIGN.md); the game is built in phases, and each phase stays playable.
 
 ## Running the game
 
-Open `index.html` directly in a modern browser (double-click it, or drag it into a browser window). No install, build step, or server is needed, and it works offline. On the title screen, press `Enter` (or click) to start; that also turns on sound.
+Open `index.html` directly in a modern browser (double-click it, or drag it into a browser window). No install, build step, or server is needed, and it works offline. On the title screen, press `Enter` (or click), then pick your fighter and your opponent on the character select screen (arrows to move, `Enter` to confirm, `Esc` to go back). Pressing a key also turns on sound.
 
 ## Controls
 
@@ -61,33 +45,32 @@ Standing guard blocks highs and mids. Crouching guard (down + back) blocks lows,
 
 ### Moves
 
-| Input | SIGMA (balanced) | DELTA (power) | Level |
-| --- | --- | --- | --- |
-| `P` | Prime Jab, i10 | Delta Jab, i11 | high |
-| `P, P` | Straight; add `K` after it connects for a 3-hit string | Derivative Hook (tracks) | high |
-| `K` | Vector Kick, i14 | Normal Force, i16 | mid |
-| down + `K` | Floor Function, i16 (tracks) | Floor Stomp, i18 | low |
-| `H` | Prime Impact, i19 (launches on counter hit) | Quadratic Hammer, i22, +2 on block (launches on counter hit) | mid |
-| down + `H` | Parabola Launcher, i15, −15 on block; press up on hit to jump after them | Limit Break, i16, −17 on block; same jump cancel | mid |
-| down-back + `K` | Integral Sweep, i20, knockdown, −18 on block | Root Sweep, i22, knockdown, −20 on block | low |
-| forward + `H` | Derivative Drop, i21, bounds airborne opponents | Vertical Asymptote, i24, bounds | mid |
-| in the air: `P` / `K` / `H` | Tangent Jab → Secant Kick → Asymptote Spike (bound) | Delta Drop Jab / Falling Normal → Terminal Velocity (bound) | mid |
-| `P`+`K` / back+`P`+`K` | Function Toss (break: P) / Inverse Throw (break: K) | Body Slam / Inverse Function | throw |
-| while down: `K` / `P` or `H` | Rolling Zero (low) / Spring Theorem (mid) wake-up kicks | same | low / mid |
+Every fighter uses the same input layout. What each input does, and its frame data, depends on the fighter; see [`MOVES.md`](MOVES.md).
 
-**Knocked down:** up gets up, back or forward rolls, a sidestep key rolls sideways, and `K` or `P` does a wake-up kick. Doing nothing leaves you open to a ground hit. To **tech roll**, press `P`, `K` or `H` just before you land from a juggle. Sweeps, bounds and wall splats can't be teched.
+| Input | What it is |
+| --- | --- |
+| `P` / `K` / `H` | jab / mid kick / heavy |
+| `P, P` and other strings | follow-ups, often only if the first hit connects |
+| down + `K` / down-back + `K` | low kick / knockdown sweep |
+| down + `H` | launcher; press up when it hits to jump after them |
+| forward or back + a button | fighter-specific moves (for example DALSASS's Function Feint and Piecewise) |
+| `P` / `K` / `H` in the air | air attacks that chain on hit; air `H` bounds |
+| `P`+`K` / back + `P`+`K` | front throw (break with `P`) / reverse throw (break with `K`) |
+| while knocked down | up gets up, back or forward rolls, a sidestep key rolls sideways, `K` or `P` does a wake-up kick |
+| just before landing from a juggle | `P`, `K` or `H` tech rolls (not after sweeps, bounds or wall splats) |
 
-Things to try:
+Fighters available now:
 
-- **SIGMA air combo:** launcher, up, air P, air K, air H (bound), then K after the bounce.
-- **DELTA air route:** launcher, up, air K, air H.
-- **Wall combo:** set the start position to a wall, then heavy, jab, jab, launcher.
-- **Punish practice:** set the dummy action to Launcher, block it, and punish it.
-- **Throw breaks:** set the dummy action to Throw and break its throws.
+- **BRINKHUS** (balanced, limits) — best for new players. The Epsilon-Delta string (`P, K, K`) combos naturally on hit. His launcher is Limit Break (down + `H`) and his throw is Squeeze Theorem.
+- **DALSASS** (tricky, functions):
+  - **Function Feint** (forward + `H`) looks like his overhead. Cancel it into a jab (`P`), a low (`K`), the real overhead (`H`) or a throw (`P`+`K`), or let it fizzle.
+  - **Piecewise** (back + `P`) switches to a second stance where `P`, `K` and `H` are different moves. Moving leaves the stance.
+  - **Asymptote Slide** (down-forward + `K`) slides under highs and knocks down.
+  - The crowd cheers louder for him, and he wags a finger when you fall for a feint.
 
 ### Training mode
 
-After the title screen the game goes into training mode. Press `Esc`, or click **MENU** at the top of the screen, to open the training menu. The fight pauses while the menu is open. Use up/down to pick a row, left/right to change it, and `Esc` to close. You can also click a row.
+After character select the game goes into training mode, starting with both fighters' round intros (any button skips). A K.O. shows the win screen: `Enter` for a rematch, `Esc` for character select. Press `Esc`, or click **MENU** at the top of the screen, to open the training menu. The fight pauses while the menu is open. Use up/down to pick a row, left/right to change it, and `Esc` to close. You can also click a row.
 
 | Setting | Options |
 | --- | --- |
@@ -99,7 +82,8 @@ After the title screen the game goes into training mode. Press `Esc`, or click *
 | Health | Refill a moment after each combo, or Normal (K.O. resets) |
 | Frame data / Input display / Hitboxes / Slow motion | On, Off |
 | Start position | Center, Left wall, Right wall (for wall combos) |
-| Fighters | Swap who plays which fighter |
+| Swap sides | P1 and P2 trade fighters |
+| Character select | Back to the character select screen |
 | Reset | Reset positions, health and meters (also `R`, or the **RESET** button) |
 
 **Frame data panel:** each move's startup, active and recovery frames, its frame advantage, and properties (tracks, bound, splat, hits downed opponents). The `LAST` line is the advantage the engine measured for your last hit or block: blue for plus, red for minus. It shows the kind of hit for launches, wall splats and throws.
@@ -115,7 +99,7 @@ Hotkeys:
 | `2` | Hitboxes (red), hurtboxes (green), pushboxes (yellow) |
 | `3` | Frame data panel |
 | `4` | Slow motion |
-| `5` | Swap fighters |
+| `5` | Swap sides (P1 and P2 trade fighters) |
 | `6` | Input display |
 | `R` | Reset |
 | `M` | Mute |
@@ -129,10 +113,11 @@ lib/phaser.min.js       Phaser 3.90, vendored
 src/fg.js               global namespace and tuning constants
 src/engine/             pure simulation, no Phaser: input buffer, fighter state machine, match loop and walls,
                         combat (hits, juggles, bounds, wall hits, throws, guard meter), dummy
-src/data/               fighter definitions with frame data, and skeleton poses
+src/data/               poses, the fighter kit (kit.js) and one file per fighter in fighters/
 src/render/             fighter drawing, stage, effects and sound, HUD, pixel font,
                         input display, training menu
-src/scenes/             the title screen, and the fight scene that ties input, simulation and rendering together
+src/scenes/             title, character select, and the fight scene that ties input, simulation and rendering together
+tools/movelist.js       regenerates MOVES.md from the fighter data
 tests/sim.test.js       headless engine tests (node tests/sim.test.js)
 tests/smoke.js          optional browser smoke test over file:// (needs Playwright)
 ```
@@ -155,4 +140,6 @@ node tests/smoke.js      # optional: opens index.html from disk in headless Chro
 ## Project docs
 
 - [`GAME_DESIGN.md`](GAME_DESIGN.md) — full game vision and design
+- [`ROSTER.md`](ROSTER.md) — the eight fighters: archetypes, looks, personalities, moves and victory lines
+- [`MOVES.md`](MOVES.md) — generated move lists with frame data and combo routes
 - [`CLAUDE.md`](CLAUDE.md) — working rules for AI-assisted development

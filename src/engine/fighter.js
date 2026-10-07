@@ -42,6 +42,8 @@
     this.guard = 0;        // guard pressure meter
     this.guardDelay = 0;
     this.holdGuard = false; // set by the training dummy
+    this.stance = 'A';      // 'B' = alternate stance (e.g. DALSASS's Piecewise)
+    this.fromFeint = false; // current move was cancelled out of a feint
     this.clearComboFlags();
   };
 
@@ -95,6 +97,8 @@
 
   Fighter.prototype.startMove = function (id) {
     var m = this.def.moves[id];
+    var prev = this.state === 'attack' ? this.move : null;
+    this.fromFeint = !!(prev && prev.feint);
     this.setState('attack');
     this.move = m;
     this.moveFrame = 1;
@@ -124,6 +128,7 @@
         if (this.tryCancel(buf, frame)) return;
         if (this.moveFrame <= m.total) return;
         if (m.air) { this.setState('air'); return; }
+        if (m.stanceSwitch) this.stance = this.stance === 'B' ? 'A' : 'B';
         this.setState('idle');
         break;
       }
@@ -237,7 +242,35 @@
 
   Fighter.prototype.startThrow = function (buf) {
     buf.consume('p'); buf.consume('k');
-    this.startMove(buf.back(this.facing) ? 'throwB' : 'throw');
+    this.stance = 'A';
+    this.startMove(buf.back(this.facing) ? 'throwB' : this.pick(buf.forward(this.facing) ? ['cmdGrab', 'throw'] : ['throw']));
+  };
+
+  // Pick the first move this fighter has from a list of candidates.
+  Fighter.prototype.pick = function (ids) {
+    for (var i = 0; i < ids.length; i++) if (this.def.moves[ids[i]]) return ids[i];
+    return null;
+  };
+
+  // Which move a button press means right now, from the directions held and the
+  // fighter's state. Missing directional moves fall back to the plain one.
+  Fighter.prototype.resolveMove = function (btn, buf) {
+    var down = buf.held.down, back = buf.back(this.facing), fwd = buf.forward(this.facing);
+    var B = btn.toUpperCase();
+    if (this.stance === 'B') {
+      if (btn === 'p' && back && this.def.moves.bP) return 'bP'; // switch back
+      var st = this.pick(['pw' + B]);
+      if (st) return st;
+    }
+    if (this.state === 'dash' && btn === 'p') { var dp = this.pick(['dashP']); if (dp) return dp; }
+    if (this.state === 'sidestep') { var sp = this.pick(['ss' + B]); if (sp) return sp; }
+    if (btn === 'p') return this.pick(down ? ['dP', 'jab'] : fwd ? ['fP', 'jab'] : back ? ['bP', 'jab'] : ['jab']);
+    if (btn === 'k') {
+      if (down) return this.pick(back ? ['sweep', 'low'] : fwd ? ['dfK', 'low'] : ['low']);
+      return this.pick(fwd ? ['fK', 'mid'] : back ? ['bK', 'mid'] : ['mid']);
+    }
+    if (down) return this.pick(['launcher']);
+    return this.pick(fwd ? ['fH', 'heavy'] : back ? ['bH', 'heavy'] : ['heavy']);
   };
 
   Fighter.prototype.tryAttack = function (buf, frame) {
@@ -245,11 +278,9 @@
     var btn = buf.latest(['p', 'k', 'h'], frame);
     if (!btn) return false;
     buf.consume(btn);
-    var down = buf.held.down, back = buf.back(this.facing), fwd = buf.forward(this.facing);
-    var id;
-    if (btn === 'p') id = 'jab';
-    else if (btn === 'k') id = down ? (back ? 'sweep' : 'low') : 'mid';
-    else id = down ? 'launcher' : (fwd ? 'slam' : 'heavy');
+    var id = this.resolveMove(btn, buf);
+    var wasStance = this.stance === 'B' && id && id.indexOf('pw') === 0;
+    if (wasStance) this.stance = 'A'; // stance attacks leave the stance
     this.startMove(id);
     return true;
   };
@@ -283,8 +314,13 @@
       if (this.moveFrame < c.from || this.moveFrame > c.to) continue;
       if (c.onContact && !this.contact) continue;
       if (c.onHit && this.contact !== 'hit') continue;
-      if (!buf.wasPressed(c.btn, frame)) continue;
-      buf.consume(c.btn);
+      if (c.btn === 'throw') {
+        if (!throwPressed(buf, frame)) continue;
+        buf.consume('p'); buf.consume('k');
+      } else {
+        if (!buf.wasPressed(c.btn, frame)) continue;
+        buf.consume(c.btn);
+      }
       if (c.into === 'jump') {
         // Jump cancel: chase the launched opponent into the air.
         this.setState('air');
@@ -304,6 +340,12 @@
   Fighter.prototype.neutral = function (buf, frame) {
     var d = this.def;
     if (this.tryAttack(buf, frame)) return;
+    // Any movement leaves an alternate stance; standing still keeps it.
+    if (this.stance === 'B') {
+      var h = buf.held;
+      if (h.left || h.right || h.up || h.down || buf.wasPressed('ssIn', frame) || buf.wasPressed('ssOut', frame)) this.stance = 'A';
+      else { if (this.state !== 'idle') this.setState('idle'); this.vx = 0; return; }
+    }
 
     if (buf.wasPressed('ssIn', frame) || buf.wasPressed('ssOut', frame)) {
       this.sideDir = buf.wasPressed('ssIn', frame) ? 1 : -1;
@@ -450,7 +492,7 @@
 
   // Current hitbox in world space, shrunk by `inset` pixels on each side.
   Fighter.prototype.hitbox = function (inset) {
-    if (this.state !== 'attack') return null;
+    if (this.state !== 'attack' || !this.move.box) return null;
     var b = this.move.box, i = inset || 0;
     var x1 = this.x + (b.x + i) * this.facing;
     var x2 = this.x + (b.x + b.w - i) * this.facing;
@@ -458,7 +500,7 @@
   };
 
   Fighter.prototype.isActiveFrame = function () {
-    return this.state === 'attack' && this.moveFrame >= this.move.startup &&
+    return this.state === 'attack' && !!this.move.box && this.moveFrame >= this.move.startup &&
       this.moveFrame <= this.move.startup + this.move.active - 1;
   };
 

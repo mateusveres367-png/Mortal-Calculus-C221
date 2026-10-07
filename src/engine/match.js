@@ -7,6 +7,7 @@
   function Match(defA, defB) {
     this.fighters = [new FG.Fighter(defA, 0), new FG.Fighter(defB, 1)];
     this.buffers = [new FG.InputBuffer(), new FG.InputBuffer()];
+    this.autoReset = true;
     this.reset();
   }
 
@@ -30,6 +31,7 @@
     this.throwState = null;
     this.koTimer = 0;
     this.winner = null;
+    this.over = false;
   };
 
   // raws: [rawInputP1, rawInputP2]. Events produced by this step are in this.events.
@@ -71,7 +73,10 @@
       if (f[i].actionable) this.combo[i] = { hits: 0, damage: 0 };
     }
 
-    if (this.koTimer > 0 && --this.koTimer === 0) this.reset();
+    if (this.koTimer > 0 && --this.koTimer === 0) {
+      // The scene turns autoReset off and shows a win screen when `over` is set.
+      if (this.autoReset) this.reset(); else this.over = true;
+    }
   };
 
   // Landing results: floor bounces, knockdowns and tech rolls.

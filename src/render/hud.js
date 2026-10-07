@@ -45,7 +45,7 @@
     for (var k = 0; k < lines.length; k++) {
       this.overlayText.push(T(54, 46 + k * 11, lines[k][0], lines[k][1]).setDepth(61));
     }
-    this.setOverlay(true);
+    this.setOverlay(false);
   }
 
   Hud.CONTROLS = [
@@ -59,14 +59,14 @@
     ['PUNCH  P     J                NUM1 / ,', 'w'],
     ['KICK   K     K                NUM2 / .', 'w'],
     ['HEAVY  H     L                NUM3 / /', 'w'],
-    ['MOVES   P JAB  P,P STRING  K MID  D+K LOW  D/B+K SWEEP', 'y'],
-    ['        H HEAVY  F+H SLAM (BOUND)  D+H LAUNCHER (UP ON HIT: AIR CHASE)', 'y'],
+    ['MOVES   P JAB  K MID  H HEAVY  D+K LOW  D/B+K SWEEP  D+H LAUNCHER', 'y'],
+    ['        F/B + BUTTON: SPECIALS (SEE MOVES.MD)  UP ON LAUNCH: AIR CHASE', 'y'],
     ['AIR     P / K / H IN THE AIR, CHAIN ON HIT. AIR H BOUNDS', 'y'],
     ['THROW   P+K (BREAK WITH P)   B+P+K (BREAK WITH K)', 'y'],
     ['DOWN    UP RISE  BACK/FWD ROLL  SIDESTEP ROLL  K/P WAKE KICKS', 'y'],
     ['        TECH: PRESS P/K/H JUST BEFORE YOU LAND', 'y'],
     ['ESC TRAINING MENU   1 DUMMY STANCE   2 HITBOXES   3 FRAME DATA', 'g'],
-    ['4 SLOW-MO   5 SWAP   6 INPUTS   R RESET   M MUTE   C HIDE THIS', 'g']
+    ['4 SLOW-MO   5 SWAP SIDES   6 INPUTS   R RESET   M MUTE   C HIDE', 'g']
   ];
 
   Hud.prototype.setOverlay = function (on) {
@@ -91,8 +91,14 @@
     }
   };
 
-  Hud.prototype.showBanner = function (text, sub, frames) {
+  // opts: { scale, y } (defaults: big and centred; long text is smaller).
+  Hud.prototype.showBanner = function (text, sub, frames, opts) {
+    opts = opts || {};
+    var y = opts.y != null ? opts.y : 120;
     this.banner.setText(text);
+    this.banner.setScale(opts.scale || (text.length > 12 ? 2 : 4));
+    this.banner.setY(y);
+    this.subBanner.setY(y + (opts.scale || (text.length > 12 ? 2 : 4)) * 9 + 6);
     this.subBanner.setText(sub || '');
     this.bannerTimer = frames;
   };

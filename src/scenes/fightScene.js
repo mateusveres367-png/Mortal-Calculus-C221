@@ -7,14 +7,22 @@
   FightScene.prototype = Object.create(Phaser.Scene.prototype);
   FightScene.prototype.constructor = FightScene;
 
+  // data: { p1, p2 } fighter ids from the select screen.
+  FightScene.prototype.init = function (data) {
+    data = data || {};
+    var roster = FG.ROSTER;
+    this.ids = { p1: data.p1 || roster[0].id, p2: data.p2 || roster[Math.min(1, roster.length - 1)].id };
+  };
+
   FightScene.prototype.create = function () {
     FG.makeFonts(this);
-    this.stage = new FG.Stage(this);
+    this.stage = new FG.Stage(this, { home: FG.fighterById(this.ids.p2) });
     this.world = this.add.graphics().setDepth(0);
     this.hud = new FG.Hud(this);
     this.effects = new FG.Effects();
     this.dummy = new FG.Dummy();
-    this.swapped = false;
+    this.intro = null;   // round intro animation in progress
+    this.win = null;     // win screen after a K.O.
     // Training mode options (changed from the training menu or hotkeys).
     this.training = {
       p2Human: false, refill: true, showData: true, showInputs: true,
@@ -26,7 +34,10 @@
     this.acc = 0;
     this.tickCount = 0;
     this.impact = null;
-    this.newMatch();
+    // Labels that float over a fighter (alternate stance, taunts).
+    this.tags = [0, 1].map(function () { return FG.text(this, 0, 0, '', 'y').setOrigin(0.5, 1).setScrollFactor(1).setDepth(20); }, this);
+    this.speech = new FG.SpeechBox(this);
+    this.newMatch({ intro: true });
     this.setupKeys();
     this.setupButtons();
     this.menu = new FG.TrainingMenu(this, this.menuItems());
@@ -34,15 +45,58 @@
     window.FG_SCENE = this;
   };
 
-  FightScene.prototype.newMatch = function () {
-    var a = FG.FIGHTERS[this.swapped ? 1 : 0], b = FG.FIGHTERS[this.swapped ? 0 : 1];
-    this.match = new FG.Match(a, b);
+  // opts.intro plays both fighters' round intros first.
+  FightScene.prototype.newMatch = function (opts) {
+    opts = opts || {};
+    this.match = new FG.Match(FG.fighterById(this.ids.p1), FG.fighterById(this.ids.p2));
+    this.match.autoReset = false; // K.O. shows the win screen instead
     this.match.reset(this.training.startPos);
     this.effects = new FG.Effects();
     this.impact = null;
+    this.win = null;
+    this.speech.hide();
     this.histories[0].clear(); this.histories[1].clear();
     this.hud.clear();
+    var f = this.match.fighters;
+    for (var i = 0; i < 2; i++) { f[i]._blazer = !!f[i].def.look.blazer; f[i]._pending = null; }
+    if (opts.intro) this.startIntro();
+    else { this.intro = null; this.hud.showBanner('FIGHT!', '', 50); }
+  };
+
+  // Round intro: each fighter's intro animation, then READY / FIGHT. Any button skips it.
+  FightScene.prototype.startIntro = function () {
+    var f = this.match.fighters, len = 0;
+    for (var i = 0; i < 2; i++) {
+      f[i]._override = { anim: f[i].def.intro, t: 0 };
+      len = Math.max(len, FG.animLength(f[i].def.intro));
+    }
+    this.intro = { t: 0, len: len + 10 };
+    this.hud.showBanner(f[0].def.name + ' VS ' + f[1].def.name, '', len - 20);
+  };
+
+  FightScene.prototype.endIntro = function () {
+    var f = this.match.fighters;
+    for (var i = 0; i < 2; i++) { f[i]._override = null; f[i]._blazer = false; }
+    this.intro = null;
     this.hud.showBanner('FIGHT!', '', 50);
+    // Show the controls once per session, after the first intro.
+    if (!FG.seenControls) { FG.seenControls = true; this.hud.setOverlay(true); }
+  };
+
+  // Win screen: the winner's victory animation and a random victory line.
+  FightScene.prototype.startWin = function () {
+    var m = this.match, w = m.fighters[m.winner], l = m.fighters[1 - m.winner];
+    var lines = w.def.victoryLines;
+    this.win = { winner: m.winner, t: 0 };
+    w._override = { anim: w.def.victory, t: 0, loop: true };
+    l._override = { anim: l.def.defeat, t: 0, loop: true };
+    w._gesture = null; w._face = null;
+    this.speech.show(w.def.name, lines[Math.floor(Math.random() * lines.length)]);
+    this.hud.showBanner(w.def.name + ' WINS', 'ENTER: REMATCH   ESC: CHARACTER SELECT', 100000, { scale: 3, y: 150 });
+  };
+
+  FightScene.prototype.toSelect = function () {
+    this.scene.start('select', { p1: this.ids.p1, p2: this.ids.p2 });
   };
 
   // Rows of the training menu. Each has a label, a value() and change(delta).
@@ -68,8 +122,9 @@
       toggle('slow', 'SLOW MOTION'),
       { label: 'START POSITION', value: function () { return posLabel[t.startPos]; },
         change: function (delta) { t.startPos = positions[(positions.indexOf(t.startPos) + delta + 3) % 3]; self.newMatch(); } },
-      { label: 'FIGHTERS', value: function () { var f = self.match.fighters; return f[0].def.name + ' VS ' + f[1].def.name; },
-        change: function () { self.swapped = !self.swapped; self.newMatch(); } },
+      { label: 'SWAP SIDES', value: function () { var f = self.match.fighters; return f[0].def.name + ' VS ' + f[1].def.name; },
+        change: function () { self.swapSides(); } },
+      { label: 'CHARACTER SELECT', value: function () { return ''; }, change: function () { self.toSelect(); } },
       { label: 'RESET (R)', value: function () { return ''; }, change: function () { self.newMatch(); self.menu.setOpen(false); } },
       { label: 'CLOSE (ESC)', value: function () { return ''; }, change: function () { self.menu.setOpen(false); } }
     ];
@@ -93,16 +148,24 @@
     });
   };
 
-  FightScene.prototype.drawButtons = function () {
+  FightScene.prototype.drawButtons = function (hidden) {
     var g = this.buttonG;
     g.clear();
     for (var i = 0; i < this.buttons.length; i++) {
       var b = this.buttons[i];
+      b.text.setVisible(!hidden);
+      if (hidden) continue;
       g.fillStyle(b.hover ? 0x3c6fb0 : 0x000000, 0.75);
       g.fillRect(Math.round(b.x - b.w / 2), 44, b.w, 13);
       g.lineStyle(1, b.hover ? 0xffd23f : 0xd8c79a, 1);
       g.strokeRect(Math.round(b.x - b.w / 2), 44, b.w, 13);
     }
+  };
+
+  FightScene.prototype.swapSides = function () {
+    var p1 = this.ids.p1;
+    this.ids.p1 = this.ids.p2; this.ids.p2 = p1;
+    this.newMatch();
   };
 
   FightScene.prototype.setupKeys = function () {
@@ -119,13 +182,23 @@
     kb.on('keydown', function (e) {
       FG.Sfx.unlock();
       if (self.menu.open) { self.menu.key(e.code); return; }
+      if (self.intro) {
+        if (['Enter', 'Space', 'Escape', 'KeyJ', 'KeyK', 'KeyL'].indexOf(e.code) >= 0) self.endIntro();
+        return;
+      }
+      if (self.win) {
+        if (self.win.t < 20) return;
+        if (e.code === 'Enter' || e.code === 'Space' || e.code === 'KeyJ') self.newMatch();
+        else if (e.code === 'Escape' || e.code === 'KeyK') self.toSelect();
+        return;
+      }
       switch (e.code) {
         case 'Escape': self.menu.setOpen(true); break;
         case 'Digit1': self.dummy.change('stance', 1); break;
         case 'Digit2': t.showBoxes = !t.showBoxes; break;
         case 'Digit3': t.showData = !t.showData; break;
         case 'Digit4': t.slow = !t.slow; break;
-        case 'Digit5': self.swapped = !self.swapped; self.newMatch(); break;
+        case 'Digit5': self.swapSides(); break;
         case 'Digit6': t.showInputs = !t.showInputs; break;
         case 'KeyR': self.newMatch(); break;
         case 'KeyM': FG.Sfx.muted = !FG.Sfx.muted; break;
@@ -152,7 +225,7 @@
 
   FightScene.prototype.update = function (time, delta) {
     // The training menu pauses the fight.
-    this.acc = this.menu.open ? 0 : this.acc + Math.min(delta, 100) * (this.training.slow ? 0.25 : 1);
+    this.acc = this.menu.open ? 0 : this.acc + Math.min(delta, 100) * (this.training.slow && !this.intro && !this.win ? 0.25 : 1);
     while (this.acc >= STEP_MS) {
       this.tick();
       this.acc -= STEP_MS;
@@ -160,7 +233,26 @@
     this.render();
   };
 
+  // Intro and win screen: animate the fighters but don't run the fight.
+  FightScene.prototype.presentationTick = function () {
+    var m = this.match, f = m.fighters;
+    this.tickCount++;
+    for (var i = 0; i < 2; i++) {
+      if (f[i]._override) f[i]._override.t++;
+      FG.updatePose(f[i], this.tickCount);
+    }
+    if (this.intro) {
+      // LOPEZ-style intros take something off partway through.
+      if (++this.intro.t >= this.intro.len) this.endIntro();
+    }
+    if (this.win) this.win.t++;
+    this.effects.update();
+    this.stage.update();
+    this.hud.tick(m);
+  };
+
   FightScene.prototype.tick = function () {
+    if (this.intro || this.win) { this.presentationTick(); return; }
     var m = this.match, f = m.fighters;
     var raw1 = this.readP1();
     var human = this.training.p2Human;
@@ -182,10 +274,20 @@
       if (ev.type === 'land' || ev.type === 'bounce') this.effects.shake(ev.type === 'bounce' ? 0.006 : 0.003);
       if (ev.type === 'hit' && !ev.ground) this.impact = { who: ev.defender, frames: ev.ch ? 4 : 2, color: ev.ch ? 0xffb347 : 0xffffff };
       if (ev.type === 'guardbreak') this.impact = { who: ev.defender, frames: 4, color: 0x5fd7ff };
+      this.personality(ev);
       this.hud.onEvent(ev);
     }
 
+    if (m.over && !this.win) this.startWin();
     if (this.training.refill) this.refillHealth();
+    for (var g = 0; g < 2; g++) {
+      // Start a queued gesture once the fighter is back to neutral.
+      var pg = f[g]._pending;
+      if (pg && (f[g].state === 'idle' || --pg.ttl <= 0)) {
+        if (f[g].state === 'idle' && f[g].def.gestures && f[g].def.gestures[pg.name]) f[g]._gesture = { anim: f[g].def.gestures[pg.name], t: 0 };
+        f[g]._pending = null;
+      }
+    }
     this.effects.update();
     this.stage.update();
     this.hud.tick(m);
@@ -193,6 +295,23 @@
     this.tickCount++;
     FG.updatePose(f[0], this.tickCount);
     FG.updatePose(f[1], this.tickCount);
+  };
+
+  // Personality reactions to match events: gestures, expressions, the crowd.
+  FightScene.prototype.personality = function (ev) {
+    var f = this.match.fighters;
+    if (ev.type === 'hit' || ev.type === 'grab') {
+      var a = f[ev.attacker];
+      if (ev.feint) {
+        a._pending = { name: 'wag', ttl: 120 };
+        this.hud.setLabel(ev.attacker, 'FAKED OUT!');
+      }
+      if (ev.type === 'hit') {
+        var big = ev.move && (ev.move.strength === 'heavy' || ev.move.strength === 'launch' || ev.ko);
+        this.stage.cheer((big ? 2 : 1) * (a.def.crowdFavorite ? 2 : 1), !!a.def.crowdFavorite);
+        f[ev.defender]._face = { type: 'wince', t: 30 };
+      }
+    }
   };
 
   // Training: refill health a moment after a combo ends, so practice never stops.
@@ -234,12 +353,22 @@
     var t = this.training;
     if (t.showBoxes) { FG.drawBoxes(g, f[0]); FG.drawBoxes(g, f[1]); }
 
+    // Floating labels: alternate stance.
+    for (var k = 0; k < 2; k++) {
+      var fk = f[k], tag = this.tags[k];
+      tag.setText(fk.stance === 'B' && !this.win ? 'PIECEWISE' : '');
+      tag.setPosition(Math.round(fk.x), Math.round(C.GROUND_Y - fk.y - 104 * fk.def.scale));
+    }
+    if (this.win) this.speech.draw(f[this.win.winner], this.cameras.main.scrollX);
+
     var modeLabel = 'TRAINING   P2: ' + (t.p2Human ? 'HUMAN' : this.dummy.label('stance') +
       (this.dummy.get('action') !== 'none' ? ' + ' + this.dummy.label('action') : ''));
-    this.hud.draw(m, { modeLabel: modeLabel, showData: t.showData, slow: t.slow });
-    this.inputDisplays[0].draw(this.histories[0], t.showInputs);
-    this.inputDisplays[1].draw(this.histories[1], t.showInputs);
-    this.drawButtons();
+    var clean = !!(this.intro || this.win);
+    this.hud.draw(m, { modeLabel: clean ? '' : modeLabel, showData: t.showData && !clean, slow: t.slow });
+    // The intro and win screen hide the training clutter.
+    this.inputDisplays[0].draw(this.histories[0], t.showInputs && !clean);
+    this.inputDisplays[1].draw(this.histories[1], t.showInputs && !clean);
+    this.drawButtons(clean);
   };
 
   FG.FightScene = FightScene;

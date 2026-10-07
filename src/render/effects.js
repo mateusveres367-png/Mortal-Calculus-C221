@@ -238,5 +238,31 @@
     }
   };
 
+  // Crowd cheer: a swell of filtered noise. level 0..1.
+  Sfx.cheer = function (level) {
+    if (!Sfx.ctx || Sfx.muted) return;
+    var ctx = Sfx.ctx, t = ctx.currentTime;
+    var src = ctx.createBufferSource(); src.buffer = Sfx.noise;
+    var f = ctx.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 1100; f.Q.value = 0.7;
+    var g = ctx.createGain();
+    g.gain.setValueAtTime(0.001, t); g.gain.linearRampToValueAtTime(0.05 + 0.08 * level, t + 0.15);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.6 + level * 0.5);
+    src.connect(f); f.connect(g); g.connect(ctx.destination);
+    src.start(t); src.stop(t + 1.2);
+  };
+
+  // Menu blips.
+  Sfx.ui = function (kind) {
+    if (!Sfx.ctx || Sfx.muted) return;
+    var ctx = Sfx.ctx, t = ctx.currentTime;
+    var o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = 'square';
+    o.frequency.setValueAtTime(kind === 'confirm' ? 660 : 440, t);
+    if (kind === 'confirm') o.frequency.setValueAtTime(990, t + 0.06);
+    g.gain.setValueAtTime(0.06, t); g.gain.exponentialRampToValueAtTime(0.001, t + (kind === 'confirm' ? 0.16 : 0.06));
+    o.connect(g); g.connect(ctx.destination);
+    o.start(t); o.stop(t + 0.2);
+  };
+
   FG.Sfx = Sfx;
 })();

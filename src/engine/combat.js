@@ -80,7 +80,9 @@
     }
 
     a.contact = 'hit';
+    d.stance = 'A'; // getting hit knocks you out of a stance
     var ch = c.ch;
+    ev.feint = a.fromFeint; // the hit came out of a feint: the opponent fell for it
     var result = ch ? m.ch : m.hit;
     var state = d.state;
     var mult = (ch ? 1.2 : 1) * (state === 'down' ? 0.6 : 1) * (state === 'wallsplat' ? 0.85 : 1);
@@ -239,12 +241,14 @@
     a.contact = 'hit';
     a.setState('throwing');
     d.setState('thrown');
+    d.stance = 'A';
+    var feinted = a.fromFeint;
     d.facing = -a.facing;
     d.vx = 0; a.vx = 0;
     this.measure = null;
     this.throwState = { a: c.a, d: c.d, move: m, start: this.frame, x0: a.x };
     this.placeThrown(0);
-    this.events.push({ type: 'grab', attacker: c.a, defender: c.d, move: m, x: d.x, y: 60 });
+    this.events.push({ type: 'grab', attacker: c.a, defender: c.d, move: m, x: d.x, y: 60, feint: feinted });
   };
 
   Match.prototype.throwBreak = function (ai, di, why) {

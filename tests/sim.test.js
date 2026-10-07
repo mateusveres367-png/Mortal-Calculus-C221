@@ -4,10 +4,13 @@
 var fs = require('fs'), path = require('path'), vm = require('vm');
 var ctx = { console: console, Math: Math };
 ctx.window = ctx; vm.createContext(ctx);
-['src/fg.js', 'src/engine/input.js', 'src/data/poses.js', 'src/data/fighters.js',
- 'src/engine/fighter.js', 'src/engine/match.js', 'src/engine/combat.js', 'src/engine/dummy.js', 'src/render/inputDisplay.js'].forEach(function (f) {
-  vm.runInContext(fs.readFileSync(path.join(__dirname, '..', f), 'utf8'), ctx, { filename: f });
-});
+// Load the same simulation and data scripts the game loads, in index.html order
+// (everything except Phaser, rendering and scenes; inputDisplay has the pure input history).
+var html = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+var re = /<script src="(src\/(?:fg\.js|engine\/[^"]+|data\/[^"]+|render\/inputDisplay\.js))"><\/script>/g, mt;
+while ((mt = re.exec(html))) {
+  vm.runInContext(fs.readFileSync(path.join(__dirname, '..', mt[1]), 'utf8'), ctx, { filename: mt[1] });
+}
 var FG = ctx.FG, failures = 0, passes = 0;
 
 function check(name, cond, info) {
@@ -37,27 +40,35 @@ function exchange(defA, defB, dist, press, defRaw, extraFrames) {
   return { m: m, events: events };
 }
 
-var defs = FG.FIGHTERS;
+// Inputs for each standard move id. P1 faces right, so forward is right.
+var INPUT = {
+  jab: { p: true }, mid: { k: true }, low: { k: true, down: true }, sweep: { k: true, down: true, left: true },
+  dfK: { k: true, down: true, right: true }, fK: { k: true, right: true }, bK: { k: true, left: true },
+  fP: { p: true, right: true }, bP: { p: true, left: true }, heavy: { h: true }, fH: { h: true, right: true },
+  bH: { h: true, left: true }, launcher: { h: true, down: true }
+};
+// Moves measured by the generic frame data check: plain strikes with an input above.
+function measurable(m) {
+  return INPUT[m.id] && m.box && !m.feint && !m.stanceSwitch && !m.parry && !m.charge && !m.throw && !m.air;
+}
+
+var defs = FG.ROSTER;
 defs.forEach(function (atk) {
   defs.forEach(function (dfn) {
     var tag = atk.name + ' vs ' + dfn.name;
     // Single moves: measure on block and hit at close range.
-    [['jab', { p: true }, false, 'stand'], ['mid', { k: true }, false, 'stand'],
-     ['heavy', { h: true }, false, 'stand'], ['low', { k: true, down: true }, true, 'crouch'],
-     ['launcher', { h: true, down: true }, false, 'stand'],
-     ['sweep', { k: true, down: true, left: true }, true, 'crouch'], ['slam', { h: true, right: true }, false, 'stand']].forEach(function (t) {
-      var id = t[0], mv = atk.moves[id];
-      var dist = 40;
-      // Block
-      var backKey = 'right'; // P2 faces left, so holding right is back
-      var guardRaw = t[3] === 'crouch' ? { right: true, down: true } : { right: true };
-      var r = exchange(atk, dfn, dist, [t[1]], guardRaw);
+    Object.keys(atk.moves).forEach(function (id) {
+      var mv = atk.moves[id];
+      if (!measurable(mv)) return;
+      var press = INPUT[id], dist = 40;
+      // P2 faces left, so holding right is back.
+      var guardRaw = mv.level === 'low' ? { right: true, down: true } : { right: true };
+      var r = exchange(atk, dfn, dist, [press], guardRaw);
       var blk = r.events.filter(function (e) { return e.type === 'block'; });
       check(tag + ' ' + id + ' is blocked', blk.length === 1, r.events.map(function (e) { return e.type; }));
       check(tag + ' ' + id + ' block adv', r.m.lastResult[0] && r.m.lastResult[0].adv === mv.block,
         { got: r.m.lastResult[0] && r.m.lastResult[0].adv, want: mv.block });
-      // Hit (defender standing still, or crouching for lows is irrelevant: standing gets hit by lows)
-      r = exchange(atk, dfn, dist, [t[1]], {});
+      r = exchange(atk, dfn, dist, [press], {});
       var hit = r.events.filter(function (e) { return e.type === 'hit'; });
       check(tag + ' ' + id + ' hits', hit.length === 1, r.events.map(function (e) { return e.type; }));
       if (mv.hit.knockdown) {
@@ -74,8 +85,25 @@ defs.forEach(function (atk) {
   });
 });
 
+// Every fighter has the full kit.
+defs.forEach(function (d) {
+  ['jab', 'mid', 'low', 'sweep', 'heavy', 'launcher', 'throw', 'throwB', 'airP', 'airK', 'airH', 'wakeLow', 'wakeMid'].forEach(function (id) {
+    check(d.name + ' has ' + id, !!d.moves[id]);
+  });
+  check(d.name + ' has victory lines', d.victoryLines && d.victoryLines.length === 3);
+  check(d.name + ' has intro, victory and defeat animations', d.intro && d.victory && d.defeat);
+  check(d.name + ' has a stance', !!d.poses.idle);
+  // Every pose a move, intro or victory uses exists.
+  var anims = [d.intro, d.victory, d.defeat];
+  Object.keys(d.moves).forEach(function (id) { anims.push(d.moves[id].anim); });
+  Object.keys(d.gestures || {}).forEach(function (id) { anims.push(d.gestures[id]); });
+  anims.forEach(function (a) {
+    (a || []).forEach(function (k) { check(d.name + ' pose ' + k[1] + ' exists', !!(d.poses[k[1]] || FG.POSES[k[1]])); });
+  });
+});
+
 // Hit level rules ------------------------------------------------------------
-var S = defs[0], D = defs[1];
+var S = FG.fighterById('brinkhus'), D = FG.fighterById('dalsass');
 (function () {
   // Jab whiffs over a crouching opponent.
   var r = exchange(S, D, 44, [{ p: true }], { down: true });
@@ -116,7 +144,7 @@ var S = defs[0], D = defs[1];
   for (i = 0; i < 60; i++) {
     m.step([raw(i === 0 ? {} : {}), raw(i === 0 ? { ssIn: true } : {})]);
   }
-  // SIGMA's low kick tracks.
+  // BRINKHUS's low kick tracks.
   m = setup(D, S, 44); evs = [];
   for (i = 0; i < 60; i++) {
     m.step([raw(i === 0 ? { ssIn: true } : {}), raw(i === 2 ? { k: true, down: true } : {})]);
@@ -125,18 +153,6 @@ var S = defs[0], D = defs[1];
   check('tracking low catches sidestep', evs.some(function (e) { return e.type === 'hit'; }), evs.map(function (e) { return e.type; }));
 })();
 
-// Launcher -> jab -> mid juggle connects.
-(function () {
-  var m = setup(S, D, 40), evs = [];
-  var script = { 0: { h: true, down: true }, 48: { p: true }, 76: { k: true } };
-  for (var i = 0; i < 200; i++) {
-    m.step([raw(script[i] || {}), raw({})]);
-    evs = evs.concat(m.events);
-  }
-  var hits = evs.filter(function (e) { return e.type === 'hit'; }).map(function (e) { return e.move.id; });
-  check('launcher > jab > mid juggle', hits.join() === 'launcher,jab,mid', hits);
-  check('defender knocked down after juggle', ['down', 'getup', 'idle'].indexOf(m.fighters[1].state) >= 0, m.fighters[1].state);
-})();
 
 // Blocked launcher is punishable by a jab.
 (function () {
@@ -170,16 +186,32 @@ var S = defs[0], D = defs[1];
   check('walk forward', Math.abs(m.fighters[0].x - x0 - 30 * S.walkF) < 3, m.fighters[0].x - x0);
 })();
 
-// String: SIGMA jab, jab, kick is a natural combo on hit.
-(function () {
-  var m = setup(S, D, 44), evs = [];
-  for (var i = 0; i < 120; i++) {
-    m.step([raw(i === 0 || i === 12 ? { p: true } : i === 24 ? { k: true } : {}), raw({})]);
-    evs = evs.concat(m.events);
+// Every fighter's documented combo routes connect exactly as listed.
+// Timed routes press each input on its frame; queued routes press the next input
+// on the first frame the attacker is free. Wall routes start next to the wall.
+function runCombo(atk, combo) {
+  var dfn = defs.filter(function (d) { return d !== atk; })[0] || atk;
+  var m = new FG.Match(atk, dfn);
+  run(m, 2);
+  if (combo.wall) { var w = FG.C.WALL_R - 18 * dfn.scale - 10; m.fighters[1].x = w; m.fighters[0].x = w - 44; }
+  else { m.fighters[0].x = 480; m.fighters[1].x = 520; }
+  var hits = [], next = 0;
+  for (var i = 0; i < 320; i++) {
+    var r1 = FG.emptyRaw();
+    if (combo.plan && combo.plan[i]) r1 = FG.parseInput(combo.plan[i]);
+    if (combo.queue && next < combo.queue.length && m.fighters[0].state === 'idle' && m.hitstop === 0) r1 = FG.parseInput(combo.queue[next++]);
+    m.step([r1, FG.emptyRaw()]);
+    m.events.forEach(function (e) { if (e.type === 'hit' && e.attacker === 0) hits.push(e.move.id); });
   }
-  var hits = evs.filter(function (e) { return e.type === 'hit'; }).map(function (e) { return e.move.id; });
-  check('P,P,K string', hits.join() === 'jab,jab2,mid', hits);
-})();
+  return hits;
+}
+defs.forEach(function (d) {
+  check(d.name + ' has combo routes', d.combos.length >= 3, d.combos.length);
+  d.combos.forEach(function (c) {
+    var hits = runCombo(d, c);
+    check(d.name + ' combo ' + c.name, hits.join() === c.hits.join(), { got: hits, want: c.hits });
+  });
+});
 
 // KO resets the round.
 (function () {
@@ -209,38 +241,26 @@ function types(r) { return r.events.map(function (e) { return e.type; }); }
 function has(r, type) { return r.events.some(function (e) { return e.type === type; }); }
 var LAUNCH = { h: true, down: true };
 
-// Air combo: launcher, jump cancel, air P > air K > air H (bound), ground follow-up.
+// Air combos are skill-based: drop the jump cancel or a timing and the route fails.
 (function () {
-  var plan = { 0: LAUNCH, 16: { up: true }, 28: { p: true }, 34: { k: true }, 44: { h: true }, 102: { k: true } };
-  var r = play(S, D, 40, plan, {}, 260);
-  var ids = r.hits.map(function (e) { return e.move.id; });
-  check('air combo route', ids.join() === 'launcher,airP,airK,airH,mid', ids);
-  check('air heavy bounds', r.hits.some(function (e) { return e.bound; }) && has(r, 'bounce'));
-  // Skill: the same inputs without the jump cancel just whiff in place.
-  var plan2 = { 0: LAUNCH, 28: { p: true }, 34: { k: true }, 44: { h: true } };
-  r = play(S, D, 40, plan2, {}, 200);
+  var route = S.combos.filter(function (c) { return c.name === 'LIMIT AT INFINITY'; })[0];
+  function toRaw(plan) { var o = {}; for (var f in plan) o[f] = FG.parseInput(plan[f]); return o; }
+  var noJump = {}; for (var f in route.plan) if (route.plan[f] !== 'UP') noJump[f] = route.plan[f];
+  var r = play(S, D, 40, toRaw(noJump), {}, 200);
   check('no jump cancel, no air combo', r.hits.length <= 2, r.hits.map(function (e) { return e.move.id; }));
-  // Skill: mistimed air punch misses.
-  var plan3 = { 0: LAUNCH, 16: { up: true }, 66: { p: true } };
-  r = play(S, D, 40, plan3, {}, 200);
+  var late = { 0: 'D+H', 16: 'UP', 66: 'P' };
+  r = play(S, D, 40, toRaw(late), {}, 200);
   check('late air punch drops the combo', r.hits.length === 1, r.hits.map(function (e) { return e.move.id; }));
-  // Jump cancel only works on hit, not on block.
   r = play(S, D, 40, { 0: LAUNCH, 16: { up: true } }, function (i) { return i >= 6 ? { right: true } : {}; }, 60);
   check('no jump cancel on block', r.m.fighters[0].y === 0 && r.m.fighters[0].state !== 'air', r.m.fighters[0].state);
 })();
 
-// DELTA's shorter air route: launcher, jump cancel, air K > air H.
-(function () {
-  var plan = { 0: LAUNCH, 16: { up: true }, 28: { k: true }, 34: { h: true }, 96: { k: true } };
-  var r = play(D, S, 40, plan, {}, 260);
-  var ids = r.hits.map(function (e) { return e.move.id; });
-  check('DELTA air route', ids.join() === 'launcher,airK,airH,mid', ids);
-})();
-
 // One bound per combo: a second bound move just juggles.
 (function () {
-  var plan = { 0: LAUNCH, 16: { up: true }, 28: { p: true }, 34: { k: true }, 44: { h: true } };
-  var r = play(S, D, 40, plan, {}, 102, null);
+  var plan = {};
+  var route = S.combos.filter(function (c) { return c.name === 'LIMIT AT INFINITY'; })[0].plan;
+  Object.keys(route).forEach(function (f) { if (+f < 100) plan[f] = FG.parseInput(route[f]); });
+  var r = play(S, D, 40, plan, {}, 110, null);
   var m = r.m, d = m.fighters[1];
   check('bound used', d.boundUsed === true, d.boundUsed);
   var bounds = r.events.filter(function (e) { return e.bound; }).length;
@@ -385,7 +405,12 @@ var LAUNCH = { h: true, down: true };
 
 // Guard pressure: repeated blocked heavies break the guard; the meter recovers.
 (function () {
-  var plan = function (i) { return i % 50 === 0 ? { h: true } : {}; };
+  // Step back into range before each heavy (pushback moves the attacker away from the wall).
+  var plan = function (i, m) {
+    if (i % 50 !== 0) return {};
+    m.fighters[0].x = m.fighters[1].x - 40;
+    return { h: true };
+  };
   var guardHold = function (i) { return i >= 6 ? { right: true } : {}; };
   var r = play(S, D, 40, plan, guardHold, 50 * 6, function (m) {
     // Keep them in range against the wall so pushback doesn't separate them.
@@ -408,7 +433,7 @@ var LAUNCH = { h: true, down: true };
 
 // Air attacks against a standing opponent: blocked standing, and the attacker lands.
 (function () {
-  var r = play(S, D, 70, { 0: { up: true, right: true }, 14: { k: true } }, function (i) { return i >= 2 ? { right: true } : {}; }, 80);
+  var r = play(S, D, 70, { 0: { up: true, right: true }, 16: { k: true } }, function (i) { return i >= 2 ? { right: true } : {}; }, 80);
   check('jump-in kick is blocked standing', has(r, 'block'), types(r));
   check('air attacker lands', r.m.fighters[0].y === 0 && r.m.fighters[0].state !== 'air', r.m.fighters[0].state);
 })();
@@ -502,6 +527,59 @@ function count(r, type, attacker) {
   for (var i = 0; i < 3; i++) m.step([raw({}), raw({})]);
   m.koTimer = 1; m.step([raw({}), raw({})]);
   check('round reset keeps the chosen start position', d.x < a.x && a.health === S.health, [a.x, d.x]);
+})();
+
+// =========================== Phase 4 =========================================
+
+// DALSASS: Piecewise stance, Function Feint, Asymptote Slide.
+(function () {
+  function ids(r, who) { return r.events.filter(function (e) { return e.type === 'whiff' && e.fighter === (who || 0); }).map(function (e) { return e.move.id; }); }
+  // B+P enters the stance; P from the stance is Step Function and leaves the stance.
+  var r = play(D, S, 40, { 0: FG.parseInput('B+P'), 20: { p: true } }, {}, 60);
+  check('piecewise stance move', ids(r).join() === 'bP,pwP', ids(r));
+  check('stance attack leaves the stance', r.m.fighters[0].stance === 'A', r.m.fighters[0].stance);
+  r = play(D, S, 40, { 0: FG.parseInput('B+P') }, {}, 20);
+  check('in piecewise stance', r.m.fighters[0].stance === 'B', r.m.fighters[0].stance);
+  r = play(D, S, 40, { 0: FG.parseInput('B+P'), 20: { right: true } }, {}, 24);
+  check('moving leaves the stance', r.m.fighters[0].stance === 'A', r.m.fighters[0].stance);
+  r = play(D, S, 40, { 0: FG.parseInput('B+P'), 20: { k: true } }, {}, 60);
+  check('stance K is a low', ids(r).join() === 'bP,pwK' && D.moves.pwK.level === 'low', ids(r));
+  // Getting hit knocks him out of the stance.
+  r = play(D, S, 40, { 0: FG.parseInput('B+P') }, { 14: { p: true } }, 40);
+  check('hit leaves the stance', r.m.fighters[0].stance === 'A', r.m.fighters[0].stance);
+
+  // The feint alone never hits.
+  r = play(D, S, 40, { 0: FG.parseInput('F+H') }, {}, 40);
+  check('feint does not hit', count(r, 'hit') === 0 && count(r, 'block') === 0, types(r));
+  // Feint cancels: jab, low, real overhead, throw. Hits out of a feint are flagged.
+  [['P', 'jab'], ['K', 'low'], ['H', 'drop']].forEach(function (t) {
+    var q = play(D, S, 40, { 0: FG.parseInput('F+H'), 10: FG.parseInput(t[0]) }, {}, 70);
+    var hit = q.events.filter(function (e) { return e.type === 'hit' && e.attacker === 0; })[0];
+    check('feint cancels into ' + t[1], hit && hit.move.id === t[1] && hit.feint === true, hit && hit.move.id);
+  });
+  r = play(D, S, 40, { 0: FG.parseInput('F+H'), 10: FG.parseInput('P+K') }, {}, 70);
+  var grab = r.events.filter(function (e) { return e.type === 'grab'; })[0];
+  check('feint cancels into throw', grab && grab.feint === true, types(r));
+  // Too late to cancel once the window closes.
+  r = play(D, S, 40, { 0: FG.parseInput('F+H'), 21: { p: true } }, {}, 60);
+  check('feint cancel window closes', ids(r).join() === 'fH,jab' && count(r, 'hit') === 1, ids(r));
+  // The feint's real overhead bounds a juggled opponent.
+  check('inverse drop bounds', D.moves.drop.bound === true);
+
+  // Asymptote Slide travels and goes under highs.
+  var x0;
+  r = play(D, S, 160, { 0: FG.parseInput('D/F+K') }, {}, 30, function (m) { x0 = m.fighters[0].x; });
+  check('slide travels', r.m.fighters[0].x - x0 > 40, r.m.fighters[0].x - x0);
+  r = play(D, S, 40, { 4: FG.parseInput('D/F+K') }, { 0: { p: true } }, 40);
+  check('slide ducks a jab', count(r, 'hit', 1) === 0, types(r));
+})();
+
+// BRINKHUS: Epsilon-Delta only continues when the jab connects (out of range it stops).
+(function () {
+  var plan = { 0: { p: true }, 14: { k: true }, 32: { k: true } };
+  var r = play(S, D, 120, plan, {}, 80);
+  var ids = r.events.filter(function (e) { return e.type === 'whiff' && e.fighter === 0; }).map(function (e) { return e.move.id; });
+  check('Epsilon needs the jab to connect', ids.indexOf('eps') < 0 && ids.indexOf('delta') < 0, ids);
 })();
 
 console.log(passes + ' passed, ' + failures + ' failed');

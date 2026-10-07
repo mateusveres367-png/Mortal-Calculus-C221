@@ -65,6 +65,29 @@
     this.rightTaps = [-9999, -9999];
   };
 
+  // Parse move notation like 'D+H', 'F+H', 'D/F+K', 'P+K' or 'UP' into a raw input
+  // for a fighter facing right (F = right, B = left).
+  function parseInput(notation) {
+    var r = emptyRaw();
+    notation.split('+').forEach(function (t) {
+      switch (t) {
+        case 'P': r.p = true; break;
+        case 'K': r.k = true; break;
+        case 'H': r.h = true; break;
+        case 'D': r.down = true; break;
+        case 'U': case 'UP': r.up = true; break;
+        case 'F': r.right = true; break;
+        case 'B': r.left = true; break;
+        case 'D/F': r.down = true; r.right = true; break;
+        case 'D/B': r.down = true; r.left = true; break;
+        case 'SI': r.ssIn = true; break;
+        case 'SO': r.ssOut = true; break;
+      }
+    });
+    return r;
+  }
+
   FG.InputBuffer = InputBuffer;
   FG.emptyRaw = emptyRaw;
+  FG.parseInput = parseInput;
 })();

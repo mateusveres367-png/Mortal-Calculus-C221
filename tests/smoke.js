@@ -24,7 +24,17 @@ try { playwright = require('playwright'); } catch (e) {
   var title = await page.title();
   await page.screenshot({ path: path.join(out, '0-title.png') });
   await page.keyboard.press('Enter');
-  await page.waitForFunction(function () { return window.FG_SCENE && window.FG_SCENE.tickCount > 30; }, null, { timeout: 15000 });
+  // Character select: BRINKHUS for P1, DALSASS as the opponent.
+  await page.waitForFunction(function () { return window.FG_SELECT && window.FG_SELECT.t > 10; }, null, { timeout: 15000 });
+  await page.screenshot({ path: path.join(out, '0-select.png') });
+  await page.keyboard.press('Enter'); // P1: the cursor starts on the first fighter
+  await page.keyboard.press('Enter'); // opponent: the cursor starts on the second
+  // Round intro, then skip the rest of it.
+  await page.waitForFunction(function () { return window.FG_SCENE && window.FG_SCENE.intro && window.FG_SCENE.intro.t > 30; }, null, { timeout: 15000 });
+  await page.screenshot({ path: path.join(out, '0-intro.png') });
+  var matchup = await page.evaluate(function () { var f = window.FG_SCENE.match.fighters; return f[0].def.id + ' vs ' + f[1].def.id; });
+  await page.keyboard.press('Enter');
+  await page.waitForFunction(function () { return window.FG_SCENE && !window.FG_SCENE.intro && window.FG_SCENE.tickCount > 30; }, null, { timeout: 15000 });
   var renderer = await page.evaluate(function () { return FG.game.renderer.type === Phaser.WEBGL ? 'WEBGL' : 'CANVAS'; });
   await page.screenshot({ path: path.join(out, '1-start.png') });
 
@@ -35,14 +45,15 @@ try { playwright = require('playwright'); } catch (e) {
   await page.evaluate(function () {
     var s = window.FG_SCENE;
     s.newMatch();
-    s.match.fighters[0].x = 500; s.match.fighters[1].x = 540;
+    s.match.fighters[0].x = 480; s.match.fighters[1].x = 520;
     var start = s.tickCount;
-    var plan = { 0: { h: true, down: true }, 16: { up: true }, 28: { p: true }, 34: { k: true }, 44: { h: true }, 102: { k: true } };
+    var route = FG.fighterById('brinkhus').combos.filter(function (c) { return c.name === 'LIMIT AT INFINITY'; })[0];
+    var plan = {};
+    Object.keys(route.plan).forEach(function (f) { plan[f] = FG.parseInput(route.plan[f]); });
     window.HITS = [];
     s.forceInput = function (t) {
-      var i = t - start, r = FG.emptyRaw(), p = plan[i];
-      if (p) for (var k in p) r[k] = p[k];
-      return [r, null];
+      var p = plan[t - start];
+      return [p || FG.emptyRaw(), null];
     };
     var orig = s.hud.onEvent.bind(s.hud);
     s.hud.onEvent = function (ev) { if (ev.type === 'hit') window.HITS.push(ev.move.id); orig(ev); };
@@ -89,8 +100,8 @@ try { playwright = require('playwright'); } catch (e) {
   await page.screenshot({ path: path.join(out, '6-training.png') });
 
   await browser.close();
-  console.log(JSON.stringify({ title: title, renderer: renderer, hits: hits, p1: p1, menuOk: menuOk, resetX: resetX, errors: errors }, null, 1));
-  var ok = !errors.length && title === 'Mortal Calculus: C221' && hits.join() === 'launcher,airP,airK,airH,mid' &&
+  console.log(JSON.stringify({ title: title, matchup: matchup, renderer: renderer, hits: hits, p1: p1, menuOk: menuOk, resetX: resetX, errors: errors }, null, 1));
+  var ok = !errors.length && title === 'Mortal Calculus: C221' && matchup === 'brinkhus vs dalsass' && hits.join() === 'launcher,airP,airK,airH,mid' &&
     p1.last && p1.last.kind === 'BLOCK' && p1.last.adv === 1 && menuOk && resetOk;
   console.log(ok ? 'SMOKE OK' : 'SMOKE FAILED');
   if (!ok) process.exit(1);

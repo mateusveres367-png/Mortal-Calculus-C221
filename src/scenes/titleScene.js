@@ -1,5 +1,5 @@
 // Title screen: the game's name over the dimmed stage. Enter, Space or a
-// click starts training mode.
+// click goes to character select (then training mode).
 (function () {
   var C = FG.C;
 
@@ -43,7 +43,7 @@
   TitleScene.prototype.start = function () {
     if (this.started) return;
     this.started = true;
-    this.scene.start('fight');
+    this.scene.start('select');
   };
 
   TitleScene.prototype.update = function () {
