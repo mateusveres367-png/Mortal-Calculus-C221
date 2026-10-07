@@ -8,21 +8,13 @@ Early setup. The full vision lives in [`GAME_DESIGN.md`](GAME_DESIGN.md); the ga
 
 ## Tech stack
 
-- **Engine:** Phaser 3 (renders to HTML5 Canvas / WebGL)
-- **Language:** JavaScript (ES modules)
-- **Dev server / build:** Vite (planned)
+- **Engine:** Phaser 3 (renders to HTML5 Canvas / WebGL), vendored locally
+- **Language:** plain JavaScript loaded with classic `<script>` tags
+- **Build:** none
 
-## Getting started
+## Running the game
 
-Once the first playable phase lands:
-
-```bash
-npm install
-npm run dev      # start a local dev server with hot reload
-npm run build    # produce a static build in dist/
-```
-
-Open the URL Vite prints (usually http://localhost:5173) in a modern browser.
+Once the first playable phase lands, open `index.html` directly in a modern browser (double-click it, or drag it into a browser window). No install, build step, or server is needed, and it works offline.
 
 ## Project docs
 
