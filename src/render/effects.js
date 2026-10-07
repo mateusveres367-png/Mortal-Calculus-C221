@@ -58,6 +58,14 @@
       case 'grab':
         this.flashes.push({ x: x, y: y, r: 8, life: 5, max: 5, color: 0xffffff, star: true });
         return;
+      case 'parry':
+        this.flashes.push({ x: x, y: y, r: 22, life: 10, max: 10, color: 0xdff6ff, star: true });
+        this.flashes.push({ x: x, y: y, r: 16, life: 14, max: 14, color: 0x5fd7ff, ring: true });
+        for (var pp = 0; pp < 10; pp++) {
+          var pa = Math.random() * Math.PI * 2;
+          this.parts.push({ x: x, y: y, vx: Math.cos(pa) * 2.5, vy: Math.sin(pa) * 2.5, life: 14, max: 14, size: 2, color: pp % 2 ? 0x5fd7ff : 0xffffff });
+        }
+        return;
       case 'break':
         this.flashes.push({ x: x, y: y, r: 18, life: 9, max: 9, color: 0xffffff, star: true });
         this.flashes.push({ x: x, y: y, r: 14, life: 10, max: 10, color: 0x5fd7ff, ring: true });
@@ -230,6 +238,10 @@
         break;
       case 'grab':
         burst(0.05, 1500, 2, 0.2, 'bandpass');
+        break;
+      case 'parry':
+        thump(0.15, 1400, 900, 0.25);
+        burst(0.1, 6500, 8, 0.3, 'bandpass');
         break;
       case 'break':
         burst(0.08, 4200, 3, 0.35, 'bandpass');

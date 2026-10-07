@@ -186,11 +186,10 @@ var S = FG.fighterById('brinkhus'), D = FG.fighterById('dalsass');
   check('walk forward', Math.abs(m.fighters[0].x - x0 - 30 * S.walkF) < 3, m.fighters[0].x - x0);
 })();
 
-// Every fighter's documented combo routes connect exactly as listed.
+// Every fighter's documented combo routes connect exactly as listed, against every opponent.
 // Timed routes press each input on its frame; queued routes press the next input
 // on the first frame the attacker is free. Wall routes start next to the wall.
-function runCombo(atk, combo) {
-  var dfn = defs.filter(function (d) { return d !== atk; })[0] || atk;
+function runCombo(atk, combo, dfn) {
   var m = new FG.Match(atk, dfn);
   run(m, 2);
   if (combo.wall) { var w = FG.C.WALL_R - 18 * dfn.scale - 10; m.fighters[1].x = w; m.fighters[0].x = w - 44; }
@@ -207,9 +206,12 @@ function runCombo(atk, combo) {
 }
 defs.forEach(function (d) {
   check(d.name + ' has combo routes', d.combos.length >= 3, d.combos.length);
+  // Routes must work against every opponent (fighters differ in size).
   d.combos.forEach(function (c) {
-    var hits = runCombo(d, c);
-    check(d.name + ' combo ' + c.name, hits.join() === c.hits.join(), { got: hits, want: c.hits });
+    defs.forEach(function (opp) {
+      var hits = runCombo(d, c, opp);
+      check(d.name + ' combo ' + c.name + ' vs ' + opp.name, hits.join() === c.hits.join(), { got: hits, want: c.hits });
+    });
   });
 });
 
@@ -580,6 +582,53 @@ function count(r, type, attacker) {
   var r = play(S, D, 120, plan, {}, 80);
   var ids = r.events.filter(function (e) { return e.type === 'whiff' && e.fighter === 0; }).map(function (e) { return e.move.id; });
   check('Epsilon needs the jab to connect', ids.indexOf('eps') < 0 && ids.indexOf('delta') < 0, ids);
+})();
+
+// CHAI: Reflection Counter (parry) and Tangent Step (sidestep attack).
+(function () {
+  var CH = FG.fighterById('chai');
+  // P2 jabs; CHAI parries so the jab arrives inside frames 2-10 of the parry.
+  var r = play(CH, S, 40, { 4: FG.parseInput('B+H') }, { 0: { p: true } }, 60);
+  var hits = r.events.filter(function (e) { return e.type === 'hit'; });
+  check('parry catches a high', count(r, 'parry') === 1, types(r));
+  check('parry counters at once', hits.length === 1 && hits[0].attacker === 0 && hits[0].move.id === 'reflect', hits.map(function (e) { return e.move.id; }));
+  // Mids too.
+  r = play(CH, S, 40, { 8: FG.parseInput('B+H') }, { 0: { k: true } }, 60);
+  check('parry catches a mid', count(r, 'parry') === 1, types(r));
+  // Lows go through and counter-hit the parry.
+  r = play(CH, S, 40, { 10: FG.parseInput('B+H') }, { 0: { k: true, down: true } }, 60);
+  hits = r.events.filter(function (e) { return e.type === 'hit'; });
+  check('lows beat the parry', count(r, 'parry') === 0 && hits.length === 1 && hits[0].attacker === 1 && hits[0].ch, hits.map(function (e) { return e.move.id; }));
+  // A whiffed parry is punishable.
+  r = play(CH, S, 40, { 0: FG.parseInput('B+H') }, { 14: { p: true } }, 60);
+  hits = r.events.filter(function (e) { return e.type === 'hit' && e.attacker === 1; });
+  check('whiffed parry gets punished', hits.length === 1, types(r));
+  // Throws beat the parry.
+  r = play(CH, S, 40, { 4: FG.parseInput('B+H') }, { 0: FG.parseInput('P+K') }, 60);
+  check('throw beats the parry', count(r, 'grab', 1) === 1 && count(r, 'parry') === 0, types(r));
+
+  // Tangent Step: sidestep a jab, then P comes out early and hits.
+  r = play(CH, S, 40, { 0: { ssIn: true }, 6: { p: true } }, { 2: { p: true } }, 60);
+  hits = r.events.filter(function (e) { return e.type === 'hit'; });
+  check('tangent step dodges and hits', hits.length === 1 && hits[0].attacker === 0 && hits[0].move.id === 'ssP', hits.map(function (e) { return e.attacker + e.move.id; }));
+  // Other fighters can't attack that early out of a sidestep.
+  r = play(S, D, 40, { 0: { ssIn: true }, 4: { p: true } }, {}, 40);
+  var started = r.events.filter(function (e) { return e.type === 'whiff' && e.fighter === 0; }).length;
+  check('early sidestep attack is CHAI only', started === 0, types(r));
+})();
+
+// LEE: the Arithmetic Sequence speeds up, and Recursive Rush repeats at most three times.
+(function () {
+  var L = FG.fighterById('lee');
+  var st = ['jab', 'seq2', 'seq3', 'seqP'].map(function (id) { return L.moves[id].startup; });
+  check('arithmetic sequence gets faster', st[0] > st[1] && st[1] > st[2] && st[2] > st[3], st);
+  var r = play(L, S, 40, { 0: FG.parseInput('F+P'), 15: { p: true }, 33: { p: true }, 51: { p: true } }, {}, 120);
+  var rushes = r.events.filter(function (e) { return e.type === 'hit' && e.move.id === 'fP'; }).length;
+  check('recursive rush stops at three', rushes === 3, rushes);
+  // On block it doesn't repeat.
+  r = play(L, S, 40, { 0: FG.parseInput('F+P'), 15: { p: true } }, function (i) { return i >= 3 ? { right: true } : {}; }, 60);
+  var ids = r.events.filter(function (e) { return e.type === 'whiff' && e.fighter === 0; }).map(function (e) { return e.move.id; });
+  check('recursive rush only repeats on hit', ids.join() === 'fP,jab' || ids.join() === 'fP', ids);
 })();
 
 console.log(passes + ' passed, ' + failures + ' failed');

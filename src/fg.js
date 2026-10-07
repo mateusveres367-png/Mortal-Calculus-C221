@@ -63,6 +63,9 @@ FG.C = {
   THROW_END_FRAME: 46,
   THROW_BREAK_FRAMES: 16,
 
+  // Parries: how long a parried attacker staggers.
+  PARRY_STUN: 30,
+
   // Guard pressure meter (0..100)
   GUARD_MAX: 100,
   GUARD_REGEN_DELAY: 60,

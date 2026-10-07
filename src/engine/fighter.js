@@ -83,6 +83,13 @@
     return this.state === 'attack' && this.moveFrame <= this.move.startup + this.move.active - 1;
   };
 
+  // In the active window of a parry move (CHAI's Reflection Counter, LOPEZ's Null Hypothesis)?
+  Fighter.prototype.parryWindow = function () {
+    if (this.state !== 'attack' || !this.move.parry) return null;
+    var pr = this.move.parry;
+    return this.moveFrame >= pr.from && this.moveFrame <= pr.to ? pr : null;
+  };
+
   Fighter.prototype.inRecovery = function () {
     return this.state === 'attack' && this.moveFrame > this.move.startup + this.move.active - 1;
   };
@@ -99,6 +106,8 @@
     var m = this.def.moves[id];
     var prev = this.state === 'attack' ? this.move : null;
     this.fromFeint = !!(prev && prev.feint);
+    // How many times in a row this move has cancelled into itself (Recursive Rush).
+    this.repeatCount = prev && prev.id === id ? (this.repeatCount || 0) + 1 : 0;
     this.setState('attack');
     this.move = m;
     this.moveFrame = 1;
@@ -161,7 +170,8 @@
       case 'sidestep':
         this.vx = 0;
         if (this.stateFrame >= C.SIDESTEP_FRAMES) { this.setState('idle'); break; }
-        if (this.stateFrame >= SIDESTEP_ACT_FROM && this.tryAttack(buf, frame)) return;
+        // Some fighters (CHAI) can attack out of a sidestep earlier than others.
+        if (this.stateFrame >= (this.def.ssAttackFrom || SIDESTEP_ACT_FROM) && this.tryAttack(buf, frame)) return;
         return;
       case 'prejump':
         if (this.stateFrame >= PREJUMP_FRAMES) {
@@ -314,6 +324,7 @@
       if (this.moveFrame < c.from || this.moveFrame > c.to) continue;
       if (c.onContact && !this.contact) continue;
       if (c.onHit && this.contact !== 'hit') continue;
+      if (c.into === this.move.id && (this.repeatCount || 0) >= (c.max || 0)) continue;
       if (c.btn === 'throw') {
         if (!throwPressed(buf, frame)) continue;
         buf.consume('p'); buf.consume('k');
@@ -443,6 +454,8 @@
       (this.state === 'roll' && this.rollDir === 'side') ? C.ROLL_FRAMES : 0;
     if (depthFrames) {
       this.z = this.sideDir * C.SIDESTEP_DEPTH * Math.sin(Math.PI * Math.min(1, this.stateFrame / depthFrames));
+    } else if (this.state === 'attack' && this.move.keepZ && this.moveFrame < this.move.startup) {
+      // Sidestep attacks stay off the line until they hit.
     } else {
       this.z *= 0.7;
       if (Math.abs(this.z) < 0.2) this.z = 0;

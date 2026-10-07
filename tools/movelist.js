@@ -50,6 +50,7 @@ FG.ROSTER.forEach(function (d) {
     if (m.wallSplat) notes.push('wall splats');
     if (m.otg) notes.push('hits downed opponents');
     if (m.crouching) notes.push('ducks highs');
+    if (m.keepZ) notes.push('stays off the line until it hits');
     if (m.feint) notes.push('feint: cancel with P, K, H or P+K during frames 6-18');
     if (m.stanceSwitch) notes.push('switches stance');
     if (m.parry) notes.push('parry');

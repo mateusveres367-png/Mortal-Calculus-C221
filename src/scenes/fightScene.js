@@ -281,6 +281,7 @@
     if (m.over && !this.win) this.startWin();
     if (this.training.refill) this.refillHealth();
     for (var g = 0; g < 2; g++) {
+      if (f[g]._tag && --f[g]._tag.t <= 0) f[g]._tag = null;
       // Start a queued gesture once the fighter is back to neutral.
       var pg = f[g]._pending;
       if (pg && (f[g].state === 'idle' || --pg.ttl <= 0)) {
@@ -310,7 +311,19 @@
         var big = ev.move && (ev.move.strength === 'heavy' || ev.move.strength === 'launch' || ev.ko);
         this.stage.cheer((big ? 2 : 1) * (a.def.crowdFavorite ? 2 : 1), !!a.def.crowdFavorite);
         f[ev.defender]._face = { type: 'wince', t: 30 };
+        // After a big hit: CHAI winces apologetically, LEE pushes up his glasses.
+        if (big && a.def.bigHit) {
+          if (a.def.bigHit.gesture) a._pending = { name: a.def.bigHit.gesture, ttl: 120 };
+          if (a.def.bigHit.face) a._face = { type: a.def.bigHit.face, t: 50 };
+        }
+        // LEE taunts once a combo reaches three hits.
+        var hits = this.match.combo[ev.defender].hits;
+        if (a.def.taunts && hits === 3) a._tag = { text: a.def.taunts[Math.floor(Math.random() * a.def.taunts.length)], t: 70 };
       }
+    }
+    if (ev.type === 'parry') {
+      this.hud.setLabel(ev.attacker, ev.label || 'PARRY!');
+      if (f[ev.attacker].def.parryFace) f[ev.attacker]._face = { type: f[ev.attacker].def.parryFace, t: 30 };
     }
   };
 
@@ -356,7 +369,7 @@
     // Floating labels: alternate stance.
     for (var k = 0; k < 2; k++) {
       var fk = f[k], tag = this.tags[k];
-      tag.setText(fk.stance === 'B' && !this.win ? 'PIECEWISE' : '');
+      tag.setText(this.win ? '' : fk._tag ? fk._tag.text : fk.stance === 'B' ? 'PIECEWISE' : '');
       tag.setPosition(Math.round(fk.x), Math.round(C.GROUND_Y - fk.y - 104 * fk.def.scale));
     }
     if (this.win) this.speech.draw(f[this.win.winner], this.cameras.main.scrollX);

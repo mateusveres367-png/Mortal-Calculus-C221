@@ -24,7 +24,7 @@ try { playwright = require('playwright'); } catch (e) {
   var title = await page.title();
   await page.screenshot({ path: path.join(out, '0-title.png') });
   await page.keyboard.press('Enter');
-  // Character select: BRINKHUS for P1, DALSASS as the opponent.
+  // Character select: the first two fighters on the roster.
   await page.waitForFunction(function () { return window.FG_SELECT && window.FG_SELECT.t > 10; }, null, { timeout: 15000 });
   await page.screenshot({ path: path.join(out, '0-select.png') });
   await page.keyboard.press('Enter'); // P1: the cursor starts on the first fighter
@@ -33,6 +33,7 @@ try { playwright = require('playwright'); } catch (e) {
   await page.waitForFunction(function () { return window.FG_SCENE && window.FG_SCENE.intro && window.FG_SCENE.intro.t > 30; }, null, { timeout: 15000 });
   await page.screenshot({ path: path.join(out, '0-intro.png') });
   var matchup = await page.evaluate(function () { var f = window.FG_SCENE.match.fighters; return f[0].def.id + ' vs ' + f[1].def.id; });
+  var expectMatchup = await page.evaluate(function () { return FG.ROSTER[0].id + ' vs ' + FG.ROSTER[1].id; });
   await page.keyboard.press('Enter');
   await page.waitForFunction(function () { return window.FG_SCENE && !window.FG_SCENE.intro && window.FG_SCENE.tickCount > 30; }, null, { timeout: 15000 });
   var renderer = await page.evaluate(function () { return FG.game.renderer.type === Phaser.WEBGL ? 'WEBGL' : 'CANVAS'; });
@@ -47,7 +48,10 @@ try { playwright = require('playwright'); } catch (e) {
     s.newMatch();
     s.match.fighters[0].x = 480; s.match.fighters[1].x = 520;
     var start = s.tickCount;
-    var route = FG.fighterById('brinkhus').combos.filter(function (c) { return c.name === 'LIMIT AT INFINITY'; })[0];
+    // P1's longest timed combo route (they all work against every opponent).
+    var route = s.match.fighters[0].def.combos.filter(function (c) { return c.plan && !c.wall; })
+      .sort(function (a, b) { return b.hits.length - a.hits.length; })[0];
+    window.EXPECT_HITS = route.hits.join();
     var plan = {};
     Object.keys(route.plan).forEach(function (f) { plan[f] = FG.parseInput(route.plan[f]); });
     window.HITS = [];
@@ -61,11 +65,12 @@ try { playwright = require('playwright'); } catch (e) {
   await page.waitForFunction(function () { return window.HITS.length >= 1; }, null, { timeout: 5000 });
   await page.waitForTimeout(60);
   await page.screenshot({ path: path.join(out, '2-launch.png') });
-  await page.waitForFunction(function () { return window.HITS.length >= 4; }, null, { timeout: 8000 });
+  await page.waitForFunction(function () { return window.HITS.length >= 3; }, null, { timeout: 8000 });
   await page.waitForTimeout(30);
   await page.screenshot({ path: path.join(out, '3-air-combo.png') });
-  await page.waitForFunction(function () { return window.HITS.length >= 5; }, null, { timeout: 8000 });
+  await page.waitForFunction(function () { return window.HITS.length >= window.EXPECT_HITS.split(',').length; }, null, { timeout: 8000 });
   var hits = await page.evaluate(function () { return window.HITS.slice(); });
+  var expectHits = await page.evaluate(function () { return window.EXPECT_HITS; });
 
   // Real keyboard input: walk P1 forward then jab into a standing-guard dummy.
   await page.evaluate(function () { var s = window.FG_SCENE; s.forceInput = null; s.newMatch(); s.dummy.settings.stance = 4; s.training.showBoxes = false; });
@@ -75,7 +80,7 @@ try { playwright = require('playwright'); } catch (e) {
   await page.keyboard.press('KeyJ');
   await page.waitForFunction(function () { return !!window.FG_SCENE.match.lastResult[0]; }, null, { timeout: 5000 });
   await page.screenshot({ path: path.join(out, '4-block.png') });
-  var p1 = await page.evaluate(function () { var m = window.FG_SCENE.match; var r = m.lastResult[0]; return { x: m.fighters[0].x, last: r && { move: r.move.id, kind: r.kind, adv: r.adv }, hp2: m.fighters[1].health }; });
+  var p1 = await page.evaluate(function () { var m = window.FG_SCENE.match; var r = m.lastResult[0]; return { x: m.fighters[0].x, last: r && { move: r.move.id, kind: r.kind, adv: r.adv }, jabBlock: m.fighters[0].def.moves.jab.block, hp2: m.fighters[1].health }; });
 
   // Training menu: Esc opens it and pauses the fight; arrows change a setting; Esc closes.
   await page.keyboard.press('Escape');
@@ -101,8 +106,8 @@ try { playwright = require('playwright'); } catch (e) {
 
   await browser.close();
   console.log(JSON.stringify({ title: title, matchup: matchup, renderer: renderer, hits: hits, p1: p1, menuOk: menuOk, resetX: resetX, errors: errors }, null, 1));
-  var ok = !errors.length && title === 'Mortal Calculus: C221' && matchup === 'brinkhus vs dalsass' && hits.join() === 'launcher,airP,airK,airH,mid' &&
-    p1.last && p1.last.kind === 'BLOCK' && p1.last.adv === 1 && menuOk && resetOk;
+  var ok = !errors.length && title === 'Mortal Calculus: C221' && matchup === expectMatchup && hits.join() === expectHits &&
+    p1.last && p1.last.kind === 'BLOCK' && p1.last.adv === p1.jabBlock && menuOk && resetOk;
   console.log(ok ? 'SMOKE OK' : 'SMOKE FAILED');
   if (!ok) process.exit(1);
 })().catch(function (e) { console.error(e); process.exit(1); });

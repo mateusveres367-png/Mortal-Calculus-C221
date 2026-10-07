@@ -7,7 +7,7 @@
   // --- Finding contacts ---------------------------------------------------------
 
   Match.prototype.resolveHits = function () {
-    var f = this.fighters, strikes = [], grabs = [];
+    var f = this.fighters, strikes = [], grabs = [], parries = [];
     for (var i = 0; i < 2; i++) {
       var a = f[i], d = f[1 - i];
       if (!a.isActiveFrame() || a.contact) continue;
@@ -25,12 +25,32 @@
       if (!touching) continue;
       // Snapshot the defender's guard and counter-hit state before anything changes (trades).
       var c = { a: i, d: 1 - i, guard: d.guardStance(this.buffers[1 - i]), ch: d.inCounterHitWindow(), punish: d.inRecovery() };
+      // A parry catches strikes of the levels it covers (never throws).
+      var pr = !m.throw && d.parryWindow();
+      if (pr && pr.levels.indexOf(m.level) >= 0) { parries.push(c); continue; }
       (m.throw ? grabs : strikes).push(c);
     }
+    for (var q = 0; q < parries.length; q++) this.applyParry(parries[q]);
     // A strike beats a throw on the same frame; two throws at once clash and break.
     if (grabs.length === 2) { this.throwBreak(0, 1, 'clash'); grabs = []; }
     for (var k = 0; k < strikes.length; k++) this.applyContact(strikes[k]);
     if (grabs.length && !strikes.length) this.startGrab(grabs[0]);
+  };
+
+  // Parry: the attacker staggers and the parrying fighter counters at once.
+  Match.prototype.applyParry = function (c) {
+    var a = this.fighters[c.a], d = this.fighters[c.d], pr = d.move.parry, label = d.move.parryLabel;
+    a.actionable = false; d.actionable = false;
+    a.contact = 'parried';
+    a.setState('hitstun');
+    a.stun = C.PARRY_STUN;
+    a.reaction = 'high';
+    a.vx = 0;
+    d.startMove(pr.counter);
+    this.measure = null;
+    this.hitstop = Math.max(this.hitstop, 12);
+    this.lastResult[c.d] = { move: d.def.moves[pr.counter], kind: 'PARRY', adv: null };
+    this.events.push({ type: 'parry', attacker: c.d, defender: c.a, x: (a.x + d.x) / 2, y: 70, shake: 0.004, label: label });
   };
 
   // --- Damage -------------------------------------------------------------------

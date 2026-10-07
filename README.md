@@ -4,7 +4,7 @@ A retro, Tekken-inspired 2D/2.5D fighting game themed around the El Camino Real 
 
 ## Status
 
-**Phase 4 — the roster (in progress, playable).** The eight fighters from [`ROSTER.md`](ROSTER.md) are being built two at a time. Available now: **BRINKHUS** (balanced, limits) and **DALSASS** (tricky, functions).
+**Phase 4 — the roster (in progress, playable).** The eight fighters from [`ROSTER.md`](ROSTER.md) are being built two at a time. Available now: **BRINKHUS** (balanced, limits), **CHAI** (technical, geometry), **DALSASS** (tricky, functions) and **LEE** (rushdown, sequences).
 
 What's in the game so far:
 
@@ -53,7 +53,8 @@ Every fighter uses the same input layout. What each input does, and its frame da
 | `P, P` and other strings | follow-ups, often only if the first hit connects |
 | down + `K` / down-back + `K` | low kick / knockdown sweep |
 | down + `H` | launcher; press up when it hits to jump after them |
-| forward or back + a button | fighter-specific moves (for example DALSASS's Function Feint and Piecewise) |
+| forward or back + a button | fighter-specific moves (for example DALSASS's Function Feint, CHAI's parry, LEE's Recursive Rush) |
+| sidestep, then a button | sidestep attack (CHAI's Tangent Step comes out early) |
 | `P` / `K` / `H` in the air | air attacks that chain on hit; air `H` bounds |
 | `P`+`K` / back + `P`+`K` | front throw (break with `P`) / reverse throw (break with `K`) |
 | while knocked down | up gets up, back or forward rolls, a sidestep key rolls sideways, `K` or `P` does a wake-up kick |
@@ -67,6 +68,14 @@ Fighters available now:
   - **Piecewise** (back + `P`) switches to a second stance where `P`, `K` and `H` are different moves. Moving leaves the stance.
   - **Asymptote Slide** (down-forward + `K`) slides under highs and knocks down.
   - The crowd cheers louder for him, and he wags a finger when you fall for a feint.
+- **CHAI** (technical, geometry):
+  - **Tangent Step:** sidestep, then `P` (or `K` for a low). It comes out earlier than other fighters' sidestep attacks and stays off the line until it hits.
+  - **Reflection Counter** (back + `H`) parries highs and mids during frames 2–10, then counters at once. Lows and throws beat it, and a whiffed parry is punishable.
+  - Her routes are precise; the Vertex Bound route has a 2-frame window. She winces apologetically after landing a big hit and offers a hand up when she wins.
+- **LEE** (rushdown, sequences):
+  - **Arithmetic Sequence** (`P, P, P`, then `P` for a mid or `K` for a low) gets faster with every hit.
+  - **Recursive Rush** (forward + `P`) repeats on hit when you press `P` again, up to three times.
+  - His normals are plus on block. He taunts mid-combo and pushes up his glasses after big hits.
 
 ### Training mode
 
