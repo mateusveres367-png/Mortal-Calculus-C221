@@ -41,6 +41,7 @@
 
   FG.makeFonts = function (scene) {
     for (var key in FG.FONT_COLORS) {
+      if (scene.textures.exists('pf_' + key)) continue; // already made by an earlier scene
       var color = FG.FONT_COLORS[key];
       var canvas = document.createElement('canvas');
       canvas.width = CW * CHARS.length;

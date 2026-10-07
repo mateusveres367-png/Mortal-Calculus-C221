@@ -1,5 +1,7 @@
 # CLAUDE.md
 
+The game is called **Mortal Calculus: C221**. Use that name for the title screen, the browser tab and the docs (`FG.TITLE` in `src/fg.js` holds it for code).
+
 ## Start here
 
 Read [`GAME_DESIGN.md`](GAME_DESIGN.md) for the full vision of the game before making changes. It is the source of truth for what we are building.

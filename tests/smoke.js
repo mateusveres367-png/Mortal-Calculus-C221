@@ -19,6 +19,11 @@ try { playwright = require('playwright'); } catch (e) {
 
   var url = 'file://' + path.resolve(__dirname, '..', 'index.html');
   await page.goto(url);
+  // Title screen first: check the name, then press Enter to start training mode.
+  await page.waitForFunction(function () { return window.FG_TITLE && window.FG_TITLE.t > 10; }, null, { timeout: 15000 });
+  var title = await page.title();
+  await page.screenshot({ path: path.join(out, '0-title.png') });
+  await page.keyboard.press('Enter');
   await page.waitForFunction(function () { return window.FG_SCENE && window.FG_SCENE.tickCount > 30; }, null, { timeout: 15000 });
   var renderer = await page.evaluate(function () { return FG.game.renderer.type === Phaser.WEBGL ? 'WEBGL' : 'CANVAS'; });
   await page.screenshot({ path: path.join(out, '1-start.png') });
@@ -84,8 +89,8 @@ try { playwright = require('playwright'); } catch (e) {
   await page.screenshot({ path: path.join(out, '6-training.png') });
 
   await browser.close();
-  console.log(JSON.stringify({ renderer: renderer, hits: hits, p1: p1, menuOk: menuOk, resetX: resetX, errors: errors }, null, 1));
-  var ok = !errors.length && hits.join() === 'launcher,airP,airK,airH,mid' &&
+  console.log(JSON.stringify({ title: title, renderer: renderer, hits: hits, p1: p1, menuOk: menuOk, resetX: resetX, errors: errors }, null, 1));
+  var ok = !errors.length && title === 'Mortal Calculus: C221' && hits.join() === 'launcher,airP,airK,airH,mid' &&
     p1.last && p1.last.kind === 'BLOCK' && p1.last.adv === 1 && menuOk && resetOk;
   console.log(ok ? 'SMOKE OK' : 'SMOKE FAILED');
   if (!ok) process.exit(1);

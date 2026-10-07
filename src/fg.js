@@ -2,6 +2,10 @@
 // every script attaches what it defines to FG and is loaded in order by index.html.
 var FG = (typeof window !== 'undefined' ? window : globalThis).FG = {};
 
+FG.TITLE = 'Mortal Calculus: C221';
+FG.TITLE_MAIN = 'MORTAL CALCULUS';
+FG.TITLE_SUB = 'C221';
+
 FG.C = {
   // Simulation runs at a fixed 60 steps per second; all frame data is in these frames.
   FPS: 60,

@@ -1,4 +1,4 @@
-# Browser Fighting Game
+# Mortal Calculus: C221
 
 A retro, Tekken-inspired 2D/2.5D fighting game themed around the El Camino Real Math Department. It runs in the browser and is built with HTML5 Canvas and JavaScript using [Phaser 3](https://phaser.io/).
 
@@ -40,7 +40,7 @@ The full vision lives in [`GAME_DESIGN.md`](GAME_DESIGN.md); the game is built i
 
 ## Running the game
 
-Open `index.html` directly in a modern browser (double-click it, or drag it into a browser window). No install, build step, or server is needed, and it works offline. Press any key once to enable sound.
+Open `index.html` directly in a modern browser (double-click it, or drag it into a browser window). No install, build step, or server is needed, and it works offline. On the title screen, press `Enter` (or click) to start; that also turns on sound.
 
 ## Controls
 
@@ -87,7 +87,7 @@ Things to try:
 
 ### Training mode
 
-The game starts in training mode. Press `Esc`, or click **MENU** at the top of the screen, to open the training menu. The fight pauses while the menu is open. Use up/down to pick a row, left/right to change it, and `Esc` to close. You can also click a row.
+After the title screen the game goes into training mode. Press `Esc`, or click **MENU** at the top of the screen, to open the training menu. The fight pauses while the menu is open. Use up/down to pick a row, left/right to change it, and `Esc` to close. You can also click a row.
 
 | Setting | Options |
 | --- | --- |
@@ -132,7 +132,7 @@ src/engine/             pure simulation, no Phaser: input buffer, fighter state 
 src/data/               fighter definitions with frame data, and skeleton poses
 src/render/             fighter drawing, stage, effects and sound, HUD, pixel font,
                         input display, training menu
-src/scenes/             the Phaser scene that ties input, simulation and rendering together
+src/scenes/             the title screen, and the fight scene that ties input, simulation and rendering together
 tests/sim.test.js       headless engine tests (node tests/sim.test.js)
 tests/smoke.js          optional browser smoke test over file:// (needs Playwright)
 ```
