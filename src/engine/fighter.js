@@ -53,6 +53,7 @@
   // Per-combo limits, cleared whenever the fighter is free again.
   Fighter.prototype.clearComboFlags = function () {
     this.juggleHits = 0;
+    this.comboHits = 0;     // hits taken in the current combo (juggle gravity grows with it)
     this.wallUsed = false;
     this.wallHits = 0;
     this.boundUsed = false;
@@ -453,7 +454,7 @@
       this.slide = 0;
     } else if (this.isAirborne()) {
       var juggled = this.state === 'juggle';
-      this.vy -= juggled ? C.JUGGLE_GRAVITY * (1 + C.JUGGLE_GRAVITY_SCALE * this.juggleHits) : C.GRAVITY;
+      this.vy -= juggled ? FG.juggleGravity(this.comboHits) : C.GRAVITY;
       this.y += this.vy;
       this.x += this.vx;
       if (this.y <= 0) {
@@ -554,6 +555,11 @@
   Fighter.prototype.isActiveFrame = function () {
     return this.state === 'attack' && !!this.move.box && this.moveFrame >= this.move.startup &&
       this.moveFrame <= this.move.startup + this.move.active - 1;
+  };
+
+  // Juggle gravity after `hits` hits in the combo.
+  FG.juggleGravity = function (hits) {
+    return C.JUGGLE_GRAVITY * Math.min(C.JUGGLE_GRAVITY_MAX, 1 + C.JUGGLE_GRAVITY_SCALE * Math.max(0, (hits || 1) - 1));
   };
 
   FG.Fighter = Fighter;

@@ -142,12 +142,10 @@
     FG.kit.taunt()),
 
     combos: [
-      { name: 'RIGHT TRIANGLE', notation: 'P, K', plan: { 0: 'P', 10: 'K' }, hits: ['jab', 'jabK'] },
-      { name: 'PARABOLA JUGGLE', notation: 'D+H, P, K', plan: { 0: 'D+H', 42: 'P', 66: 'K' }, hits: ['launcher', 'jab', 'mid'] },
-      { name: 'VERTEX SPIKE', notation: 'D+H, UP, AIR P, AIR K, AIR H, K',
-        plan: { 0: 'D+H', 14: 'UP', 22: 'P', 29: 'K', 38: 'H', 73: 'K' }, hits: ['launcher', 'airP', 'airK', 'airH', 'mid'] },
-      { name: 'VERTEX BOUND (HARD)', notation: 'D+H, F+H (2-FRAME WINDOW), K',
-        plan: { 0: 'D+H', 42: 'F+H', 81: 'K' }, hits: ['launcher', 'fH', 'mid'] }
+      { name: 'RIGHT TRIANGLE', difficulty: 'easy', notation: 'P, K', plan: { 0: 'P', 11: 'K' }, hits: ['jab', 'jabK'] },
+      { name: 'PARABOLA JUGGLE', difficulty: 'medium', notation: 'D+H, P, K', plan: { 0: 'D+H', 39: 'P', 53: 'K' }, hits: ['launcher', 'jab', 'jabK'] },
+      { name: 'VERTEX SPIKE', difficulty: 'hard', notation: 'D+H, UP, AIR P, AIR K, AIR H, K',
+        plan: { 0: 'D+H', 17: 'UP', 32: 'P', 40: 'K', 50: 'H', 79: 'K' }, hits: ['launcher', 'airP', 'airK', 'airH', 'mid'] }
     ],
 
     intro: [[1, 'idle'], [14, 'stand'], [30, 'bow'], [48, 'bow'], [62, 'stand'], [84, 'idle']],

@@ -53,6 +53,9 @@
 
     f[0].think(b[0], f[1], this.frame);
     f[1].think(b[1], f[0], this.frame);
+    // A fighter who is free this frame is out of any combo: a hit landing now
+    // (they could have guarded) starts a new one.
+    for (i = 0; i < 2; i++) if (f[i].actionable) this.combo[i] = { hits: 0, damage: 0 };
     for (i = 0; i < 2; i++) {
       if (f[i].startedMove) { this.events.push({ type: 'whiff', fighter: i, move: f[i].startedMove }); f[i].startedMove = null; }
       // MIYASHIRO's Calculated: an opponent's whiff makes his next hit stronger.
@@ -91,7 +94,7 @@
     if (fi.bounced) {
       fi.bounced = false;
       this.events.push({ type: 'bounce', fighter: i, x: fi.x });
-      this.hitstop = Math.max(this.hitstop, 4);
+      this.hitstop = Math.max(this.hitstop, 6);
     }
     if (!fi.landed) return;
     fi.landed = false;
@@ -217,7 +220,7 @@
     var dist = combo.dist || 40;
     if (combo.wall) { var w = C.WALL_R - 18 * dfn.scale - 10; m.fighters[1].x = w; m.fighters[0].x = w - 44; }
     else { m.fighters[0].x = 500 - dist / 2; m.fighters[1].x = 500 + dist / 2; }
-    var hits = [], damage = 0, next = 0, f0 = m.frame, fired = {}, firedOpp = {};
+    var hits = [], counts = [], damage = 0, next = 0, f0 = m.frame, fired = {}, firedOpp = {};
     function merge(r, notation) { var add = FG.parseInput(notation); for (var k in add) if (add[k]) r[k] = true; }
     for (i = 0; i < (frames || 320); i++) {
       var r1 = FG.emptyRaw(), r2 = FG.emptyRaw(), t = m.frame - f0;
@@ -226,9 +229,11 @@
       if (combo.queue && next < combo.queue.length && m.fighters[0].state === 'idle' && m.hitstop === 0) merge(r1, combo.queue[next++]);
       if (combo.oppPlan && combo.oppPlan[t] && !firedOpp[t]) { merge(r2, combo.oppPlan[t]); firedOpp[t] = true; }
       m.step([r1, r2]);
-      m.events.forEach(function (e) { if (e.type === 'hit' && e.attacker === 0) { hits.push(e.move.id); damage += e.damage; } });
+      m.events.forEach(function (e) { if (e.type === 'hit' && e.attacker === 0) { hits.push(e.move.id); damage += e.damage; counts.push(e.hits); } });
     }
-    return { hits: hits, damage: damage, match: m };
+    // A true combo: the combo counter climbs 1, 2, 3... (the opponent never got free).
+    var trueCombo = counts.every(function (n, k) { return n === k + 1; });
+    return { hits: hits, damage: damage, counts: counts, trueCombo: trueCombo, match: m };
   };
 
   FG.Match = Match;

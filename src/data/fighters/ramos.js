@@ -136,11 +136,11 @@
     FG.kit.taunt()),
 
     combos: [
-      { name: 'ROW AND COLUMN', notation: 'P, P', plan: { 0: 'P', 10: 'P' }, hits: ['jab', 'jab2'] },
-      { name: 'TRANSPOSE JUGGLE', notation: 'D+H, P, D+K ON THE GROUND', plan: { 0: 'D+H', 41: 'P', 91: 'D+K' }, hits: ['launcher', 'jab', 'low'] },
-      { name: 'RANK SPIKE', notation: 'D+H, UP, AIR P, AIR K, AIR H, K',
-        plan: { 0: 'D+H', 15: 'UP', 29: 'P', 36: 'K', 45: 'H', 80: 'K' }, hits: ['launcher', 'airP', 'airK', 'airH', 'mid'] },
-      { name: 'IDENTITY STOMP', notation: 'F+P+K, D+K ON THE GROUND', plan: { 0: 'F+P+K', 68: 'D+K' }, hits: ['cmdGrab', 'low'] }
+      { name: 'ROW AND COLUMN', difficulty: 'easy', notation: 'P, P', plan: { 0: 'P', 15: 'P' }, hits: ['jab', 'jab2'] },
+      { name: 'TRANSPOSE JUGGLE', difficulty: 'medium', notation: 'D+H, P, D+K ON THE GROUND', plan: { 0: 'D+H', 39: 'P', 82: 'D+K' }, hits: ['launcher', 'jab', 'low'] },
+      { name: 'RANK SPIKE', difficulty: 'hard', notation: 'D+H, UP, AIR P, AIR K, AIR H, K',
+        plan: { 0: 'D+H', 17: 'UP', 32: 'P', 40: 'K', 50: 'H', 79: 'K' }, hits: ['launcher', 'airP', 'airK', 'airH', 'mid'] },
+      { name: 'IDENTITY STOMP', difficulty: 'medium', notation: 'F+P+K, D+K ON THE GROUND', plan: { 0: 'F+P+K', 66: 'D+K' }, hits: ['cmdGrab', 'low'] }
     ],
 
     intro: [[1, 'stand'], [12, 'knuckles'], [28, 'knuckles'], [38, 'stretch'], [56, 'stretch'], [66, 'stand'], [84, 'idle']],

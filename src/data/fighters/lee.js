@@ -148,12 +148,12 @@
     FG.kit.taunt()),
 
     combos: [
-      { name: 'ARITHMETIC SEQUENCE', notation: 'P, P, P, P', plan: { 0: 'P', 10: 'P', 19: 'P', 27: 'P' }, hits: ['jab', 'seq2', 'seq3', 'seqP'] },
-      { name: 'RECURSIVE RUSH', notation: 'F+P, P, P', plan: { 0: 'F+P', 13: 'P', 25: 'P' }, hits: ['fP', 'fP', 'fP'] },
-      { name: 'FIBONACCI SPIKE', notation: 'D+H, UP, AIR P, AIR K, AIR H, K',
-        plan: { 0: 'D+H', 14: 'UP', 29: 'P', 36: 'K', 45: 'H', 81: 'K' }, hits: ['launcher', 'airP', 'airK', 'airH', 'mid'] },
-      { name: 'FIBONACCI JUGGLE', notation: 'D+H, P, P, D+K ON THE GROUND',
-        plan: { 0: 'D+H', 40: 'P', 50: 'P', 90: 'D+K' }, hits: ['launcher', 'jab', 'seq2', 'low'] }
+      { name: 'ARITHMETIC SEQUENCE', difficulty: 'easy', notation: 'P, P, P, P', plan: { 0: 'P', 11: 'P', 22: 'P', 32: 'P' }, hits: ['jab', 'seq2', 'seq3', 'seqP'] },
+      { name: 'RECURSIVE RUSH', difficulty: 'easy', notation: 'F+P, P, P', plan: { 0: 'F+P', 13: 'P', 26: 'P' }, hits: ['fP', 'fP', 'fP'] },
+      { name: 'FIBONACCI JUGGLE', difficulty: 'medium', notation: 'D+H, P, P, D+K ON THE GROUND',
+        plan: { 0: 'D+H', 37: 'P', 50: 'P', 90: 'D+K' }, hits: ['launcher', 'jab', 'seq2', 'low'] },
+      { name: 'FIBONACCI SPIKE', difficulty: 'hard', notation: 'D+H, UP, AIR P, AIR K, AIR H, K',
+        plan: { 0: 'D+H', 16: 'UP', 31: 'P', 40: 'K', 50: 'H', 79: 'K' }, hits: ['launcher', 'airP', 'airK', 'airH', 'mid'] }
     ],
 
     intro: [[1, 'idle'], [14, 'stand'], [26, 'glasses2'], [44, 'glasses2'], [56, 'shrug'], [74, 'shrug'], [86, 'idle']],

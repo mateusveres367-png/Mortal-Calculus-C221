@@ -112,7 +112,7 @@
       launcher: {
         name: 'Launcher', label: 'POWER RULE', cmd: 'D+H', level: 'mid', strength: 'launch',
         startup: 17, active: 4, recovery: 24, damage: 22,
-        block: -17, hit: { launch: 7.4 }, ch: { launch: 8 },
+        block: -17, hit: { launch: 8.2 }, ch: { launch: 8.8 },
         hitbox: { x: 8, w: 28, y: 30, h: 82 }, push: 6, juggle: 5.5, carry: 0.6, shake: 0.01,
         step: [10, 17, 1.3],
         cancels: [{ btn: 'up', into: 'jump', from: 19, to: 31, onHit: true }],
@@ -126,11 +126,11 @@
     FG.kit.taunt()),
 
     combos: [
-      { name: 'SQUARED', notation: 'P, P', plan: { 0: 'P', 11: 'P' }, hits: ['jab', 'jab2'] },
-      { name: 'POWER RULE JUGGLE', notation: 'D+H, P, P', plan: { 0: 'D+H', 41: 'P', 62: 'P' }, hits: ['launcher', 'jab', 'jab2'] },
-      { name: 'TOWER OF POWERS', notation: 'D+H, UP, AIR K, AIR H, D+K ON THE GROUND',
-        plan: { 0: 'D+H', 17: 'UP', 25: 'K', 36: 'H', 98: 'D+K' }, hits: ['launcher', 'airK', 'airH', 'low'] },
-      { name: 'EXPONENTIAL GROWTH', notation: 'AT THE WALL: H, D+H', queue: ['H', 'D+H'], wall: true, hits: ['heavy', 'launcher'] }
+      { name: 'SQUARED', difficulty: 'easy', notation: 'P, P', plan: { 0: 'P', 16: 'P' }, hits: ['jab', 'jab2'] },
+      { name: 'POWER RULE JUGGLE', difficulty: 'medium', notation: 'D+H, P, P', plan: { 0: 'D+H', 42: 'P', 59: 'P' }, hits: ['launcher', 'jab', 'jab2'] },
+      { name: 'TOWER OF POWERS', difficulty: 'hard', notation: 'D+H, UP, AIR K, AIR H, D+K ON THE GROUND',
+        plan: { 0: 'D+H', 20: 'UP', 31: 'K', 40: 'H', 94: 'D+K' }, hits: ['launcher', 'airK', 'airH', 'low'] },
+      { name: 'EXPONENTIAL GROWTH', difficulty: 'medium', notation: 'AT THE WALL: H, D+H', queue: ['H', 'D+H'], wall: true, hits: ['heavy', 'launcher'] }
     ],
 
     // The car drives in, he steps out (the scene handles the car), then loosens his tie.

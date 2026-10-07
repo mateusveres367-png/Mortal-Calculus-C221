@@ -139,12 +139,14 @@
     FG.kit.taunt()),
 
     combos: [
-      { name: 'CROSS PRODUCT JUGGLE', notation: 'D+H, P, K', plan: { 0: 'D+H', 41: 'P', 62: 'K' }, hits: ['launcher', 'jab', 'mid'] },
-      { name: 'PROJECTION SPIKE', notation: 'D+H, UP, AIR P, AIR K, AIR H, K',
-        plan: { 0: 'D+H', 15: 'UP', 30: 'P', 37: 'K', 46: 'H', 81: 'K' }, hits: ['launcher', 'airP', 'airK', 'airH', 'mid'] },
-      { name: 'CALCULATED RUSH', notation: 'THEY WHIFF A JAB, F, F+P (CALCULATED BONUS)',
+      { name: 'UNIT VECTORS', difficulty: 'easy', notation: 'P, P', plan: { 0: 'P', 15: 'P' }, hits: ['jab', 'jab2'] },
+      { name: 'CROSS PRODUCT JUGGLE', difficulty: 'medium', notation: 'D+H, P, P, D+K ON THE GROUND',
+        plan: { 0: 'D+H', 38: 'P', 56: 'P', 97: 'D+K' }, hits: ['launcher', 'jab', 'jab2', 'low'] },
+      { name: 'PROJECTION SPIKE', difficulty: 'hard', notation: 'D+H, UP, AIR P, AIR K, AIR H, K',
+        plan: { 0: 'D+H', 17: 'UP', 32: 'P', 41: 'K', 51: 'H', 79: 'K' }, hits: ['launcher', 'airP', 'airK', 'airH', 'mid'] },
+      { name: 'CALCULATED RUSH', difficulty: 'medium', notation: 'THEY WHIFF A JAB, F, F+P (CALCULATED BONUS)',
         dist: 100, oppPlan: { 0: 'P' }, plan: { 18: 'F', 20: 'F', 27: 'P' }, hits: ['dashP'] },
-      { name: 'VECTOR SPACE', notation: 'AT THE WALL: H, F+K, D+H', queue: ['H', 'F+K', 'D+H'], wall: true, hits: ['heavy', 'fK', 'launcher'] }
+      { name: 'VECTOR SPACE', difficulty: 'medium', notation: 'AT THE WALL: H, F+K, D+H', queue: ['H', 'F+K', 'D+H'], wall: true, hits: ['heavy', 'fK', 'launcher'] }
     ],
 
     intro: [[1, 'stand'], [12, 'sleeve'], [26, 'sleeve'], [34, 'sleeve2'], [48, 'sleeve2'], [58, 'bow'], [70, 'stand'], [86, 'idle']],

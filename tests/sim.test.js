@@ -201,8 +201,10 @@ defs.forEach(function (d) {
   // Routes must work against every opponent (fighters differ in size).
   d.combos.forEach(function (c) {
     defs.forEach(function (opp) {
-      var hits = runCombo(d, c, opp);
+      var r = FG.runCombo(d, opp, c), hits = r.hits;
       check(d.name + ' combo ' + c.name + ' vs ' + opp.name, hits.join() === c.hits.join(), { got: hits, want: c.hits });
+      // A true combo: every hit lands before the opponent is free again.
+      check(d.name + ' combo ' + c.name + ' is a true combo vs ' + opp.name, r.trueCombo, r.counts);
     });
   });
 });
@@ -812,6 +814,47 @@ check('all eight fighters', FG.ROSTER.length === 8, FG.ROSTER.length);
     m.events.forEach(function (e) { if (e.type === 'hit') seen.push(e.hits); });
   }
   check('combo hits are numbered', seen.join() === '1,2,3', seen);
+})();
+
+// Juggle physics: launchers throw them up on a snappy arc; air hits pop them by a
+// fixed amount per strength; gravity grows with the combo so juggles end; bounds
+// slam them into the floor and they bounce back up.
+(function () {
+  defs.forEach(function (d) {
+    var r = play(d, D, 40, { 0: LAUNCH }, {}, 140), opp = r.m.fighters[1];
+    var m = setup(d, D, 40), apexT = null, top = 0, landT = null, launchedT = null;
+    var f0 = m.frame;
+    for (var i = 0; i < 200; i++) {
+      m.step([raw(i === 0 ? LAUNCH : {}), raw({})]);
+      var o = m.fighters[1];
+      if (launchedT === null && o.state === 'juggle') launchedT = m.frame;
+      if (launchedT !== null && o.y > top) { top = o.y; apexT = m.frame; }
+      if (launchedT !== null && landT === null && o.state === 'down') landT = m.frame;
+    }
+    check(d.name + ' launch is high and snappy', top >= 85 && apexT - launchedT <= 26 && landT - launchedT <= 52, [top, apexT - launchedT, landT - launchedT]);
+  });
+  check('juggle gravity grows with the combo', FG.juggleGravity(1) < FG.juggleGravity(4) && FG.juggleGravity(4) < FG.juggleGravity(10), [FG.juggleGravity(1), FG.juggleGravity(10)]);
+  check('juggle gravity is capped', FG.juggleGravity(100) === FG.C.JUGGLE_GRAVITY * FG.C.JUGGLE_GRAVITY_MAX);
+  // The same air hit pops the same amount, whoever you are.
+  var pops = defs.map(function (d) {
+    var m = setup(S, d, 40);
+    var o = m.fighters[1]; o.setState('juggle'); o.y = 60; o.vy = -2; o.juggleHits = 1;
+    m.juggleHit({ a: 0, d: 1 }, m.fighters[0], o, S.moves.jab, {});
+    return Math.round(o.vy * 100) / 100;
+  });
+  check('air hit pops are consistent', pops.every(function (v) { return v === pops[0]; }) && pops[0] > 2, pops);
+  // Bound: an air H slams them down; they bounce back up.
+  var route = S.combos.filter(function (c) { return c.difficulty === 'hard'; })[0];
+  var res = FG.runCombo(S, D, route), bounce = false;
+  var m2 = res.match;
+  check('hard route bounds', route.hits.indexOf('airH') >= 0 && res.hits.join() === route.hits.join());
+  var b = play(S, D, 40, (function () { var o = {}; for (var k in route.plan) if (+k <= 51) o[k] = FG.parseInput(route.plan[k]); return o; })(), {}, 140);
+  check('bound bounces them back up', has(b, 'bounce'), types(b));
+  // Juggles end on their own: launch, then jab as fast as possible.
+  defs.forEach(function (d) {
+    var r = play(d, D, 40, function (i) { return i === 0 ? LAUNCH : (i > 30 && i % 2 ? { p: true } : {}); }, {}, 400);
+    check(d.name + ' mashed juggle ends', r.hits.length <= 8 && r.m.fighters[1].state !== 'juggle', r.hits.length);
+  });
 })();
 
 console.log(passes + ' passed, ' + failures + ' failed');

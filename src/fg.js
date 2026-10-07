@@ -23,7 +23,17 @@ FG.C = {
   PUSH_WIDTH: 18, // half-width of the body pushbox
 
   GRAVITY: 0.5,
-  JUGGLE_GRAVITY: 0.3,
+  // Juggles: launchers throw the opponent up fast on a snappy arc (launch speed
+  // is scaled by LAUNCH_SNAP), and juggle gravity grows with every hit in the
+  // combo, up to JUGGLE_GRAVITY_MAX times, so juggles end on their own.
+  JUGGLE_GRAVITY: 0.42,
+  JUGGLE_GRAVITY_SCALE: 0.07,  // extra juggle gravity per combo hit after the first
+  JUGGLE_GRAVITY_MAX: 2.0,
+  LAUNCH_SNAP: 1.2,
+  // Air hits pop a juggled opponent up a little, by the same amount for every
+  // move of a strength (so juggles are predictable), shrinking with each juggle hit.
+  JUGGLE_POP: { light: 3.8, medium: 4.3, heavy: 4.8, launch: 5.6 },
+  JUGGLE_POP_DECAY: 0.1,
 
   // Input
   BUFFER_FRAMES: 8,
@@ -38,8 +48,9 @@ FG.C = {
   SUPER_JUMP_VY: 9.4,     // launcher jump-cancel
   SUPER_JUMP_VX: 1.7,
   AIR_ACTIONS: 3,         // air attacks per jump
-  JUGGLE_GRAVITY_SCALE: 0.05, // extra juggle gravity per juggle hit
-  BOUNCE_VY: 5.4,         // floor bounce after a bound
+  BOUND_VY: 9,            // a bound slams the opponent into the floor this fast
+  BOUNCE_VY: 7,           // ...and they bounce back up at this speed
+  BOUND_DRIVE: 3,         // an air bound sends the attacker down at least this fast
 
   // Walls
   WALL_STUN: 46,

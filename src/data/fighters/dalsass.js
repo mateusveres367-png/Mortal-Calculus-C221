@@ -162,12 +162,11 @@
     FG.kit.taunt()),
 
     combos: [
-      { name: 'DISCONTINUITY JUGGLE', notation: 'D+H, P, K', plan: { 0: 'D+H', 37: 'P', 65: 'K' }, hits: ['launcher', 'jab', 'mid'] },
-      { name: 'INVERSE SPIKE', notation: 'D+H, UP, AIR K, AIR H, K',
-        plan: { 0: 'D+H', 15: 'UP', 22: 'K', 31: 'H', 65: 'K' }, hits: ['launcher', 'airK', 'airH', 'mid'] },
-      { name: 'FAKE OUT', notation: 'D+H, F+H, H (BOUND), D+K ON THE GROUND',
-        plan: { 0: 'D+H', 42: 'F+H', 47: 'H', 104: 'D+K' }, hits: ['launcher', 'drop', 'low'] },
-      { name: 'SLIDE AND STOMP', notation: 'D/F+K, D+K ON THE GROUND', plan: { 0: 'D/F+K', 81: 'D+K' }, hits: ['dfK', 'low'] }
+      { name: 'COMPOSITION', difficulty: 'easy', notation: 'P, P', plan: { 0: 'P', 15: 'P' }, hits: ['jab', 'jab2'] },
+      { name: 'DISCONTINUITY JUGGLE', difficulty: 'medium', notation: 'D+H, P, P', plan: { 0: 'D+H', 38: 'P', 56: 'P' }, hits: ['launcher', 'jab', 'jab2'] },
+      { name: 'INVERSE SPIKE', difficulty: 'hard', notation: 'D+H, UP, AIR K, AIR H, K',
+        plan: { 0: 'D+H', 17: 'UP', 31: 'K', 41: 'H', 70: 'K' }, hits: ['launcher', 'airK', 'airH', 'mid'] },
+      { name: 'SLIDE AND STOMP', difficulty: 'medium', notation: 'D/F+K, D+K ON THE GROUND', plan: { 0: 'D/F+K', 49: 'D+K' }, hits: ['dfK', 'low'] }
     ],
 
 

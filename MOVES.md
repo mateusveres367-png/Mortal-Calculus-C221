@@ -30,9 +30,9 @@ Calm and friendly, but every hit is heavy. Slow, patient, devastating.
 
 **Combo routes** (tested in `tests/sim.test.js`):
 
-- **Squared:** P, P (frames: P @0, P @18)
-- **Power Rule Juggle:** D+H, P, P (frames: D+H @0, P @56, P @84)
-- **Tower Of Powers:** D+H, up, air K, air H, D+K on the ground (frames: D+H @0, UP @19, K @40, H @54, D+K @136)
+- **Squared:** P, P (frames: P @0, P @16)
+- **Power Rule Juggle:** D+H, P, P (frames: D+H @0, P @42, P @59)
+- **Tower Of Powers:** D+H, up, air K, air H, D+K on the ground (frames: D+H @0, UP @20, K @31, H @40, D+K @94)
 - **Exponential Growth:** at the wall: H, D+H (each input as soon as you can act)
 
 ## BRINKHUS — Balanced — Limits
@@ -62,9 +62,9 @@ Nice, easygoing, a good sport. Best for new players.
 
 **Combo routes** (tested in `tests/sim.test.js`):
 
-- **Epsilon-Delta:** P, K, K (frames: P @0, K @14, K @32)
-- **Limit Break Juggle:** D+H, P, K (frames: D+H @0, P @53, K @83)
-- **Limit At Infinity:** D+H, up, air P, air K, air H, K (frames: D+H @0, UP @16, P @43, K @55, H @68, K @123)
+- **Epsilon-Delta:** P, K, K (frames: P @0, K @12, K @24)
+- **Limit Break Juggle:** D+H, P, P, D+K on the ground (frames: D+H @0, P @38, P @55, D+K @95)
+- **Limit At Infinity:** D+H, up, air P, air K, air H, K (frames: D+H @0, UP @17, P @32, K @41, H @51, K @79)
 - **Hard Limit:** at the wall: H, P, P, D+H (each input as soon as you can act)
 
 ## CHAI — Technical — Geometry
@@ -96,10 +96,9 @@ Very kind, precise and graceful. Bows before fights.
 
 **Combo routes** (tested in `tests/sim.test.js`):
 
-- **Right Triangle:** P, K (frames: P @0, K @14)
-- **Parabola Juggle:** D+H, P, K (frames: D+H @0, P @55, K @85)
-- **Vertex Spike:** D+H, up, air P, air K, air H, K (frames: D+H @0, UP @16, P @35, K @47, H @60, K @115)
-- **Vertex Bound (hard):** D+H, F+H (2-FRAME WINDOW), K (frames: D+H @0, F+H @55, K @110)
+- **Right Triangle:** P, K (frames: P @0, K @11)
+- **Parabola Juggle:** D+H, P, K (frames: D+H @0, P @39, K @53)
+- **Vertex Spike:** D+H, up, air P, air K, air H, K (frames: D+H @0, UP @17, P @32, K @40, H @50, K @79)
 
 ## DALSASS — Tricky — Functions
 
@@ -132,10 +131,10 @@ Happy, sassy, everyone's favorite. Fakes you out with a grin.
 
 **Combo routes** (tested in `tests/sim.test.js`):
 
-- **Discontinuity Juggle:** D+H, P, K (frames: D+H @0, P @50, K @84)
-- **Inverse Spike:** D+H, up, air K, air H, K (frames: D+H @0, UP @16, K @35, H @48, K @101)
-- **Fake Out:** D+H, F+H, H (bound), D+K on the ground (frames: D+H @0, F+H @55, H @60, D+K @133)
-- **Slide And Stomp:** D/F+K, D+K on the ground (frames: D/F+K @0, D+K @91)
+- **Composition:** P, P (frames: P @0, P @15)
+- **Discontinuity Juggle:** D+H, P, P (frames: D+H @0, P @38, P @56)
+- **Inverse Spike:** D+H, up, air K, air H, K (frames: D+H @0, UP @17, K @31, H @41, K @70)
+- **Slide And Stomp:** D/F+K, D+K on the ground (frames: D/F+K @0, D+K @49)
 
 ## LEE — Rushdown — Sequences
 
@@ -166,10 +165,10 @@ Sarcastic and funny. Taunts mid-combo. Relentless pressure.
 
 **Combo routes** (tested in `tests/sim.test.js`):
 
-- **Arithmetic Sequence:** P, P, P, P (frames: P @0, P @12, P @26, P @40)
-- **Recursive Rush:** F+P, P, P (frames: F+P @0, P @15, P @33)
-- **Fibonacci Spike:** D+H, up, air P, air K, air H, K (frames: D+H @0, UP @16, P @42, K @54, H @67, K @123)
-- **Fibonacci Juggle:** D+H, P, P, D+K on the ground (frames: D+H @0, P @53, P @65, D+K @115)
+- **Arithmetic Sequence:** P, P, P, P (frames: P @0, P @11, P @22, P @32)
+- **Recursive Rush:** F+P, P, P (frames: F+P @0, P @13, P @26)
+- **Fibonacci Juggle:** D+H, P, P, D+K on the ground (frames: D+H @0, P @37, P @50, D+K @90)
+- **Fibonacci Spike:** D+H, up, air P, air K, air H, K (frames: D+H @0, UP @16, P @31, K @40, H @50, K @79)
 
 ## LOPEZ — Defensive — Statistics
 
@@ -199,10 +198,10 @@ Very suspicious. Always watching. Waits for you to commit, then punishes.
 
 **Combo routes** (tested in `tests/sim.test.js`):
 
-- **Sample Mean:** P, P (frames: P @0, P @16)
-- **Outlier Juggle:** D+H, P, P (frames: D+H @0, P @54, P @72)
-- **Normal Distribution:** D+H, up, air P, air K, air H, D+K on the ground (frames: D+H @0, UP @17, P @45, K @58, H @72, D+K @147)
-- **Confidence Interval:** BLOCK THEIR JAB, P, D+K on the ground (frames: P @25, D+K @79; hold B @0-14)
+- **Sample Mean:** P, P (frames: P @0, P @15)
+- **Outlier Juggle:** D+H, P, P, D+K on the ground (frames: D+H @0, P @39, P @56, D+K @97)
+- **Normal Distribution:** D+H, up, air P, air K, air H, D+K on the ground (frames: D+H @0, UP @18, P @32, K @41, H @51, D+K @103)
+- **Confidence Interval:** BLOCK THEIR JAB, P, D+K on the ground (frames: P @21, D+K @63; hold B @0-11)
 
 ## MIYASHIRO — Spacing — Vectors
 
@@ -232,8 +231,9 @@ Very smart. Reads opponents, keeps perfect distance, punishes every mistake.
 
 **Combo routes** (tested in `tests/sim.test.js`):
 
-- **Cross Product Juggle:** D+H, P, K (frames: D+H @0, P @54, K @81)
-- **Projection Spike:** D+H, up, air P, air K, air H, K (frames: D+H @0, UP @16, P @43, K @55, H @68, K @123)
+- **Unit Vectors:** P, P (frames: P @0, P @15)
+- **Cross Product Juggle:** D+H, P, P, D+K on the ground (frames: D+H @0, P @38, P @56, D+K @97)
+- **Projection Spike:** D+H, up, air P, air K, air H, K (frames: D+H @0, UP @17, P @32, K @41, H @51, K @79)
 - **Calculated Rush:** THEY WHIFF A JAB, F, F+P (CALCULATED BONUS) (frames: F @18, F @20, P @27)
 - **Vector Space:** at the wall: H, F+K, D+H (each input as soon as you can act)
 
@@ -264,7 +264,7 @@ Fast, explosive grappler who closes distance quickly. Confident and focused.
 
 **Combo routes** (tested in `tests/sim.test.js`):
 
-- **Row And Column:** P, P (frames: P @0, P @16)
-- **Transpose Juggle:** D+H, P, D+K on the ground (frames: D+H @0, P @54, D+K @110)
-- **Rank Spike:** D+H, up, air P, air K, air H, K (frames: D+H @0, UP @17, P @42, K @54, H @67, K @122)
-- **Identity Stomp:** F+P+K, D+K on the ground (frames: F+P+K @0, D+K @82)
+- **Row And Column:** P, P (frames: P @0, P @15)
+- **Transpose Juggle:** D+H, P, D+K on the ground (frames: D+H @0, P @39, D+K @82)
+- **Rank Spike:** D+H, up, air P, air K, air H, K (frames: D+H @0, UP @17, P @32, K @40, H @50, K @79)
+- **Identity Stomp:** F+P+K, D+K on the ground (frames: F+P+K @0, D+K @66)

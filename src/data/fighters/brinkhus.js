@@ -126,11 +126,12 @@
 
     // Combo routes: inputs on sim frames counted from the first press (tested in tests/sim.test.js).
     combos: [
-      { name: 'EPSILON-DELTA', notation: 'P, K, K', plan: { 0: 'P', 10: 'K', 21: 'K' }, hits: ['jab', 'eps', 'delta'] },
-      { name: 'LIMIT BREAK JUGGLE', notation: 'D+H, P, K', plan: { 0: 'D+H', 40: 'P', 64: 'K' }, hits: ['launcher', 'jab', 'mid'] },
-      { name: 'LIMIT AT INFINITY', notation: 'D+H, UP, AIR P, AIR K, AIR H, K',
-        plan: { 0: 'D+H', 15: 'UP', 30: 'P', 37: 'K', 46: 'H', 81: 'K' }, hits: ['launcher', 'airP', 'airK', 'airH', 'mid'] },
-      { name: 'HARD LIMIT', notation: 'AT THE WALL: H, P, P, D+H', queue: ['H', 'P', 'P', 'D+H'], wall: true, hits: ['heavy', 'jab', 'jab', 'launcher'] }
+      { name: 'EPSILON-DELTA', difficulty: 'easy', notation: 'P, K, K', plan: { 0: 'P', 12: 'K', 24: 'K' }, hits: ['jab', 'eps', 'delta'] },
+      { name: 'LIMIT BREAK JUGGLE', difficulty: 'medium', notation: 'D+H, P, P, D+K ON THE GROUND',
+        plan: { 0: 'D+H', 38: 'P', 55: 'P', 95: 'D+K' }, hits: ['launcher', 'jab', 'jab2', 'low'] },
+      { name: 'LIMIT AT INFINITY', difficulty: 'hard', notation: 'D+H, UP, AIR P, AIR K, AIR H, K',
+        plan: { 0: 'D+H', 17: 'UP', 32: 'P', 41: 'K', 51: 'H', 79: 'K' }, hits: ['launcher', 'airP', 'airK', 'airH', 'mid'] },
+      { name: 'HARD LIMIT', difficulty: 'medium', notation: 'AT THE WALL: H, P, P, D+H', queue: ['H', 'P', 'P', 'D+H'], wall: true, hits: ['heavy', 'jab', 'jab', 'launcher'] }
     ],
 
 

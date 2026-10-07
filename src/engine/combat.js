@@ -64,6 +64,7 @@
     var scale = combo.hits <= 2 ? 1 : Math.max(0.3, 1 - 0.12 * (combo.hits - 2));
     var dmg = Math.max(1, Math.round(base * scale * (mult || 1)));
     combo.damage += dmg;
+    d.comboHits = combo.hits;
     d.health = Math.max(0, d.health - dmg);
     if (d.health <= 0 && !d.ko) {
       d.ko = true;
@@ -140,7 +141,7 @@
     } else if (d.isAirborne()) {
       this.juggleHit(c, a, d, m, ev);
     } else if (result.launch) {
-      this.toJuggle(d, a, result.launch, m);
+      this.toJuggle(d, a, result.launch * C.LAUNCH_SNAP, m);
       ev.launch = true;
       ev.shake += 0.002;
       this.lastResult[c.a] = { move: m, kind: 'LAUNCH', adv: null };
@@ -189,16 +190,20 @@
       d.setState('juggle');
       d.boundUsed = true;
       d.bounding = true;
-      d.vy = -6;
+      d.vy = -C.BOUND_VY;
       d.vx = a.facing * 0.4;
       d.juggleHits = Math.max(0, d.juggleHits - 1);
       d.noTech = true;
       ev.bound = true; ev.finisher = true;
+      // An air spike drives the attacker down with it, to land in time to follow up.
+      if (a.isAirborne()) a.vy = Math.min(a.vy, -C.BOUND_DRIVE);
       ev.shake = Math.max(ev.shake, 0.007);
       this.lastResult[c.a] = { move: m, kind: 'BOUND', adv: null };
       return;
     }
-    var pop = m.juggle * Math.max(0.4, 1 - 0.12 * d.juggleHits);
+    // A controlled pop: the same move always lifts by about the same amount,
+    // a little less with each juggle hit.
+    var pop = (m.pop || C.JUGGLE_POP[m.strength] || 4) * Math.max(0.45, 1 - C.JUGGLE_POP_DECAY * d.juggleHits);
     this.toJuggle(d, a, pop, m);
     this.lastResult[c.a] = { move: m, kind: 'JUGGLE', adv: null };
   };
@@ -209,7 +214,7 @@
     d.wallHits++;
     var heavy = m.strength === 'heavy' || m.strength === 'launch' || result.launch;
     if (heavy || d.wallHits >= C.WALL_HITS_MAX) {
-      this.toJuggle(d, a, result.launch ? result.launch * 0.75 : 4.5, m);
+      this.toJuggle(d, a, result.launch ? result.launch * 0.75 * C.LAUNCH_SNAP : 4.5, m);
       d.vx = a.facing * 0.6;
       ev.finisher = true;
       this.lastResult[c.a] = { move: m, kind: 'WALL BLAST', adv: null };
@@ -345,7 +350,7 @@
       this.hitstop = Math.max(this.hitstop, d.ko ? 30 : 14);
       this.lastResult[t.a] = { move: m, kind: 'THROW', adv: null };
       this.events.push({ type: 'hit', attacker: t.a, defender: t.d, move: m, level: 'throw', throw: true,
-        x: d.x, y: 12, facing: a.facing, damage: dmg, ko: d.ko, shake: 0.009 });
+        x: d.x, y: 12, facing: a.facing, damage: dmg, ko: d.ko, shake: 0.009, hits: this.combo[t.d].hits });
       return;
     }
     if (tf >= C.THROW_END_FRAME) {
