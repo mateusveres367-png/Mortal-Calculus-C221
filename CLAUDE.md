@@ -23,3 +23,15 @@ What that means in practice:
   - generate textures and sprites in code, or embed them in `.js` as data URIs, or set Phaser's `loader.imageLoadType: 'HTMLImageElement'` for image files;
   - synthesize sounds with the Web Audio API or embed them as data URIs.
 - **Check every phase by opening `index.html` from disk** in a browser, not through a server, and confirm it loads and plays with no console errors.
+
+## Codebase
+
+- `index.html` loads every script in dependency order. A new file must be added there.
+- `src/engine/` is pure simulation with no Phaser: it runs at a fixed 60 steps per second and can be tested in Node. Keep rendering, sound and input reading out of it.
+- `src/data/fighters.js` holds each move's frame data. Startup counts the press frame as frame 1, so a 10-frame move hits on the 10th frame. Block and hit values are frame advantage, and the engine derives stun from them.
+- `src/render/` draws from simulation state; `src/scenes/fightScene.js` reads the keyboard, steps the match and renders.
+
+## Checks before committing
+
+- `node tests/sim.test.js` must pass. It checks that the frame advantage the engine actually produces matches the declared frame data, plus hit levels, counter hits, sidestep, juggles and movement. Add tests for new mechanics.
+- Open `index.html` from disk and play. `node tests/smoke.js` does a headless version of that when Playwright is available.
