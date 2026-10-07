@@ -47,7 +47,7 @@ try { playwright = require('playwright'); } catch (e) {
     var s = window.FG_SCENE;
     s.newMatch();
     s.match.fighters[0].x = 480; s.match.fighters[1].x = 520;
-    var start = s.tickCount;
+    var f0 = s.match.frame, fired = {};
     // P1's longest timed combo route (they all work against every opponent).
     var route = s.match.fighters[0].def.combos.filter(function (c) { return c.plan && !c.wall; })
       .sort(function (a, b) { return b.hits.length - a.hits.length; })[0];
@@ -55,8 +55,10 @@ try { playwright = require('playwright'); } catch (e) {
     var plan = {};
     Object.keys(route.plan).forEach(function (f) { plan[f] = FG.parseInput(route.plan[f]); });
     window.HITS = [];
-    s.forceInput = function (t) {
-      var p = plan[t - start];
+    // Route frames are game frames (hitstop doesn't count), like FG.runCombo.
+    s.forceInput = function () {
+      var t = s.match.frame - f0, p = !fired[t] && plan[t];
+      if (p) fired[t] = true;
       return [p || FG.emptyRaw(), null];
     };
     var orig = s.hud.onEvent.bind(s.hud);
