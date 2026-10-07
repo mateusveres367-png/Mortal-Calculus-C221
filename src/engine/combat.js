@@ -19,8 +19,8 @@
       if (m.level === 'high' && d.isCrouching()) continue;
       // A backdash that evades lows early on (LOPEZ's Standard Deviation).
       if (m.level === 'low' && d.state === 'backdash' && d.stateFrame <= (d.def.backdashLowInvuln || 0)) continue;
-      // Only ground-hitting moves reach a fighter who is lying down.
-      if (d.state === 'down' && (!m.otg || d.groundHits >= C.GROUND_HITS_MAX)) continue;
+      // Only ground-hitting moves reach a fighter who is lying down, or tripped and falling.
+      if ((d.state === 'down' || (d.state === 'juggle' && d.tripped)) && (!m.otg || d.groundHits >= C.GROUND_HITS_MAX)) continue;
       if (m.throw && !d.isThrowable(m.grabsCrouch)) continue;
       var hb = a.hitbox(0), hurts = d.hurtboxes(), touching = false;
       for (var j = 0; j < hurts.length; j++) if (FG.overlap(hb, hurts[j])) { touching = true; break; }
@@ -129,7 +129,7 @@
       d.noTech = true;
       hitstop = C.HITSTOP_KO; ev.shake = 0.012; ev.finisher = true;
       this.lastResult[c.a] = { move: m, kind: 'K.O.', adv: null };
-    } else if (state === 'down') {
+    } else if (state === 'down' || d.tripped) {
       // Ground hit: limited, and it only delays the wake-up a little.
       d.groundHits++;
       d.stateFrame = Math.max(0, d.stateFrame - 10);
@@ -145,20 +145,23 @@
       ev.launch = true;
       ev.shake += 0.002;
       this.lastResult[c.a] = { move: m, kind: 'LAUNCH', adv: null };
-    } else if (result.knockdown) {
-      this.toJuggle(d, a, 2.4, m);
-      d.vx = a.facing * 0.8;
-      ev.knockdown = true; ev.finisher = true;
-      this.lastResult[c.a] = { move: m, kind: 'KNOCKDOWN', adv: null };
     } else if (m.wallSplat && this.wallDistance(d, a.facing) < 40) {
       // A heavy blow next to the wall splats the opponent against it.
       d.y = 0;
       this.wallSplat(d, c.d);
       ev.finisher = true;
       this.lastResult[c.a] = { move: m, kind: 'WALL SPLAT', adv: null };
+    } else if (result.knockdown) {
+      this.toJuggle(d, a, 2.4, m);
+      d.vx = a.facing * 0.8;
+      d.tripped = true; // falling to the floor: not a juggle
+      ev.knockdown = true; ev.finisher = true;
+      this.lastResult[c.a] = { move: m, kind: 'KNOCKDOWN', adv: null };
     } else {
       d.setState('hitstun');
       d.stun = m.air ? m.stunHit : attackerLeft + result.adv;
+      // Long combos lose hitstun, so no ground loop lasts forever.
+      d.stun = Math.max(1, d.stun - C.COMBO_DECAY_STUN * Math.max(0, this.combo[c.d].hits - C.COMBO_DECAY_FROM));
       d.reaction = m.level === 'low' ? 'low' : (m.strength === 'heavy' || m.level === 'mid') ? 'mid' : 'high';
       d.vx = 0;
       this.push(a, d, m.push);
@@ -180,6 +183,7 @@
     d.y = Math.max(d.y, 1);
     d.juggleHits++;
     d.bounding = false;
+    d.tripped = false;
     d.noTech = !!m.noTech;
   };
 

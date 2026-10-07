@@ -42,5 +42,5 @@ What that means in practice:
 
 ## Checks before committing
 
-- `node tests/sim.test.js` must pass. It checks that the frame advantage the engine actually produces matches the declared frame data, plus hit levels, counter hits, sidestep, juggles and movement. Add tests for new mechanics.
+- `node tests/sim.test.js` must pass. When combo routes or juggle physics change, keep `COMBOS.md` up to date. It checks that the frame advantage the engine actually produces matches the declared frame data, plus hit levels, counter hits, sidestep, juggles and movement. Add tests for new mechanics.
 - Open `index.html` from disk and play. `node tests/smoke.js` does a headless version of that when Playwright is available.

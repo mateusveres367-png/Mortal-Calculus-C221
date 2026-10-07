@@ -931,5 +931,72 @@ defs.forEach(function (d) {
   });
 });
 
+// Self-check: nothing infinite, and nothing too easy.
+(function () {
+  function rng(seed) { return function () { seed |= 0; seed = seed + 0x6D2B79F5 | 0; var t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  var TOKENS = ['P', 'K', 'H', 'D+H', 'D+K', 'F+P', 'F+K', 'F+H', 'B+P', 'B+K', 'B+H', 'UP', 'D/F+K', 'D/B+K', 'P+K', 'F', 'B'];
+  // Mash inputs against a dummy that never guards. Returns the longest combo (hits)
+  // and the most frames any one combo kept the dummy from being free.
+  function mash(d, pick, frames, wall) {
+    var m = new FG.Match(d, D); m.step([raw({}), raw({})]);
+    if (wall) { m.fighters[1].x = FG.C.WALL_R - 30; m.fighters[0].x = FG.C.WALL_R - 74; } else { m.fighters[0].x = 480; m.fighters[1].x = 520; }
+    var best = 0, longest = 0, since = null;
+    for (var i = 0; i < frames; i++) {
+      var tok = pick(i);
+      m.step([tok ? FG.parseInput(tok) : raw({}), raw({})]);
+      m.events.forEach(function (e) { if (e.type === 'hit' && e.attacker === 0) { best = Math.max(best, e.hits); if (e.hits === 1) since = i; } });
+      if (m.fighters[1].actionable) since = null; else if (since !== null) longest = Math.max(longest, i - since);
+      var a = m.fighters[0], o = m.fighters[1];
+      if (!wall && o.actionable && Math.abs(a.x - o.x) > 120) a.x = o.x - 40 * a.facing; // keep them close
+    }
+    return { hits: best, frames: longest };
+  }
+  defs.forEach(function (d) {
+    var R = rng(d.id.length * 7919 + 1), worst = { hits: 0, frames: 0 };
+    for (var s = 0; s < 24; s++) {
+      var r = mash(d, function () { return R() < 0.3 ? TOKENS[Math.floor(R() * TOKENS.length)] : null; }, 700, s % 3 === 0);
+      worst.hits = Math.max(worst.hits, r.hits); worst.frames = Math.max(worst.frames, r.frames);
+    }
+    check(d.name + ': random mashing never lands a big combo', worst.hits < 8, worst);
+    check(d.name + ': every combo ends (no infinite)', worst.frames < 400, worst);
+    ['P', 'K', 'H', 'D+H'].forEach(function (b) {
+      [false, true].forEach(function (wall) {
+        var r = mash(d, function (i) { return i % 2 ? null : b; }, 600, wall);
+        check(d.name + ': mashing ' + b + (wall ? ' at the wall' : '') + ' stays short', r.hits <= 4 && r.frames < 300, r);
+      });
+    });
+    // Each hard route has a real timing check: an input with no more than 14 frames
+    // of leeway (counted from 15 early to 15 late).
+    d.combos.filter(function (c) { return c.difficulty === 'hard' && c.plan; }).forEach(function (c) {
+      var keys = Object.keys(c.plan).map(Number).sort(function (x, y) { return x - y; }), tight = 99;
+      keys.slice(1).forEach(function (k) {
+        var n = 0;
+        for (var dt = -15; dt <= 15; dt++) {
+          var plan = {};
+          keys.forEach(function (kk) { plan[kk === k ? k + dt : kk] = c.plan[kk]; });
+          if (Object.keys(plan).length === keys.length && FG.runCombo(d, D, Object.assign({}, c, { plan: plan })).hits.join() === c.hits.join()) n++;
+        }
+        tight = Math.min(tight, n);
+      });
+      check(d.name + ' ' + c.name + ' has a tight input', tight <= 14, tight);
+    });
+    // No route takes more than 40% of anyone's health.
+    var minHealth = Math.min.apply(null, defs.map(function (o) { return o.health; }));
+    d.combos.forEach(function (c) {
+      var dmg = FG.runCombo(d, D, c).damage;
+      check(d.name + ' ' + c.name + ' damage is fair', dmg <= minHealth * 0.4, [dmg, minHealth]);
+    });
+  });
+  // Long combos lose hitstun.
+  function stunAfterJab(comboHits) {
+    var m = setup(S, D, 40), o = m.fighters[1];
+    o.setState('hitstun'); o.stun = 40; m.combo[1].hits = comboHits; // already in a combo
+    m.fighters[0].startMove('jab');
+    for (var i = 0; i < 20; i++) { m.step([raw({}), raw({})]); if (m.events.some(function (e) { return e.type === 'hit'; })) return o.stun; }
+    return null;
+  }
+  check('hitstun decays deep into a combo', stunAfterJab(FG.C.COMBO_DECAY_FROM + 4) < stunAfterJab(1), [stunAfterJab(FG.C.COMBO_DECAY_FROM + 4), stunAfterJab(1)]);
+})();
+
 console.log(passes + ' passed, ' + failures + ' failed');
 process.exit(failures ? 1 : 0);

@@ -171,7 +171,7 @@
   // A juggled fighter carried into the wall sticks to it (once per combo).
   Match.prototype.checkWallSplat = function (i) {
     var d = this.fighters[i];
-    if (d.state !== 'juggle' || d.ko || d.wallUsed || d.bounding || d.y > C.WALL_SPLAT_MAX_Y) return;
+    if (d.state !== 'juggle' || d.ko || d.wallUsed || d.bounding || d.tripped || d.y > C.WALL_SPLAT_MAX_Y) return;
     var dir = d.vx > 0.1 ? 1 : d.vx < -0.1 ? -1 : 0;
     if (dir && this.wallDistance(d, dir) <= 1) this.wallSplat(d, i);
   };

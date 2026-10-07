@@ -142,8 +142,8 @@
       { name: 'SAMPLE MEAN', difficulty: 'easy', notation: 'P, P', plan: { 0: 'P', 15: 'P' }, hits: ['jab', 'jab2'] },
       { name: 'OUTLIER JUGGLE', difficulty: 'medium', notation: 'D+H, P, P, D+K ON THE GROUND',
         plan: { 0: 'D+H', 39: 'P', 56: 'P', 97: 'D+K' }, hits: ['launcher', 'jab', 'jab2', 'low'] },
-      { name: 'NORMAL DISTRIBUTION', difficulty: 'hard', notation: 'D+H, UP, AIR P, AIR K, AIR H, D+K ON THE GROUND',
-        plan: { 0: 'D+H', 18: 'UP', 32: 'P', 41: 'K', 51: 'H', 103: 'D+K' }, hits: ['launcher', 'airP', 'airK', 'airH', 'low'] },
+      { name: 'NORMAL DISTRIBUTION', difficulty: 'hard', notation: 'D+H, UP, AIR P, AIR K, AIR H, K',
+        plan: { 0: 'D+H', 18: 'UP', 28: 'P', 41: 'K', 52: 'H', 81: 'K' }, hits: ['launcher', 'airP', 'airK', 'airH', 'mid'] },
       { name: 'CONFIDENCE INTERVAL', difficulty: 'medium', notation: 'BLOCK THEIR JAB, P, D+K ON THE GROUND',
         hold: [[0, 11, 'B']], oppPlan: { 0: 'P' }, plan: { 21: 'P', 63: 'D+K' }, hits: ['postBlockP', 'low'] }
     ],

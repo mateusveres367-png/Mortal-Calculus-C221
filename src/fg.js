@@ -95,6 +95,10 @@ FG.C = {
   HITSTOP_CH: 5,        // added on a counter hit
   HITSTOP_FINISHER: 17, // knockdowns, wall splats, bounds, wall blasts
   HITSTOP_KO: 30,
+  // Safety net against ground loops: from this many hits into a combo, each hit
+  // leaves the opponent in hitstun a few frames less.
+  COMBO_DECAY_FROM: 10,
+  COMBO_DECAY_STUN: 3,
   BIG_COMBO: 5,         // hits for a combo to count as big (slow-mo finish, NICE label)
 
   KO_RESET_FRAMES: 180

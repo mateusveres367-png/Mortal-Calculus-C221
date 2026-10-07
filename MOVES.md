@@ -145,7 +145,7 @@ Sarcastic and funny. Taunts mid-combo. Relentless pressure.
 | P | First Term | high | 10 | 2 | 12 | +2 | +9 | +11 | 6 |  |
 | P,P | Second Term | high | 9 | 2 | 14 | -1 | +7 | +10 | 7 |  |
 | P,P,P | Third Term | mid | 8 | 2 | 16 | -4 | +5 | +9 | 8 |  |
-| P,P,P,P | Nth Term | mid | 7 | 3 | 22 | -12 | knockdown | knockdown | 14 | wall splats |
+| P,P,P,P | Nth Term | mid | 7 | 3 | 22 | -12 | knockdown | knockdown | 14 |  |
 | P,P,P,K | Divergent Low | low | 7 | 3 | 22 | -14 | +1 | knockdown | 11 | ducks highs |
 | F+P | Recursive Rush | mid | 13 | 3 | 15 | +1 | +5 | +9 | 10 |  |
 | K | Common Difference | mid | 12 | 3 | 17 | -3 | +5 | +9 | 12 |  |
@@ -200,7 +200,7 @@ Very suspicious. Always watching. Waits for you to commit, then punishes.
 
 - **Sample Mean:** P, P (frames: P @0, P @15)
 - **Outlier Juggle:** D+H, P, P, D+K on the ground (frames: D+H @0, P @39, P @56, D+K @97)
-- **Normal Distribution:** D+H, up, air P, air K, air H, D+K on the ground (frames: D+H @0, UP @18, P @32, K @41, H @51, D+K @103)
+- **Normal Distribution:** D+H, up, air P, air K, air H, K (frames: D+H @0, UP @18, P @28, K @41, H @52, K @81)
 - **Confidence Interval:** BLOCK THEIR JAB, P, D+K on the ground (frames: P @21, D+K @63; hold B @0-11)
 
 ## MIYASHIRO — Spacing — Vectors

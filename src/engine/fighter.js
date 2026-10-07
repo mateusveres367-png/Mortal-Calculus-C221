@@ -60,6 +60,7 @@
     this.bounding = false;
     this.groundHits = 0;
     this.noTech = false;
+    this.tripped = false;   // knocked down and falling: only ground hits reach them
   };
 
   Fighter.prototype.setState = function (s) {

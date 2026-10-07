@@ -79,7 +79,7 @@
       },
       seqP: {
         name: 'String 4 (mid)', label: 'NTH TERM', cmd: 'P,P,P,P', level: 'mid', strength: 'heavy',
-        startup: 7, active: 3, recovery: 22, damage: 14, wallSplat: true,
+        startup: 7, active: 3, recovery: 22, damage: 14,
         block: -12, hit: { knockdown: true }, ch: { knockdown: true },
         hitbox: { x: 26, w: 26, y: 56, h: 20 }, push: 18, juggle: 3.6, carry: 1.8, shake: 0.006,
         anim: [[1, 'body_x'], [4, 'rush_c'], [7, 'rush_x'], [10, 'rush_x'], [31, 'idle']]

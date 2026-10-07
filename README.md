@@ -27,6 +27,7 @@ What's in the game so far:
   - impact effects and sounds by attack type: quick jabs, heavy body shots, powerful roundhouses, explosive launchers, and dramatic counter hits with a screen flash and a shockwave
 - **Combo feel pass:**
   - hit feel: hitstop scales with strength (jabs tiny, heavies longer, launchers and combo finishers longest); each hit in a combo sounds a little higher than the last and throws bigger sparks; counter hits get a bright flash, a big COUNTER! and an extra-heavy sound
+  - self-check: tests play every route against every fighter, mash buttons at random to make sure nothing is infinite or too easy, and check damage rises with difficulty; see [`COMBOS.md`](COMBOS.md)
   - combo trials (training mode, key 7 or the menu): every fighter's routes from easy to hard; the panel shows each input and its move, checks them off as they land, resets on a drop or wrong move, and loads the next trial when you finish one (8/9 switch trials, R restarts)
   - input feel: an 8-frame input buffer; a buffered press keeps the direction you held when you pressed it (an early D+H still launches); every route forgives presses 3 frames early or late; string cancels leave a quick afterimage and a whip sound, and the frame data panel shows each move's chain buttons and window; every fighter has an easy, a medium and a hard combo route (more damage as they get harder)
   - combo counter: a big pixel hit count with total damage that pops and shakes on every hit, ranked NICE (5+), GREAT (8+), INCREDIBLE (12+) and PROOF COMPLETE (15+)
@@ -201,4 +202,5 @@ node tests/smoke.js      # optional: opens index.html from disk in headless Chro
 - [`GAME_DESIGN.md`](GAME_DESIGN.md) — full game vision and design
 - [`ROSTER.md`](ROSTER.md) — the eight fighters: archetypes, looks, personalities, moves and victory lines
 - [`MOVES.md`](MOVES.md) — generated move lists with frame data and combo routes
+- [`COMBOS.md`](COMBOS.md) — every fighter's combo routes by difficulty, and what the combo feel pass changed
 - [`CLAUDE.md`](CLAUDE.md) — working rules for AI-assisted development
