@@ -68,7 +68,6 @@
     if (m.carry == null) m.carry = 0.5;
     if (m.juggle == null) m.juggle = 3;
     if (m.push == null) m.push = 8;
-    if (m.hitstop == null) m.hitstop = 8;
     if (m.shake == null) m.shake = 0;
   }
 
@@ -93,7 +92,7 @@
           name: 'Air Punch', label: names[0], cmd: 'AIR P', level: 'mid', strength: 'light', air: true,
           startup: 7 + sl, active: 4, recovery: 10, damage: 8 + sl * 2, landLag: 4 + sl,
           stunHit: 16, stunBlock: 10,
-          hitbox: { x: 24, w: 18, y: 52, h: 16 }, push: 6, juggle: 2.6, carry: 0.4, stall: 2.6, hitstop: 6,
+          hitbox: { x: 24, w: 18, y: 52, h: 16 }, push: 6, juggle: 2.6, carry: 0.4, stall: 2.6,
           cancels: cancels('airP', 7 + sl, 18 + sl),
           anim: [[1, 'jump'], [5 + sl, 'air_p'], [11 + sl, 'air_p'], [20 + sl, 'jump']]
         }, o.airP),
@@ -101,7 +100,7 @@
           name: 'Air Kick', label: names[1], cmd: 'AIR K', level: 'mid', strength: 'medium', air: true,
           startup: 9 + sl, active: 5, recovery: 12, damage: 11 + sl * 2, landLag: 6 + sl,
           stunHit: 18, stunBlock: 12,
-          hitbox: { x: 26, w: 20, y: 14, h: 20 }, push: 10, juggle: 3, carry: 0.5, stall: 2.4, hitstop: 8, shake: 0.002,
+          hitbox: { x: 26, w: 20, y: 14, h: 20 }, push: 10, juggle: 3, carry: 0.5, stall: 2.4, shake: 0.002,
           cancels: cancels('airK', 9 + sl, 22 + sl),
           anim: [[1, 'jump'], [6 + sl, 'air_k'], [14 + sl, 'air_k'], [25 + sl, 'jump']]
         }, o.airK),
@@ -109,7 +108,7 @@
           name: 'Air Heavy', label: names[2], cmd: 'AIR H', level: 'mid', strength: 'heavy', air: true, bound: true,
           startup: 12 + sl, active: 4, recovery: 16, damage: 16 + sl * 3, landLag: 10 + sl,
           stunHit: 22, stunBlock: 14,
-          hitbox: { x: 16, w: 24, y: 26, h: 26 }, push: 14, juggle: 2, carry: 0.3, stall: 1.5, hitstop: 11, shake: 0.006,
+          hitbox: { x: 16, w: 24, y: 26, h: 26 }, push: 14, juggle: 2, carry: 0.3, stall: 1.5, shake: 0.006,
           anim: [[1, 'jump'], [8 + sl, 'air_hc'], [12 + sl, 'air_hx'], [16 + sl, 'air_hx'], [31 + sl, 'jump']]
         }, o.airH)
       };
@@ -122,13 +121,13 @@
         wakeLow: merge({
           name: 'Wake-up Low', label: 'ROLLING ZERO', cmd: 'K (DOWN)', level: 'low', strength: 'medium', crouching: true,
           startup: 14, active: 3, recovery: 22, damage: 10, block: -14, hit: { adv: -2 },
-          hitbox: { x: 26, w: 22, y: 0, h: 14 }, push: 10, juggle: 2.5, hitstop: 8, shake: 0.002,
+          hitbox: { x: 26, w: 22, y: 0, h: 14 }, push: 10, juggle: 2.5, shake: 0.002,
           anim: [[1, 'down'], [14, 'wake_low'], [17, 'wake_low'], [27, 'crouch'], [38, 'idle']]
         }, o.wakeLow),
         wakeMid: merge({
           name: 'Wake-up Mid', label: 'SPRING THEOREM', cmd: 'P/H (DOWN)', level: 'mid', strength: 'medium',
           startup: 18, active: 3, recovery: 22, damage: 14, block: -12, hit: { adv: 2 },
-          hitbox: { x: 28, w: 22, y: 44, h: 20 }, push: 12, juggle: 3, hitstop: 9, shake: 0.003,
+          hitbox: { x: 28, w: 22, y: 44, h: 20 }, push: 12, juggle: 3, shake: 0.003,
           anim: [[1, 'down'], [10, 'crouch'], [18, 'wake_mid'], [21, 'wake_mid'], [30, 'squat'], [42, 'idle']]
         }, o.wakeMid)
       };
@@ -140,7 +139,7 @@
         name: 'Sweep', label: label, cmd: 'D/B+K', level: 'low', strength: 'medium', crouching: true,
         startup: 20, active: 3, recovery: 26, damage: 16, noTech: true,
         block: -18, hit: { knockdown: true }, ch: { knockdown: true },
-        hitbox: { x: 30, w: 24, y: 0, h: 14 }, push: 8, juggle: 2.5, hitstop: 10, shake: 0.004,
+        hitbox: { x: 30, w: 24, y: 0, h: 14 }, push: 8, juggle: 2.5, shake: 0.004,
         anim: [[1, 'crouch'], [12, 'sweep_c'], [20, 'sweep_x'], [23, 'sweep_x'], [36, 'sweep_c'], [49, 'crouch']]
       }, o);
     },
@@ -153,12 +152,12 @@
         throw: merge({
           name: 'Throw', label: front, cmd: 'P+K', level: 'high', strength: 'heavy', throw: true, breakBtn: 'p',
           startup: 12, active: 2, recovery: 26, damage: 30, hitbox: { x: 12, w: 26, y: 40, h: 40 },
-          push: 0, juggle: 0, hitstop: 0, shake: 0.009, anim: grab
+          push: 0, juggle: 0, shake: 0.009, anim: grab
         }, o.throw),
         throwB: merge({
           name: 'Reverse Throw', label: back, cmd: 'B+P+K', level: 'high', strength: 'heavy', throw: true, breakBtn: 'k', reverse: true,
           startup: 12, active: 2, recovery: 26, damage: 34, hitbox: { x: 12, w: 26, y: 40, h: 40 },
-          push: 0, juggle: 0, hitstop: 0, shake: 0.009, anim: grab
+          push: 0, juggle: 0, shake: 0.009, anim: grab
         }, o.throwB)
       };
     },

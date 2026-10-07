@@ -25,6 +25,8 @@ What's in the game so far:
   - feet stay planted and take real steps when the body moves; knees and elbows are solved so limbs keep their length; nobody slides or floats
   - hit reactions by blow: heads snap back from jabs, bodies fold over body shots, roundhouses spin them, overheads crumple them
   - impact effects and sounds by attack type: quick jabs, heavy body shots, powerful roundhouses, explosive launchers, and dramatic counter hits with a screen flash and a shockwave
+- **Combo feel pass:**
+  - hit feel: hitstop scales with strength (jabs tiny, heavies longer, launchers and combo finishers longest); each hit in a combo sounds a little higher than the last and throws bigger sparks; counter hits get a bright flash, a big COUNTER! and an extra-heavy sound
 
 The full vision lives in [`GAME_DESIGN.md`](GAME_DESIGN.md); the game is built in phases, and each phase stays playable.
 

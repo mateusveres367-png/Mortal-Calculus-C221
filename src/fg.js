@@ -77,5 +77,12 @@ FG.C = {
   GUARD_REGEN: 0.5,
   GUARD_BREAK_ADV: 22,
 
+  // Hitstop (frames both fighters freeze on contact) by move strength: jabs
+  // barely stop, heavies hang, launchers and combo finishers hang longest.
+  HITSTOP: { light: 4, medium: 7, heavy: 11, launch: 15 },
+  HITSTOP_CH: 5,        // added on a counter hit
+  HITSTOP_FINISHER: 17, // knockdowns, wall splats, bounds, wall blasts
+  HITSTOP_KO: 30,
+
   KO_RESET_FRAMES: 180
 };

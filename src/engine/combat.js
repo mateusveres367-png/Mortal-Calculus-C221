@@ -118,22 +118,22 @@
       if (charge >= 1) result = { knockdown: true };
     }
     var dmg = this.dealDamage(c.a, c.d, m.damage, mult);
-    var hitstop = m.hitstop + (ch ? 4 : 0);
-    ev.ch = ch; ev.punish = c.punish; ev.damage = dmg;
+    var hitstop = (C.HITSTOP[m.strength] || 6) + (ch ? C.HITSTOP_CH : 0);
+    ev.ch = ch; ev.punish = c.punish; ev.damage = dmg; ev.hits = this.combo[c.d].hits;
     ev.shake = m.shake * (ch ? 1.6 : 1);
     this.measure = null;
 
     if (d.ko && state !== 'down') {
       this.toJuggle(d, a, 7, m);
       d.noTech = true;
-      hitstop = 30; ev.shake = 0.012;
+      hitstop = C.HITSTOP_KO; ev.shake = 0.012; ev.finisher = true;
       this.lastResult[c.a] = { move: m, kind: 'K.O.', adv: null };
     } else if (state === 'down') {
       // Ground hit: limited, and it only delays the wake-up a little.
       d.groundHits++;
       d.stateFrame = Math.max(0, d.stateFrame - 10);
       ev.ground = true;
-      hitstop = Math.round(m.hitstop * 0.7);
+      hitstop = Math.round(hitstop * 0.7);
       this.lastResult[c.a] = { move: m, kind: 'GROUND HIT', adv: null };
     } else if (state === 'wallsplat') {
       this.wallHit(c, a, d, m, result, ev);
@@ -147,12 +147,13 @@
     } else if (result.knockdown) {
       this.toJuggle(d, a, 2.4, m);
       d.vx = a.facing * 0.8;
-      ev.knockdown = true;
+      ev.knockdown = true; ev.finisher = true;
       this.lastResult[c.a] = { move: m, kind: 'KNOCKDOWN', adv: null };
     } else if (m.wallSplat && this.wallDistance(d, a.facing) < 40) {
       // A heavy blow next to the wall splats the opponent against it.
       d.y = 0;
       this.wallSplat(d, c.d);
+      ev.finisher = true;
       this.lastResult[c.a] = { move: m, kind: 'WALL SPLAT', adv: null };
     } else {
       d.setState('hitstun');
@@ -163,6 +164,8 @@
       this.startMeasure(c.a, c.d, m, ch ? 'COUNTER' : 'HIT', ch);
     }
 
+    // Combo enders (knockdowns, splats, bounds, wall blasts) hang the longest.
+    if (ev.finisher && !d.ko) hitstop = Math.max(hitstop, C.HITSTOP_FINISHER + (ch ? C.HITSTOP_CH : 0));
     this.hitstop = Math.max(this.hitstop, hitstop);
     ev.ko = d.ko;
     this.events.push(ev);
@@ -190,7 +193,7 @@
       d.vx = a.facing * 0.4;
       d.juggleHits = Math.max(0, d.juggleHits - 1);
       d.noTech = true;
-      ev.bound = true;
+      ev.bound = true; ev.finisher = true;
       ev.shake = Math.max(ev.shake, 0.007);
       this.lastResult[c.a] = { move: m, kind: 'BOUND', adv: null };
       return;
@@ -208,6 +211,7 @@
     if (heavy || d.wallHits >= C.WALL_HITS_MAX) {
       this.toJuggle(d, a, result.launch ? result.launch * 0.75 : 4.5, m);
       d.vx = a.facing * 0.6;
+      ev.finisher = true;
       this.lastResult[c.a] = { move: m, kind: 'WALL BLAST', adv: null };
       return;
     }
@@ -249,7 +253,7 @@
     d.guardCrouch = c.guard === 'crouch';
     d.vx = 0;
     this.push(a, d, m.push);
-    this.hitstop = Math.max(this.hitstop, Math.round(m.hitstop * 0.6));
+    this.hitstop = Math.max(this.hitstop, Math.round((C.HITSTOP[m.strength] || 6) * 0.6));
     this.startMeasure(c.a, c.d, m, 'BLOCK');
   };
 

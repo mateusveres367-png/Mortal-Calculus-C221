@@ -61,7 +61,7 @@
         name: 'Jab', label: 'ROW JAB', cmd: 'P', level: 'high', strength: 'light',
         startup: 10, active: 2, recovery: 13, damage: 7,
         block: 1, hit: { adv: 8 }, ch: { adv: 10 },
-        hitbox: { x: 22, w: 26, y: 66, h: 14 }, push: 5, juggle: 3.2, hitstop: 6,
+        hitbox: { x: 22, w: 26, y: 66, h: 14 }, push: 5, juggle: 3.2,
         cancels: [{ btn: 'p', into: 'jab2', from: 10, to: 22 }],
         anim: [[1, 'idle'], [7, 'jab_c'], [10, 'jab_x'], [13, 'jab_x'], [24, 'idle']]
       },
@@ -69,7 +69,7 @@
         name: 'Jab 2', label: 'COLUMN ELBOW', cmd: 'P,P', level: 'high', strength: 'medium',
         startup: 10, active: 3, recovery: 16, damage: 11,
         block: -2, hit: { adv: 6 }, ch: { adv: 10 },
-        hitbox: { x: 14, w: 26, y: 64, h: 18 }, push: 6, juggle: 3.4, hitstop: 8, shake: 0.002,
+        hitbox: { x: 14, w: 26, y: 64, h: 18 }, push: 6, juggle: 3.4, shake: 0.002,
         anim: [[1, 'jab_x'], [6, 'elbow_c'], [10, 'elbow_x'], [13, 'elbow_x'], [28, 'idle']]
       },
       // Out of his fast dash: a shoulder charge that knocks down.
@@ -77,7 +77,7 @@
         name: 'Shoulder Charge', label: 'AUGMENTED CHARGE', cmd: 'F,F+P', level: 'mid', strength: 'heavy',
         startup: 13, active: 4, recovery: 20, damage: 17,
         block: -9, hit: { knockdown: true }, ch: { knockdown: true },
-        hitbox: { x: 10, w: 30, y: 40, h: 30 }, push: 22, juggle: 3.6, carry: 1.8, hitstop: 12, shake: 0.006,
+        hitbox: { x: 10, w: 30, y: 40, h: 30 }, push: 22, juggle: 3.6, carry: 1.8, shake: 0.006,
         step: [1, 13, 3.4],
         anim: [[1, 'dash'], [8, 'shoulder'], [13, 'shoulder'], [17, 'shoulder'], [36, 'idle']]
       },
@@ -85,14 +85,14 @@
         name: 'Knee', label: 'PIVOT KNEE', cmd: 'K', level: 'mid', strength: 'medium',
         startup: 13, active: 3, recovery: 17, damage: 13,
         block: -4, hit: { adv: 5 }, ch: { adv: 9 },
-        hitbox: { x: 16, w: 24, y: 44, h: 22 }, push: 8, juggle: 3.6, hitstop: 9, shake: 0.002,
+        hitbox: { x: 16, w: 24, y: 44, h: 22 }, push: 8, juggle: 3.6, shake: 0.002,
         anim: [[1, 'idle'], [8, 'fk_c'], [13, 'knee_x'], [16, 'knee_x'], [32, 'idle']]
       },
       low: {
         name: 'Low Kick', label: 'LOWER TRIANGULAR', cmd: 'D+K', level: 'low', strength: 'light', crouching: true, otg: true,
         startup: 15, active: 3, recovery: 20, damage: 10,
         block: -11, hit: { adv: 0 }, ch: { adv: 6 },
-        hitbox: { x: 26, w: 24, y: 0, h: 16 }, push: 8, juggle: 2.5, hitstop: 7, shake: 0.002,
+        hitbox: { x: 26, w: 24, y: 0, h: 16 }, push: 8, juggle: 2.5, shake: 0.002,
         anim: [[1, 'crouch'], [10, 'lk_c'], [15, 'lk_x'], [18, 'lk_x'], [28, 'lk_c'], [37, 'crouch']]
       },
       sweep: FG.kit.sweep('NULL SPACE SWEEP'),
@@ -100,7 +100,7 @@
         name: 'Heavy', label: 'ROW REDUCTION', cmd: 'H', level: 'mid', strength: 'heavy',
         startup: 18, active: 3, recovery: 21, damage: 20, wallSplat: true,
         block: -4, hit: { adv: 6 }, ch: { launch: 6 },
-        hitbox: { x: 20, w: 26, y: 50, h: 22 }, push: 24, juggle: 3.6, carry: 2, hitstop: 12, shake: 0.006,
+        hitbox: { x: 20, w: 26, y: 50, h: 22 }, push: 24, juggle: 3.6, carry: 2, shake: 0.006,
         step: [10, 18, 2],
         anim: [[1, 'idle'], [12, 'elbow_c'], [18, 'elbow_x'], [21, 'elbow_x'], [29, 'hv_r'], [41, 'idle']]
       },
@@ -108,7 +108,7 @@
         name: 'Overhead', label: 'SCALAR SLAM', cmd: 'F+H', level: 'mid', strength: 'heavy', bound: true,
         startup: 21, active: 3, recovery: 21, damage: 18, guardDmg: 24,
         block: -6, hit: { adv: 3 }, ch: { knockdown: true },
-        hitbox: { x: 30, w: 24, y: 48, h: 22 }, push: 16, juggle: 2.5, hitstop: 12, shake: 0.006,
+        hitbox: { x: 30, w: 24, y: 48, h: 22 }, push: 16, juggle: 2.5, shake: 0.006,
         step: [12, 21, 1.4],
         anim: [[1, 'idle'], [14, 'ham_c'], [21, 'ham_x'], [24, 'ham_x'], [33, 'hv_r'], [45, 'idle']]
       },
@@ -116,7 +116,7 @@
         name: 'Launcher', label: 'TRANSPOSE TOSS', cmd: 'D+H', level: 'mid', strength: 'launch',
         startup: 15, active: 4, recovery: 23, damage: 17,
         block: -15, hit: { launch: 7.8 }, ch: { launch: 8.4 },
-        hitbox: { x: 8, w: 28, y: 26, h: 80 }, push: 6, juggle: 5.5, carry: 0.6, hitstop: 13, shake: 0.008,
+        hitbox: { x: 8, w: 28, y: 26, h: 80 }, push: 6, juggle: 5.5, carry: 0.6, shake: 0.008,
         step: [8, 15, 1.6],
         cancels: [{ btn: 'up', into: 'jump', from: 17, to: 28, onHit: true }],
         anim: [[1, 'crouch'], [9, 'toss_c'], [15, 'toss_x'], [19, 'toss_x'], [28, 'up_r'], [41, 'idle']]
@@ -125,7 +125,7 @@
       cmdGrab: {
         name: 'Command Grab', label: 'IDENTITY', cmd: 'F+P+K', level: 'mid', strength: 'heavy', throw: true, grabsCrouch: true, breakBtn: null,
         startup: 16, active: 3, recovery: 32, damage: 32,
-        hitbox: { x: 10, w: 28, y: 20, h: 60 }, push: 0, juggle: 0, hitstop: 0, shake: 0.011,
+        hitbox: { x: 10, w: 28, y: 20, h: 60 }, push: 0, juggle: 0, shake: 0.011,
         anim: [[1, 'idle'], [10, 'grab_c'], [16, 'grab_x'], [19, 'grab_x'], [50, 'idle']]
       }
     },
@@ -136,11 +136,11 @@
     FG.kit.taunt()),
 
     combos: [
-      { name: 'ROW AND COLUMN', notation: 'P, P', plan: { 0: 'P', 16: 'P' }, hits: ['jab', 'jab2'] },
-      { name: 'TRANSPOSE JUGGLE', notation: 'D+H, P, D+K ON THE GROUND', plan: { 0: 'D+H', 54: 'P', 110: 'D+K' }, hits: ['launcher', 'jab', 'low'] },
+      { name: 'ROW AND COLUMN', notation: 'P, P', plan: { 0: 'P', 10: 'P' }, hits: ['jab', 'jab2'] },
+      { name: 'TRANSPOSE JUGGLE', notation: 'D+H, P, D+K ON THE GROUND', plan: { 0: 'D+H', 41: 'P', 91: 'D+K' }, hits: ['launcher', 'jab', 'low'] },
       { name: 'RANK SPIKE', notation: 'D+H, UP, AIR P, AIR K, AIR H, K',
-        plan: { 0: 'D+H', 17: 'UP', 42: 'P', 54: 'K', 67: 'H', 122: 'K' }, hits: ['launcher', 'airP', 'airK', 'airH', 'mid'] },
-      { name: 'IDENTITY STOMP', notation: 'F+P+K, D+K ON THE GROUND', plan: { 0: 'F+P+K', 82: 'D+K' }, hits: ['cmdGrab', 'low'] }
+        plan: { 0: 'D+H', 15: 'UP', 29: 'P', 36: 'K', 45: 'H', 80: 'K' }, hits: ['launcher', 'airP', 'airK', 'airH', 'mid'] },
+      { name: 'IDENTITY STOMP', notation: 'F+P+K, D+K ON THE GROUND', plan: { 0: 'F+P+K', 68: 'D+K' }, hits: ['cmdGrab', 'low'] }
     ],
 
     intro: [[1, 'stand'], [12, 'knuckles'], [28, 'knuckles'], [38, 'stretch'], [56, 'stretch'], [66, 'stand'], [84, 'idle']],

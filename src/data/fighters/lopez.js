@@ -60,7 +60,7 @@
         name: 'Jab', label: 'SAMPLE JAB', cmd: 'P', level: 'high', strength: 'light',
         startup: 10, active: 2, recovery: 14, damage: 8,
         block: 0, hit: { adv: 7 }, ch: { adv: 10 },
-        hitbox: { x: 22, w: 28, y: 70, h: 14 }, push: 8, juggle: 3.2, hitstop: 6,
+        hitbox: { x: 22, w: 28, y: 70, h: 14 }, push: 8, juggle: 3.2,
         cancels: [{ btn: 'p', into: 'jab2', from: 10, to: 22 }],
         anim: [[1, 'idle'], [7, 'jab_c'], [10, 'jab_x'], [13, 'jab_x'], [25, 'idle']]
       },
@@ -68,7 +68,7 @@
         name: 'Jab 2', label: 'MEAN STRAIGHT', cmd: 'P,P', level: 'high', strength: 'light',
         startup: 10, active: 2, recovery: 16, damage: 10,
         block: -3, hit: { adv: 6 }, ch: { adv: 9 },
-        hitbox: { x: 26, w: 28, y: 68, h: 14 }, push: 10, juggle: 3.4, hitstop: 7,
+        hitbox: { x: 26, w: 28, y: 68, h: 14 }, push: 10, juggle: 3.4,
         anim: [[1, 'jab_x'], [6, 'cross_c'], [10, 'cross_x'], [13, 'cross_x'], [27, 'idle']]
       },
       // Confidence Interval: P right after blocking becomes this fast, heavy punisher.
@@ -76,21 +76,21 @@
         name: 'Punisher', label: 'CONFIDENCE INTERVAL', cmd: 'P AFTER BLOCK', level: 'mid', strength: 'heavy',
         startup: 8, active: 2, recovery: 20, damage: 18, wallSplat: true,
         block: -10, hit: { knockdown: true }, ch: { knockdown: true },
-        hitbox: { x: 22, w: 30, y: 56, h: 22 }, push: 20, juggle: 3.6, carry: 1.8, hitstop: 12, shake: 0.006,
+        hitbox: { x: 22, w: 30, y: 56, h: 22 }, push: 20, juggle: 3.6, carry: 1.8, shake: 0.006,
         anim: [[1, 'idle'], [5, 'conf_c'], [8, 'conf_x'], [10, 'conf_x'], [29, 'idle']]
       },
       mid: {
         name: 'Mid Kick', label: 'REGRESSION KICK', cmd: 'K', level: 'mid', strength: 'medium',
         startup: 15, active: 3, recovery: 18, damage: 15,
         block: -5, hit: { adv: 4 }, ch: { adv: 9 },
-        hitbox: { x: 36, w: 28, y: 40, h: 20 }, push: 16, juggle: 3.8, hitstop: 9, shake: 0.003,
+        hitbox: { x: 36, w: 28, y: 40, h: 20 }, push: 16, juggle: 3.8, shake: 0.003,
         anim: [[1, 'idle'], [10, 'reg_c'], [15, 'reg_x'], [18, 'reg_x'], [26, 'reg_c'], [35, 'idle']]
       },
       low: {
         name: 'Low Kick', label: 'LOWER QUARTILE', cmd: 'D+K', level: 'low', strength: 'medium', crouching: true, otg: true,
         startup: 16, active: 3, recovery: 20, damage: 11,
         block: -12, hit: { adv: 0 }, ch: { adv: 6 },
-        hitbox: { x: 28, w: 26, y: 0, h: 16 }, push: 10, juggle: 2.5, hitstop: 8, shake: 0.002,
+        hitbox: { x: 28, w: 26, y: 0, h: 16 }, push: 10, juggle: 2.5, shake: 0.002,
         anim: [[1, 'crouch'], [11, 'lk_c'], [16, 'lk_x'], [19, 'lk_x'], [29, 'lk_c'], [38, 'crouch']]
       },
       sweep: FG.kit.sweep('BELL CURVE SWEEP', { startup: 21 }),
@@ -98,7 +98,7 @@
         name: 'Heavy', label: 'SIGNIFICANT FIGURE', cmd: 'H', level: 'mid', strength: 'heavy',
         startup: 19, active: 3, recovery: 21, damage: 22, wallSplat: true,
         block: -4, hit: { adv: 6 }, ch: { launch: 6 },
-        hitbox: { x: 34, w: 24, y: 52, h: 16 }, push: 26, juggle: 3.6, carry: 2, hitstop: 12, shake: 0.006,
+        hitbox: { x: 34, w: 24, y: 52, h: 16 }, push: 26, juggle: 3.6, carry: 2, shake: 0.006,
         step: [11, 19, 1.6],
         anim: [[1, 'idle'], [13, 'hv_c'], [19, 'hv_x'], [22, 'hv_x'], [30, 'hv_r'], [42, 'idle']]
       },
@@ -106,7 +106,7 @@
         name: 'Overhead', label: 'MEDIAN DROP', cmd: 'F+H', level: 'mid', strength: 'heavy', bound: true,
         startup: 22, active: 3, recovery: 21, damage: 19, guardDmg: 24,
         block: -7, hit: { adv: 3 }, ch: { knockdown: true },
-        hitbox: { x: 30, w: 24, y: 48, h: 22 }, push: 16, juggle: 2.5, hitstop: 12, shake: 0.006,
+        hitbox: { x: 30, w: 24, y: 48, h: 22 }, push: 16, juggle: 2.5, shake: 0.006,
         step: [12, 22, 1.2],
         anim: [[1, 'idle'], [14, 'ham_c'], [22, 'ham_x'], [25, 'ham_x'], [34, 'hv_r'], [46, 'idle']]
       },
@@ -120,14 +120,14 @@
         name: 'Counter', label: 'REJECTION', cmd: 'PARRY', level: 'mid', strength: 'heavy',
         startup: 7, active: 3, recovery: 18, damage: 22,
         block: -6, hit: { knockdown: true }, ch: { knockdown: true },
-        hitbox: { x: 24, w: 32, y: 44, h: 30 }, push: 22, juggle: 3.5, carry: 1.8, hitstop: 13, shake: 0.007,
+        hitbox: { x: 24, w: 32, y: 44, h: 30 }, push: 22, juggle: 3.5, carry: 1.8, shake: 0.007,
         anim: [[1, 'parry'], [7, 'counter_x'], [10, 'counter_x'], [27, 'idle']]
       },
       launcher: {
         name: 'Launcher', label: 'OUTLIER', cmd: 'D+H', level: 'mid', strength: 'launch',
         startup: 16, active: 4, recovery: 22, damage: 17,
         block: -15, hit: { launch: 7.6 }, ch: { launch: 8.2 },
-        hitbox: { x: 8, w: 26, y: 30, h: 80 }, push: 6, juggle: 5.5, carry: 0.6, hitstop: 13, shake: 0.008,
+        hitbox: { x: 8, w: 26, y: 30, h: 80 }, push: 6, juggle: 5.5, carry: 0.6, shake: 0.008,
         step: [9, 16, 1.3],
         cancels: [{ btn: 'up', into: 'jump', from: 18, to: 29, onHit: true }],
         anim: [[1, 'crouch'], [10, 'outlier_c'], [16, 'outlier_x'], [20, 'outlier_x'], [29, 'up_r'], [41, 'idle']]
@@ -139,12 +139,12 @@
     FG.kit.taunt()),
 
     combos: [
-      { name: 'SAMPLE MEAN', notation: 'P, P', plan: { 0: 'P', 16: 'P' }, hits: ['jab', 'jab2'] },
-      { name: 'OUTLIER JUGGLE', notation: 'D+H, P, P', plan: { 0: 'D+H', 54: 'P', 72: 'P' }, hits: ['launcher', 'jab', 'jab2'] },
+      { name: 'SAMPLE MEAN', notation: 'P, P', plan: { 0: 'P', 10: 'P' }, hits: ['jab', 'jab2'] },
+      { name: 'OUTLIER JUGGLE', notation: 'D+H, P, P', plan: { 0: 'D+H', 41: 'P', 53: 'P' }, hits: ['launcher', 'jab', 'jab2'] },
       { name: 'NORMAL DISTRIBUTION', notation: 'D+H, UP, AIR P, AIR K, AIR H, D+K ON THE GROUND',
-        plan: { 0: 'D+H', 17: 'UP', 45: 'P', 58: 'K', 72: 'H', 147: 'D+K' }, hits: ['launcher', 'airP', 'airK', 'airH', 'low'] },
+        plan: { 0: 'D+H', 16: 'UP', 32: 'P', 40: 'K', 50: 'H', 105: 'D+K' }, hits: ['launcher', 'airP', 'airK', 'airH', 'low'] },
       { name: 'CONFIDENCE INTERVAL', notation: 'BLOCK THEIR JAB, P, D+K ON THE GROUND',
-        hold: [[0, 14, 'B']], oppPlan: { 0: 'P' }, plan: { 25: 'P', 79: 'D+K' }, hits: ['postBlockP', 'low'] }
+        hold: [[0, 11, 'B']], oppPlan: { 0: 'P' }, plan: { 21: 'P', 63: 'D+K' }, hits: ['postBlockP', 'low'] }
     ],
 
     // Takes the blazer off before the round (the intro hides it at frame 38).

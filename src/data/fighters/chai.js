@@ -56,7 +56,7 @@
         name: 'Jab', label: 'RIGHT ANGLE', cmd: 'P', level: 'high', strength: 'light',
         startup: 10, active: 2, recovery: 12, damage: 6,
         block: 2, hit: { adv: 8 }, ch: { adv: 11 },
-        hitbox: { x: 22, w: 28, y: 70, h: 14 }, push: 6, juggle: 3.2, hitstop: 6,
+        hitbox: { x: 22, w: 28, y: 70, h: 14 }, push: 6, juggle: 3.2,
         cancels: [{ btn: 'k', into: 'jabK', from: 10, to: 22, onContact: true }],
         anim: [[1, 'idle'], [7, 'jab_c'], [10, 'jab_x'], [13, 'jab_x'], [23, 'idle']]
       },
@@ -64,21 +64,21 @@
         name: 'Jab Kick', label: 'COMPLEMENTARY KICK', cmd: 'P,K', level: 'mid', strength: 'medium',
         startup: 12, active: 3, recovery: 20, damage: 12,
         block: -9, hit: { adv: 3 }, ch: { adv: 8 },
-        hitbox: { x: 30, w: 26, y: 48, h: 20 }, push: 14, juggle: 3.6, hitstop: 9, shake: 0.002,
+        hitbox: { x: 30, w: 26, y: 48, h: 20 }, push: 14, juggle: 3.6, shake: 0.002,
         anim: [[1, 'jab_x'], [8, 'fk_c'], [12, 'kick_x'], [15, 'kick_x'], [34, 'idle']]
       },
       mid: {
         name: 'Mid Kick', label: 'ISOSCELES KICK', cmd: 'K', level: 'mid', strength: 'medium',
         startup: 13, active: 3, recovery: 19, damage: 13,
         block: -6, hit: { adv: 4 }, ch: { adv: 9 },
-        hitbox: { x: 30, w: 26, y: 46, h: 20 }, push: 14, juggle: 3.8, hitstop: 9, shake: 0.002,
+        hitbox: { x: 30, w: 26, y: 46, h: 20 }, push: 14, juggle: 3.8, shake: 0.002,
         anim: [[1, 'idle'], [9, 'fk_c'], [13, 'kick_x'], [16, 'kick_x'], [24, 'fk_c'], [34, 'idle']]
       },
       low: {
         name: 'Low Kick', label: 'ACUTE LOW', cmd: 'D+K', level: 'low', strength: 'light',
         startup: 15, active: 3, recovery: 19, damage: 9, crouching: true, otg: true,
         block: -11, hit: { adv: 0 }, ch: { adv: 6 },
-        hitbox: { x: 28, w: 24, y: 0, h: 16 }, push: 10, juggle: 2.5, hitstop: 7, shake: 0.002,
+        hitbox: { x: 28, w: 24, y: 0, h: 16 }, push: 10, juggle: 2.5, shake: 0.002,
         anim: [[1, 'crouch'], [10, 'lk_c'], [15, 'lk_x'], [18, 'lk_x'], [28, 'lk_c'], [36, 'crouch']]
       },
       sweep: FG.kit.sweep('OBTUSE SWEEP', { startup: 19, damage: 15 }),
@@ -86,7 +86,7 @@
         name: 'Heavy', label: 'HYPOTENUSE', cmd: 'H', level: 'mid', strength: 'heavy',
         startup: 17, active: 3, recovery: 22, damage: 19, wallSplat: true,
         block: -6, hit: { adv: 5 }, ch: { launch: 6 },
-        hitbox: { x: 34, w: 24, y: 52, h: 16 }, push: 24, juggle: 3.6, carry: 2, hitstop: 11, shake: 0.005,
+        hitbox: { x: 34, w: 24, y: 52, h: 16 }, push: 24, juggle: 3.6, carry: 2, shake: 0.005,
         step: [9, 18, 1.8],
         anim: [[1, 'idle'], [11, 'hv_c'], [17, 'hv_x'], [20, 'hv_x'], [28, 'hv_r'], [41, 'idle']]
       },
@@ -94,7 +94,7 @@
         name: 'Axe Kick', label: 'VERTEX DROP', cmd: 'F+H', level: 'mid', strength: 'heavy', bound: true,
         startup: 20, active: 3, recovery: 20, damage: 17, guardDmg: 22,
         block: -7, hit: { adv: 3 }, ch: { knockdown: true },
-        hitbox: { x: 30, w: 22, y: 30, h: 30 }, push: 14, juggle: 2.5, hitstop: 12, shake: 0.006,
+        hitbox: { x: 30, w: 22, y: 30, h: 30 }, push: 14, juggle: 2.5, shake: 0.006,
         step: [12, 20, 1.3],
         anim: [[1, 'idle'], [12, 'axe_c'], [20, 'axe_x'], [23, 'axe_x'], [32, 'hv_r'], [42, 'idle']]
       },
@@ -108,7 +108,7 @@
         name: 'Counter', label: 'REFLECTION', cmd: 'PARRY', level: 'mid', strength: 'heavy',
         startup: 6, active: 3, recovery: 18, damage: 20,
         block: -6, hit: { knockdown: true }, ch: { knockdown: true },
-        hitbox: { x: 20, w: 34, y: 50, h: 30 }, push: 20, juggle: 3.5, carry: 1.6, hitstop: 13, shake: 0.007,
+        hitbox: { x: 20, w: 34, y: 50, h: 30 }, push: 20, juggle: 3.5, carry: 1.6, shake: 0.007,
         anim: [[1, 'parry'], [6, 'reflect_x'], [9, 'reflect_x'], [26, 'idle']]
       },
       // Tangent Step: an attack out of a sidestep (sidestep, then P). Tracks.
@@ -116,21 +116,21 @@
         name: 'Sidestep Attack', label: 'TANGENT STEP', cmd: 'SS, P', level: 'mid', strength: 'medium', tracks: true, keepZ: true,
         startup: 12, active: 3, recovery: 16, damage: 15,
         block: -3, hit: { adv: 6 }, ch: { knockdown: true },
-        hitbox: { x: 18, w: 28, y: 54, h: 22 }, push: 14, juggle: 3.6, hitstop: 10, shake: 0.004,
+        hitbox: { x: 18, w: 28, y: 54, h: 22 }, push: 14, juggle: 3.6, shake: 0.004,
         anim: [[1, 'squat'], [7, 'tangent_c'], [12, 'tangent_x'], [15, 'tangent_x'], [31, 'idle']]
       },
       ssK: {
         name: 'Sidestep Low', label: 'SECANT SWEEP', cmd: 'SS, K', level: 'low', strength: 'medium', tracks: true, crouching: true, keepZ: true,
         startup: 15, active: 3, recovery: 22, damage: 12,
         block: -13, hit: { knockdown: true }, ch: { knockdown: true },
-        hitbox: { x: 28, w: 24, y: 0, h: 14 }, push: 8, juggle: 2.5, hitstop: 9, shake: 0.003,
+        hitbox: { x: 28, w: 24, y: 0, h: 14 }, push: 8, juggle: 2.5, shake: 0.003,
         anim: [[1, 'squat'], [9, 'sweep_c'], [15, 'sweep_x'], [18, 'sweep_x'], [30, 'sweep_c'], [40, 'crouch']]
       },
       launcher: {
         name: 'Launcher', label: 'PARABOLA LAUNCHER', cmd: 'D+H', level: 'mid', strength: 'launch',
         startup: 14, active: 4, recovery: 24, damage: 15,
         block: -16, hit: { launch: 7.8 }, ch: { launch: 8.4 },
-        hitbox: { x: 10, w: 28, y: 36, h: 76 }, push: 6, juggle: 5.5, carry: 0.6, hitstop: 13, shake: 0.008,
+        hitbox: { x: 10, w: 28, y: 36, h: 76 }, push: 6, juggle: 5.5, carry: 0.6, shake: 0.008,
         step: [8, 14, 1.4],
         cancels: [{ btn: 'up', into: 'jump', from: 16, to: 28, onHit: true }],
         anim: [[1, 'crouch'], [8, 'flip_c'], [14, 'flip_x'], [18, 'flip_x'], [30, 'squat'], [41, 'idle']]
@@ -142,12 +142,12 @@
     FG.kit.taunt()),
 
     combos: [
-      { name: 'RIGHT TRIANGLE', notation: 'P, K', plan: { 0: 'P', 14: 'K' }, hits: ['jab', 'jabK'] },
-      { name: 'PARABOLA JUGGLE', notation: 'D+H, P, K', plan: { 0: 'D+H', 55: 'P', 85: 'K' }, hits: ['launcher', 'jab', 'mid'] },
+      { name: 'RIGHT TRIANGLE', notation: 'P, K', plan: { 0: 'P', 10: 'K' }, hits: ['jab', 'jabK'] },
+      { name: 'PARABOLA JUGGLE', notation: 'D+H, P, K', plan: { 0: 'D+H', 42: 'P', 66: 'K' }, hits: ['launcher', 'jab', 'mid'] },
       { name: 'VERTEX SPIKE', notation: 'D+H, UP, AIR P, AIR K, AIR H, K',
-        plan: { 0: 'D+H', 16: 'UP', 35: 'P', 47: 'K', 60: 'H', 115: 'K' }, hits: ['launcher', 'airP', 'airK', 'airH', 'mid'] },
+        plan: { 0: 'D+H', 14: 'UP', 22: 'P', 29: 'K', 38: 'H', 73: 'K' }, hits: ['launcher', 'airP', 'airK', 'airH', 'mid'] },
       { name: 'VERTEX BOUND (HARD)', notation: 'D+H, F+H (2-FRAME WINDOW), K',
-        plan: { 0: 'D+H', 55: 'F+H', 110: 'K' }, hits: ['launcher', 'fH', 'mid'] }
+        plan: { 0: 'D+H', 42: 'F+H', 81: 'K' }, hits: ['launcher', 'fH', 'mid'] }
     ],
 
     intro: [[1, 'idle'], [14, 'stand'], [30, 'bow'], [48, 'bow'], [62, 'stand'], [84, 'idle']],

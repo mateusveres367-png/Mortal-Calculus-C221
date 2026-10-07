@@ -56,7 +56,7 @@
         name: 'Jab', label: 'POWER JAB', cmd: 'P', level: 'high', strength: 'light',
         startup: 11, active: 2, recovery: 14, damage: 10,
         block: 0, hit: { adv: 7 }, ch: { adv: 10 },
-        hitbox: { x: 22, w: 26, y: 68, h: 14 }, push: 9, juggle: 3, hitstop: 7,
+        hitbox: { x: 22, w: 26, y: 68, h: 14 }, push: 9, juggle: 3,
         cancels: [{ btn: 'p', into: 'jab2', from: 11, to: 23 }],
         anim: [[1, 'idle'], [8, 'jab_c'], [11, 'jab_x'], [14, 'jab_x'], [26, 'idle']]
       },
@@ -64,21 +64,21 @@
         name: 'Jab 2', label: 'SQUARED', cmd: 'P,P', level: 'high', strength: 'medium',
         startup: 12, active: 3, recovery: 19, damage: 15,
         block: -5, hit: { adv: 4 }, ch: { adv: 10 },
-        hitbox: { x: 24, w: 28, y: 66, h: 16 }, push: 14, juggle: 3.4, hitstop: 9, shake: 0.003,
+        hitbox: { x: 24, w: 28, y: 66, h: 16 }, push: 14, juggle: 3.4, shake: 0.003,
         anim: [[1, 'jab_x'], [7, 'cross_c'], [12, 'cross_x'], [15, 'cross_x'], [33, 'idle']]
       },
       mid: {
         name: 'Mid Kick', label: 'EXPONENT KICK', cmd: 'K', level: 'mid', strength: 'medium',
         startup: 16, active: 3, recovery: 20, damage: 19,
         block: -7, hit: { adv: 5 }, ch: { adv: 10 },
-        hitbox: { x: 30, w: 28, y: 38, h: 22 }, push: 18, juggle: 3.6, hitstop: 10, shake: 0.004,
+        hitbox: { x: 30, w: 28, y: 38, h: 22 }, push: 18, juggle: 3.6, shake: 0.004,
         anim: [[1, 'idle'], [11, 'fk_c'], [16, 'fk_x'], [19, 'fk_x'], [27, 'fk_c'], [38, 'idle']]
       },
       low: {
         name: 'Low Kick', label: 'NEGATIVE EXPONENT', cmd: 'D+K', level: 'low', strength: 'medium', crouching: true, otg: true,
         startup: 18, active: 3, recovery: 22, damage: 13,
         block: -13, hit: { adv: 0 }, ch: { adv: 6 },
-        hitbox: { x: 30, w: 26, y: 0, h: 16 }, push: 10, juggle: 2.5, hitstop: 9, shake: 0.003,
+        hitbox: { x: 30, w: 26, y: 0, h: 16 }, push: 10, juggle: 2.5, shake: 0.003,
         anim: [[1, 'crouch'], [12, 'st_c'], [18, 'st_x'], [21, 'st_x'], [32, 'st_c'], [42, 'crouch']]
       },
       sweep: FG.kit.sweep('ZERO POWER SWEEP', { startup: 22, damage: 20, strength: 'heavy', shake: 0.006 }),
@@ -86,7 +86,7 @@
         name: 'Heavy', label: 'BASE HOOK', cmd: 'H', level: 'mid', strength: 'heavy',
         startup: 21, active: 4, recovery: 20, damage: 28, wallSplat: true,
         block: 1, hit: { adv: 8 }, ch: { launch: 6.2 },
-        hitbox: { x: 26, w: 26, y: 52, h: 20 }, push: 30, juggle: 3.6, carry: 2.2, hitstop: 14, shake: 0.008,
+        hitbox: { x: 26, w: 26, y: 52, h: 20 }, push: 30, juggle: 3.6, carry: 2.2, shake: 0.008,
         step: [12, 21, 1.5],
         anim: [[1, 'idle'], [14, 'hook_c'], [21, 'hook_x'], [25, 'hook_x'], [33, 'hv_r'], [44, 'idle']]
       },
@@ -95,7 +95,7 @@
         name: 'Haymaker', label: 'EXPONENTIAL HAYMAKER', cmd: 'F+H', level: 'mid', strength: 'heavy',
         startup: 26, active: 4, recovery: 22, damage: 36, wallSplat: true, guardDmg: 34,
         block: -6, hit: { knockdown: true }, ch: { launch: 6.6 },
-        hitbox: { x: 30, w: 30, y: 58, h: 20 }, push: 34, juggle: 3.6, carry: 2.6, hitstop: 16, shake: 0.011,
+        hitbox: { x: 30, w: 30, y: 58, h: 20 }, push: 34, juggle: 3.6, carry: 2.6, shake: 0.011,
         step: [14, 26, 1.8],
         anim: [[1, 'idle'], [18, 'hay_c'], [26, 'hay_x'], [30, 'hay_x'], [40, 'hv_r'], [52, 'idle']]
       },
@@ -105,7 +105,7 @@
         startup: 20, active: 4, recovery: 22, damage: 20, wallSplat: true,
         block: -8, hit: { adv: 4 }, ch: { knockdown: true },
         charge: { at: 12, btn: 'h', mid: 16, max: 40, damage: [1, 1.5, 2.1] },
-        hitbox: { x: 30, w: 30, y: 50, h: 20 }, push: 30, juggle: 3.6, carry: 2.4, hitstop: 14, shake: 0.009,
+        hitbox: { x: 30, w: 30, y: 50, h: 20 }, push: 30, juggle: 3.6, carry: 2.4, shake: 0.009,
         step: [13, 20, 2.4],
         anim: [[1, 'idle'], [12, 'om_c'], [20, 'om_x'], [24, 'om_x'], [34, 'hv_r'], [46, 'idle']]
       },
@@ -113,7 +113,7 @@
         name: 'Launcher', label: 'POWER RULE', cmd: 'D+H', level: 'mid', strength: 'launch',
         startup: 17, active: 4, recovery: 24, damage: 22,
         block: -17, hit: { launch: 7.4 }, ch: { launch: 8 },
-        hitbox: { x: 8, w: 28, y: 30, h: 82 }, push: 6, juggle: 5.5, carry: 0.6, hitstop: 15, shake: 0.01,
+        hitbox: { x: 8, w: 28, y: 30, h: 82 }, push: 6, juggle: 5.5, carry: 0.6, shake: 0.01,
         step: [10, 17, 1.3],
         cancels: [{ btn: 'up', into: 'jump', from: 19, to: 31, onHit: true }],
         anim: [[1, 'crouch'], [11, 'power_c'], [17, 'power_x'], [21, 'power_x'], [31, 'up_r'], [44, 'idle']]
@@ -126,10 +126,10 @@
     FG.kit.taunt()),
 
     combos: [
-      { name: 'SQUARED', notation: 'P, P', plan: { 0: 'P', 18: 'P' }, hits: ['jab', 'jab2'] },
-      { name: 'POWER RULE JUGGLE', notation: 'D+H, P, P', plan: { 0: 'D+H', 56: 'P', 84: 'P' }, hits: ['launcher', 'jab', 'jab2'] },
+      { name: 'SQUARED', notation: 'P, P', plan: { 0: 'P', 11: 'P' }, hits: ['jab', 'jab2'] },
+      { name: 'POWER RULE JUGGLE', notation: 'D+H, P, P', plan: { 0: 'D+H', 41: 'P', 62: 'P' }, hits: ['launcher', 'jab', 'jab2'] },
       { name: 'TOWER OF POWERS', notation: 'D+H, UP, AIR K, AIR H, D+K ON THE GROUND',
-        plan: { 0: 'D+H', 19: 'UP', 40: 'K', 54: 'H', 136: 'D+K' }, hits: ['launcher', 'airK', 'airH', 'low'] },
+        plan: { 0: 'D+H', 17: 'UP', 25: 'K', 36: 'H', 98: 'D+K' }, hits: ['launcher', 'airK', 'airH', 'low'] },
       { name: 'EXPONENTIAL GROWTH', notation: 'AT THE WALL: H, D+H', queue: ['H', 'D+H'], wall: true, hits: ['heavy', 'launcher'] }
     ],
 

@@ -87,15 +87,18 @@
     var st = STYLE[ev.move.strength] || STYLE.light;
     var colors = ev.ch ? [0xffffff, 0xff8a1f, 0xff4a3d, 0xffd23f] : st.colors;
     var kind = ev.impact || FG.impactKind(ev.move);
-    var n = st.n + (ev.ch ? 8 : 0);
+    // Sparks grow as the combo goes on.
+    var grow = 1 + Math.min(1.1, Math.max(0, (ev.hits || 1) - 1) * 0.1);
+    var n = Math.round((st.n + (ev.ch ? 8 : 0)) * grow);
     for (var j = 0; j < n; j++) {
       var ang = Math.random() * Math.PI * 2;
-      var sp = st.speed * (0.5 + Math.random());
+      var sp = st.speed * (0.5 + Math.random()) * Math.sqrt(grow);
       var up = kind === 'launch' ? -1.5 : 0;
       this.parts.push({ x: x, y: y, vx: Math.cos(ang) * sp + ev.facing * 1.2, vy: Math.sin(ang) * sp + up,
         life: 12 + Math.random() * 10, max: 22, size: Math.random() < 0.3 ? 3 : 2, color: colors[j % colors.length] });
     }
-    this.flashes.push({ x: x, y: y, r: st.star * (ev.ch ? 1.4 : 1), life: 7, max: 7, color: ev.ch ? 0xffb347 : 0xffffff, star: true });
+    this.flashes.push({ x: x, y: y, r: st.star * (ev.ch ? 1.4 : 1) * grow, life: 7, max: 7, color: ev.ch ? 0xffb347 : 0xffffff, star: true });
+    if (grow > 1.25) this.flashes.push({ x: x, y: y, r: 12 * grow, life: 9, max: 9, color: 0xffffff, ring: true });
     this.impact(kind, x, y, ev);
     if (ev.ch) this.counterHit(x, y, ev);
   };
@@ -163,7 +166,7 @@
   Effects.prototype.counterHit = function (x, y, ev) {
     this.flashes.push({ x: x, y: y, r: 44, life: 16, max: 16, color: 0xff4a3d, ring: true, thick: 3 });
     this.flashes.push({ x: x, y: y, r: 60, life: 10, max: 10, color: 0xffd23f, radial: true });
-    this.flashScreen(0xff8a1f, 0.32, 10);
+    this.flashScreen(0xffe2b0, 0.5, 9);
     this.shake(0.012);
   };
 
@@ -308,10 +311,14 @@
     for (var i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
   };
 
+  // Pitch multiplier for the sound being played: each hit in a combo rings a little higher.
+  var PITCH = 1;
+
   function burst(dur, freq, q, gain, type) {
     var ctx = Sfx.ctx, t = ctx.currentTime;
     var src = ctx.createBufferSource(); src.buffer = Sfx.noise;
-    var f = ctx.createBiquadFilter(); f.type = type || 'lowpass'; f.frequency.value = freq; f.Q.value = q;
+    src.playbackRate.value = PITCH;
+    var f = ctx.createBiquadFilter(); f.type = type || 'lowpass'; f.frequency.value = freq * PITCH; f.Q.value = q;
     var g = ctx.createGain();
     g.gain.setValueAtTime(gain, t); g.gain.exponentialRampToValueAtTime(0.001, t + dur);
     src.connect(f); f.connect(g); g.connect(ctx.destination);
@@ -320,7 +327,7 @@
   function thump(dur, f0, f1, gain) {
     var ctx = Sfx.ctx, t = ctx.currentTime;
     var o = ctx.createOscillator(); o.type = 'sine';
-    o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f1, t + dur);
+    o.frequency.setValueAtTime(f0 * PITCH, t); o.frequency.exponentialRampToValueAtTime(f1 * PITCH, t + dur);
     var g = ctx.createGain();
     g.gain.setValueAtTime(gain, t); g.gain.exponentialRampToValueAtTime(0.001, t + dur);
     o.connect(g); g.connect(ctx.destination);
@@ -330,7 +337,7 @@
   function sweep(dur, f0, f1, gain, type) {
     var ctx = Sfx.ctx, t = ctx.currentTime;
     var o = ctx.createOscillator(); o.type = type || 'triangle';
-    o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f1, t + dur);
+    o.frequency.setValueAtTime(f0 * PITCH, t); o.frequency.exponentialRampToValueAtTime(f1 * PITCH, t + dur);
     var g = ctx.createGain();
     g.gain.setValueAtTime(gain, t); g.gain.exponentialRampToValueAtTime(0.001, t + dur);
     o.connect(g); g.connect(ctx.destination);
@@ -367,8 +374,16 @@
         break;
       case 'hit': {
         if (ev.throw) { thump(0.25, 110, 30, 0.8); burst(0.18, 700, 1, 0.45); break; }
+        // Each hit in a combo is a semitone-ish higher than the last.
+        PITCH = Math.min(1.9, Math.pow(1.06, Math.max(0, (ev.hits || 1) - 1)));
         impactSound(ev.impact || FG.impactKind(ev.move), strength);
-        if (ev.ch) { burst(0.12, 5000, 6, 0.18, 'bandpass'); thump(0.18, 120, 40, 0.5); }
+        PITCH = 1;
+        if (ev.ch) { // extra heavy: a deep boom, a crack and a ringing clang
+          thump(0.45, 95, 22, 0.95);
+          burst(0.3, 900, 0.6, 0.55);
+          burst(0.22, 5200, 5, 0.32, 'bandpass');
+          sweep(0.3, 1500, 380, 0.1, 'square');
+        }
         if (ev.ko) thump(0.6, 90, 30, 0.7);
         break;
       }

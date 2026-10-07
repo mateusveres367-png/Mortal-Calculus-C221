@@ -55,7 +55,7 @@
         name: 'Jab', label: 'UNIT VECTOR', cmd: 'P', level: 'high', strength: 'light',
         startup: 10, active: 3, recovery: 13, damage: 7,
         block: 0, hit: { adv: 7 }, ch: { adv: 10 },
-        hitbox: { x: 22, w: 30, y: 70, h: 14 }, push: 8, juggle: 3.2, hitstop: 6,
+        hitbox: { x: 22, w: 30, y: 70, h: 14 }, push: 8, juggle: 3.2,
         cancels: [{ btn: 'p', into: 'jab2', from: 10, to: 22 }],
         anim: [[1, 'idle'], [7, 'jab_c'], [10, 'jab_x'], [14, 'jab_x'], [25, 'idle']]
       },
@@ -63,7 +63,7 @@
         name: 'Jab 2', label: 'SCALAR', cmd: 'P,P', level: 'high', strength: 'light',
         startup: 10, active: 2, recovery: 16, damage: 9,
         block: -3, hit: { adv: 6 }, ch: { adv: 9 },
-        hitbox: { x: 26, w: 28, y: 68, h: 14 }, push: 12, juggle: 3.4, hitstop: 7,
+        hitbox: { x: 26, w: 28, y: 68, h: 14 }, push: 12, juggle: 3.4,
         anim: [[1, 'jab_x'], [6, 'cross_c'], [10, 'cross_x'], [13, 'cross_x'], [27, 'idle']]
       },
       // Vector Rush: dash, then P. A lunging straight that covers ground.
@@ -71,7 +71,7 @@
         name: 'Dash Punch', label: 'VECTOR RUSH', cmd: 'F,F+P', level: 'mid', strength: 'heavy',
         startup: 12, active: 3, recovery: 18, damage: 16, wallSplat: true,
         block: -4, hit: { adv: 6 }, ch: { launch: 6 },
-        hitbox: { x: 26, w: 30, y: 54, h: 20 }, push: 20, juggle: 3.6, carry: 1.6, hitstop: 11, shake: 0.005,
+        hitbox: { x: 26, w: 30, y: 54, h: 20 }, push: 20, juggle: 3.6, carry: 1.6, shake: 0.005,
         step: [1, 12, 3.2],
         anim: [[1, 'rush_c'], [8, 'rush_c'], [12, 'rush_x'], [15, 'rush_x'], [32, 'idle']]
       },
@@ -79,7 +79,7 @@
         name: 'Mid Kick', label: 'MAGNITUDE KICK', cmd: 'K', level: 'mid', strength: 'medium',
         startup: 14, active: 3, recovery: 18, damage: 13,
         block: -5, hit: { adv: 4 }, ch: { adv: 9 },
-        hitbox: { x: 32, w: 28, y: 40, h: 18 }, push: 16, juggle: 3.8, hitstop: 9, shake: 0.002,
+        hitbox: { x: 32, w: 28, y: 40, h: 18 }, push: 16, juggle: 3.8, shake: 0.002,
         anim: [[1, 'idle'], [10, 'fk_c'], [14, 'fk_x'], [17, 'fk_x'], [24, 'fk_c'], [34, 'idle']]
       },
       // Dot Product: the longest poke in the game. Mid, safe at its tip.
@@ -87,7 +87,7 @@
         name: 'Long Poke', label: 'DOT PRODUCT', cmd: 'F+K', level: 'mid', strength: 'medium',
         startup: 16, active: 3, recovery: 18, damage: 12,
         block: -6, hit: { adv: 3 }, ch: { adv: 8 },
-        hitbox: { x: 40, w: 36, y: 42, h: 18 }, push: 18, juggle: 3.6, hitstop: 9, shake: 0.002,
+        hitbox: { x: 40, w: 36, y: 42, h: 18 }, push: 18, juggle: 3.6, shake: 0.002,
         step: [8, 16, 1.4],
         anim: [[1, 'idle'], [10, 'poke_c'], [16, 'poke_x'], [19, 'poke_x'], [27, 'poke_c'], [37, 'idle']]
       },
@@ -96,14 +96,14 @@
         name: 'Spin Kick', label: 'UNIT CIRCLE', cmd: 'B+K', level: 'high', strength: 'heavy', tracks: true,
         startup: 17, active: 4, recovery: 20, damage: 18,
         block: -7, hit: { knockdown: true }, ch: { knockdown: true },
-        hitbox: { x: 22, w: 30, y: 66, h: 22 }, push: 18, juggle: 3.6, carry: 1.6, hitstop: 12, shake: 0.006,
+        hitbox: { x: 22, w: 30, y: 66, h: 22 }, push: 18, juggle: 3.6, carry: 1.6, shake: 0.006,
         anim: [[1, 'idle'], [8, 'spin_c'], [17, 'spin_x'], [21, 'spin_x'], [30, 'spin_c'], [41, 'idle']]
       },
       low: {
         name: 'Low Kick', label: 'COMPONENT LOW', cmd: 'D+K', level: 'low', strength: 'light', crouching: true, otg: true,
         startup: 15, active: 3, recovery: 19, damage: 9,
         block: -11, hit: { adv: 0 }, ch: { adv: 6 },
-        hitbox: { x: 30, w: 26, y: 0, h: 16 }, push: 10, juggle: 2.5, hitstop: 7, shake: 0.002,
+        hitbox: { x: 30, w: 26, y: 0, h: 16 }, push: 10, juggle: 2.5, shake: 0.002,
         anim: [[1, 'crouch'], [10, 'lk_c'], [15, 'lk_x'], [18, 'lk_x'], [28, 'lk_c'], [36, 'crouch']]
       },
       sweep: FG.kit.sweep('ORTHOGONAL SWEEP'),
@@ -111,7 +111,7 @@
         name: 'Heavy', label: 'RESULTANT', cmd: 'H', level: 'mid', strength: 'heavy',
         startup: 18, active: 3, recovery: 22, damage: 20, wallSplat: true,
         block: -5, hit: { adv: 5 }, ch: { launch: 6 },
-        hitbox: { x: 36, w: 24, y: 52, h: 16 }, push: 26, juggle: 3.6, carry: 2, hitstop: 12, shake: 0.006,
+        hitbox: { x: 36, w: 24, y: 52, h: 16 }, push: 26, juggle: 3.6, carry: 2, shake: 0.006,
         step: [10, 18, 1.8],
         anim: [[1, 'idle'], [12, 'hv_c'], [18, 'hv_x'], [21, 'hv_x'], [29, 'hv_r'], [42, 'idle']]
       },
@@ -119,7 +119,7 @@
         name: 'Overhead', label: 'NORMAL VECTOR', cmd: 'F+H', level: 'mid', strength: 'heavy', bound: true,
         startup: 21, active: 3, recovery: 21, damage: 18, guardDmg: 24,
         block: -6, hit: { adv: 3 }, ch: { knockdown: true },
-        hitbox: { x: 30, w: 24, y: 48, h: 22 }, push: 16, juggle: 2.5, hitstop: 12, shake: 0.006,
+        hitbox: { x: 30, w: 24, y: 48, h: 22 }, push: 16, juggle: 2.5, shake: 0.006,
         step: [12, 21, 1.2],
         anim: [[1, 'idle'], [14, 'ham_c'], [21, 'ham_x'], [24, 'ham_x'], [33, 'hv_r'], [45, 'idle']]
       },
@@ -127,7 +127,7 @@
         name: 'Launcher', label: 'CROSS PRODUCT', cmd: 'D+H', level: 'mid', strength: 'launch',
         startup: 15, active: 4, recovery: 23, damage: 16,
         block: -15, hit: { launch: 7.6 }, ch: { launch: 8.2 },
-        hitbox: { x: 8, w: 28, y: 30, h: 80 }, push: 6, juggle: 5.5, carry: 0.6, hitstop: 13, shake: 0.008,
+        hitbox: { x: 8, w: 28, y: 30, h: 80 }, push: 6, juggle: 5.5, carry: 0.6, shake: 0.008,
         step: [9, 15, 1.2],
         cancels: [{ btn: 'up', into: 'jump', from: 17, to: 28, onHit: true }],
         anim: [[1, 'crouch'], [10, 'xprod_c'], [15, 'xprod_x'], [19, 'xprod_x'], [28, 'up_r'], [41, 'idle']]
@@ -139,9 +139,9 @@
     FG.kit.taunt()),
 
     combos: [
-      { name: 'CROSS PRODUCT JUGGLE', notation: 'D+H, P, K', plan: { 0: 'D+H', 54: 'P', 81: 'K' }, hits: ['launcher', 'jab', 'mid'] },
+      { name: 'CROSS PRODUCT JUGGLE', notation: 'D+H, P, K', plan: { 0: 'D+H', 41: 'P', 62: 'K' }, hits: ['launcher', 'jab', 'mid'] },
       { name: 'PROJECTION SPIKE', notation: 'D+H, UP, AIR P, AIR K, AIR H, K',
-        plan: { 0: 'D+H', 16: 'UP', 43: 'P', 55: 'K', 68: 'H', 123: 'K' }, hits: ['launcher', 'airP', 'airK', 'airH', 'mid'] },
+        plan: { 0: 'D+H', 15: 'UP', 30: 'P', 37: 'K', 46: 'H', 81: 'K' }, hits: ['launcher', 'airP', 'airK', 'airH', 'mid'] },
       { name: 'CALCULATED RUSH', notation: 'THEY WHIFF A JAB, F, F+P (CALCULATED BONUS)',
         dist: 100, oppPlan: { 0: 'P' }, plan: { 18: 'F', 20: 'F', 27: 'P' }, hits: ['dashP'] },
       { name: 'VECTOR SPACE', notation: 'AT THE WALL: H, F+K, D+H', queue: ['H', 'F+K', 'D+H'], wall: true, hits: ['heavy', 'fK', 'launcher'] }

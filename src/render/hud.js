@@ -22,6 +22,10 @@
     this.labelTimer = [0, 0];
     this.comboShow = [{ hits: 0, damage: 0, timer: 0 }, { hits: 0, damage: 0, timer: 0 }];
 
+    // Big COUNTER! callout on counter hits, on the attacker's side.
+    this.counterText = T(0, 0, 'COUNTER!', 'r', 4).setOrigin(0.5, 0.5).setVisible(false);
+    this.counterT = 0; this.counterSide = 0;
+
     this.banner = T(C.VIEW_W / 2, 120, '', 'y', 4).setOrigin(0.5, 0);
     this.subBanner = T(C.VIEW_W / 2, 160, '', 'w', 2).setOrigin(0.5, 0);
     this.bannerTimer = 0;
@@ -90,6 +94,7 @@
       this.comboShow[i] = { hits: 0, damage: 0, timer: 0 };
       this.trail[i] = null;
     }
+    this.counterT = 0; this.counterText.setVisible(false);
   };
 
   // opts: { scale, y } (defaults: big and centred; long text is smaller).
@@ -119,8 +124,8 @@
       default: return;
     }
     var i = ev.attacker, text = null;
+    if (ev.ch && !ev.throw) { this.counterT = 1; this.counterSide = i; }
     if (ev.throw) text = 'THROW!';
-    else if (ev.ch) text = 'COUNTER HIT!';
     else if (ev.punish) text = 'PUNISH!';
     else if (ev.bound) text = 'BOUND!';
     else if (ev.ground) text = 'GROUND HIT';
@@ -151,6 +156,17 @@
       }
     }
     if (this.bannerTimer > 0 && --this.bannerTimer === 0) { this.banner.setText(''); this.subBanner.setText(''); }
+    // COUNTER! slams in big, settles, flickers and fades.
+    if (this.counterT > 0) {
+      var ct = this.counterT++, ctx = this.counterText;
+      if (ct > 54) { this.counterT = 0; ctx.setVisible(false); }
+      else {
+        var sc = ct < 5 ? 6.5 - ct * 0.5 : ct < 9 ? 4 + Math.sin((ct - 5) * 1.6) * 0.4 : 4;
+        var jx = ct < 10 ? (ct % 2 ? 2 : -2) : 0;
+        ctx.setVisible(ct < 40 || ct % 4 < 2).setScale(sc).setFont(ct % 6 < 3 ? 'pf_r' : 'pf_y')
+          .setPosition((this.counterSide === 0 ? C.VIEW_W * 0.3 : C.VIEW_W * 0.7) + jx, 92);
+      }
+    }
   };
 
   Hud.prototype.draw = function (match, opts) {

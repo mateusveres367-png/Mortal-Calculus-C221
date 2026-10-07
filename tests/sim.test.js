@@ -219,13 +219,22 @@ defs.forEach(function (d) {
 
 // =========================== Phase 2 =========================================
 
-// Run a scripted exchange. plans: { frame: rawInput } for P1 and P2.
+// Run a scripted exchange. plans: { frame: rawInput } for P1 and P2, on game frames
+// (hitstop doesn't count, like FG.runCombo), or functions of (step, match).
 function play(atk, dfn, dist, plan1, plan2, frames, setupFn) {
   var m = setup(atk, dfn, dist), evs = [];
   if (setupFn) setupFn(m);
+  var f0 = m.frame, fired1 = {}, fired2 = {};
+  function at(plan, fired, i) {
+    if (typeof plan === 'function') return plan(i, m);
+    var t = m.frame - f0;
+    if (!plan[t] || fired[t]) return {};
+    fired[t] = true;
+    return plan[t];
+  }
   for (var i = 0; i < frames; i++) {
-    var r1 = raw(typeof plan1 === 'function' ? plan1(i, m) : (plan1[i] || {}));
-    var r2 = raw(typeof plan2 === 'function' ? plan2(i, m) : (plan2[i] || {}));
+    var r1 = raw(at(plan1, fired1, i));
+    var r2 = raw(at(plan2, fired2, i));
     m.step([r1, r2]);
     evs = evs.concat(m.events);
   }
@@ -310,7 +319,7 @@ var LAUNCH = { h: true, down: true };
   var r = play(S, D, 40, { 0: SWEEP }, {}, 60);
   check('sweep knocks down', r.m.fighters[1].state === 'down', r.m.fighters[1].state);
   // Low kick as a ground hit while they are down.
-  r = play(S, D, 40, { 0: SWEEP, 60: { k: true, down: true } }, {}, 100);
+  r = play(S, D, 40, { 0: SWEEP, 48: { k: true, down: true } }, {}, 100);
   check('low hits downed opponent', r.hits.filter(function (e) { return e.ground; }).length === 1, r.hits.map(function (e) { return e.move.id + (e.ground ? '(G)' : ''); }));
   // Jab cannot.
   r = play(S, D, 40, { 0: SWEEP, 60: { p: true } }, {}, 100);
@@ -772,6 +781,37 @@ check('all eight fighters', FG.ROSTER.length === 8, FG.ROSTER.length);
   check('others cannot chain dashes', dist(S, chain) < dist(S, { 0: { right: true }, 2: { right: true } }) + 10, [dist(S, chain)]);
   function regen(def) { var m = setup(def, D, 200); m.fighters[0].guard = 60; run(m, 30); return 60 - m.fighters[0].guard; }
   check('ramos guard recovers twice as fast', Math.abs(regen(RM) - 2 * regen(S)) < 0.01, [regen(RM), regen(S)]);
+})();
+
+// =========================== Combo feel ======================================
+
+// Hit feel: hitstop scales with strength; combo finishers and launchers hang longest;
+// every hit carries its number in the combo (sound pitch and spark size use it).
+(function () {
+  function stopOf(def, input, dist) {
+    var m = setup(def, D, dist || 40), stop = 0;
+    for (var i = 0; i < 40; i++) {
+      m.step([raw(i === 0 ? input : {}), raw({})]);
+      if (m.events.some(function (e) { return e.type === 'hit'; })) { stop = m.hitstop; break; }
+    }
+    return stop;
+  }
+  defs.forEach(function (d) {
+    var jab = stopOf(d, { p: true }), heavy = stopOf(d, { h: true }), launch = stopOf(d, LAUNCH);
+    check(d.name + ' hitstop: jab < heavy < launcher', jab > 0 && jab < heavy && heavy < launch, [jab, heavy, launch]);
+    check(d.name + ' jab hitstop is tiny', jab <= 5, jab);
+  });
+  // A sweep (knockdown) is a finisher.
+  check('finisher hitstop', stopOf(S, { k: true, down: true, left: true }) >= FG.C.HITSTOP_FINISHER, stopOf(S, { k: true, down: true, left: true }));
+  var m = setup(S, D, 40), seen = [];
+  var plan = S.combos[0].plan, f0 = m.frame, fired = {};
+  for (var i = 0; i < 120; i++) {
+    var t = m.frame - f0, in1 = {};
+    if (plan[t] && !fired[t]) { in1 = FG.parseInput(plan[t]); fired[t] = true; }
+    m.step([raw(in1), raw({})]);
+    m.events.forEach(function (e) { if (e.type === 'hit') seen.push(e.hits); });
+  }
+  check('combo hits are numbered', seen.join() === '1,2,3', seen);
 })();
 
 console.log(passes + ' passed, ' + failures + ' failed');
