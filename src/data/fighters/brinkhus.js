@@ -30,6 +30,7 @@
 
   FG.defineFighter({
     id: 'brinkhus', order: 1,
+    homeStage: 'classroom',
     name: 'BRINKHUS', archetype: 'BALANCED', theme: 'LIMITS',
     bio: 'NICE, EASYGOING, A GOOD SPORT. BEST FOR NEW PLAYERS.',
     signature: ['LIMIT JAB', 'EPSILON-DELTA STRING', 'LIMIT BREAK', 'SQUEEZE THEOREM'],

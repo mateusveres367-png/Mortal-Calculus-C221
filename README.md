@@ -4,7 +4,7 @@ A retro, Tekken-inspired 2D/2.5D fighting game themed around the El Camino Real 
 
 ## Status
 
-**Phase 5 — animation (playable).** All eight fighters from [`ROSTER.md`](ROSTER.md): **PEDERSEN** (power, exponents; the cover fighter), **BRINKHUS** (balanced, limits), **CHAI** (technical, geometry), **DALSASS** (tricky, functions), **LEE** (rushdown, sequences), **LOPEZ** (defensive, statistics), **MIYASHIRO** (spacing, vectors) and **RAMOS** (grappler, matrices).
+**Phase 6 — stages (playable).** All eight fighters from [`ROSTER.md`](ROSTER.md): **PEDERSEN** (power, exponents; the cover fighter), **BRINKHUS** (balanced, limits), **CHAI** (technical, geometry), **DALSASS** (tricky, functions), **LEE** (rushdown, sequences), **LOPEZ** (defensive, statistics), **MIYASHIRO** (spacing, vectors) and **RAMOS** (grappler, matrices).
 
 What's in the game so far:
 
@@ -18,13 +18,21 @@ What's in the game so far:
 - **Roster (phase 4):**
   - each fighter is drawn from their described look and has their own stance, idle animation, normals, launcher, throws, combo routes, and intro, victory and defeat animations
   - character select, round intros, and a win screen with a random victory line in a speech box
-  - the title screen features PEDERSEN next to his red sports car; his intro drives it in, and his stage is the outdoor campus with the car parked
+  - the title screen features PEDERSEN next to his red sports car; his intro drives it in
   - full move lists with frame data are in [`MOVES.md`](MOVES.md)
 - **Animation (phase 5):**
   - every attack has anticipation (weight back, shoulders wound up), a full-body strike (hips drive through, shoulders and hips rotate, weight shifts onto the front foot) and a recovery that settles
   - feet stay planted and take real steps when the body moves; knees and elbows are solved so limbs keep their length; nobody slides or floats
   - hit reactions by blow: heads snap back from jabs, bodies fold over body shots, roundhouses spin them, overheads crumple them
   - impact effects and sounds by attack type: quick jabs, heavy body shots, powerful roundhouses, explosive launchers, and dramatic counter hits with a screen flash and a shockwave
+- **Stages (phase 6):** six stages with parallax depth and small animations, and students in the background who cheer, flinch at big hits and jump up for a K.O.:
+  - **Classroom C221:** whiteboards full of math, desks with calculators, a ticking clock, a flickering tube light
+  - **Math Hallway:** lockers, classroom doors, bulletin boards, a humming vending machine, students walking past
+  - **Computer Lab:** a bench of CRT monitors plotting sine waves, bar charts and spirals; students spin round to watch
+  - **Outdoor Campus:** buildings at dusk, a clock tower, swaying trees, a waving flag, drifting clouds and birds
+  - **Department Office:** bookshelves, filing cabinets, a turning ceiling fan, a printer that never stops, screensavers
+  - **Faculty Parking:** PEDERSEN's stage; his red sports car sits in his reserved spot, cars pass on the road behind
+  - each fighter has a home stage (player 2's is used); PEDERSEN drives in only on outdoor stages and walks in indoors
 - **Combo feel pass:**
   - hit feel: hitstop scales with strength (jabs tiny, heavies longer, launchers and combo finishers longest); each hit in a combo sounds a little higher than the last and throws bigger sparks; counter hits get a bright flash, a big COUNTER! and an extra-heavy sound
   - self-check: tests play every route against every fighter, mash buttons at random to make sure nothing is infinite or too easy, and check damage rises with difficulty; see [`COMBOS.md`](COMBOS.md)
@@ -173,7 +181,7 @@ lib/phaser.min.js       Phaser 3.90, vendored
 src/fg.js               global namespace and tuning constants
 src/engine/             pure simulation, no Phaser: input buffer, fighter state machine, match loop and walls,
                         combat (hits, juggles, bounds, wall hits, throws, guard meter), dummy
-src/data/               poses, the fighter kit (kit.js) and one file per fighter in fighters/
+src/data/               poses, the fighter kit (kit.js), the stage list (stages.js) and one file per fighter in fighters/
 src/render/             fighter drawing, procedural motion (motion.js), stage, effects and sound,
                         HUD, pixel font, input display, training menu
 src/scenes/             title, character select, and the fight scene that ties input, simulation and rendering together

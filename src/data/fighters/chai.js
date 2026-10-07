@@ -33,6 +33,7 @@
 
   FG.defineFighter({
     id: 'chai', order: 2,
+    homeStage: 'classroom',
     name: 'CHAI', archetype: 'TECHNICAL', theme: 'GEOMETRY',
     bio: 'VERY KIND, PRECISE AND GRACEFUL. BOWS BEFORE FIGHTS.',
     signature: ['TANGENT STEP', 'REFLECTION COUNTER', 'PARABOLA LAUNCHER', 'TRANSFORMATION'],

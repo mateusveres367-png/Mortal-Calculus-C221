@@ -998,5 +998,13 @@ defs.forEach(function (d) {
   check('hitstun decays deep into a combo', stunAfterJab(FG.C.COMBO_DECAY_FROM + 4) < stunAfterJab(1), [stunAfterJab(FG.C.COMBO_DECAY_FROM + 4), stunAfterJab(1)]);
 })();
 
+// Stages: the five from the design doc plus PEDERSEN's faculty parking lot.
+(function () {
+  var ids = FG.STAGES.map(function (st) { return st.id; });
+  check('all stages exist', ['classroom', 'hallway', 'lab', 'campus', 'office', 'parking'].every(function (id) { return ids.indexOf(id) >= 0; }), ids);
+  defs.forEach(function (d) { check(d.name + ' home stage exists', ids.indexOf(d.homeStage) >= 0, d.homeStage); });
+  check('pedersen fights in the faculty parking lot', FG.fighterById('pedersen').homeStage === 'parking' && FG.stageById('parking').outdoor);
+})();
+
 console.log(passes + ' passed, ' + failures + ' failed');
 process.exit(failures ? 1 : 0);

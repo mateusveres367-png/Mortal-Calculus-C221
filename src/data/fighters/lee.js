@@ -33,6 +33,7 @@
 
   FG.defineFighter({
     id: 'lee', order: 4,
+    homeStage: 'hallway',
     name: 'LEE', archetype: 'RUSHDOWN', theme: 'SEQUENCES',
     bio: 'SARCASTIC AND FUNNY. TAUNTS MID-COMBO. RELENTLESS PRESSURE.',
     signature: ['ARITHMETIC SEQUENCE', 'RECURSIVE RUSH', 'FIBONACCI UPPERCUT', 'SERIES EXPANSION'],

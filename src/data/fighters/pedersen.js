@@ -37,7 +37,7 @@
     scale: 1.12, health: 200,
     walkF: 1.5, walkB: 1.3, dashSpeed: 6.4, backdashSpeed: 7.4,
     car: true,            // drives in for his intro; parks in the background
-    homeStage: 'campus',  // his stage: outdoor campus with the car parked
+    homeStage: 'parking', // his stage: the faculty parking lot, his car in the reserved spot
     look: {
       skin: 0xe2ad85, eyeColor: 0x7cc4f0,
       hair: { style: 'slick', color: 0x5a3c24 },

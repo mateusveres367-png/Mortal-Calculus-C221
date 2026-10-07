@@ -12,11 +12,16 @@
     data = data || {};
     var roster = FG.ROSTER;
     this.ids = { p1: data.p1 || roster[0].id, p2: data.p2 || roster[Math.min(1, roster.length - 1)].id };
+    // The stage: picked on stage select, or player 2's home stage.
+    this.stageId = data.stage || FG.fighterById(this.ids.p2).homeStage || 'classroom';
   };
 
   FightScene.prototype.create = function () {
     FG.makeFonts(this);
-    this.stage = new FG.Stage(this, { home: FG.fighterById(this.ids.p2) });
+    // PEDERSEN drives in on outdoor stages; his car is then part of the fight scene.
+    var stageDef = FG.stageById(this.stageId);
+    var carInWorld = !!stageDef.outdoor && (FG.fighterById(this.ids.p1).car || FG.fighterById(this.ids.p2).car);
+    this.stage = new FG.Stage(this, { id: this.stageId, carInWorld: carInWorld });
     this.ghosts = this.add.graphics().setDepth(-1).setAlpha(0.45); // cancel afterimages
     this.world = this.add.graphics().setDepth(0);
     this.screenFlash = this.add.graphics().setScrollFactor(0).setDepth(40); // impact flashes over the world
@@ -75,7 +80,7 @@
     // PEDERSEN's car parks behind his starting spot (and drives in during his intro).
     this.cars = [];
     for (var c = 0; c < 2; c++) {
-      if (!f[c].def.car) continue;
+      if (!f[c].def.car || !this.stage.outdoor) continue; // indoors he walks in
       var park = Math.max(C.WALL_L + 80, Math.min(C.WALL_R - 80, f[c].x - f[c].facing * 95));
       this.cars.push({ owner: c, parkX: park, x: park, facing: f[c].facing, door: 0, spin: 0 });
       f[c]._hidden = false;
@@ -195,7 +200,7 @@
   };
 
   FightScene.prototype.toSelect = function () {
-    this.scene.start('select', { p1: this.ids.p1, p2: this.ids.p2 });
+    this.scene.start('select', { p1: this.ids.p1, p2: this.ids.p2, stage: this.stageId });
   };
 
   // Rows of the training menu. Each has a label, a value() and change(delta).
@@ -541,6 +546,9 @@
       if (ev.type === 'hit') {
         var big = ev.move && (ev.move.strength === 'heavy' || ev.move.strength === 'launch' || ev.ko);
         this.stage.cheer((big ? 2 : 1) * (a.def.crowdFavorite ? 2 : 1), !!a.def.crowdFavorite);
+        // The students in the background flinch at big hits and jump up for a K.O.
+        if (ev.ko) this.stage.react('ko');
+        else if (big || ev.ch || ev.finisher || ev.damage >= 18) this.stage.react('big');
         f[ev.defender]._face = { type: 'wince', t: 30 };
         // After a big hit: CHAI winces apologetically, LEE pushes up his glasses.
         if (big && a.def.bigHit) {

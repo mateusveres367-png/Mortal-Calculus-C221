@@ -34,6 +34,7 @@
 
   FG.defineFighter({
     id: 'lopez', order: 5,
+    homeStage: 'office',
     name: 'LOPEZ', archetype: 'DEFENSIVE', theme: 'STATISTICS',
     bio: 'VERY SUSPICIOUS. ALWAYS WATCHING. WAITS FOR YOU TO COMMIT, THEN PUNISHES.',
     signature: ['STANDARD DEVIATION', 'CONFIDENCE INTERVAL', 'NULL HYPOTHESIS', 'OUTLIER', 'REGRESSION'],

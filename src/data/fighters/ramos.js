@@ -35,6 +35,7 @@
 
   FG.defineFighter({
     id: 'ramos', order: 7,
+    homeStage: 'campus',
     name: 'RAMOS', archetype: 'GRAPPLER', theme: 'MATRICES',
     bio: 'FAST, EXPLOSIVE GRAPPLER WHO CLOSES DISTANCE QUICKLY. CONFIDENT AND FOCUSED.',
     signature: ['MATRIX LOCK', 'DETERMINANT SLAM', 'IDENTITY', 'TRANSPOSE TOSS'],

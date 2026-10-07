@@ -32,6 +32,7 @@
 
   FG.defineFighter({
     id: 'miyashiro', order: 6,
+    homeStage: 'lab',
     name: 'MIYASHIRO', archetype: 'SPACING', theme: 'VECTORS',
     bio: 'VERY SMART. READS OPPONENTS, KEEPS PERFECT DISTANCE, PUNISHES EVERY MISTAKE.',
     signature: ['VECTOR RUSH', 'DOT PRODUCT', 'UNIT CIRCLE', 'CROSS PRODUCT', 'PROJECTION', 'CALCULATED'],

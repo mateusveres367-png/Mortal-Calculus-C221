@@ -31,6 +31,7 @@
 
   FG.defineFighter({
     id: 'dalsass', order: 3,
+    homeStage: 'hallway',
     name: 'DALSASS', archetype: 'TRICKY', theme: 'FUNCTIONS',
     bio: "HAPPY, SASSY, EVERYONE'S FAVORITE. FAKES YOU OUT WITH A GRIN.",
     signature: ['PIECEWISE', 'FUNCTION FEINT', 'ASYMPTOTE SLIDE', 'DISCONTINUITY', 'CONTRADICTION'],

@@ -13,7 +13,7 @@
 
   TitleScene.prototype.create = function () {
     FG.makeFonts(this);
-    this.stage = new FG.Stage(this, { variant: 'campus' });
+    this.stage = new FG.Stage(this, { id: 'parking', carInWorld: true }); // his car is out front instead
     this.cameras.main.scrollX = (C.WORLD_W - C.VIEW_W) / 2;
 
     var shade = this.add.graphics().setScrollFactor(0).setDepth(5);
