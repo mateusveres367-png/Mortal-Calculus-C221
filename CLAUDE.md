@@ -37,6 +37,7 @@ What that means in practice:
 - Smack talk: each fighter's `talk.lines` (pre-round and taunt lines) and `talk.quips` (short lines after big combos and counter hits). Rivalry exchanges are in `src/data/talk.js`. Speech boxes are `src/render/speechBox.js`.
 - `src/render/stage.js` builds the stages (classroom, PEDERSEN's campus). The stage is player 2's `homeStage`. `src/render/car.js` draws PEDERSEN's car (no real badges or logos).
 - `src/render/` draws from simulation state; `src/scenes/fightScene.js` reads the keyboard, steps the match and renders.
+- `src/render/motion.js` layers procedural motion on the keyframed poses: anticipation, strike and recovery on every attack (by motion kind), planted feet with real steps, IK for knees and elbows, hit reactions and strike trails. It also classifies each attack's impact kind (jab, body, power, launch, overhead, low) for effects and sounds. Keep the striking hand or foot pinned to its authored pose during active frames so visuals match hitboxes.
 
 ## Checks before committing
 

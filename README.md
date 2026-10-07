@@ -4,7 +4,7 @@ A retro, Tekken-inspired 2D/2.5D fighting game themed around the El Camino Real 
 
 ## Status
 
-**Phase 4 — the roster (playable).** All eight fighters from [`ROSTER.md`](ROSTER.md): **PEDERSEN** (power, exponents; the cover fighter), **BRINKHUS** (balanced, limits), **CHAI** (technical, geometry), **DALSASS** (tricky, functions), **LEE** (rushdown, sequences), **LOPEZ** (defensive, statistics), **MIYASHIRO** (spacing, vectors) and **RAMOS** (grappler, matrices).
+**Phase 5 — animation (playable).** All eight fighters from [`ROSTER.md`](ROSTER.md): **PEDERSEN** (power, exponents; the cover fighter), **BRINKHUS** (balanced, limits), **CHAI** (technical, geometry), **DALSASS** (tricky, functions), **LEE** (rushdown, sequences), **LOPEZ** (defensive, statistics), **MIYASHIRO** (spacing, vectors) and **RAMOS** (grappler, matrices).
 
 What's in the game so far:
 
@@ -20,6 +20,11 @@ What's in the game so far:
   - character select, round intros, and a win screen with a random victory line in a speech box
   - the title screen features PEDERSEN next to his red sports car; his intro drives it in, and his stage is the outdoor campus with the car parked
   - full move lists with frame data are in [`MOVES.md`](MOVES.md)
+- **Animation (phase 5):**
+  - every attack has anticipation (weight back, shoulders wound up), a full-body strike (hips drive through, shoulders and hips rotate, weight shifts onto the front foot) and a recovery that settles
+  - feet stay planted and take real steps when the body moves; knees and elbows are solved so limbs keep their length; nobody slides or floats
+  - hit reactions by blow: heads snap back from jabs, bodies fold over body shots, roundhouses spin them, overheads crumple them
+  - impact effects and sounds by attack type: quick jabs, heavy body shots, powerful roundhouses, explosive launchers, and dramatic counter hits with a screen flash and a shockwave
 
 The full vision lives in [`GAME_DESIGN.md`](GAME_DESIGN.md); the game is built in phases, and each phase stays playable.
 
@@ -159,8 +164,8 @@ src/fg.js               global namespace and tuning constants
 src/engine/             pure simulation, no Phaser: input buffer, fighter state machine, match loop and walls,
                         combat (hits, juggles, bounds, wall hits, throws, guard meter), dummy
 src/data/               poses, the fighter kit (kit.js) and one file per fighter in fighters/
-src/render/             fighter drawing, stage, effects and sound, HUD, pixel font,
-                        input display, training menu
+src/render/             fighter drawing, procedural motion (motion.js), stage, effects and sound,
+                        HUD, pixel font, input display, training menu
 src/scenes/             title, character select, and the fight scene that ties input, simulation and rendering together
 tools/movelist.js       regenerates MOVES.md from the fighter data
 tests/sim.test.js       headless engine tests (node tests/sim.test.js)

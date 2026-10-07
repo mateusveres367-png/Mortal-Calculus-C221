@@ -18,6 +18,7 @@
     FG.makeFonts(this);
     this.stage = new FG.Stage(this, { home: FG.fighterById(this.ids.p2) });
     this.world = this.add.graphics().setDepth(0);
+    this.screenFlash = this.add.graphics().setScrollFactor(0).setDepth(40); // impact flashes over the world
     this.hud = new FG.Hud(this);
     this.effects = new FG.Effects();
     this.dummy = new FG.Dummy();
@@ -345,6 +346,12 @@
 
     for (var i = 0; i < m.events.length; i++) {
       var ev = m.events[i];
+      if ((ev.type === 'hit' || ev.type === 'block') && ev.move && !ev.throw) {
+        ev.impact = FG.impactKind(ev.move);
+        // The body reacts to the kind of blow (motion.js).
+        var dfn = f[ev.defender];
+        dfn._react = ev.type === 'block' ? { kind: 'block', t: 0 } : { kind: ev.impact, t: 0, scale: ev.ch ? 1.3 : 1 };
+      }
       FG.Sfx.play(ev);
       if (ev.type !== 'whiff') this.effects.spawn(ev);
       if (ev.shake) this.effects.shake(ev.shake);
@@ -379,8 +386,9 @@
     this.hud.tick(m);
     if (this.impact && --this.impact.frames < 0) this.impact = null;
     this.tickCount++;
-    FG.updatePose(f[0], this.tickCount);
-    FG.updatePose(f[1], this.tickCount);
+    var frozen = { frozen: m.hitstop > 0 };
+    FG.updatePose(f[0], this.tickCount, frozen);
+    FG.updatePose(f[1], this.tickCount, frozen);
   };
 
   // Order of Magnitude: sparks gather at the fist while charging; x10 / x100 at each level.
@@ -487,6 +495,9 @@
       FG.drawFighter(g, fi, opts);
     }
     this.effects.draw(g);
+    var sf = this.effects.screen, fl = this.screenFlash;
+    fl.clear();
+    if (sf) { fl.fillStyle(sf.color, sf.alpha * sf.life / sf.max); fl.fillRect(0, 0, C.VIEW_W, C.VIEW_H); }
     var t = this.training;
     if (t.showBoxes) { FG.drawBoxes(g, f[0]); FG.drawBoxes(g, f[1]); }
 

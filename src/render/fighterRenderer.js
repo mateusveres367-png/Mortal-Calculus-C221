@@ -3,7 +3,9 @@
 // the simulation state; attacks, intros, victories and gestures use keyframes.
 //
 // Render-only fields on a fighter (never read by the simulation):
-//   _pose      the pose currently drawn
+//   _pose      the pose currently drawn (_base before the motion layer)
+//   _twist     shoulder / hip rotation from the motion layer
+//   _feet, _strike, _trail, _react   motion layer state (motion.js)
 //   _override  { anim, t, loop } intro / victory / defeat animation
 //   _gesture   { anim, t } a short idle gesture (finger wag, glasses adjust...)
 //   _face      { type, t } expression override: 'wince', 'squint', 'grin'
@@ -68,15 +70,10 @@
       case 'attack': return keyframed(def, f.move.anim, f.moveFrame);
       case 'walkF':
       case 'walkB': {
-        p = getPose(def, 'idle').slice();
-        var ph = f.stateFrame * (s === 'walkF' ? 0.22 : -0.2);
-        var sw = Math.sin(ph) * 5;
-        p[16] += sw; p[20] -= sw;                       // feet slide
-        p[17] += Math.max(0, Math.cos(ph)) * 3;          // lift front foot
-        p[21] += Math.max(0, -Math.cos(ph)) * 3;         // lift back foot
-        p[14] += sw * 0.6; p[18] -= sw * 0.6;            // knees follow
-        var bob = Math.abs(Math.sin(ph)) * 1.5;
-        for (var i = 1; i < 14; i += 2) p[i] -= bob;
+        // The feet step for real (see motion.js); the body leans into the walk.
+        p = idlePose(f, t);
+        var lean = s === 'walkF' ? 1.5 : -1.5;
+        for (var i = 2; i <= 12; i += 2) p[i] += lean * (p[i + 1] - p[1]) / 30;
         return p;
       }
       case 'crouch': return P('crouch');
@@ -123,8 +120,10 @@
     }
   }
 
-  // Smoothly blend toward the target, except during attacks and on fresh hits (snap for impact).
-  FG.updatePose = function (f, t) {
+  // Smoothly blend toward the target, except during attacks and on fresh hits (snap
+  // for impact). Then the procedural motion layer (motion.js) adds anticipation,
+  // weight shift, planted feet and reactions. opts.frozen: hitstop is on.
+  FG.updatePose = function (f, t, opts) {
     // LOPEZ squints while his parry is up, before he counters.
     if (f.state === 'attack' && f.move && f.move.parry && f.def.parryFace) f._face = { type: f.def.parryFace, t: 2 };
     if (f._gesture && (f.state !== 'idle' || ++f._gesture.t > FG.animLength(f._gesture.anim))) f._gesture = null;
@@ -132,8 +131,9 @@
     var target = targetPose(f, t);
     var snap = !f._override && (f.state === 'attack' || f.state === 'juggle' || f.state === 'thrown' || f.state === 'wallsplat' ||
       ((f.state === 'hitstun' || f.state === 'guardbreak') && f.stateFrame <= 1));
-    if (!f._pose || snap) f._pose = target.slice();
-    else f._pose = lerp(f._pose, target, f._override ? 0.6 : 0.45);
+    if (!f._base || snap) f._base = target.slice();
+    else f._base = lerp(f._base, target, f._override ? 0.6 : 0.45);
+    f._pose = FG.applyMotion ? FG.applyMotion(f, f._base, opts) : f._base;
   };
 
   function shade(c, k) {
@@ -281,8 +281,19 @@
     var ox = Math.round((opts.x != null ? opts.x : f.x) + (opts.jitter || 0));
     var oy = Math.round((opts.groundY != null ? opts.groundY : C.GROUND_Y) - f.z * 0.5);
     var lift = f.y * (opts.scale || 1);
-    function X(i) { return Math.round(ox + p[i * 2] * s * dir); }
-    function Y(i) { return Math.round(oy - (p[i * 2 + 1] * s + lift)); }
+    // Shoulder and hip rotation (motion layer): the back shoulder and hip swing
+    // forward as the body turns into a strike. Joints 11-14 are the front / back
+    // shoulder and front / back hip.
+    var tw = f._twist || 0;
+    var TW = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1.5 * tw, 3.5 * tw, -1 * tw, 2 * tw];
+    function X(i) {
+      if (i > 10) return Math.round(ox + (p[i > 12 ? 0 : 2] + TW[i]) * s * dir);
+      return Math.round(ox + p[i * 2] * s * dir);
+    }
+    function Y(i) {
+      if (i > 10) return Math.round(oy - (p[i > 12 ? 1 : 3] * s + lift));
+      return Math.round(oy - (p[i * 2 + 1] * s + lift));
+    }
 
     if (!opts.noShadow) {
       var sh = Math.max(0.4, 1 - lift / 160);
@@ -292,6 +303,16 @@
 
     var flash = opts.flash;
     function c(v) { return flash != null ? flash : v; }
+
+    // A streak behind the striking hand or foot (motion layer).
+    var tr = f._trail;
+    if (tr && tr.length > 1 && flash == null && opts.x == null) {
+      for (var ti = 1; ti < tr.length; ti++) {
+        var ta = ti / tr.length;
+        g.lineStyle(Math.max(1, Math.round((2 + ti * 1.4) * s)), 0xffffff, 0.12 + ta * 0.3);
+        g.lineBetween(tr[ti - 1].x, tr[ti - 1].y, tr[ti].x, tr[ti].y);
+      }
+    }
 
     var top = look.top, blazer = look.blazer && f._blazer;
     var skin = look.skin, skinBack = shade(skin, 0.8);
@@ -319,10 +340,11 @@
     function arm(e, h, back) {
       var sk = back ? skinBack : skin, sl = back ? sleeveBack : sleeve;
       var sleeves = blazer ? 'long' : top.sleeves;
-      limb(1, e, 7, sk);
-      if (sleeves === 'long') { limb(1, e, 7, sl); limb(e, h, 6, sl); }
-      else if (sleeves === 'rolled') { limb(1, e, 7, sl); limb(e, h, 6, sk); part(e, h, 0, 0.3, 7, shade(sl, 0.9)); }
-      else { limb(e, h, 6, sk); part(1, e, 0, 0.62, 8, sl); }
+      var sh = back ? 12 : 11;
+      limb(sh, e, 7, sk);
+      if (sleeves === 'long') { limb(sh, e, 7, sl); limb(e, h, 6, sl); }
+      else if (sleeves === 'rolled') { limb(sh, e, 7, sl); limb(e, h, 6, sk); part(e, h, 0, 0.3, 7, shade(sl, 0.9)); }
+      else { limb(e, h, 6, sk); part(sh, e, 0, 0.62, 8, sl); }
       if (look.wristband) { // red-white-red band at the wrist
         part(e, h, 0.68, 0.76, 7, look.wristband[0]); part(e, h, 0.76, 0.83, 7, look.wristband[1]); part(e, h, 0.83, 0.9, 7, look.wristband[0]);
       }
@@ -333,7 +355,7 @@
     // Joint indices: 0 hip, 1 chest, 2 head, 3 fElbow, 4 fHand, 5 bElbow, 6 bHand, 7 fKnee, 8 fFoot, 9 bKnee, 10 bFoot
     // Back limbs first, in darker shades.
     var legsBack = shade(look.legs, 0.72);
-    limb(0, 9, 9, legsBack); limb(9, 10, 7, legsBack);
+    limb(14, 9, 9, legsBack); limb(9, 10, 7, legsBack);
     block(10, shoeW - 1, shoeH - 1, shade(look.shoes, 0.7), true);
     arm(5, 6, true);
 
@@ -341,7 +363,9 @@
     var hx = X(0), hy = Y(0), cx = X(1), cy = Y(1);
     var vx = cx - hx, vy = cy - hy, len = Math.sqrt(vx * vx + vy * vy) || 1;
     var nx = -vy / len, ny = vx / len, ux = vx / len, uy = vy / len;
-    var wc = 9 * s * build.torso, wh = 7 * s * build.torso;
+    // A torso turned toward or away from the camera looks narrower.
+    var turn = 1 - 0.18 * Math.min(1, Math.abs(tw));
+    var wc = 9 * s * build.torso * turn, wh = 7 * s * build.torso * (1 - 0.1 * Math.min(1, Math.abs(tw)));
     function quad(color, a0, a1) { // a0..a1: band across the torso width, -1 (back) .. 1 (front)
       g.fillStyle(c(color), 1);
       g.fillPoints([
@@ -430,7 +454,7 @@
     drawHair(g, hdx, hdy, s, dir, look.hair, c);
 
     // Front limbs on top.
-    limb(0, 7, 9, look.legs); limb(7, 8, 7, look.legs);
+    limb(13, 7, 9, look.legs); limb(7, 8, 7, look.legs);
     block(8, shoeW, shoeH, look.shoes, true);
     arm(3, 4, false);
   };
@@ -438,7 +462,7 @@
   // A fighter-like object for drawing outside a match (select screen, title, win screen).
   FG.puppet = function (def, x, facing) {
     return { def: def, x: x, y: 0, z: 0, vx: 0, vy: 0, facing: facing || 1, state: 'idle', stateFrame: 0,
-      index: 0, stance: 'A', _pose: null, _override: null, _gesture: null, _face: null, _blazer: false };
+      index: 0, stance: 'A', puppet: true, _pose: null, _override: null, _gesture: null, _face: null, _blazer: false };
   };
 
   // Debug overlay: hurtboxes (green), hitbox (red), pushbox (yellow line).

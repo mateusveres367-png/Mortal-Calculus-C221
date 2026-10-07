@@ -86,22 +86,99 @@
     }
     var st = STYLE[ev.move.strength] || STYLE.light;
     var colors = ev.ch ? [0xffffff, 0xff8a1f, 0xff4a3d, 0xffd23f] : st.colors;
+    var kind = ev.impact || FG.impactKind(ev.move);
     var n = st.n + (ev.ch ? 8 : 0);
     for (var j = 0; j < n; j++) {
       var ang = Math.random() * Math.PI * 2;
       var sp = st.speed * (0.5 + Math.random());
-      var up = ev.move.strength === 'launch' ? -1.5 : 0;
+      var up = kind === 'launch' ? -1.5 : 0;
       this.parts.push({ x: x, y: y, vx: Math.cos(ang) * sp + ev.facing * 1.2, vy: Math.sin(ang) * sp + up,
         life: 12 + Math.random() * 10, max: 22, size: Math.random() < 0.3 ? 3 : 2, color: colors[j % colors.length] });
     }
     this.flashes.push({ x: x, y: y, r: st.star * (ev.ch ? 1.4 : 1), life: 7, max: 7, color: ev.ch ? 0xffb347 : 0xffffff, star: true });
-    if (ev.ch || ev.move.strength === 'heavy' || ev.move.strength === 'launch') {
-      this.flashes.push({ x: x, y: y, r: st.star * 0.8, life: 10, max: 10, color: ev.ch ? 0xff4a3d : 0xffd23f, ring: true });
+    this.impact(kind, x, y, ev);
+    if (ev.ch) this.counterHit(x, y, ev);
+  };
+
+  // Each kind of blow has its own look:
+  //   jab       quick: a small snap and a few speed lines
+  //   body      heavy: a compression ring, sweat flying, a vertical jolt
+  //   power     powerful (roundhouses, haymakers): a crescent arc, streaks, a hard sideways shake
+  //   launch    explosive: a burst column, debris flung upward, a screen flash
+  //   overhead  a slam: dust ring on the floor, streaks driving down
+  //   low       sparks skittering along the floor
+  Effects.prototype.impact = function (kind, x, y, ev) {
+    var f = ev.facing, i, a;
+    switch (kind) {
+      case 'jab':
+        this.flashes.push({ x: x, y: y, r: 10, life: 4, max: 4, color: 0xffffff, ring: true });
+        for (i = 0; i < 3; i++) this.parts.push({ x: x - f * 4, y: y - 5 + i * 5, vx: f * 6, vy: 0, life: 4, max: 4, size: 2, streak: 10, color: 0xffffff });
+        break;
+      case 'body':
+        this.flashes.push({ x: x, y: y, r: 14, life: 10, max: 10, color: 0xffffff, squash: true });
+        this.flashes.push({ x: x, y: y, r: 18, life: 12, max: 12, color: 0xffd23f, ring: true });
+        for (i = 0; i < 7; i++) {
+          a = -Math.PI / 2 + (Math.random() - 0.5) * 1.6;
+          this.parts.push({ x: x, y: y, vx: Math.cos(a) * 2 + f * 1.5, vy: Math.sin(a) * 2.6, life: 22, max: 22, size: 2, color: i % 2 ? 0xbfe6ff : 0xffffff });
+        }
+        this.shake(0.007, 'y');
+        break;
+      case 'power':
+        this.flashes.push({ x: x, y: y, r: 26, life: 10, max: 10, color: 0xffe066, arc: f });
+        this.flashes.push({ x: x, y: y, r: 22, life: 12, max: 12, color: 0xff8a1f, ring: true });
+        for (i = 0; i < 7; i++) {
+          this.parts.push({ x: x, y: y + (Math.random() - 0.5) * 26, vx: f * (5 + Math.random() * 4), vy: (Math.random() - 0.5) * 0.6,
+            life: 9, max: 9, size: 2, streak: 14, color: i % 2 ? 0xffffff : 0xffd23f });
+        }
+        this.shake(0.011, 'x');
+        break;
+      case 'launch':
+        this.flashes.push({ x: x, y: y, r: 16, life: 14, max: 14, color: 0xffd23f, column: true });
+        this.flashes.push({ x: x, y: y, r: 26, life: 12, max: 12, color: 0xffffff, ring: true });
+        for (i = 0; i < 14; i++) {
+          this.parts.push({ x: x + (Math.random() - 0.5) * 18, y: y + 6, vx: (Math.random() - 0.5) * 2.4, vy: -4 - Math.random() * 5,
+            life: 20 + Math.random() * 8, max: 28, size: i % 3 ? 2 : 3, streak: i % 2 ? 8 : 0, color: i % 2 ? 0xffd23f : 0xff8a1f });
+        }
+        this.dust(x, 10, 2.5);
+        this.flashScreen(0xfff3c4, 0.28, 7);
+        this.shake(0.008, 'y');
+        break;
+      case 'overhead':
+        this.flashes.push({ x: x, y: C.GROUND_Y, r: 22, life: 12, max: 12, color: 0xd8c79a, ring: true, flat: true });
+        for (i = 0; i < 5; i++) this.parts.push({ x: x + (i - 2) * 6, y: y - 10, vx: 0, vy: 6, life: 6, max: 6, size: 2, streak: 12, color: 0xffffff });
+        this.dust(x, 14, 3);
+        this.shake(0.009, 'y');
+        break;
+      case 'low':
+        for (i = 0; i < 10; i++) {
+          this.parts.push({ x: x, y: C.GROUND_Y - 2, vx: f * (1 + Math.random() * 4) * (i % 4 ? 1 : -0.5), vy: -Math.random() * 2.2,
+            life: 12 + Math.random() * 8, max: 20, size: 2, color: i % 2 ? 0xffb347 : 0xffffff });
+        }
+        this.dust(x, 4, 1.5);
+        break;
     }
   };
 
-  Effects.prototype.shake = function (intensity) {
-    this.shakeMag = Math.max(this.shakeMag, intensity * C.VIEW_W);
+  // Counter hit: a dramatic orange flash, speed lines bursting out and a big shockwave.
+  Effects.prototype.counterHit = function (x, y, ev) {
+    this.flashes.push({ x: x, y: y, r: 44, life: 16, max: 16, color: 0xff4a3d, ring: true, thick: 3 });
+    this.flashes.push({ x: x, y: y, r: 60, life: 10, max: 10, color: 0xffd23f, radial: true });
+    this.flashScreen(0xff8a1f, 0.32, 10);
+    this.shake(0.012);
+  };
+
+  // A full-screen flash, drawn by the scene over the world.
+  Effects.prototype.flashScreen = function (color, alpha, frames) {
+    if (this.screen && this.screen.alpha * this.screen.life / this.screen.max > alpha) return;
+    this.screen = { color: color, alpha: alpha, life: frames, max: frames };
+  };
+
+  // axis: 'x' or 'y' for a directional jolt, or omitted for both.
+  Effects.prototype.shake = function (intensity, axis) {
+    var mag = intensity * C.VIEW_W;
+    if (axis === 'x') this.shakeX = Math.max(this.shakeX || 0, mag);
+    else if (axis === 'y') this.shakeY = Math.max(this.shakeY || 0, mag);
+    else this.shakeMag = Math.max(this.shakeMag, mag);
   };
 
   // Called once per display tick, including during hitstop, so sparks keep moving.
@@ -125,11 +202,15 @@
     }
     this.shakeMag *= 0.82;
     if (this.shakeMag < 0.3) this.shakeMag = 0;
+    this.shakeX = (this.shakeX || 0) * 0.8; if (this.shakeX < 0.3) this.shakeX = 0;
+    this.shakeY = (this.shakeY || 0) * 0.78; if (this.shakeY < 0.3) this.shakeY = 0;
+    if (this.screen && --this.screen.life <= 0) this.screen = null;
   };
 
   Effects.prototype.shakeOffset = function () {
-    if (!this.shakeMag) return { x: 0, y: 0 };
-    return { x: Math.round((Math.random() * 2 - 1) * this.shakeMag), y: Math.round((Math.random() * 2 - 1) * this.shakeMag * 0.6) };
+    var mx = this.shakeMag + (this.shakeX || 0), my = this.shakeMag * 0.6 + (this.shakeY || 0);
+    if (!mx && !my) return { x: 0, y: 0 };
+    return { x: Math.round((Math.random() * 2 - 1) * mx), y: Math.round((Math.random() * 2 - 1) * my) };
   };
 
   Effects.prototype.draw = function (g) {
@@ -168,12 +249,42 @@
         g.fillRect(f.x - 3, f.y - 3, 6, 6);
       }
       if (f.ring) {
+        g.lineStyle(f.thick || 2, f.color, k);
+        if (f.flat) g.strokeEllipse(f.x, f.y, Math.round(f.r * (3.2 - 2 * k)), Math.round(f.r * (0.8 - 0.5 * k)));
+        else g.strokeCircle(f.x, f.y, Math.round(f.r * (1.6 - k)));
+      }
+      if (f.squash) { // compression: a ring squeezed flat as it expands
+        g.lineStyle(3, f.color, k);
+        g.strokeEllipse(f.x, f.y, Math.round(f.r * (1 + (1 - k) * 2.2)), Math.round(f.r * (0.5 + k * 1.2)));
+      }
+      if (f.arc) { // crescent swept in the direction of the blow
+        var ar = f.r * (1.4 - k * 0.5), a0 = f.arc > 0 ? -1.1 : Math.PI - 1.1, ac = f.arc > 0 ? 0 : Math.PI;
+        g.lineStyle(Math.max(2, Math.round(6 * k)), f.color, Math.min(1, k * 1.4));
+        g.beginPath(); g.arc(f.x - f.arc * ar * 0.6, f.y, ar, a0, a0 + 2.2, false); g.strokePath();
+        g.lineStyle(2, 0xffffff, k);
+        g.beginPath(); g.arc(f.x - f.arc * ar * 0.6, f.y, ar - 3, ac - 0.7, ac + 0.7, false); g.strokePath();
+      }
+      if (f.column) { // burst column shooting up from the hit
+        var ch = Math.round(150 * (1 - k * 0.6)), cw = Math.round(f.r * (0.4 + k));
+        g.fillStyle(f.color, k * 0.7); g.fillRect(f.x - cw, f.y - ch, cw * 2, ch + 6);
+        g.fillStyle(0xffffff, k * 0.9); g.fillRect(f.x - Math.round(cw * 0.4), f.y - ch, Math.round(cw * 0.8), ch + 6);
+      }
+      if (f.radial) { // speed lines bursting out
         g.lineStyle(2, f.color, k);
-        g.strokeCircle(f.x, f.y, Math.round(f.r * (1.6 - k)));
+        for (var rl = 0; rl < 14; rl++) {
+          var ra = rl / 14 * Math.PI * 2 + (rl % 2) * 0.15, r0 = f.r * (0.35 + (1 - k) * 0.5), r1 = r0 + f.r * (0.4 + (rl % 3) * 0.15);
+          g.lineBetween(f.x + Math.cos(ra) * r0, f.y + Math.sin(ra) * r0, f.x + Math.cos(ra) * r1, f.y + Math.sin(ra) * r1);
+        }
       }
     }
     for (var j = 0; j < this.parts.length; j++) {
       var p = this.parts[j];
+      if (p.streak) { // a short line trailing behind the particle
+        var sv = Math.sqrt(p.vx * p.vx + p.vy * p.vy) || 1;
+        g.lineStyle(p.size, p.color, Math.min(1, p.life / 4));
+        g.lineBetween(p.x, p.y, p.x - p.vx / sv * p.streak, p.y - p.vy / sv * p.streak);
+        continue;
+      }
       g.fillStyle(p.color, Math.min(1, p.life / 6));
       g.fillRect(Math.round(p.x), Math.round(p.y), p.size, p.size);
     }
@@ -216,6 +327,33 @@
     o.start(t); o.stop(t + dur);
   }
 
+  function sweep(dur, f0, f1, gain, type) {
+    var ctx = Sfx.ctx, t = ctx.currentTime;
+    var o = ctx.createOscillator(); o.type = type || 'triangle';
+    o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f1, t + dur);
+    var g = ctx.createGain();
+    g.gain.setValueAtTime(gain, t); g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+    o.connect(g); g.connect(ctx.destination);
+    o.start(t); o.stop(t + dur);
+  }
+
+  // Hit sounds by impact kind (see Effects.impact).
+  function impactSound(kind, strength) {
+    switch (kind) {
+      case 'jab':      burst(0.04, 3200, 1.2, 0.32, 'bandpass'); thump(0.05, 260, 120, 0.28); break;
+      case 'body':     thump(0.16, 130, 40, 0.75); burst(0.1, 520, 1, 0.42); break;
+      case 'power':    burst(0.07, 2300, 0.8, 0.45); thump(0.2, 170, 35, 0.75); burst(0.16, 900, 0.7, 0.32); break;
+      case 'launch':   burst(0.28, 1300, 0.5, 0.55); thump(0.32, 95, 28, 0.85); sweep(0.18, 180, 640, 0.12); break;
+      case 'overhead': thump(0.24, 100, 26, 0.85); burst(0.16, 420, 1, 0.48); break;
+      case 'low':      burst(0.06, 2600, 2, 0.3, 'bandpass'); thump(0.08, 210, 80, 0.32); break;
+      default: {
+        var k = { light: 0, medium: 1, heavy: 2, launch: 3 }[strength] || 0;
+        burst(0.06 + k * 0.04, 1800 - k * 350, 1, 0.35 + k * 0.08);
+        thump(0.08 + k * 0.05, 180 - k * 30, 50, 0.4 + k * 0.12);
+      }
+    }
+  }
+
   Sfx.play = function (ev) {
     if (!Sfx.ctx || Sfx.muted) return;
     var strength = ev.move ? ev.move.strength : 'light';
@@ -228,9 +366,8 @@
         thump(0.05, 900, 400, 0.12);
         break;
       case 'hit': {
-        var k = { light: 0, medium: 1, heavy: 2, launch: 3 }[strength] || 0;
-        burst(0.06 + k * 0.04, 1800 - k * 350, 1, 0.35 + k * 0.08);
-        thump(0.08 + k * 0.05, 180 - k * 30, 50, 0.4 + k * 0.12);
+        if (ev.throw) { thump(0.25, 110, 30, 0.8); burst(0.18, 700, 1, 0.45); break; }
+        impactSound(ev.impact || FG.impactKind(ev.move), strength);
         if (ev.ch) { burst(0.12, 5000, 6, 0.18, 'bandpass'); thump(0.18, 120, 40, 0.5); }
         if (ev.ko) thump(0.6, 90, 30, 0.7);
         break;
