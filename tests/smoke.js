@@ -72,6 +72,8 @@ try { playwright = require('playwright'); } catch (e) {
   await page.screenshot({ path: path.join(out, '3-air-combo.png') });
   await page.waitForFunction(function () { return window.HITS.length >= window.EXPECT_HITS.split(',').length; }, null, { timeout: 8000 });
   var hits = await page.evaluate(function () { return window.HITS.slice(); });
+  await page.waitForTimeout(50);
+  var counterText = await page.evaluate(function () { return window.FG_SCENE.hud.counter[0].num.text; });
   var expectHits = await page.evaluate(function () { return window.EXPECT_HITS; });
 
   // Real keyboard input: walk P1 forward then jab into a standing-guard dummy.
@@ -127,8 +129,8 @@ try { playwright = require('playwright'); } catch (e) {
   await page.screenshot({ path: path.join(out, '7-ko.png') });
 
   await browser.close();
-  console.log(JSON.stringify({ title: title, matchup: matchup, renderer: renderer, hits: hits, p1: p1, menuOk: menuOk, resetX: resetX, ko: ko, errors: errors }, null, 1));
-  var ok = !errors.length && title === 'Mortal Calculus: C221' && matchup === expectMatchup && hits.join() === expectHits &&
+  console.log(JSON.stringify({ title: title, matchup: matchup, renderer: renderer, hits: hits, counter: counterText, p1: p1, menuOk: menuOk, resetX: resetX, ko: ko, errors: errors }, null, 1));
+  var ok = !errors.length && title === 'Mortal Calculus: C221' && matchup === expectMatchup && hits.join() === expectHits && counterText === String(hits.length) &&
     p1.last && p1.last.kind === 'BLOCK' && p1.last.adv === p1.jabBlock && menuOk && resetOk && koOk;
   console.log(ok ? 'SMOKE OK' : 'SMOKE FAILED');
   if (!ok) process.exit(1);

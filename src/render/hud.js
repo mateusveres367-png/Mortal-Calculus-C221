@@ -16,9 +16,17 @@
     this.vs = T(C.VIEW_W / 2, 13, 'VS', 'y', 2).setOrigin(0.5, 0);
     this.mode = T(C.VIEW_W / 2, 34, '', 'c').setOrigin(0.5, 0);
 
-    this.combo = [T(16, 64, '', 'y', 2), T(C.VIEW_W - 16, 64, '', 'y', 2).setOrigin(1, 0)];
-    this.comboDmg = [T(16, 84, '', 'w'), T(C.VIEW_W - 16, 84, '', 'w').setOrigin(1, 0)];
-    this.label = [T(16, 96, '', 'o', 2), T(C.VIEW_W - 16, 96, '', 'o', 2).setOrigin(1, 0)];
+    // Combo counter: a big hit count, total damage, and a rank for long combos.
+    this.counter = [0, 1].map(function (i) {
+      return {
+        num: T(0, 0, '', 'y', 5).setOrigin(i ? 1 : 0, 0.5),
+        word: T(0, 0, 'HITS', 'w', 2).setOrigin(i ? 1 : 0, 0.5),
+        dmg: T(0, 0, '', 'w', 1).setOrigin(i ? 1 : 0, 0),
+        rank: T(0, 0, '', 'c', 2).setOrigin(i ? 1 : 0, 0.5),
+        pop: 0, rankPop: 0, tier: 0, fade: 0
+      };
+    });
+    this.label = [T(16, 148, '', 'o', 2), T(C.VIEW_W - 16, 148, '', 'o', 2).setOrigin(1, 0)];
     this.labelTimer = [0, 0];
     this.comboShow = [{ hits: 0, damage: 0, timer: 0 }, { hits: 0, damage: 0, timer: 0 }];
 
@@ -92,6 +100,7 @@
       this.label[i].setText('');
       this.labelTimer[i] = 0;
       this.comboShow[i] = { hits: 0, damage: 0, timer: 0 };
+      this.counter[i].tier = 0; this.counter[i].pop = 0; this.counter[i].rankPop = 0;
       this.trail[i] = null;
     }
     this.counterT = 0; this.counterText.setVisible(false);
@@ -140,12 +149,19 @@
       if (this.labelTimer[i] > 0 && --this.labelTimer[i] === 0) this.label[i].setText('');
       // Combo counter for attacker i is the combo on defender 1 - i.
       var c = match.combo[1 - i], show = this.comboShow[i];
+      var cc = this.counter[i];
       if (c.hits >= 1 && (c.hits !== show.hits || c.damage !== show.damage)) {
-        show.hits = c.hits; show.damage = c.damage; show.timer = 90;
+        if (c.hits > show.hits || show.timer === 0) cc.pop = 8;
+        show.hits = c.hits; show.damage = c.damage; show.timer = 100;
+        var tier = Hud.rankTier(c.hits);
+        if (tier > cc.tier) { cc.rankPop = 16; FG.Sfx.ui('confirm'); }
+        cc.tier = tier;
       } else if (c.hits === 0 && show.timer > 0) {
         show.timer--;
       }
-      if (show.timer === 0) show.hits = 0;
+      if (show.timer === 0) { show.hits = 0; cc.tier = 0; }
+      if (cc.pop > 0) cc.pop--;
+      if (cc.rankPop > 0) cc.rankPop--;
       // Health trail drains after a short delay.
       var f = match.fighters[i];
       if (this.trail[i] === null || f.health > this.trail[i]) this.trail[i] = f.health;
@@ -164,8 +180,49 @@
         var sc = ct < 5 ? 6.5 - ct * 0.5 : ct < 9 ? 4 + Math.sin((ct - 5) * 1.6) * 0.4 : 4;
         var jx = ct < 10 ? (ct % 2 ? 2 : -2) : 0;
         ctx.setVisible(ct < 40 || ct % 4 < 2).setScale(sc).setFont(ct % 6 < 3 ? 'pf_r' : 'pf_y')
-          .setPosition((this.counterSide === 0 ? C.VIEW_W * 0.3 : C.VIEW_W * 0.7) + jx, 92);
+          .setPosition((this.counterSide === 0 ? C.VIEW_W * 0.32 : C.VIEW_W * 0.68) + jx, 172);
       }
+    }
+  };
+
+  // Rank labels by combo length.
+  Hud.RANKS = [[15, 'PROOF COMPLETE', 'r'], [12, 'INCREDIBLE', 'o'], [8, 'GREAT', 'y'], [5, 'NICE', 'c']];
+  Hud.rankTier = function (hits) {
+    for (var k = 0; k < Hud.RANKS.length; k++) if (hits >= Hud.RANKS[k][0]) return Hud.RANKS.length - k;
+    return 0;
+  };
+  Hud.rankFor = function (hits) {
+    for (var k = 0; k < Hud.RANKS.length; k++) if (hits >= Hud.RANKS[k][0]) return Hud.RANKS[k];
+    return null;
+  };
+
+  // The combo counter for attacker i: pops and shakes on every hit, fades when it's over.
+  Hud.prototype.drawCounter = function (i) {
+    var show = this.comboShow[i], cc = this.counter[i];
+    var on = show.hits >= 2;
+    cc.num.setVisible(on); cc.word.setVisible(on); cc.dmg.setVisible(on); cc.rank.setVisible(on);
+    if (!on) return;
+    var over = show.timer < 100; // the combo has ended; it lingers, then blinks out
+    if (over && show.timer < 30 && show.timer % 6 < 3) { cc.num.setVisible(false); cc.word.setVisible(false); cc.dmg.setVisible(false); cc.rank.setVisible(false); return; }
+    var k = cc.pop / 8, side = i ? -1 : 1, x0 = i ? C.VIEW_W - 16 : 16, y0 = 76;
+    // A dark panel behind it so it reads over any stage.
+    var rankW = Hud.rankFor(show.hits) ? Hud.rankFor(show.hits)[1].length * 14 + 10 : 0;
+    var pw = Math.max(150, rankW + 12), ph = Hud.rankFor(show.hits) ? 76 : 56;
+    this.g.fillStyle(0x07060c, over ? 0.3 : 0.5);
+    this.g.fillRect(i ? C.VIEW_W - 8 - pw : 8, y0 - 22, pw, ph);
+    var jx = cc.pop > 2 ? (cc.pop % 2 ? 2 : -2) : 0, jy = cc.pop > 2 ? (cc.pop % 3 - 1) * 2 : 0;
+    var big = show.hits >= 10 ? 6 : 5;
+    cc.num.setText(String(show.hits)).setScale(big + 2.5 * k * k).setPosition(x0 + jx, y0 + jy)
+      .setFont(cc.pop > 4 ? 'pf_w' : over ? 'pf_g' : 'pf_y');
+    cc.word.setPosition(x0 + side * (cc.num.width + 6) + jx, y0 + 4 + jy).setFont(over ? 'pf_g' : 'pf_w');
+    cc.dmg.setText(show.damage + ' DAMAGE').setPosition(x0, y0 + 24).setFont(over ? 'pf_g' : 'pf_w');
+    var rank = Hud.rankFor(show.hits);
+    if (rank) {
+      var rk = cc.rankPop / 16, flash = rank[0] >= 15 && this.blink % 8 < 4;
+      cc.rank.setText(rank[1]).setScale(2 + 1.2 * rk * rk).setPosition(x0 + (rk > 0.5 ? jx : 0), y0 + 50)
+        .setFont(over ? 'pf_g' : flash ? 'pf_w' : 'pf_' + rank[2]);
+    } else {
+      cc.rank.setText('');
     }
   };
 
@@ -196,13 +253,7 @@
 
       this.names[i].setText((i === 0 ? 'P1 ' : 'P2 ') + f.def.name + '  ' + f.def.archetype);
 
-      var show = this.comboShow[i];
-      if (show.hits >= 2) {
-        this.combo[i].setText(show.hits + ' HITS');
-        this.comboDmg[i].setText(show.damage + ' DAMAGE');
-      } else {
-        this.combo[i].setText(''); this.comboDmg[i].setText('');
-      }
+      this.drawCounter(i);
     }
 
     this.mode.setText(opts.modeLabel);
