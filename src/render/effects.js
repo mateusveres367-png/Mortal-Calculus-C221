@@ -40,13 +40,16 @@
         this.flashes.push({ x: x, y: C.GROUND_Y, r: 14, life: 8, max: 8, color: 0xd8c79a, ring: true });
         return;
       case 'wallsplat':
-        this.cracks.push({ x: x, y: y, life: 90, seed: Math.random() * 1000 });
-        this.dust(x, 4, 1);
-        for (var w = 0; w < 10; w++) {
-          this.parts.push({ x: x, y: y + (Math.random() - 0.5) * 30, vx: (Math.random() - 0.5) * 3, vy: -Math.random() * 2,
-            life: 16, max: 16, size: 2, color: w % 2 ? 0xc9cfd6 : 0x6b6f7a });
+        // A big crack in the wall where they hit, plaster raining down.
+        this.cracks.push({ x: x, y: y, life: 150, seed: Math.random() * 1000, size: 1.4 });
+        this.dust(x, 6, 1);
+        for (var w = 0; w < 18; w++) {
+          this.parts.push({ x: x, y: y + (Math.random() - 0.5) * 40, vx: (x < C.WORLD_W / 2 ? 1 : -1) * Math.random() * 2.5, vy: -Math.random() * 2.5,
+            life: 22 + Math.random() * 12, max: 34, size: w % 4 ? 2 : 3, color: w % 2 ? 0xc9cfd6 : 0x6b6f7a });
         }
-        this.flashes.push({ x: x, y: y, r: 22, life: 9, max: 9, color: 0xffd23f, ring: true });
+        this.flashes.push({ x: x, y: y, r: 26, life: 10, max: 10, color: 0xffd23f, ring: true, thick: 3 });
+        this.flashes.push({ x: x, y: y, r: 20, life: 6, max: 6, color: 0xffffff, star: true });
+        this.shake(0.012, 'x');
         return;
       case 'guardbreak':
         for (var g = 0; g < 18; g++) {
@@ -76,6 +79,11 @@
         return;
     }
     if (ev.type === 'hit' && ev.throw) this.dust(x, 16, 3);
+    // Each hit on a splatted fighter cracks the wall a little more.
+    if (ev.type === 'hit' && ev.wall) {
+      var wx = x < C.WORLD_W / 2 ? C.WALL_L : C.WALL_R;
+      this.cracks.push({ x: wx, y: y, life: 100, seed: Math.random() * 1000, size: 0.8 });
+    }
     if (ev.type === 'block') {
       for (var i = 0; i < 7; i++) {
         var a = (i / 6 - 0.5) * Math.PI * 0.9 + (ev.facing > 0 ? Math.PI : 0);
@@ -224,21 +232,31 @@
         return { x: o.x + p[0] * cs - p[1] * sn, y: o.y + p[0] * sn + p[1] * cs };
       }), true);
     }
+    this.drawFront(g);
+  };
+
+  // Drawn before the fighters: wall cracks sit on the wall, behind whoever is splatted.
+  Effects.prototype.drawBack = function (g) {
     // Wall cracks: jagged lines radiating from the impact point.
     for (var c = 0; c < this.cracks.length; c++) {
-      var cr = this.cracks[c], alpha = Math.min(1, cr.life / 30);
-      g.lineStyle(1, 0x111111, alpha);
-      for (var ray = 0; ray < 7; ray++) {
-        var ang = ray / 7 * Math.PI * 2 + cr.seed, px = cr.x, py = cr.y;
-        for (var seg = 0; seg < 3; seg++) {
-          var len = 6 + ((cr.seed * (ray + 3) * (seg + 1)) % 7);
+      var cr = this.cracks[c], alpha = Math.min(1, cr.life / 30), sz = cr.size || 1;
+      // A dark dent at the centre, then jagged cracks radiating out.
+      g.fillStyle(0x000000, 0.35 * alpha); g.fillCircle(cr.x, cr.y, Math.round(7 * sz));
+      for (var ray = 0; ray < 9; ray++) {
+        var ang = ray / 9 * Math.PI * 2 + cr.seed, px = cr.x, py = cr.y;
+        for (var seg = 0; seg < 4; seg++) {
+          var len = (7 + ((cr.seed * (ray + 3) * (seg + 1)) % 8)) * sz;
           ang += (((cr.seed * (seg + 7) * (ray + 1)) % 10) - 5) * 0.08;
           var nx = px + Math.cos(ang) * len, ny = py + Math.sin(ang) * len;
+          g.lineStyle(seg < 2 ? 2 : 1, 0x111111, alpha);
           g.lineBetween(Math.round(px), Math.round(py), Math.round(nx), Math.round(ny));
           px = nx; py = ny;
         }
       }
     }
+  };
+
+  Effects.prototype.drawFront = function (g) {
     for (var i = 0; i < this.flashes.length; i++) {
       var f = this.flashes[i], k = f.life / f.max;
       if (f.star) {

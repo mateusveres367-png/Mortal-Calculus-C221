@@ -106,10 +106,30 @@ try { playwright = require('playwright'); } catch (e) {
   var resetOk = Math.abs(resetX - (1040 / 2 - 90)) < 5;
   await page.screenshot({ path: path.join(out, '6-training.png') });
 
+  // A round-winning hit zooms the world camera in and plays in slow motion; the HUD
+  // (drawn by its own camera) doesn't zoom.
+  var ko = await page.evaluate(function () {
+    var s = window.FG_SCENE, m;
+    s.training.refill = false; s.newMatch(); m = s.match;
+    m.fighters[0].x = 480; m.fighters[1].x = 520; m.fighters[1].health = 2;
+    var seen = null;
+    for (var t = 0; t < 120 && !seen; t++) {
+      var r1 = t === 0 ? FG.parseInput('P') : FG.emptyRaw();
+      s.forceInput = function () { return [r1, FG.emptyRaw()]; };
+      s.tick(); s.render();
+      if (m.fighters[1].ko) seen = { slow: !!s.slowmo, zoom: s.cameras.main.zoom, ui: s.uiCam.zoom };
+    }
+    s.forceInput = null; s.training.refill = true;
+    return seen;
+  });
+  var koOk = !!ko && ko.slow && ko.ui === 1;
+  await page.waitForTimeout(150);
+  await page.screenshot({ path: path.join(out, '7-ko.png') });
+
   await browser.close();
-  console.log(JSON.stringify({ title: title, matchup: matchup, renderer: renderer, hits: hits, p1: p1, menuOk: menuOk, resetX: resetX, errors: errors }, null, 1));
+  console.log(JSON.stringify({ title: title, matchup: matchup, renderer: renderer, hits: hits, p1: p1, menuOk: menuOk, resetX: resetX, ko: ko, errors: errors }, null, 1));
   var ok = !errors.length && title === 'Mortal Calculus: C221' && matchup === expectMatchup && hits.join() === expectHits &&
-    p1.last && p1.last.kind === 'BLOCK' && p1.last.adv === p1.jabBlock && menuOk && resetOk;
+    p1.last && p1.last.kind === 'BLOCK' && p1.last.adv === p1.jabBlock && menuOk && resetOk && koOk;
   console.log(ok ? 'SMOKE OK' : 'SMOKE FAILED');
   if (!ok) process.exit(1);
 })().catch(function (e) { console.error(e); process.exit(1); });

@@ -44,6 +44,9 @@
     this.setupKeys();
     this.setupButtons();
     this.menu = new FG.TrainingMenu(this, this.menuItems());
+    // The world camera zooms on big moments; a second camera draws the HUD, unzoomed.
+    this.uiCam = this.cameras.add(0, 0, C.VIEW_W, C.VIEW_H);
+    this.sortCameras();
     // The page can be loaded headlessly for testing; expose the scene there.
     window.FG_SCENE = this;
   };
@@ -56,6 +59,8 @@
     this.match.reset(this.training.startPos);
     this.effects = new FG.Effects();
     this.impact = null;
+    this.zoom = null;     // { t, amount, x, y, hold }: a quick zoom-in on a big hit
+    this.slowmo = null;   // { frames, scale }: slow motion on a big finish
     this.win = null;
     this.speech.hide();
     this.bubbles[0].hide(); this.bubbles[1].hide();
@@ -287,7 +292,8 @@
 
   FightScene.prototype.update = function (time, delta) {
     // The training menu pauses the fight.
-    this.acc = this.menu.open ? 0 : this.acc + Math.min(delta, 100) * (this.training.slow && !this.intro && !this.win ? 0.25 : 1);
+    var rate = (this.training.slow && !this.intro && !this.win ? 0.25 : 1) * (this.slowmo ? this.slowmo.scale : 1);
+    this.acc = this.menu.open ? 0 : this.acc + Math.min(delta, 100) * rate;
     while (this.acc >= STEP_MS) {
       this.tick();
       this.acc -= STEP_MS;
@@ -354,7 +360,8 @@
       }
       FG.Sfx.play(ev);
       if (ev.type !== 'whiff') this.effects.spawn(ev);
-      if (ev.shake) this.effects.shake(ev.shake);
+      if (ev.type === 'hit') this.bigMoment(ev);
+      else if (ev.shake) this.effects.shake(ev.shake);
       if (ev.type === 'land' || ev.type === 'bounce') this.effects.shake(ev.type === 'bounce' ? 0.006 : 0.003);
       if (ev.type === 'hit' && !ev.ground) this.impact = { who: ev.defender, frames: ev.ch ? 4 : 2, color: ev.ch ? 0xffb347 : 0xffffff };
       if (ev.type === 'guardbreak') this.impact = { who: ev.defender, frames: 4, color: 0x5fd7ff };
@@ -362,6 +369,13 @@
       this.hud.onEvent(ev);
     }
 
+    // A big juggle combo that just ended: the landing plays in slow motion.
+    for (var lj = 0; lj < m.events.length; lj++) {
+      var le = m.events[lj];
+      if (le.type === 'land' && f[le.fighter].state === 'down' && this.prevCombo[1 - le.fighter] >= C.BIG_COMBO) this.startSlowmo(20, 0.4);
+    }
+    if (this.slowmo && --this.slowmo.frames <= 0) this.slowmo = null;
+    if (this.zoom) this.zoom.t++;
     if (m.over && !this.win) this.startWin();
     this.chargeFeedback();
     this.bubbles[0].tick(); this.bubbles[1].tick();
@@ -389,6 +403,56 @@
     var frozen = { frozen: m.hitstop > 0 };
     FG.updatePose(f[0], this.tickCount, frozen);
     FG.updatePose(f[1], this.tickCount, frozen);
+  };
+
+  // Screen feel for a hit: shake scales with damage; launchers and combo finishers
+  // zoom in; the final hit of a big combo, and a round-winning hit, go slow-motion.
+  FightScene.prototype.bigMoment = function (ev) {
+    var dmg = ev.damage || 0;
+    this.effects.shake(Math.min(0.016, 0.0012 + dmg * 0.00034) * (ev.ch ? 1.4 : 1));
+    var y = ev.y || 60;
+    if (ev.ko) { this.startZoom(0.22, ev.x, y, 40); this.startSlowmo(60, 0.3); return; }
+    if (ev.launch) this.startZoom(0.1, ev.x, y + 20, 10);
+    else if (ev.finisher && !ev.bound && !ev.wall) this.startZoom(ev.hits >= C.BIG_COMBO ? 0.16 : 0.1, ev.x, y, ev.hits >= C.BIG_COMBO ? 18 : 8);
+    else if (ev.bound) this.startZoom(0.07, ev.x, y, 6);
+    // The last hit of a big combo: knockdowns, wall blasts and throws end it.
+    if (ev.finisher && !ev.bound && ev.hits >= C.BIG_COMBO && (ev.knockdown || ev.wallBlast)) this.startSlowmo(28, 0.35);
+  };
+
+  FightScene.prototype.startZoom = function (amount, x, y, hold) {
+    if (this.zoom && this.zoom.amount > amount && this.zoom.t < this.zoom.hold + 6) return;
+    this.zoom = { t: 0, amount: amount, x: x, y: y, hold: hold || 8 };
+  };
+
+  FightScene.prototype.startSlowmo = function (frames, scale) {
+    if (this.slowmo && this.slowmo.frames > frames) return;
+    this.slowmo = { frames: frames, scale: scale };
+  };
+
+  // Zoom amount now: snaps in over 4 ticks, holds, eases back out over 24.
+  FightScene.prototype.zoomLevel = function () {
+    var z = this.zoom;
+    if (!z) return 0;
+    var t = z.t, k;
+    if (t < 4) k = t / 4;
+    else if (t < 4 + z.hold) k = 1;
+    else k = 1 - Math.min(1, (t - 4 - z.hold) / 24);
+    if (k <= 0 && t > 4) { this.zoom = null; return 0; }
+    k = k * k * (3 - 2 * k);
+    return z.amount * k;
+  };
+
+  // Every object fixed to the screen is drawn by the UI camera only, the rest by the
+  // world camera only (so zooming the world leaves the HUD alone).
+  FightScene.prototype.sortCameras = function () {
+    if (!this.uiCam) return;
+    var list = this.children.list, main = this.cameras.main;
+    for (var i = 0; i < list.length; i++) {
+      var o = list[i];
+      if (o._camSorted) continue;
+      o._camSorted = true;
+      if (o.scrollFactorX === 0 && o.scrollFactorY === 0) main.ignore(o); else this.uiCam.ignore(o);
+    }
   };
 
   // Order of Magnitude: sparks gather at the fist while charging; x10 / x100 at each level.
@@ -475,11 +539,21 @@
     var mid = (f[0].x + f[1].x) / 2;
     var shake = this.effects.shakeOffset();
     var cam = this.cameras.main;
-    cam.scrollX = Phaser.Math.Clamp(Math.round(mid - C.VIEW_W / 2), 0, C.WORLD_W - C.VIEW_W) + shake.x;
-    cam.scrollY = shake.y;
+    // The camera centres between the fighters; a zoom pulls it toward the impact.
+    var zl = this.zoomLevel(), zoom = 1 + zl, zk = this.zoom ? zl / this.zoom.amount : 0;
+    var cx = mid, cy = C.VIEW_H / 2;
+    if (this.zoom) { cx += (this.zoom.x - mid) * 0.45 * zk; cy += (C.GROUND_Y - this.zoom.y - cy) * 0.35 * zk; }
+    var halfW = C.VIEW_W / 2 / zoom, halfH = C.VIEW_H / 2 / zoom;
+    cx = Phaser.Math.Clamp(cx, halfW, C.WORLD_W - halfW);
+    cy = Math.min(cy, C.VIEW_H - halfH); // never show below the bottom of the stage
+    cam.setZoom(zoom);
+    cam.scrollX = Math.round(cx - C.VIEW_W / 2) + shake.x;
+    cam.scrollY = Math.round(cy - C.VIEW_H / 2) + shake.y;
+    this.sortCameras();
 
     g.clear();
     this.drawCars(g);
+    this.effects.drawBack(g);
     // Draw the fighter further into the background first.
     var order = f[0].z > f[1].z ? [0, 1] : f[1].z > f[0].z ? [1, 0] : (f[0].state === 'attack' ? [1, 0] : [0, 1]);
     for (var i = 0; i < 2; i++) {
@@ -507,11 +581,13 @@
       tag.setText(this.win ? '' : fk._tag ? fk._tag.text : fk.stance === 'B' ? 'PIECEWISE' : '');
       tag.setPosition(Math.round(fk.x), Math.round(C.GROUND_Y - fk.y - 104 * fk.def.scale));
     }
-    var camX = this.cameras.main.scrollX;
-    if (this.win) this.speech.draw(f[this.win.winner], camX);
+    // Speech boxes are on the UI camera: place them where the (zoomed) world shows the fighter.
+    var camX = cam.scrollX;
+    function onScreen(wx) { return camX + (wx - camX - C.VIEW_W / 2) * zoom + C.VIEW_W / 2; }
+    if (this.win) this.speech.draw(f[this.win.winner], camX, onScreen(f[this.win.winner].x));
     var spoken = this.introLine();
-    if (spoken) this.speech.draw(f[spoken.speaker], camX, f[spoken.speaker]._drawX);
-    for (var bi = 0; bi < 2; bi++) this.bubbles[bi].draw(f[bi], camX);
+    if (spoken) { var sp = f[spoken.speaker]; this.speech.draw(sp, camX, onScreen(sp._drawX != null ? sp._drawX : sp.x)); }
+    for (var bi = 0; bi < 2; bi++) this.bubbles[bi].draw(f[bi], camX, onScreen(f[bi].x));
 
     var modeLabel = 'TRAINING   P2: ' + (t.p2Human ? 'HUMAN' : this.dummy.label('stance') +
       (this.dummy.get('action') !== 'none' ? ' + ' + this.dummy.label('action') : ''));

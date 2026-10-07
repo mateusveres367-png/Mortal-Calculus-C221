@@ -216,12 +216,13 @@
     if (heavy || d.wallHits >= C.WALL_HITS_MAX) {
       this.toJuggle(d, a, result.launch ? result.launch * 0.75 * C.LAUNCH_SNAP : 4.5, m);
       d.vx = a.facing * 0.6;
-      ev.finisher = true;
+      ev.finisher = true; ev.wallBlast = true;
       this.lastResult[c.a] = { move: m, kind: 'WALL BLAST', adv: null };
       return;
     }
     d.stun = Math.max(12, C.WALL_STUN - 6 * d.wallHits);
     d.y = Math.min(d.y + 4, 40);
+    d.stateFrame = Math.min(d.stateFrame, Math.floor(C.WALL_STICK / 2)); // pinned again, briefly
     ev.wall = true;
     this.lastResult[c.a] = { move: m, kind: 'WALL HIT', adv: null };
   };

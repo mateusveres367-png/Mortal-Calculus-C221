@@ -857,5 +857,17 @@ check('all eight fighters', FG.ROSTER.length === 8, FG.ROSTER.length);
   });
 })();
 
+// Wall splats stick for a moment before sliding down, and you can keep hitting.
+(function () {
+  var m = setup(S, D, 40);
+  var d = m.fighters[1];
+  d.y = 30; m.wallSplat(d, 1);
+  var y0 = d.y, stuck = true;
+  for (var i = 0; i < FG.C.WALL_STICK - 1; i++) { m.step([raw({}), raw({})]); if (d.y !== y0) stuck = false; }
+  check('wall splat sticks', stuck && d.state === 'wallsplat', [d.y, y0, d.state]);
+  for (i = 0; i < 10; i++) m.step([raw({}), raw({})]);
+  check('then slides down the wall', d.y < y0, d.y);
+})();
+
 console.log(passes + ' passed, ' + failures + ' failed');
 process.exit(failures ? 1 : 0);

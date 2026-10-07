@@ -54,6 +54,7 @@ FG.C = {
 
   // Walls
   WALL_STUN: 46,
+  WALL_STICK: 18,         // a splatted fighter sticks to the wall this long before sliding down
   WALL_SPLAT_MAX_Y: 110,
   WALL_HITS_MAX: 4,
 
@@ -94,6 +95,7 @@ FG.C = {
   HITSTOP_CH: 5,        // added on a counter hit
   HITSTOP_FINISHER: 17, // knockdowns, wall splats, bounds, wall blasts
   HITSTOP_KO: 30,
+  BIG_COMBO: 5,         // hits for a combo to count as big (slow-mo finish, NICE label)
 
   KO_RESET_FRAMES: 180
 };

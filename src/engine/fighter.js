@@ -480,7 +480,8 @@
         }
       }
     } else if (this.state === 'wallsplat') {
-      this.y = Math.max(0, this.y - 1.5); // slide down the wall
+      // Stuck to the wall for a moment, then sliding down it.
+      if (this.stateFrame > C.WALL_STICK) this.y = Math.max(0, this.y - 1.5);
     } else {
       this.x += this.vx;
     }
