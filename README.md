@@ -4,7 +4,7 @@ A retro, Tekken-inspired 2D/2.5D fighting game themed around the El Camino Real 
 
 ## Status
 
-**Phase 4 — the roster (in progress, playable).** The eight fighters from [`ROSTER.md`](ROSTER.md) are being built two at a time. Available now: **BRINKHUS** (balanced, limits), **CHAI** (technical, geometry), **DALSASS** (tricky, functions), **LEE** (rushdown, sequences), **LOPEZ** (defensive, statistics) and **MIYASHIRO** (spacing, vectors).
+**Phase 4 — the roster (playable).** All eight fighters from [`ROSTER.md`](ROSTER.md): **PEDERSEN** (power, exponents; the cover fighter), **BRINKHUS** (balanced, limits), **CHAI** (technical, geometry), **DALSASS** (tricky, functions), **LEE** (rushdown, sequences), **LOPEZ** (defensive, statistics), **MIYASHIRO** (spacing, vectors) and **RAMOS** (grappler, matrices).
 
 What's in the game so far:
 
@@ -18,6 +18,7 @@ What's in the game so far:
 - **Roster (phase 4):**
   - each fighter is drawn from their described look and has their own stance, idle animation, normals, launcher, throws, combo routes, and intro, victory and defeat animations
   - character select, round intros, and a win screen with a random victory line in a speech box
+  - the title screen features PEDERSEN next to his red sports car; his intro drives it in, and his stage is the outdoor campus with the car parked
   - full move lists with frame data are in [`MOVES.md`](MOVES.md)
 
 The full vision lives in [`GAME_DESIGN.md`](GAME_DESIGN.md); the game is built in phases, and each phase stays playable.
@@ -59,11 +60,18 @@ Every fighter uses the same input layout. What each input does, and its frame da
 | sidestep, then a button | sidestep attack (CHAI's Tangent Step comes out early) |
 | `P` / `K` / `H` in the air | air attacks that chain on hit; air `H` bounds |
 | `P`+`K` / back + `P`+`K` | front throw (break with `P`) / reverse throw (break with `K`) |
+| forward + `P`+`K` | command grab (RAMOS's Identity): unbreakable |
+| hold the button | charge moves (PEDERSEN's Order of Magnitude) |
 | while knocked down | up gets up, back or forward rolls, a sidestep key rolls sideways, `K` or `P` does a wake-up kick |
 | just before landing from a juggle | `P`, `K` or `H` tech rolls (not after sweeps, bounds or wall splats) |
 
-Fighters available now:
+The fighters:
 
+- **PEDERSEN** (power, exponents) — the cover fighter. Slow, with huge damage:
+  - **Exponential Haymaker** (forward + `H`) splats the wall.
+  - **Order of Magnitude** (back + `H`, hold `H` to charge) knocks down at half charge. At full charge it does over double damage and breaks the guard if blocked.
+  - **Power Rule** (down + `H`) is his launcher, and **Long Division** (`P`+`K`) is a slam throw.
+  - His intro drives his car in; he steps out and loosens his tie.
 - **BRINKHUS** (balanced, limits) — best for new players. The Epsilon-Delta string (`P, K, K`) combos naturally on hit. His launcher is Limit Break (down + `H`) and his throw is Squeeze Theorem.
 - **DALSASS** (tricky, functions):
   - **Function Feint** (forward + `H`) looks like his overhead. Cancel it into a jab (`P`), a low (`K`), the real overhead (`H`) or a throw (`P`+`K`), or let it fizzle.
@@ -88,10 +96,15 @@ Fighters available now:
   - **Vector Rush** (dash, then `P`) comes out early in a dash.
   - **Unit Circle** (back + `K`) is a tracking spin kick.
   - **Calculated:** when you whiff near him, his next hit within 2.5 seconds does 30% more damage.
+- **RAMOS** (grappler, matrices) — the fastest dash in the game:
+  - **Matrix Lock** (`P`+`K`) has a short break window (8 frames instead of 15).
+  - **Determinant Slam** (back + `P`+`K`) is his reverse throw.
+  - **Identity** (forward + `P`+`K`) is a command grab: slower, but it can't be broken and takes crouching opponents too.
+  - **Transpose Toss** (down + `H`) is his launcher, and dash then `P` is a shoulder charge.
 
 ### Training mode
 
-After character select the game goes into training mode, starting with both fighters' round intros (any button skips). A K.O. shows the win screen: `Enter` for a rematch, `Esc` for character select. Press `Esc`, or click **MENU** at the top of the screen, to open the training menu. The fight pauses while the menu is open. Use up/down to pick a row, left/right to change it, and `Esc` to close. You can also click a row.
+After character select the game goes into training mode, starting with both fighters' round intros (any button skips). The stage is player 2's home stage: the outdoor campus for PEDERSEN, the classroom for everyone else. A K.O. shows the win screen: `Enter` for a rematch, `Esc` for character select. Press `Esc`, or click **MENU** at the top of the screen, to open the training menu. The fight pauses while the menu is open. Use up/down to pick a row, left/right to change it, and `Esc` to close. You can also click a row.
 
 | Setting | Options |
 | --- | --- |

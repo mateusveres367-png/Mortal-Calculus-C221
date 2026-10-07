@@ -4,6 +4,36 @@ Generated from the fighter data by `node tools/movelist.js`; don't edit by hand.
 
 Frame data: **i** is startup (the frame the move hits, counting the press as frame 1), then active and recovery frames. Block / hit / counter hit are frame advantage for the attacker. Inputs assume you face right: F = toward the opponent, B = away, D = down.
 
+## PEDERSEN — Power — Exponents
+
+Calm and friendly, but every hit is heavy. Slow, patient, devastating.
+
+| Input | Move | Level | i | Active | Recovery | Block | Hit | Counter hit | Damage | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| P | Power Jab | high | 11 | 2 | 14 | 0 | +7 | +10 | 10 |  |
+| P,P | Squared | high | 12 | 3 | 19 | -5 | +4 | +10 | 15 |  |
+| K | Exponent Kick | mid | 16 | 3 | 20 | -7 | +5 | +10 | 19 |  |
+| D+K | Negative Exponent | low | 18 | 3 | 22 | -13 | 0 | +6 | 13 | hits downed opponents, ducks highs |
+| D/B+K | Zero Power Sweep | low | 22 | 3 | 26 | -18 | knockdown | knockdown | 20 | ducks highs |
+| H | Base Hook | mid | 21 | 4 | 20 | +1 | +8 | launch | 28 | wall splats |
+| F+H | Exponential Haymaker | mid | 26 | 4 | 22 | -6 | knockdown | launch | 36 | wall splats |
+| B+H (HOLD) | Order Of Magnitude | mid | 20 | 4 | 22 | -8 | +4 | knockdown | 20 | wall splats, hold to charge |
+| D+H | Power Rule | mid | 17 | 4 | 24 | -17 | launch | launch | 22 | jump cancel on hit (UP) |
+| P+K | Long Division | throw | 12 | 2 | 28 |  |  |  | 40 | break with P |
+| B+P+K | Synthetic Division | throw | 12 | 2 | 28 |  |  |  | 38 | break with K |
+| AIR P | Exponent Drop | mid | 9 | 4 | 10 |  |  |  | 12 | hitstun 16, blockstun 10, landing 6 |
+| AIR K | Power Kick | mid | 11 | 5 | 12 |  |  |  | 15 | hitstun 18, blockstun 12, landing 8 |
+| AIR H | Tower Of Powers | mid | 14 | 4 | 16 |  |  |  | 22 | bounds, hitstun 22, blockstun 14, landing 12 |
+| K (DOWN) | Rolling Zero | low | 14 | 3 | 22 | -14 | -2 | +1 | 10 | ducks highs |
+| P/H (DOWN) | Spring Theorem | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
+
+**Combo routes** (tested in `tests/sim.test.js`):
+
+- **Squared:** P, P (frames: P @0, P @18)
+- **Power Rule Juggle:** D+H, P, P (frames: D+H @0, P @56, P @84)
+- **Tower Of Powers:** D+H, up, air K, air H, D+K on the ground (frames: D+H @0, UP @19, K @40, H @54, D+K @136)
+- **Exponential Growth:** at the wall: H, D+H (each input as soon as you can act)
+
 ## BRINKHUS — Balanced — Limits
 
 Nice, easygoing, a good sport. Best for new players.
@@ -199,3 +229,34 @@ Very smart. Reads opponents, keeps perfect distance, punishes every mistake.
 - **Projection Spike:** D+H, up, air P, air K, air H, K (frames: D+H @0, UP @16, P @43, K @55, H @68, K @123)
 - **Calculated Rush:** THEY WHIFF A JAB, F, F+P (CALCULATED BONUS) (frames: F @18, F @20, P @27)
 - **Vector Space:** at the wall: H, F+K, D+H (each input as soon as you can act)
+
+## RAMOS — Grappler — Matrices
+
+Fast, explosive grappler who closes distance quickly. Confident and focused.
+
+| Input | Move | Level | i | Active | Recovery | Block | Hit | Counter hit | Damage | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| P | Row Jab | high | 10 | 2 | 13 | +1 | +8 | +10 | 7 |  |
+| P,P | Column Elbow | high | 10 | 3 | 16 | -2 | +6 | +10 | 11 |  |
+| F,F+P | Augmented Charge | mid | 13 | 4 | 20 | -9 | knockdown | knockdown | 17 |  |
+| K | Pivot Knee | mid | 13 | 3 | 17 | -4 | +5 | +9 | 13 |  |
+| D+K | Lower Triangular | low | 15 | 3 | 20 | -11 | 0 | +6 | 10 | hits downed opponents, ducks highs |
+| D/B+K | Null Space Sweep | low | 20 | 3 | 26 | -18 | knockdown | knockdown | 16 | ducks highs |
+| H | Row Reduction | mid | 18 | 3 | 21 | -4 | +6 | launch | 20 | wall splats |
+| F+H | Scalar Slam | mid | 21 | 3 | 21 | -6 | +3 | knockdown | 18 | bounds |
+| D+H | Transpose Toss | mid | 15 | 4 | 23 | -15 | launch | launch | 17 | jump cancel on hit (UP) |
+| P+K | Matrix Lock | throw | 12 | 2 | 26 |  |  |  | 34 | break with P |
+| B+P+K | Determinant Slam | throw | 12 | 2 | 26 |  |  |  | 38 | break with K |
+| F+P+K | Identity | throw | 16 | 3 | 32 |  |  |  | 32 | unbreakable |
+| AIR P | Pivot Drop | mid | 7 | 4 | 10 |  |  |  | 8 | hitstun 16, blockstun 10, landing 4 |
+| AIR K | Eigen Kick | mid | 9 | 5 | 12 |  |  |  | 11 | hitstun 18, blockstun 12, landing 6 |
+| AIR H | Rank Spike | mid | 12 | 4 | 16 |  |  |  | 16 | bounds, hitstun 22, blockstun 14, landing 10 |
+| K (DOWN) | Rolling Zero | low | 14 | 3 | 22 | -14 | -2 | +1 | 10 | ducks highs |
+| P/H (DOWN) | Spring Theorem | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
+
+**Combo routes** (tested in `tests/sim.test.js`):
+
+- **Row And Column:** P, P (frames: P @0, P @16)
+- **Transpose Juggle:** D+H, P, D+K on the ground (frames: D+H @0, P @54, D+K @110)
+- **Rank Spike:** D+H, up, air P, air K, air H, K (frames: D+H @0, UP @17, P @42, K @54, H @67, K @122)
+- **Identity Stomp:** F+P+K, D+K on the ground (frames: F+P+K @0, D+K @82)

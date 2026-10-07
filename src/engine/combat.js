@@ -21,7 +21,7 @@
       if (m.level === 'low' && d.state === 'backdash' && d.stateFrame <= (d.def.backdashLowInvuln || 0)) continue;
       // Only ground-hitting moves reach a fighter who is lying down.
       if (d.state === 'down' && (!m.otg || d.groundHits >= C.GROUND_HITS_MAX)) continue;
-      if (m.throw && !d.isThrowable()) continue;
+      if (m.throw && !d.isThrowable(m.grabsCrouch)) continue;
       var hb = a.hitbox(0), hurts = d.hurtboxes(), touching = false;
       for (var j = 0; j < hurts.length; j++) if (FG.overlap(hb, hurts[j])) { touching = true; break; }
       if (!touching) continue;
@@ -94,9 +94,12 @@
     // Air attacks hang the attacker in the air a moment so they can chain.
     if (m.air) a.vy = Math.max(a.vy, m.stall || 2.5);
 
+    var charge = a.chargeLevel();
     if (blocked) {
       a.contact = 'block';
       this.events.push(ev);
+      // A fully charged Order of Magnitude breaks the guard outright.
+      if (charge === 2) d.guard = C.GUARD_MAX;
       this.addGuardPressure(c, m, attackerLeft);
       return;
     }
@@ -109,6 +112,11 @@
     var state = d.state;
     var mult = (ch ? 1.2 : 1) * (state === 'down' ? 0.6 : 1) * (state === 'wallsplat' ? 0.85 : 1);
     if (a.calculated > 0) { mult *= C.CALCULATED_BONUS; a.calculated = 0; ev.calculated = true; }
+    if (m.charge) {
+      mult *= m.charge.damage[charge];
+      ev.charge = charge;
+      if (charge >= 1) result = { knockdown: true };
+    }
     var dmg = this.dealDamage(c.a, c.d, m.damage, mult);
     var hitstop = m.hitstop + (ch ? 4 : 0);
     ev.ch = ch; ev.punish = c.punish; ev.damage = dmg;
@@ -232,7 +240,7 @@
       this.push(a, d, m.push * 0.5);
       this.hitstop = Math.max(this.hitstop, 18);
       this.startMeasure(c.a, c.d, m, 'GUARD BREAK');
-      this.events.push({ type: 'guardbreak', attacker: c.a, defender: c.d, x: d.x, y: 60, shake: 0.01 });
+      this.events.push({ type: 'guardbreak', attacker: c.a, defender: c.d, x: d.x, y: 60, shake: 0.01, charge: a.chargeLevel() });
       return;
     }
 
@@ -307,10 +315,13 @@
 
     if (tf <= C.THROW_BREAK_WINDOW) {
       // The press may come slightly before the grab lands. Pressing both buttons doesn't count.
-      var wrong = m.breakBtn === 'p' ? 'k' : 'p';
-      var pressedRight = buf.pressed[m.breakBtn] >= t.start - 2;
-      var pressedWrong = buf.pressed[wrong] >= t.start - 2;
-      if (pressedRight && !pressedWrong) { this.throwBreak(t.a, t.d, 'break'); return; }
+      // Some throws have a shorter break window; command grabs (no breakBtn) can't be broken.
+      if (m.breakBtn && tf <= (m.breakWindow || C.THROW_BREAK_WINDOW)) {
+        var wrong = m.breakBtn === 'p' ? 'k' : 'p';
+        var pressedRight = buf.pressed[m.breakBtn] >= t.start - 2 && buf.pressed[m.breakBtn] <= t.start + (m.breakWindow || C.THROW_BREAK_WINDOW);
+        var pressedWrong = buf.pressed[wrong] >= t.start - 2;
+        if (pressedRight && !pressedWrong) { this.throwBreak(t.a, t.d, 'break'); return; }
+      }
       this.placeThrown(0);
       return;
     }

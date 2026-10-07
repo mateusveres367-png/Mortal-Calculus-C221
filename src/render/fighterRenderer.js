@@ -232,7 +232,7 @@
 
   // --- Body ---------------------------------------------------------------------
 
-  // Draw one fighter. opts: { flash: color|null, jitter: px, scale: mult, groundY, noShadow }
+  // Draw one fighter. opts: { flash: color|null, jitter: px, scale: mult, groundY, noShadow, x }
   FG.drawFighter = function (g, f, opts) {
     var p = f._pose;
     if (!p) return;
@@ -241,7 +241,7 @@
     var depth = 1 - f.z * 0.004;
     var s = def.scale * depth * (opts.scale || 1);
     var dir = f.facing;
-    var ox = Math.round(f.x + (opts.jitter || 0));
+    var ox = Math.round((opts.x != null ? opts.x : f.x) + (opts.jitter || 0));
     var oy = Math.round((opts.groundY != null ? opts.groundY : C.GROUND_Y) - f.z * 0.5);
     var lift = f.y * (opts.scale || 1);
     function X(i) { return Math.round(ox + p[i * 2] * s * dir); }

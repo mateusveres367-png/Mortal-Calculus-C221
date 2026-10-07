@@ -213,7 +213,7 @@
       var props = (m.tracks ? '  TRACKS' : '') + (m.bound ? '  BOUND' : '') + (m.wallSplat ? '  SPLAT' : '') + (m.otg ? '  OTG' : '');
       lines[1].setText((m.throw ? 'THROW' : m.level.toUpperCase()) + '  I' + m.startup + '  ACT ' + m.active + '  REC ' + m.recovery + '  TOT ' + m.total + props);
       if (m.throw) {
-        lines[2].setText('DAMAGE ' + m.damage + '  BREAK WITH ' + m.breakBtn.toUpperCase());
+        lines[2].setText('DAMAGE ' + m.damage + (m.breakBtn ? '  BREAK WITH ' + m.breakBtn.toUpperCase() : '  UNBREAKABLE'));
       } else if (m.air) {
         lines[2].setText('HITSTUN ' + m.stunHit + '  BLOCKSTUN ' + m.stunBlock + '  LANDING ' + m.landLag);
       } else {

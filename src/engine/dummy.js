@@ -113,7 +113,7 @@
 
     // --- Throw breaks -----------------------------------------------------------
     var t = match && match.throwState;
-    if (this.get('breaks') === 'on' && t && t.d === self.index && match.frame - t.start === 8) {
+    if (this.get('breaks') === 'on' && t && t.move.breakBtn && t.d === self.index && match.frame - t.start === 6) {
       raw.p = false; raw.k = false;
       raw[t.move.breakBtn] = true;
     }

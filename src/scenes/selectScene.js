@@ -139,7 +139,10 @@
       card.g.clear();
       card.g.fillStyle(0x2a2440, 1); card.g.fillRect(card.x, card.y, CARD_W, CARD_H);
       FG.updatePose(card.puppet, t);
-      FG.drawFighter(card.g, card.puppet, { scale: 1.75, groundY: card.y + 186, noShadow: true });
+      // Centre each portrait on the fighter's head (stances differ in height and lean).
+      var def = card.puppet.def, sc = 1.75 * def.scale, base = FG.getPose(def, 'idle');
+      card.puppet.x = card.x + CARD_W / 2 - base[4] * sc;
+      FG.drawFighter(card.g, card.puppet, { scale: 1.75, groundY: card.y + 26 + base[5] * sc, noShadow: true });
     }
     // Cursor frames.
     var fg = this.frameG;

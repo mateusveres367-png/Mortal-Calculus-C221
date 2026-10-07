@@ -78,8 +78,17 @@
     return false;
   };
 
-  Fighter.prototype.isThrowable = function () {
-    return !!THROWABLE[this.state] && !this.isCrouching() && !this.isAirborne();
+  // grabsCrouch: command grabs (RAMOS's Identity) also take crouching opponents.
+  Fighter.prototype.isThrowable = function (grabsCrouch) {
+    var crouchOk = grabsCrouch && (this.state === 'crouch' || this.state === 'attack');
+    return (!!THROWABLE[this.state] || crouchOk) && (!this.isCrouching() || grabsCrouch) && !this.isAirborne();
+  };
+
+  // Charge level of the current charge move: 0 (tap), 1, or 2 (full).
+  Fighter.prototype.chargeLevel = function () {
+    var c = this.move && this.move.charge;
+    if (!c) return 0;
+    return this.chargeFrames >= c.max ? 2 : this.chargeFrames >= c.mid ? 1 : 0;
   };
 
   Fighter.prototype.inCounterHitWindow = function () {
@@ -111,6 +120,7 @@
     this.fromFeint = !!(prev && prev.feint);
     // How many times in a row this move has cancelled into itself (Recursive Rush).
     this.repeatCount = prev && prev.id === id ? (this.repeatCount || 0) + 1 : 0;
+    this.chargeFrames = 0;
     this.setState('attack');
     this.move = m;
     this.moveFrame = 1;
@@ -136,6 +146,12 @@
     switch (s) {
       case 'attack': {
         var m = this.move;
+        // Charge moves (PEDERSEN's Order of Magnitude) pause their windup while the button is held.
+        if (m.charge && this.moveFrame === m.charge.at && buf.held[m.charge.btn] && this.chargeFrames < m.charge.max) {
+          this.chargeFrames++;
+          this.vx = 0;
+          return;
+        }
         this.moveFrame++;
         if (!m.air) this.vx = (m.step && this.moveFrame >= m.step[0] && this.moveFrame <= m.step[1]) ? m.step[2] * this.facing : 0;
         if (this.tryThrowConversion(buf, frame)) return;

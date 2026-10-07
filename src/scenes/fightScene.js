@@ -60,13 +60,49 @@
     var f = this.match.fighters;
     // Only intros start with LOPEZ's blazer on; he takes it off during his.
     for (var i = 0; i < 2; i++) { f[i]._blazer = !!(opts.intro && f[i].def.look.blazer); f[i]._pending = null; }
+    // PEDERSEN's car parks behind his starting spot (and drives in during his intro).
+    this.cars = [];
+    for (var c = 0; c < 2; c++) {
+      if (!f[c].def.car) continue;
+      var park = Math.max(C.WALL_L + 80, Math.min(C.WALL_R - 80, f[c].x - f[c].facing * 95));
+      this.cars.push({ owner: c, parkX: park, x: park, facing: f[c].facing, door: 0, spin: 0 });
+      f[c]._hidden = false;
+    }
     if (opts.intro) this.startIntro();
     else { this.intro = null; this.hud.showBanner('FIGHT!', '', 50); }
+  };
+
+  // The car intro: drive in, stop, open the door, PEDERSEN steps out, door closes.
+  FightScene.prototype.updateCars = function () {
+    var f = this.match.fighters;
+    for (var i = 0; i < this.cars.length; i++) {
+      var car = this.cars[i], who = f[car.owner];
+      if (!this.intro) { car.x = car.parkX; car.door = 0; who._hidden = false; who._drawX = null; continue; }
+      var t = this.intro.t, start = car.parkX - car.facing * 420;
+      if (t <= 40) {
+        var u = t / 40, e = 1 - (1 - u) * (1 - u);
+        var nx = start + (car.parkX - start) * e;
+        car.spin += (nx - car.x) * 0.12 * car.facing;
+        car.x = nx;
+      }
+      car.door = t < 48 ? 0 : t < 56 ? (t - 48) / 8 : t < 66 ? 1 : t < 74 ? 1 - (t - 66) / 8 : 0;
+      who._hidden = t < 56;
+      var doorX = car.parkX + car.facing * 12;
+      who._drawX = t < 56 ? null : t < 68 ? doorX + (who.x - doorX) * ((t - 56) / 12) : null;
+    }
+  };
+
+  FightScene.prototype.drawCars = function (g) {
+    for (var i = 0; i < this.cars.length; i++) {
+      var car = this.cars[i];
+      FG.drawCar(g, car.x, C.GROUND_Y - 26, { scale: 0.82, facing: car.facing, door: car.door, wheelSpin: car.spin });
+    }
   };
 
   // Round intro: each fighter's intro animation, then READY / FIGHT. Any button skips it.
   FightScene.prototype.startIntro = function () {
     var f = this.match.fighters, len = 0;
+    for (var c = 0; c < this.cars.length; c++) this.cars[c].x = this.cars[c].parkX - this.cars[c].facing * 420;
     for (var i = 0; i < 2; i++) {
       f[i]._override = { anim: f[i].def.intro, t: 0 };
       len = Math.max(len, FG.animLength(f[i].def.intro));
@@ -79,6 +115,7 @@
     var f = this.match.fighters;
     for (var i = 0; i < 2; i++) { f[i]._override = null; f[i]._blazer = false; }
     this.intro = null;
+    this.updateCars();
     this.hud.showBanner('FIGHT!', '', 50);
     // Show the controls once per session, after the first intro.
     if (!FG.seenControls) { FG.seenControls = true; this.hud.setOverlay(true); }
@@ -255,6 +292,7 @@
           }
         }
       }
+      this.updateCars();
       if (this.intro.t >= this.intro.len) this.endIntro();
     }
     if (this.win) this.win.t++;
@@ -291,6 +329,7 @@
     }
 
     if (m.over && !this.win) this.startWin();
+    this.chargeFeedback();
     if (this.training.refill) this.refillHealth();
     for (var g = 0; g < 2; g++) {
       if (f[g]._tag && --f[g]._tag.t <= 0) f[g]._tag = null;
@@ -308,6 +347,25 @@
     this.tickCount++;
     FG.updatePose(f[0], this.tickCount);
     FG.updatePose(f[1], this.tickCount);
+  };
+
+  // Order of Magnitude: sparks gather at the fist while charging; x10 / x100 at each level.
+  FightScene.prototype.chargeFeedback = function () {
+    var f = this.match.fighters;
+    for (var i = 0; i < 2; i++) {
+      var fi = f[i], m = fi.move;
+      if (fi.state !== 'attack' || !m || !m.charge || !fi.chargeFrames) continue;
+      var c = m.charge, fx = fi.x - fi.facing * 26 * fi.def.scale, fy = C.GROUND_Y - 62 * fi.def.scale;
+      if (fi.chargeFrames === c.mid) { fi._tag = { text: 'X10', t: 40 }; FG.Sfx.ui('move'); }
+      if (fi.chargeFrames === c.max) {
+        fi._tag = { text: 'X100', t: 60 };
+        this.effects.spawn({ type: 'grab', x: fx, y: C.GROUND_Y - fy });
+        FG.Sfx.ui('confirm');
+      }
+      var a = Math.random() * Math.PI * 2, r = 18;
+      this.effects.parts.push({ x: fx + Math.cos(a) * r, y: fy + Math.sin(a) * r, vx: -Math.cos(a) * 1.2, vy: -Math.sin(a) * 1.2,
+        life: 14, max: 14, size: 2, color: fi.chargeFrames >= c.max ? 0xff4a3d : fi.chargeFrames >= c.mid ? 0xffd23f : 0xffffff });
+    }
   };
 
   // Personality reactions to match events: gestures, expressions, the crowd.
@@ -337,6 +395,7 @@
       f[ev.fighter]._tag = { text: 'CALCULATED', t: 60 };
     }
     if (ev.type === 'hit' && ev.calculated) this.hud.setLabel(ev.attacker, 'CALCULATED!');
+    if ((ev.type === 'hit' || ev.type === 'guardbreak') && ev.charge === 2) { this.hud.setLabel(ev.attacker, 'ORDER OF MAGNITUDE!'); this.effects.shake(0.012); }
     if (ev.type === 'parry') {
       this.hud.setLabel(ev.attacker, ev.label || 'PARRY!');
       if (f[ev.attacker].def.parryFace) f[ev.attacker]._face = { type: f[ev.attacker].def.parryFace, t: 30 };
@@ -366,6 +425,7 @@
     cam.scrollY = shake.y;
 
     g.clear();
+    this.drawCars(g);
     // Draw the fighter further into the background first.
     var order = f[0].z > f[1].z ? [0, 1] : f[1].z > f[0].z ? [1, 0] : (f[0].state === 'attack' ? [1, 0] : [0, 1]);
     for (var i = 0; i < 2; i++) {
@@ -376,6 +436,8 @@
       if (m.hitstop > 0 && (fi.state === 'hitstun' || fi.state === 'juggle' || fi.state === 'blockstun')) {
         opts.jitter = (this.tickCount % 2 ? 1 : -1) * (fi.state === 'blockstun' ? 1 : 2);
       }
+      if (fi._hidden) continue;
+      if (fi._drawX != null) opts.x = fi._drawX;
       FG.drawFighter(g, fi, opts);
     }
     this.effects.draw(g);

@@ -668,5 +668,57 @@ function count(r, type, attacker) {
   check('unit circle tracks', count(r, 'hit') === 1, types(r));
 })();
 
+// PEDERSEN: Order of Magnitude charges; a full charge breaks the guard.
+(function () {
+  var PD = FG.fighterById('pedersen');
+  // The guarding opponent is against the wall so holding back can't walk out of range.
+  function charge(holdFrames, guard) {
+    return play(PD, S, 40, function (i) { return i === 0 ? FG.parseInput('B+H') : i <= holdFrames ? { h: true } : {}; },
+      function (i) { return guard && i >= 3 ? { right: true } : {}; }, 120, function (m) {
+        var w = FG.C.WALL_R - 18 * S.scale; m.fighters[1].x = w; m.fighters[0].x = w - 40;
+      });
+  }
+  var tap = charge(0, false), half = charge(32, false), full = charge(60, false);
+  function dmg(r) { var h = r.events.filter(function (e) { return e.type === 'hit' && e.attacker === 0; })[0]; return h ? h.damage : 0; }
+  check('charge does more damage', dmg(tap) < dmg(half) && dmg(half) < dmg(full), [dmg(tap), dmg(half), dmg(full)]);
+  check('full charge is over double damage', dmg(full) >= 2 * dmg(tap), [dmg(tap), dmg(full)]);
+  var blocked = charge(60, true);
+  check('full charge breaks the guard', count(blocked, 'guardbreak') === 1, types(blocked));
+  var tapBlocked = charge(0, true);
+  check('a tap is just blocked', count(tapBlocked, 'block') === 1 && count(tapBlocked, 'guardbreak') === 0, types(tapBlocked));
+})();
+
+// RAMOS: Matrix Lock's short break window; Identity can't be broken and grabs crouchers.
+(function () {
+  var RM = FG.fighterById('ramos');
+  function breakAt(frameAfterGrab, throwInput) {
+    return play(RM, S, 40, { 0: FG.parseInput(throwInput) }, function (i, m) {
+      return m.throwState && m.frame - m.throwState.start === frameAfterGrab ? { p: true } : {};
+    }, 80);
+  }
+  check('matrix lock breaks early', count(breakAt(6, 'P+K'), 'break') === 1);
+  check('matrix lock window is short', count(breakAt(11, 'P+K'), 'break') === 0);
+  check('other throws still break at 11', count(play(S, D, 40, { 0: FG.parseInput('P+K') }, function (i, m) {
+    return m.throwState && m.frame - m.throwState.start === 11 ? { p: true } : {};
+  }, 80), 'break') === 1);
+  // Identity: unbreakable, grabs a crouching opponent.
+  var r = play(RM, S, 40, { 0: FG.parseInput('F+P+K') }, function (i, m) {
+    return m.throwState && m.frame - m.throwState.start === 4 ? { p: true, down: true } : { down: true };
+  }, 90);
+  check('identity grabs a crouching opponent', count(r, 'grab') === 1, types(r));
+  check('identity cannot be broken', count(r, 'break') === 0 && r.m.fighters[1].health === S.health - RM.moves.cmdGrab.damage, r.m.fighters[1].health);
+  // A normal throw whiffs on crouchers.
+  r = play(RM, S, 40, { 0: FG.parseInput('P+K') }, function () { return { down: true }; }, 60);
+  check('matrix lock whiffs on crouch', count(r, 'grab') === 0, types(r));
+  // His dash covers the most ground.
+  function dashDist(def) { var x0, q = play(def, D, 300, { 0: { right: true }, 2: { right: true } }, {}, 20, function (m) { x0 = m.fighters[0].x; }); return q.m.fighters[0].x - x0; }
+  var others = FG.ROSTER.filter(function (d) { return d !== RM; }).map(dashDist);
+  check('ramos has the fastest dash', others.every(function (o) { return dashDist(RM) > o; }), [dashDist(RM), others]);
+})();
+
+// PEDERSEN is the cover fighter: first on the roster.
+check('pedersen is first on character select', FG.ROSTER[0].id === 'pedersen', FG.ROSTER.map(function (d) { return d.id; }));
+check('all eight fighters', FG.ROSTER.length === 8, FG.ROSTER.length);
+
 console.log(passes + ' passed, ' + failures + ' failed');
 process.exit(failures ? 1 : 0);
