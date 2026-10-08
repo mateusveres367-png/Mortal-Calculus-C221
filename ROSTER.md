@@ -190,11 +190,11 @@ Every fighter needs unique normals, launcher, throw, combo routes, stance, idle 
 
 **Moves:** Matrix Lock, Determinant Slam, Identity (command grab), Transpose Toss (launcher).
 
-**Style:** Movement-based grappler, wrestling and luchador. Suplexes (Matrix Lock is a German suplex), spinning throws, a lariat, a jumping knee, a European uppercut and crab scissors. Running moves: dash and keep holding forward to run, then attack out of the run with a spear tackle (P), a running knee (K), a baseball slide (D+K), a leaping plancha (H) or a running command grab (P+K, Gauss-Jordan). A low wrestler's stance, hands out; his long hair never stops swinging.
+**Style:** Movement-based grappler, wrestling and luchador. Suplexes (Matrix Lock is a German suplex), spinning throws, a lariat, a jumping knee, a European uppercut and crab scissors. Running moves: dash and keep holding forward to run, then attack out of the run with a spear tackle (P), a running knee (K), a baseball slide (D+K), a leaping plancha (H) or a running command grab (P+K, Gauss-Jordan). A low wrestler's stance, hands out; his bowl cut never stops swinging.
 
 **Signature — Cardio:** he never slows down. He can run for as long as he likes, has the fastest movement in the game (walk, dash, chained dashes), his guard recovers twice as fast, and he has a running command grab.
 
-**Look:** Lean and athletic. Long, bouncy black hair that swings on every dash, jump and throw. Light stubble and an easy smile. Wears an olive-brown heathered polo and a red-and-white wristband (he's Peruvian).
+**Look:** Lean and athletic. A medium-length black bowl cut that reaches his neck; it bounces and swings on every dash, jump and throw. Light stubble and an easy smile. Wears an olive-brown heathered polo and a red-and-white wristband (he's Peruvian).
 
 **Personality:** A fast, explosive grappler who closes distance quickly. Confident and focused. A cardio machine: never gets tired, and dashes faster than any other grappler.
 

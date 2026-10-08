@@ -197,6 +197,10 @@
       case 'cropped': // close-cropped: a tight cap with a clean line
         R(-7, -8, 13, 2, col); R(-8, -6, 3, 4, col); R(-7, -6, 1, 1, shade(col, 1.3)); R(5, -7, 1, 1, col);
         break;
+      case 'bowl': // a medium bowl cut: straight bangs, sides down to the neck (the swing is drawLongHair's)
+        R(-8, -9, 15, 4, col); R(-9, -6, 5, 9, col); R(-1, -6, 8, 2, col); R(6, -6, 1, 3, col);
+        R(-2, -9, 6, 1, shade(col, 1.9)); R(-8, -5, 1, 4, shade(col, 1.6));
+        break;
       case 'longBouncy': // the cap; the long part is simulated in drawLongHair
         R(-7, -8, 13, 4, col); R(-8, -6, 4, 7, col); R(-9, -3, 3, 6, col); R(4, -7, 3, 2, col); R(-2, -9, 5, 1, shade(col, 1.6));
         break;
@@ -274,11 +278,14 @@
     }
   }
 
-  // Long hair that swings (RAMOS): a chain of points hanging from the back of the
+  // Hair that swings (RAMOS's bowl cut): a chain of points hanging from the back of the
   // head, simulated each frame so dashes, jumps and throws make it bounce.
   var HAIR_SEGS = 6;
-  function drawLongHair(g, f, hx, hy, s, dir, color) {
-    var rootX = hx - dir * 6 * s, rootY = hy - 2 * s, seg = 5.5 * s;
+  // opts (a shorter cut): { segs, seg, width }.
+  function drawLongHair(g, f, hx, hy, s, dir, color, opts) {
+    opts = opts || {};
+    var HAIR_SEGS = opts.segs || 6, wid = opts.width || 7;
+    var rootX = hx - dir * 6 * s, rootY = hy - 2 * s, seg = (opts.seg || 5.5) * s;
     var pts = f._hairPts;
     if (!pts || Math.abs(pts[0].x - rootX) > 60 || Math.abs(pts[0].y - rootY) > 60) {
       pts = f._hairPts = [];
@@ -303,7 +310,7 @@
       }
     }
     for (var w = 1; w < pts.length; w++) {
-      g.lineStyle(Math.max(2, Math.round((7 - w * 0.7) * s)), color, 1);
+      g.lineStyle(Math.max(2, Math.round((wid - w * 0.7) * s)), color, 1);
       g.lineBetween(pts[w - 1].x, pts[w - 1].y, pts[w].x, pts[w].y);
       g.fillStyle(color, 1); g.fillCircle(pts[w].x, pts[w].y, Math.max(1, (3.2 - w * 0.35) * s));
     }
@@ -505,6 +512,7 @@
     // Neck and head (long hair hangs behind the head).
     var hdx = X(2), hdy = Y(2);
     if (look.hair.style === 'longBouncy') drawLongHair(g, f, hdx, hdy, s, dir, c(look.hair.color));
+    if (look.hair.style === 'bowl') drawLongHair(g, f, hdx, hdy + 1 * s, s, dir, c(look.hair.color), { segs: 3, seg: 3.4, width: 8 }); // to the neck, still swinging
     g.lineStyle(Math.round(5 * s), c(skin), 1);
     g.lineBetween(cx, cy, Math.round((cx + hdx) / 2), Math.round((cy + hdy) / 2));
     g.fillStyle(c(skin), 1);
