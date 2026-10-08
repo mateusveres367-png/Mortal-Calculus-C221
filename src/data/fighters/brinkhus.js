@@ -33,6 +33,7 @@
     id: 'brinkhus', order: 1,
     homeStage: 'classroom',
     glyphs: ['Y=MX+B', 'X=?', '2X+3=7', 'RISE/RUN'], // math that flies off their big hits
+    stringH: 'COMBINE LIKE TERMS', // P, P, H: the universal string ender (see FG.defineFighter)
     name: 'BRINKHUS', archetype: 'BALANCED', theme: 'ALGEBRA 1',
     bio: 'NICE, EASYGOING, A GOOD SPORT. BEST FOR NEW PLAYERS.',
     signature: ['SLOPE JAB', 'DISTRIBUTIVE PROPERTY', 'LINEAR RUSH', 'SOLVE FOR X', 'FOIL'],
@@ -130,8 +131,7 @@
     // Combo routes: inputs on sim frames counted from the first press (tested in tests/sim.test.js).
     combos: [
       { name: 'DISTRIBUTIVE PROPERTY', difficulty: 'easy', notation: 'P, K, K', plan: { 0: 'P', 12: 'K', 24: 'K' }, hits: ['jab', 'eps', 'delta'] },
-      { name: 'SOLVE FOR X JUGGLE', difficulty: 'medium', notation: 'D+H, P, P, D+K ON THE GROUND',
-        plan: { 0: 'D+H', 38: 'P', 55: 'P', 95: 'D+K' }, hits: ['launcher', 'jab', 'jab2', 'low'] },
+      { name: 'SOLVE FOR X JUGGLE', difficulty: 'medium', notation: 'D+H, P, P, H', plan: { 0: 'D+H', 38: 'P', 56: 'P', 67: 'H' }, hits: ['launcher', 'jab', 'jab2', 'jabH'] },
       { name: 'POINT-SLOPE SPIKE', difficulty: 'hard', notation: 'D+H, UP, AIR P, AIR K, AIR H, K',
         plan: { 0: 'D+H', 17: 'UP', 32: 'P', 41: 'K', 51: 'H', 79: 'K' }, hits: ['launcher', 'airP', 'airK', 'airH', 'mid'] },
       { name: 'ISOLATE THE VARIABLE', difficulty: 'medium', notation: 'AT THE WALL: H, P, P, D+H', queue: ['H', 'P', 'P', 'D+H'], wall: true, hits: ['heavy', 'jab', 'jab', 'launcher'] }

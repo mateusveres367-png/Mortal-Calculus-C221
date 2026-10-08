@@ -6,6 +6,7 @@
   var C = FG.C;
   var IDLE_DEMO = 15 * 60; // frames on the title before the demo starts
   var BOX = { x: 452, y: 118, w: 170, h: 108 };
+  var OPTION_ROWS = 5;
 
   var TitleScene = function () { Phaser.Scene.call(this, { key: 'title' }); };
   TitleScene.prototype = Object.create(Phaser.Scene.prototype);
@@ -18,7 +19,7 @@
     { id: 'arcade', label: 'ARCADE', help: 'FIGHT THROUGH THE WHOLE DEPARTMENT' },
     { id: 'versus', label: 'VERSUS', help: 'PLAYER 1 VS PLAYER 2, BEST OF THREE' },
     { id: 'training', label: 'TRAINING', help: 'PRACTICE, FRAME DATA AND COMBO TRIALS' },
-    { id: 'options', label: 'OPTIONS', help: 'DIFFICULTY, ROUND TIME, SOUND' }
+    { id: 'options', label: 'OPTIONS', help: 'DIFFICULTY, ROUND TIME, SOUND, EASY COMBOS' }
   ];
   var TIMES = [30, 60, 99, 0];
 
@@ -54,7 +55,7 @@
     // Main menu and options, in a box above the car.
     var self = this;
     this.menuG = this.add.graphics().setScrollFactor(0).setDepth(12);
-    this.rows = [0, 1, 2, 3].map(function (k) {
+    this.rows = [0, 1, 2, 3, 4].map(function (k) {
       var t = FG.text(self, BOX.x + 16, BOX.y + 12 + k * 18, '', 'w', 2).setDepth(13);
       t.setInteractive({ useHandCursor: true }).on('pointerdown', function () { FG.Sfx.unlock(); if (self.menuOn) { self.index = k; self.choose(0); } });
       return t;
@@ -87,7 +88,7 @@
       if (code === 'Enter' || code === 'Space' || code === 'NumpadEnter' || code === 'KeyJ') this.openMenu();
       return;
     }
-    var n = 4;
+    var n = this.options ? OPTION_ROWS : MENU.length;
     switch (code) {
       case 'ArrowUp': case 'KeyW': this.index = (this.index + n - 1) % n; FG.Sfx.ui('move'); break;
       case 'ArrowDown': case 'KeyS': this.index = (this.index + 1) % n; FG.Sfx.ui('move'); break;
@@ -95,7 +96,7 @@
       case 'ArrowRight': case 'KeyD': if (this.options) this.choose(1); break;
       case 'Enter': case 'Space': case 'NumpadEnter': case 'KeyJ': this.choose(0); break;
       case 'Escape': case 'KeyK': case 'Backspace':
-        if (this.options) { this.options = false; this.index = 3; } else this.menuOn = false;
+        if (this.options) { this.options = false; this.index = MENU.length - 1; } else this.menuOn = false;
         FG.Sfx.ui('move');
         break;
     }
@@ -116,7 +117,8 @@
       case 0: s.difficulty = FG.AI_ORDER[(FG.AI_ORDER.indexOf(s.difficulty) + d + 3) % 3]; break;
       case 1: s.time = TIMES[(TIMES.indexOf(s.time) + d + TIMES.length) % TIMES.length]; break;
       case 2: s.sound = !s.sound; FG.Sfx.muted = !s.sound; break;
-      case 3: if (!delta) { this.options = false; this.index = 3; } break;
+      case 3: s.easyCombos = !s.easyCombos; break;
+      case 4: if (!delta) { this.options = false; this.index = MENU.length - 1; } break;
     }
     FG.saveSettings();
     FG.Sfx.ui('move');
@@ -145,18 +147,21 @@
     var g = this.menuG;
     g.clear();
     if (!on) { this.rows.forEach(function (r) { r.setText(''); }); this.help.setText(''); return; }
-    g.fillStyle(0x07060c, 0.88); g.fillRect(BOX.x, BOX.y, BOX.w, BOX.h);
-    g.lineStyle(2, 0xffd23f, 1); g.strokeRect(BOX.x, BOX.y, BOX.w, BOX.h);
-    g.fillStyle(0x3c6fb0, 0.7); g.fillRect(BOX.x + 6, BOX.y + 9 + this.index * 18, BOX.w - 12, 18);
+    var rowH = this.options ? 15 : 18, h = this.options ? 96 : BOX.h;
+    g.fillStyle(0x07060c, 0.88); g.fillRect(BOX.x, BOX.y, BOX.w, h);
+    g.lineStyle(2, 0xffd23f, 1); g.strokeRect(BOX.x, BOX.y, BOX.w, h);
+    g.fillStyle(0x3c6fb0, 0.7); g.fillRect(BOX.x + 6, BOX.y + 9 + this.index * rowH, BOX.w - 12, rowH);
     var labels;
     if (this.options) {
-      labels = ['CPU ' + FG.AI_LEVELS[s.difficulty].name, 'TIME ' + (s.time ? s.time : 'NONE'), 'SOUND ' + (s.sound ? 'ON' : 'OFF'), 'BACK'];
-      this.help.setText(['HOW HARD THE CPU FIGHTS', 'SECONDS PER ROUND', 'SOUND EFFECTS', 'BACK TO THE MENU'][this.index] + (this.index < 3 ? '   LEFT/RIGHT CHANGE' : ''));
+      labels = ['CPU ' + FG.AI_LEVELS[s.difficulty].name, 'TIME ' + (s.time ? s.time : 'NONE'), 'SOUND ' + (s.sound ? 'ON' : 'OFF'), 'EASY COMBOS ' + (s.easyCombos ? 'ON' : 'OFF'), 'BACK'];
+      this.help.setText(['HOW HARD THE CPU FIGHTS', 'SECONDS PER ROUND', 'SOUND EFFECTS', 'MASH P TO KEEP A STRING GOING (P, P, H...)', 'BACK TO THE MENU'][this.index] + (this.index < 4 ? '   LEFT/RIGHT CHANGE' : ''));
     } else {
       labels = MENU.map(function (m) { return m.label; });
       this.help.setText(MENU[this.index].help);
     }
-    this.rows.forEach(function (r, k) { r.setText(labels[k]).setScale(self.options ? 1.5 : 2).setFont(k === self.index ? 'pf_y' : 'pf_w'); });
+    this.rows.forEach(function (r, k) {
+      r.setText(labels[k] || '').setScale(self.options ? 1.5 : 2).setY(BOX.y + 12 + k * (self.options ? 15 : 18)).setFont(k === self.index ? 'pf_y' : 'pf_w');
+    });
   };
 
   TitleScene.prototype.update = function () {

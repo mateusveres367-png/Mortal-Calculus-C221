@@ -35,6 +35,7 @@
     id: 'lee', order: 4,
     homeStage: 'hallway',
     glyphs: ['A(N)=A+(N-1)D', '1,1,2,3,5', 'SUM', '...'], // math that flies off their big hits
+    stringH: 'NEXT TERM', // P, P, H: the universal string ender (see FG.defineFighter)
     name: 'LEE', archetype: 'RUSHDOWN', theme: 'SEQUENCES',
     bio: 'SARCASTIC AND FUNNY. TAUNTS MID-COMBO. RELENTLESS PRESSURE.',
     signature: ['ARITHMETIC SEQUENCE', 'RECURSIVE RUSH', 'FIBONACCI UPPERCUT', 'SERIES EXPANSION'],
@@ -152,8 +153,7 @@
     combos: [
       { name: 'ARITHMETIC SEQUENCE', difficulty: 'easy', notation: 'P, P, P, P', plan: { 0: 'P', 11: 'P', 22: 'P', 32: 'P' }, hits: ['jab', 'seq2', 'seq3', 'seqP'] },
       { name: 'RECURSIVE RUSH', difficulty: 'easy', notation: 'F+P, P, P', plan: { 0: 'F+P', 13: 'P', 26: 'P' }, hits: ['fP', 'fP', 'fP'] },
-      { name: 'FIBONACCI JUGGLE', difficulty: 'medium', notation: 'D+H, P, P, P, D+K ON THE GROUND',
-        plan: { 0: 'D+H', 37: 'P', 50: 'P', 57: 'P', 99: 'D+K' }, hits: ['launcher', 'jab', 'seq2', 'seq3', 'low'] },
+      { name: 'FIBONACCI JUGGLE', difficulty: 'medium', notation: 'D+H, P, P, H', plan: { 0: 'D+H', 38: 'P', 50: 'P', 59: 'H' }, hits: ['launcher', 'jab', 'seq2', 'jabH'] },
       { name: 'FIBONACCI SPIKE', difficulty: 'hard', notation: 'D+H, UP, AIR P, AIR K, AIR H, K',
         plan: { 0: 'D+H', 16: 'UP', 31: 'P', 40: 'K', 50: 'H', 79: 'K' }, hits: ['launcher', 'airP', 'airK', 'airH', 'mid'] }
     ],

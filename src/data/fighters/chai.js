@@ -35,6 +35,7 @@
     id: 'chai', order: 2,
     homeStage: 'classroom',
     glyphs: ['360', 'C=2*PI*R', '(X,Y)->(-X,Y)', '180'], // math that flies off their big hits
+    stringH: 'CENTRAL ANGLE', // P, P, H: the universal string ender (see FG.defineFighter)
     name: 'CHAI', archetype: 'TECHNICAL', theme: 'GEOMETRY',
     bio: 'VERY KIND, PRECISE AND GRACEFUL. BOWS BEFORE FIGHTS.',
     signature: ['TANGENT STEP', 'REFLECTION COUNTER', 'ARC LAUNCHER', 'TRANSFORMATION'],
@@ -59,8 +60,15 @@
         startup: 10, active: 2, recovery: 12, damage: 6,
         block: 2, hit: { adv: 8 }, ch: { adv: 11 },
         hitbox: { x: 22, w: 28, y: 70, h: 14 }, push: 6, juggle: 3.2,
-        cancels: [{ btn: 'k', into: 'jabK', from: 10, to: 22, onContact: true }],
+        cancels: [{ btn: 'p', into: 'jab2', from: 10, to: 22 }, { btn: 'k', into: 'jabK', from: 10, to: 22, onContact: true }],
         anim: [[1, 'idle'], [7, 'jab_c'], [10, 'jab_x'], [13, 'jab_x'], [23, 'idle']]
+      },
+      jab2: {
+        name: 'Jab 2', label: 'INSCRIBED ANGLE', cmd: 'P,P', level: 'high', strength: 'light',
+        startup: 9, active: 2, recovery: 16, damage: 8,
+        block: -3, hit: { adv: 6 }, ch: { adv: 9 },
+        hitbox: { x: 24, w: 28, y: 68, h: 14 }, push: 8, juggle: 3.4,
+        anim: [[1, 'jab_x'], [6, 'cross_c'], [9, 'cross_x'], [12, 'cross_x'], [26, 'idle']]
       },
       jabK: {
         name: 'Jab Kick', label: 'COMPLEMENTARY KICK', cmd: 'P,K', level: 'mid', strength: 'medium',
@@ -145,9 +153,9 @@
 
     combos: [
       { name: 'RIGHT TRIANGLE', difficulty: 'easy', notation: 'P, K', plan: { 0: 'P', 11: 'K' }, hits: ['jab', 'jabK'] },
-      { name: 'ARC JUGGLE', difficulty: 'medium', notation: 'D+H, P, K', plan: { 0: 'D+H', 39: 'P', 53: 'K' }, hits: ['launcher', 'jab', 'jabK'] },
+      { name: 'ARC JUGGLE', difficulty: 'medium', notation: 'D+H, P, P, H', plan: { 0: 'D+H', 40: 'P', 52: 'P', 59: 'H' }, hits: ['launcher', 'jab', 'jab2', 'jabH'] },
       { name: 'VERTEX SPIKE', difficulty: 'hard', notation: 'D+H, UP, AIR P, AIR K, AIR H, K',
-        plan: { 0: 'D+H', 17: 'UP', 32: 'P', 40: 'K', 50: 'H', 79: 'K' }, hits: ['launcher', 'airP', 'airK', 'airH', 'mid'] }
+        plan: { 0: 'D+H', 17: 'UP', 31: 'P', 36: 'K', 43: 'H', 77: 'K' }, hits: ['launcher', 'airP', 'airK', 'airH', 'mid'] }
     ],
 
     intro: [[1, 'idle'], [14, 'stand'], [30, 'bow'], [48, 'bow'], [62, 'stand'], [84, 'idle']],

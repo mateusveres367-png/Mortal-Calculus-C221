@@ -41,11 +41,12 @@ What's in the game so far:
   - best of three rounds with ROUND 1 / READY / FIGHT, a round timer (time out goes to whoever has more health left), round markers, K.O., TIME, PERFECT and FINAL ROUND, and a victory screen with the score
   - CPU opponents at three levels (Options: Easy, Normal, Hard): they react with a delay, guard and read lows, punish whiffs and blocked moves, run real combo routes, tech, break throws and pick wake-up options; harder levels do each of these more often and faster
   - Options also set the round time (30, 60, 99 or none) and sound, and are remembered in your browser
+- **Easier combos:** a 10-frame input buffer, wider windows between string hits, gentler early juggle gravity, and a universal P, P, H string ender so launcher > P > P > H works for every fighter; **Easy Combos** (Options, off by default) lets you mash P to keep a string going; combo trials show a timing bar. Details in [`COMBOS.md`](COMBOS.md).
 - **Combo feel pass:**
   - hit feel: hitstop scales with strength (jabs tiny, heavies longer, launchers and combo finishers longest); each hit in a combo sounds a little higher than the last and throws bigger sparks; counter hits get a bright flash, a big COUNTER! and an extra-heavy sound
   - self-check: tests play every route against every fighter, mash buttons at random to make sure nothing is infinite or too easy, and check damage rises with difficulty; see [`COMBOS.md`](COMBOS.md)
   - combo trials (training mode, key 7 or the menu): every fighter's routes from easy to hard; the panel shows each input and its move, checks them off as they land, resets on a drop or wrong move, and loads the next trial when you finish one (8/9 switch trials, R restarts)
-  - input feel: an 8-frame input buffer; a buffered press keeps the direction you held when you pressed it (an early D+H still launches); every route forgives presses 3 frames early or late; string cancels leave a quick afterimage and a whip sound, and the frame data panel shows each move's chain buttons and window; every fighter has an easy, a medium and a hard combo route (more damage as they get harder)
+  - input feel: an input buffer (now 10 frames); a buffered press keeps the direction you held when you pressed it (an early D+H still launches); every route forgives presses 3 frames early or late; string cancels leave a quick afterimage and a whip sound, and the frame data panel shows each move's chain buttons and window; every fighter has an easy, a medium and a hard combo route (more damage as they get harder)
   - combo counter: a big pixel hit count with total damage that pops and shakes on every hit, ranked NICE (5+), GREAT (8+), INCREDIBLE (12+) and PROOF COMPLETE (15+)
   - camera and screen: a quick zoom-in on launchers and combo finishers (the HUD stays put on its own camera); screen shake scales with damage; slow motion on the final hit of a big combo and on round-winning hits; wall splats stick for a moment with a big crack in the wall, and you can keep hitting
   - juggle physics: launchers throw the opponent up on a fast, snappy arc; air hits pop them by the same small amount every time; juggle gravity grows with every hit so combos end on their own; bounds slam them into the floor and they bounce back up (an air bound drives you down with them so you can follow up)
@@ -61,7 +62,7 @@ On the title screen, press `Enter` (or click) for the menu, then up/down and `En
 - **Arcade:** pick your fighter (arrows or WASD, `Enter` or `J`), then fight the CPU ladder.
 - **Versus:** both players pick at once: player 1 with `WASD` and `J` (`K` to undo), player 2 with the arrows and `Numpad 1` or `,` (`Numpad 2` or `.` to undo). Then pick a stage.
 - **Training:** pick your fighter, then the opponent, then a stage.
-- **Options:** CPU difficulty, round time and sound (left/right to change).
+- **Options:** CPU difficulty, round time, sound and Easy Combos (left/right to change).
 
 `Esc` goes back a screen. In a fight, `Esc` pauses (arcade and versus) or opens the training menu. After a match: `Enter` for a rematch (or the next arcade fight), `Esc` for character select.
 

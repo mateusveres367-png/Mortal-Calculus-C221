@@ -233,6 +233,7 @@
     var self = this;
     var items = [{ label: 'RESUME', value: function () { return ''; }, change: function () { self.menu.setOpen(false); } }];
     if (this.mode === 'versus') items.push({ label: 'RESTART MATCH', value: function () { return ''; }, change: function () { self.menu.setOpen(false); self.rematch(); } });
+    items.push({ label: 'EASY COMBOS', value: function () { return FG.settings.easyCombos ? 'ON' : 'OFF'; }, change: function () { FG.settings.easyCombos = !FG.settings.easyCombos; FG.saveSettings(); } });
     items.push({ label: 'SOUND', value: function () { return FG.Sfx.muted ? 'OFF' : 'ON'; }, change: function () { FG.Sfx.muted = !FG.Sfx.muted; FG.settings.sound = !FG.Sfx.muted; FG.saveSettings(); } });
     items.push({ label: 'CHARACTER SELECT', value: function () { return ''; }, change: function () { self.toSelect(); } });
     items.push({ label: 'QUIT TO TITLE', value: function () { return ''; }, change: function () { self.toTitle(); } });
@@ -337,6 +338,7 @@
       dummyItem('recovery', 'DUMMY KNOCKDOWN'),
       dummyItem('breaks', 'DUMMY THROW BREAKS'),
       { label: 'HEALTH', value: function () { return t.refill ? 'REFILL' : 'NORMAL'; }, change: function () { t.refill = !t.refill; } },
+      { label: 'EASY COMBOS', value: function () { return FG.settings.easyCombos ? 'ON' : 'OFF'; }, change: function () { FG.settings.easyCombos = !FG.settings.easyCombos; FG.saveSettings(); } },
       toggle('showData', 'FRAME DATA'),
       toggle('showInputs', 'INPUT DISPLAY'),
       toggle('showBoxes', 'HITBOXES'),
@@ -452,6 +454,7 @@
   // Raw input for player i this tick: keyboard, the training dummy, or the CPU.
   FightScene.prototype.inputFor = function (i) {
     var f = this.match.fighters, m = this.match;
+    f[i].easy = !this.ai[i] && FG.settings.easyCombos && (i === 0 || this.mode === 'versus' || this.training.p2Human);
     if (this.ai[i]) return this.ai[i].input(f[i], f[1 - i], m);
     if (i === 0) return this.readP1();
     if (this.mode === 'versus' || (this.mode === 'training' && this.training.p2Human)) { f[1].holdGuard = false; return this.readP2(); }

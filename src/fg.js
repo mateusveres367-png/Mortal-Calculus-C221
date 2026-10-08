@@ -26,17 +26,22 @@ FG.C = {
   // Juggles: launchers throw the opponent up fast on a snappy arc (launch speed
   // is scaled by LAUNCH_SNAP), and juggle gravity grows with every hit in the
   // combo, up to JUGGLE_GRAVITY_MAX times, so juggles end on their own.
-  JUGGLE_GRAVITY: 0.42,
-  JUGGLE_GRAVITY_SCALE: 0.07,  // extra juggle gravity per combo hit after the first
-  JUGGLE_GRAVITY_MAX: 2.0,
-  LAUNCH_SNAP: 1.2,
+  // Gravity starts gentle (time for follow-ups) and climbs faster later on.
+  JUGGLE_GRAVITY: 0.36,
+  JUGGLE_GRAVITY_SCALE: 0.1,   // extra juggle gravity per combo hit after the first
+  JUGGLE_GRAVITY_MAX: 2.2,
+  LAUNCH_SNAP: 1.12,
   // Air hits pop a juggled opponent up a little, by the same amount for every
   // move of a strength (so juggles are predictable), shrinking with each juggle hit.
   JUGGLE_POP: { light: 3.8, medium: 4.3, heavy: 4.8, launch: 5.6 },
   JUGGLE_POP_DECAY: 0.1,
 
   // Input
-  BUFFER_FRAMES: 8,
+  BUFFER_FRAMES: 10,
+  // Easier combos: string follow-ups (cancels) in a combo leave the opponent in hitstun
+  // a little longer, and string cancel windows stay open a little later, so chains are forgiving.
+  COMBO_STUN_BONUS: 4,
+  CHAIN_LATE: 4,
   DASH_TAP_WINDOW: 12,
 
   // Sidestep: depth offset (z) and the gap beyond which linear attacks whiff.
@@ -106,7 +111,7 @@ FG.C = {
 
 // Player settings (title screen OPTIONS), remembered in this browser when possible.
 (function () {
-  FG.settings = { difficulty: 'normal', time: 60, sound: true };
+  FG.settings = { difficulty: 'normal', time: 60, sound: true, easyCombos: false };
   try {
     var saved = JSON.parse(window.localStorage.getItem('mc221.settings') || 'null');
     if (saved) for (var k in FG.settings) if (saved[k] !== undefined) FG.settings[k] = saved[k];

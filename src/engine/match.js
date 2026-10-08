@@ -56,6 +56,15 @@
     // A fighter who is free this frame is out of any combo: a hit landing now
     // (they could have guarded) starts a new one.
     for (i = 0; i < 2; i++) if (f[i].actionable) this.combo[i] = { hits: 0, damage: 0 };
+    // The string's extra hitstun only lasts while the attacker stays in the string:
+    // once they're free, it's taken back (frame advantage after a string is unchanged).
+    for (i = 0; i < 2; i++) {
+      var dv = f[1 - i];
+      if (f[i].actionable && dv.stringBonus) {
+        if (dv.state === 'hitstun') dv.stun = Math.max(1, dv.stun - dv.stringBonus);
+        dv.stringBonus = 0;
+      }
+    }
     for (i = 0; i < 2; i++) {
       if (f[i].cancelled) { this.events.push({ type: 'cancel', fighter: i, into: f[i].cancelled, x: f[i].x }); f[i].cancelled = null; }
       if (f[i].startedMove) { this.events.push({ type: 'whiff', fighter: i, move: f[i].startedMove }); f[i].startedMove = null; }
@@ -235,6 +244,29 @@
     // A true combo: the combo counter climbs 1, 2, 3... (the opponent never got free).
     var trueCombo = counts.every(function (n, k) { return n === k + 1; });
     return { hits: hits, damage: damage, counts: counts, trueCombo: trueCombo, match: m };
+  };
+
+  // Timing windows for a route: for each timed input after the first, the range of
+  // frames (moving only that input) on which the whole route still works against
+  // `opp`. Used by the combo trials' timing bar. Returns [{ frame, token, lo, hi }].
+  FG.routeWindows = function (atk, opp, combo, reach) {
+    if (!combo.plan) return [];
+    reach = reach || 18;
+    var keys = Object.keys(combo.plan).map(Number).sort(function (a, b) { return a - b; });
+    var want = combo.hits.join();
+    return keys.map(function (k, idx) {
+      if (idx === 0) return { frame: k, token: combo.plan[k], lo: k, hi: k };
+      var lo = k, hi = k;
+      function works(f) {
+        if (f <= keys[idx - 1] || (idx + 1 < keys.length && f >= keys[idx + 1])) return false;
+        var plan = {};
+        keys.forEach(function (kk) { plan[kk === k ? f : kk] = combo.plan[kk]; });
+        return FG.runCombo(atk, opp, Object.assign({}, combo, { plan: plan })).hits.join() === want;
+      }
+      while (lo - 1 >= k - reach && works(lo - 1)) lo--;
+      while (hi + 1 <= k + reach && works(hi + 1)) hi++;
+      return { frame: k, token: combo.plan[k], lo: lo, hi: hi };
+    });
   };
 
   FG.Match = Match;

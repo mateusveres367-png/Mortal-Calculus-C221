@@ -34,6 +34,7 @@
     id: 'dalsass', order: 3,
     homeStage: 'hallway',
     glyphs: ['A*A+B*B=C*C', 'SAS', 'ASA', 'GIVEN:'], // math that flies off their big hits
+    stringH: 'THEREFORE', // P, P, H: the universal string ender (see FG.defineFighter)
     name: 'DALSASS', archetype: 'TRICKY', theme: 'GEOMETRY PROOFS',
     stanceName: 'SIMILAR TRIANGLES', // the alternate stance, shown over his head
     bio: "HAPPY, SASSY, EVERYONE'S FAVORITE. FAKES YOU OUT WITH A GRIN.",
@@ -67,8 +68,8 @@
         startup: 10, active: 2, recovery: 17, damage: 10,
         block: -4, hit: { adv: 5 }, ch: { adv: 9 },
         hitbox: { x: 26, w: 26, y: 68, h: 14 }, push: 9, juggle: 3.4,
-        // Into the feint straight from the string: P, P, F+H.
-        cancels: [{ btn: 'h', into: 'fH', from: 10, to: 24 }],
+        // Into the feint straight from the string: P, P, K (P, P, H is the string heavy).
+        cancels: [{ btn: 'k', into: 'fH', from: 10, to: 24 }],
         anim: [[1, 'jab_x'], [6, 'cross_c'], [10, 'cross_x'], [13, 'cross_x'], [28, 'idle']]
       },
       mid: {
@@ -167,7 +168,7 @@
 
     combos: [
       { name: 'GIVEN, PROVE', difficulty: 'easy', notation: 'P, P', plan: { 0: 'P', 15: 'P' }, hits: ['jab', 'jab2'] },
-      { name: 'PYTHAGOREAN JUGGLE', difficulty: 'medium', notation: 'D+H, P, P', plan: { 0: 'D+H', 38: 'P', 56: 'P' }, hits: ['launcher', 'jab', 'jab2'] },
+      { name: 'PYTHAGOREAN JUGGLE', difficulty: 'medium', notation: 'D+H, P, P, H', plan: { 0: 'D+H', 39: 'P', 53: 'P', 61: 'H' }, hits: ['launcher', 'jab', 'jab2', 'jabH'] },
       { name: 'CENTROID SPIKE', difficulty: 'hard', notation: 'D+H, UP, AIR K, AIR H, K',
         plan: { 0: 'D+H', 17: 'UP', 31: 'K', 41: 'H', 70: 'K' }, hits: ['launcher', 'airK', 'airH', 'mid'] },
       { name: 'SUPPLEMENTARY STOMP', difficulty: 'medium', notation: 'D/F+K, D+K ON THE GROUND', plan: { 0: 'D/F+K', 49: 'D+K' }, hits: ['dfK', 'low'] }

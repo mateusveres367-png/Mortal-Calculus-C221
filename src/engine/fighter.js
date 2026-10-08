@@ -42,6 +42,8 @@
     this.guard = 0;        // guard pressure meter
     this.guardDelay = 0;
     this.holdGuard = false; // set by the training dummy
+    this.easy = false;      // Easy Combos (player setting): mashing P continues strings
+    this.stringBonus = 0;   // extra hitstun from a string follow-up (taken back if the string stops)
     this.stance = 'A';      // 'B' = alternate stance (e.g. DALSASS's Similar Triangles)
     this.fromFeint = false; // current move was cancelled out of a feint
     this.blockEndFrame = -999; // last frame this fighter came out of blockstun
@@ -120,6 +122,7 @@
     var m = this.def.moves[id];
     var prev = this.state === 'attack' ? this.move : null;
     this.fromFeint = !!(prev && prev.feint);
+    this.fromCancel = false;
     // How many times in a row this move has cancelled into itself (Recursive Rush).
     this.repeatCount = prev && prev.id === id ? (this.repeatCount || 0) + 1 : 0;
     this.chargeFrames = 0;
@@ -157,7 +160,7 @@
         this.moveFrame++;
         if (!m.air) this.vx = (m.step && this.moveFrame >= m.step[0] && this.moveFrame <= m.step[1]) ? m.step[2] * this.facing : 0;
         if (this.tryThrowConversion(buf, frame)) return;
-        if (this.tryCancel(buf, frame)) return;
+        if (this.tryCancel(buf, frame, opp)) return;
         if (this.moveFrame <= m.total) return;
         if (!this.contact && m.box) this.whiffed = true;
         if (m.air) { this.setState('air'); return; }
@@ -360,15 +363,37 @@
     return true;
   };
 
-  Fighter.prototype.tryCancel = function (buf, frame) {
-    var cancels = this.move.cancels;
+  // Is cancel c open on this frame?
+  Fighter.prototype.cancelOpen = function (c) {
+    if (this.moveFrame < c.from || this.moveFrame > c.to) return false;
+    // A hit gets its chance to land: until the move connects, it can't be
+    // cancelled during its active frames.
+    if (!this.contact && c.btn !== 'up' && this.isActiveFrame()) return false;
+    if (c.onContact && !this.contact) return false;
+    if (c.onHit && this.contact !== 'hit') return false;
+    if (c.into === this.move.id && (this.repeatCount || 0) >= (c.max || 0)) return false;
+    return true;
+  };
+
+  Fighter.prototype.tryCancel = function (buf, frame, opp) {
+    var cancels = this.move.cancels, i, c;
     if (!cancels) return false;
-    for (var i = 0; i < cancels.length; i++) {
-      var c = cancels[i];
-      if (this.moveFrame < c.from || this.moveFrame > c.to) continue;
-      if (c.onContact && !this.contact) continue;
-      if (c.onHit && this.contact !== 'hit') continue;
-      if (c.into === this.move.id && (this.repeatCount || 0) >= (c.max || 0)) continue;
+    // Easy Combos (a player setting): mashing P continues any string with the best
+    // follow-up: the string heavy against an airborne opponent, otherwise the first
+    // listed hit (never a feint, a jump or a throw).
+    if (this.easy && buf.wasPressed('p', frame)) {
+      var moves = this.def.moves;
+      var hits = cancels.filter(function (x) { return x.btn !== 'up' && x.btn !== 'throw' && moves[x.into] && moves[x.into].box; });
+      if (opp && opp.isAirborne()) hits.sort(function (x, y) { return (y.into === 'jabH') - (x.into === 'jabH'); });
+      for (i = 0; i < hits.length; i++) {
+        if (!this.cancelOpen(hits[i])) continue;
+        buf.consume('p');
+        return this.doCancel(hits[i]);
+      }
+    }
+    for (i = 0; i < cancels.length; i++) {
+      c = cancels[i];
+      if (!this.cancelOpen(c)) continue;
       if (c.btn === 'throw') {
         if (!throwPressed(buf, frame)) continue;
         buf.consume('p'); buf.consume('k');
@@ -376,21 +401,26 @@
         if (!buf.wasPressed(c.btn, frame)) continue;
         buf.consume(c.btn);
       }
-      this.cancelled = c.into; // read (and cleared) by the match for the cancel event
-      if (c.into === 'jump') {
-        // Jump cancel: chase the launched opponent into the air.
-        this.setState('air');
-        this.vy = C.SUPER_JUMP_VY;
-        this.vx = C.SUPER_JUMP_VX * this.facing;
-        this.airActions = 0;
-        this.superJump = true;
-      } else {
-        if (this.move.air) this.airActions++;
-        this.startMove(c.into);
-      }
-      return true;
+      return this.doCancel(c);
     }
     return false;
+  };
+
+  Fighter.prototype.doCancel = function (c) {
+    this.cancelled = c.into; // read (and cleared) by the match for the cancel event
+    if (c.into === 'jump') {
+      // Jump cancel: chase the launched opponent into the air.
+      this.setState('air');
+      this.vy = C.SUPER_JUMP_VY;
+      this.vx = C.SUPER_JUMP_VX * this.facing;
+      this.airActions = 0;
+      this.superJump = true;
+    } else {
+      if (this.move.air) this.airActions++;
+      this.startMove(c.into);
+      this.fromCancel = true; // a string follow-up (gets the combo hitstun bonus)
+    }
+    return true;
   };
 
   Fighter.prototype.neutral = function (buf, frame) {

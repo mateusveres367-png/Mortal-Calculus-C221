@@ -12,6 +12,7 @@ Calm and friendly, but every hit is heavy. Slow, patient, devastating.
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | P | Power Jab | high | 11 | 2 | 14 | 0 | +7 | +10 | 10 |  |
 | P,P | Squared | high | 12 | 3 | 19 | -5 | +4 | +10 | 15 |  |
+| P,P,H | Exponent Rule | mid | 12 | 3 | 20 | -9 | knockdown | knockdown | 13 |  |
 | F+P | Right Angle Elbow | mid | 15 | 3 | 18 | -5 | +5 | launch | 18 |  |
 | K | Exponent Kick | mid | 16 | 3 | 20 | -7 | +5 | +10 | 19 |  |
 | D+K | Negative Exponent | low | 18 | 3 | 22 | -13 | 0 | +6 | 13 | hits downed opponents, ducks highs |
@@ -32,8 +33,8 @@ Calm and friendly, but every hit is heavy. Slow, patient, devastating.
 **Combo routes** (tested in `tests/sim.test.js`):
 
 - **Squared:** P, P (frames: P @0, P @16)
-- **Logarithmic Juggle:** D+H, P, P (frames: D+H @0, P @42, P @59)
-- **Tower Of Powers:** D+H, up, air K, air H, D+K on the ground (frames: D+H @0, UP @20, K @31, H @40, D+K @94)
+- **Logarithmic Juggle:** D+H, P, P, H (frames: D+H @0, P @43, P @57, H @67)
+- **Tower Of Powers:** D+H, up, air K, air H, D+K on the ground (frames: D+H @0, UP @19, K @27, H @34, D+K @84)
 - **Exponential Growth:** at the wall: H, D+H (each input as soon as you can act)
 
 ## BRINKHUS — Balanced — Algebra 1
@@ -46,6 +47,7 @@ Nice, easygoing, a good sport. Best for new players.
 | P,P | Rise Over Run | high | 9 | 2 | 16 | -3 | +6 | +9 | 9 |  |
 | P,K | Distribute | mid | 11 | 3 | 18 | -7 | +4 | +8 | 11 |  |
 | P,K,K | Distributive Property | mid | 13 | 3 | 22 | -13 | knockdown | knockdown | 16 | wall splats |
+| P,P,H | Combine Like Terms | mid | 12 | 3 | 20 | -9 | knockdown | knockdown | 13 |  |
 | K | Variable Kick | mid | 14 | 3 | 18 | -6 | +4 | +9 | 14 |  |
 | D+K | Inequality | low | 16 | 3 | 21 | -12 | -1 | +5 | 10 | tracks, hits downed opponents, ducks highs |
 | D/B+K | Zero Product Sweep | low | 20 | 3 | 26 | -18 | knockdown | knockdown | 16 | ducks highs |
@@ -64,7 +66,7 @@ Nice, easygoing, a good sport. Best for new players.
 **Combo routes** (tested in `tests/sim.test.js`):
 
 - **Distributive Property:** P, K, K (frames: P @0, K @12, K @24)
-- **Solve For X Juggle:** D+H, P, P, D+K on the ground (frames: D+H @0, P @38, P @55, D+K @95)
+- **Solve For X Juggle:** D+H, P, P, H (frames: D+H @0, P @38, P @56, H @67)
 - **Point-Slope Spike:** D+H, up, air P, air K, air H, K (frames: D+H @0, UP @17, P @32, K @41, H @51, K @79)
 - **Isolate The Variable:** at the wall: H, P, P, D+H (each input as soon as you can act)
 
@@ -75,7 +77,9 @@ Very kind, precise and graceful. Bows before fights.
 | Input | Move | Level | i | Active | Recovery | Block | Hit | Counter hit | Damage | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | P | Right Angle | high | 10 | 2 | 12 | +2 | +8 | +11 | 6 |  |
+| P,P | Inscribed Angle | high | 9 | 2 | 16 | -3 | +6 | +9 | 8 |  |
 | P,K | Complementary Kick | mid | 12 | 3 | 20 | -9 | +3 | +8 | 12 |  |
+| P,P,H | Central Angle | mid | 12 | 3 | 20 | -9 | knockdown | knockdown | 13 |  |
 | SS, P | Tangent Step | mid | 12 | 3 | 16 | -3 | +6 | knockdown | 15 | tracks, stays off the line until it hits |
 | SS, K | Secant Sweep | low | 15 | 3 | 22 | -13 | knockdown | knockdown | 12 | tracks, ducks highs, stays off the line until it hits |
 | K | Isosceles Kick | mid | 13 | 3 | 19 | -6 | +4 | +9 | 13 |  |
@@ -98,8 +102,8 @@ Very kind, precise and graceful. Bows before fights.
 **Combo routes** (tested in `tests/sim.test.js`):
 
 - **Right Triangle:** P, K (frames: P @0, K @11)
-- **Arc Juggle:** D+H, P, K (frames: D+H @0, P @39, K @53)
-- **Vertex Spike:** D+H, up, air P, air K, air H, K (frames: D+H @0, UP @17, P @32, K @40, H @50, K @79)
+- **Arc Juggle:** D+H, P, P, H (frames: D+H @0, P @40, P @52, H @59)
+- **Vertex Spike:** D+H, up, air P, air K, air H, K (frames: D+H @0, UP @17, P @31, K @36, H @43, K @77)
 
 ## DALSASS — Tricky — Geometry Proofs
 
@@ -109,6 +113,7 @@ Happy, sassy, everyone's favorite. Fakes you out with a grin.
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | P | Given | high | 10 | 2 | 13 | +1 | +8 | +10 | 7 |  |
 | P,P | Statement | high | 10 | 2 | 17 | -4 | +5 | +9 | 10 |  |
+| P,P,H | Therefore | mid | 12 | 3 | 20 | -9 | knockdown | knockdown | 13 |  |
 | B+P | Similar Triangles | — | 13 total |  |  |  |  |  |  | switches stance |
 | STANCE P | Similar Palm | mid | 12 | 2 | 18 | -4 | +6 | +10 | 12 |  |
 | STANCE K | Scale Factor | low | 13 | 3 | 20 | -12 | +1 | +6 | 11 | hits downed opponents, ducks highs |
@@ -133,7 +138,7 @@ Happy, sassy, everyone's favorite. Fakes you out with a grin.
 **Combo routes** (tested in `tests/sim.test.js`):
 
 - **Given, Prove:** P, P (frames: P @0, P @15)
-- **Pythagorean Juggle:** D+H, P, P (frames: D+H @0, P @38, P @56)
+- **Pythagorean Juggle:** D+H, P, P, H (frames: D+H @0, P @39, P @53, H @61)
 - **Centroid Spike:** D+H, up, air K, air H, K (frames: D+H @0, UP @17, K @31, H @41, K @70)
 - **Supplementary Stomp:** D/F+K, D+K on the ground (frames: D/F+K @0, D+K @49)
 
@@ -146,6 +151,7 @@ Sarcastic and funny. Taunts mid-combo. Relentless pressure.
 | P | First Term | high | 10 | 2 | 12 | +2 | +9 | +11 | 6 |  |
 | P,P | Second Term | high | 9 | 2 | 14 | -1 | +7 | +10 | 7 |  |
 | P,P,P | Third Term | mid | 8 | 2 | 16 | -4 | +5 | +9 | 8 |  |
+| P,P,H | Next Term | mid | 12 | 3 | 20 | -9 | knockdown | knockdown | 13 |  |
 | P,P,P,P | Nth Term | mid | 7 | 3 | 22 | -12 | knockdown | knockdown | 14 |  |
 | P,P,P,K | Divergent Low | low | 7 | 3 | 22 | -14 | +1 | knockdown | 11 | ducks highs |
 | F+P | Recursive Rush | mid | 13 | 3 | 15 | +1 | +5 | +9 | 10 |  |
@@ -168,7 +174,7 @@ Sarcastic and funny. Taunts mid-combo. Relentless pressure.
 
 - **Arithmetic Sequence:** P, P, P, P (frames: P @0, P @11, P @22, P @32)
 - **Recursive Rush:** F+P, P, P (frames: F+P @0, P @13, P @26)
-- **Fibonacci Juggle:** D+H, P, P, P, D+K on the ground (frames: D+H @0, P @37, P @50, P @57, D+K @99)
+- **Fibonacci Juggle:** D+H, P, P, H (frames: D+H @0, P @38, P @50, H @59)
 - **Fibonacci Spike:** D+H, up, air P, air K, air H, K (frames: D+H @0, UP @16, P @31, K @40, H @50, K @79)
 
 ## LOPEZ — Defensive — Calculus
@@ -179,6 +185,7 @@ Very suspicious. Always watching. Waits for you to commit, then punishes.
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | P | Differential Jab | high | 10 | 2 | 14 | 0 | +7 | +10 | 8 |  |
 | P,P | Second Derivative | high | 10 | 2 | 16 | -3 | +6 | +9 | 10 |  |
+| P,P,H | Fundamental Theorem | mid | 12 | 3 | 20 | -9 | knockdown | knockdown | 13 |  |
 | K | Chain Rule Kick | mid | 15 | 3 | 18 | -5 | +4 | +9 | 15 |  |
 | D+K | Lower Sum | low | 16 | 3 | 20 | -12 | 0 | +6 | 11 | hits downed opponents, ducks highs |
 | D/B+K | Riemann Sweep | low | 21 | 3 | 26 | -18 | knockdown | knockdown | 16 | ducks highs |
@@ -200,8 +207,8 @@ Very suspicious. Always watching. Waits for you to commit, then punishes.
 **Combo routes** (tested in `tests/sim.test.js`):
 
 - **First Derivative:** P, P (frames: P @0, P @15)
-- **Limit Break Juggle:** D+H, P, P, D+K on the ground (frames: D+H @0, P @39, P @56, D+K @97)
-- **Inflection Point:** D+H, up, air P, air K, air H, K (frames: D+H @0, UP @18, P @28, K @41, H @52, K @81)
+- **Limit Break Juggle:** D+H, P, P, H (frames: D+H @0, P @40, P @58, H @69)
+- **Inflection Point:** D+H, up, air P, air K, air H, K (frames: D+H @0, UP @17, P @32, K @38, H @47, K @80)
 - **Mean Value Punish:** BLOCK THEIR JAB, P, D+K on the ground (frames: P @21, D+K @63; hold B @0-11)
 
 ## MIYASHIRO — Spacing — Algebra 2
@@ -212,6 +219,7 @@ Very smart. Reads opponents, keeps perfect distance, punishes every mistake.
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | P | Function Jab | high | 10 | 3 | 13 | 0 | +7 | +10 | 7 |  |
 | P,P | Inverse | high | 10 | 2 | 16 | -3 | +6 | +9 | 9 |  |
+| P,P,H | Solution Set | mid | 12 | 3 | 20 | -9 | knockdown | knockdown | 13 |  |
 | F,F+P | Range Check | mid | 12 | 3 | 18 | -4 | +6 | launch | 16 | wall splats |
 | K | Root Kick | mid | 14 | 3 | 18 | -5 | +4 | +9 | 13 |  |
 | F+K | Domain Control | mid | 16 | 3 | 18 | -6 | +3 | +8 | 12 |  |
@@ -233,7 +241,7 @@ Very smart. Reads opponents, keeps perfect distance, punishes every mistake.
 **Combo routes** (tested in `tests/sim.test.js`):
 
 - **Factor Pair:** P, P (frames: P @0, P @15)
-- **Quadratic Juggle:** D+H, P, P, D+K on the ground (frames: D+H @0, P @38, P @56, D+K @97)
+- **Quadratic Juggle:** D+H, P, P, H (frames: D+H @0, P @39, P @53, H @62)
 - **Focus Spike:** D+H, up, air P, air K, air H, K (frames: D+H @0, UP @17, P @32, K @41, H @51, K @79)
 - **Calculated Rush:** THEY WHIFF A JAB, F, F+P (CALCULATED BONUS) (frames: F @18, F @20, P @27)
 - **Domain And Range:** at the wall: H, F+K, D+H (each input as soon as you can act)
@@ -246,6 +254,7 @@ Fast, explosive grappler who closes distance quickly. Confident and focused.
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | P | Row Jab | high | 10 | 2 | 13 | +1 | +8 | +10 | 7 |  |
 | P,P | Column Elbow | high | 10 | 3 | 16 | -2 | +6 | +10 | 11 |  |
+| P,P,H | Row Reduction | mid | 12 | 3 | 20 | -9 | knockdown | knockdown | 13 |  |
 | F,F+P | Augmented Charge | mid | 13 | 4 | 20 | -9 | knockdown | knockdown | 17 |  |
 | K | Pivot Knee | mid | 13 | 3 | 17 | -4 | +5 | +9 | 13 |  |
 | D+K | Lower Triangular | low | 15 | 3 | 20 | -11 | 0 | +6 | 10 | hits downed opponents, ducks highs |
@@ -266,6 +275,6 @@ Fast, explosive grappler who closes distance quickly. Confident and focused.
 **Combo routes** (tested in `tests/sim.test.js`):
 
 - **Row And Column:** P, P (frames: P @0, P @15)
-- **Transpose Juggle:** D+H, P, D+K on the ground (frames: D+H @0, P @39, D+K @82)
-- **Rank Spike:** D+H, up, air P, air K, air H, K (frames: D+H @0, UP @17, P @32, K @40, H @50, K @79)
+- **Transpose Juggle:** D+H, P, P, H (frames: D+H @0, P @40, P @57, H @70)
+- **Rank Spike:** D+H, up, air P, air K, air H, K (frames: D+H @0, UP @16, P @31, K @36, H @44, K @77)
 - **Identity Stomp:** F+P+K, D+K on the ground (frames: F+P+K @0, D+K @66)

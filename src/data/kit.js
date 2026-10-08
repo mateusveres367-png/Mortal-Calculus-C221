@@ -42,6 +42,7 @@
     def.poses = def.poses || {};
     def.idleAnim = Object.assign({ breath: 1.2, bob: 0, sway: 0, rate: 0.09 }, def.idleAnim);
     def.combos = def.combos || [];
+    if (def.stringH) addStringHeavy(def);
     for (var key in def.moves) prepareMove(def, key, def.moves[key]);
     FG.ROSTER.push(def);
     FG.ROSTER.sort(function (a, b) { return a.order - b.order; });
@@ -53,9 +54,36 @@
     return null;
   };
 
+  // Every fighter's universal string ender: P, P, H. A quick version of their heavy
+  // that the second hit of their P, P string cancels into, so launcher > P > P > H
+  // always has an easy, reliable finish. def.stringH is its name.
+  function addStringHeavy(def) {
+    var mv = def.moves, hv = mv.heavy, a = hv.anim, la = mv.launcher.anim;
+    var second = ((mv.jab.cancels || []).filter(function (c) { return c.btn === 'p'; })[0] || {}).into;
+    mv.jabH = {
+      name: 'String Heavy', label: def.stringH, cmd: 'P,P,H', level: 'mid', strength: 'heavy',
+      startup: 12, active: 3, recovery: 20, damage: 13,
+      block: -9, hit: { knockdown: true }, ch: { knockdown: true },
+      // A rising heavy (the windup of their heavy, the strike of their launcher) that
+      // reaches a juggled opponent high or low.
+      hitbox: { x: 10, w: 32, y: 34, h: 80 }, push: 18, carry: 1.2, shake: 0.006,
+      step: [4, 12, 1.2],
+      anim: [[1, a[0][1]], [7, a[1][1]], [12, la[2][1]], [14, la[2][1]], [24, la[la.length - 2][1]], [34, 'idle']]
+    };
+    if (second && mv[second]) {
+      var m2 = mv[second];
+      m2.cancels = (m2.cancels || []).filter(function (c) { return c.btn !== 'h'; });
+      m2.cancels.push({ btn: 'h', into: 'jabH', from: m2.startup, to: m2.startup + 14, onContact: true });
+    }
+  }
+
   function prepareMove(def, key, m) {
     m.id = key;
     m.total = m.startup + m.active - 1 + m.recovery;
+    // Easier chains: button cancels stay open a little later (never past the move).
+    (m.cancels || []).forEach(function (c) {
+      if (c.btn !== 'up' && !c._late) { c.to = Math.min(c.to + FG.C.CHAIN_LATE, m.startup + m.active - 1 + m.recovery); c._late = true; }
+    });
     if (m.hitbox) {
       var hb = m.hitbox;
       m.box = { x: hb.x * def.scale, w: hb.w * def.scale, y: hb.y * def.scale, h: hb.h * def.scale };

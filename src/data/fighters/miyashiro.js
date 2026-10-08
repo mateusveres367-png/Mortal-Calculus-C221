@@ -34,6 +34,7 @@
     id: 'miyashiro', order: 6,
     homeStage: 'lab',
     glyphs: ['B*B-4AC', 'F(X)', 'I*I=-1', 'VERTEX'], // math that flies off their big hits
+    stringH: 'SOLUTION SET', // P, P, H: the universal string ender (see FG.defineFighter)
     name: 'MIYASHIRO', archetype: 'SPACING', theme: 'ALGEBRA 2',
     bio: 'VERY SMART. READS OPPONENTS, KEEPS PERFECT DISTANCE, PUNISHES EVERY MISTAKE.',
     signature: ['DOMAIN CONTROL', 'RANGE CHECK', 'VERTEX KICK', 'QUADRATIC LAUNCHER', 'DISCRIMINANT', 'CALCULATED'],
@@ -142,8 +143,7 @@
 
     combos: [
       { name: 'FACTOR PAIR', difficulty: 'easy', notation: 'P, P', plan: { 0: 'P', 15: 'P' }, hits: ['jab', 'jab2'] },
-      { name: 'QUADRATIC JUGGLE', difficulty: 'medium', notation: 'D+H, P, P, D+K ON THE GROUND',
-        plan: { 0: 'D+H', 38: 'P', 56: 'P', 97: 'D+K' }, hits: ['launcher', 'jab', 'jab2', 'low'] },
+      { name: 'QUADRATIC JUGGLE', difficulty: 'medium', notation: 'D+H, P, P, H', plan: { 0: 'D+H', 39: 'P', 53: 'P', 62: 'H' }, hits: ['launcher', 'jab', 'jab2', 'jabH'] },
       { name: 'FOCUS SPIKE', difficulty: 'hard', notation: 'D+H, UP, AIR P, AIR K, AIR H, K',
         plan: { 0: 'D+H', 17: 'UP', 32: 'P', 41: 'K', 51: 'H', 79: 'K' }, hits: ['launcher', 'airP', 'airK', 'airH', 'mid'] },
       { name: 'CALCULATED RUSH', difficulty: 'medium', notation: 'THEY WHIFF A JAB, F, F+P (CALCULATED BONUS)',

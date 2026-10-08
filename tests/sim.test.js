@@ -625,9 +625,12 @@ function count(r, type, attacker) {
   hits = r.events.filter(function (e) { return e.type === 'hit'; });
   check('tangent step dodges and hits', hits.length === 1 && hits[0].attacker === 0 && hits[0].move.id === 'ssP', hits.map(function (e) { return e.attacker + e.move.id; }));
   // Other fighters can't attack that early out of a sidestep.
-  r = play(S, D, 40, { 0: { ssIn: true }, 4: { p: true } }, {}, 40);
-  var started = r.events.filter(function (e) { return e.type === 'whiff' && e.fighter === 0; }).length;
-  check('early sidestep attack is CHAI only', started === 0, types(r));
+  var firstAttack = null;
+  r = play(S, D, 40, function (i, m) {
+    if (firstAttack === null && m.fighters[0].state === 'attack') firstAttack = i;
+    return i === 0 ? { ssIn: true } : i === 4 ? { p: true } : {};
+  }, {}, 40);
+  check('early sidestep attack is CHAI only', firstAttack === null || firstAttack >= 14, firstAttack);
 })();
 
 // LEE: the Arithmetic Sequence speeds up, and Recursive Rush repeats at most three times.
@@ -882,7 +885,7 @@ check('all eight fighters', FG.ROSTER.length === 8, FG.ROSTER.length);
 // Input feel: an 8-frame buffer, directions read from when the button was pressed,
 // and routes that forgive slightly early or late presses.
 (function () {
-  check('buffer is 6-8 frames', FG.C.BUFFER_FRAMES >= 6 && FG.C.BUFFER_FRAMES <= 8, FG.C.BUFFER_FRAMES);
+  check('buffer is about 10 frames', FG.C.BUFFER_FRAMES >= 9 && FG.C.BUFFER_FRAMES <= 12, FG.C.BUFFER_FRAMES);
   // A kick pressed during a whiffed jab's recovery comes out on the first free frame.
   function afterJab(early) {
     var m = setup(S, D, 200), at = S.moves.jab.total - early, start = null;
@@ -1093,6 +1096,44 @@ defs.forEach(function (d) {
   var none = new FG.Rounds({ seconds: 0 });
   for (i = 0; i < 99 * 60; i++) none.tick(m2);
   check('no timer: never times out', none.result === null && none.timeLeft() === null);
+})();
+
+// Easier combos: launcher > P > P > H works for everyone, with room to spare.
+(function () {
+  defs.forEach(function (d) {
+    var c = d.combos.filter(function (x) { return x.notation === 'D+H, P, P, H'; })[0];
+    check(d.name + ' has launcher > P > P > H', !!c && c.hits[3] === 'jabH', c && c.hits);
+    if (!c) return;
+    var keys = Object.keys(c.plan).map(Number).sort(function (x, y) { return x - y; });
+    keys.slice(1).forEach(function (k) {
+      var n = 0;
+      for (var dt = -15; dt <= 15; dt++) {
+        var plan = {};
+        keys.forEach(function (kk) { plan[kk === k ? k + dt : kk] = c.plan[kk]; });
+        if (Object.keys(plan).length === keys.length && FG.runCombo(d, D, Object.assign({}, c, { plan: plan })).hits.join() === c.hits.join()) n++;
+      }
+      check(d.name + ' launcher > P > P > H: ' + c.plan[k] + ' has a wide window', n >= 12, n);
+    });
+  });
+  // Easy Combos: mashing P after a launcher plays the whole string.
+  defs.forEach(function (d) {
+    var m = setup(d, D, 40), hits = [];
+    m.fighters[0].easy = true;
+    for (var i = 0; i < 160; i++) {
+      var r = i === 0 ? LAUNCH : (i > 30 && i % 3 === 0 ? { p: true } : {});
+      m.step([raw(r), raw({})]);
+      m.events.forEach(function (e) { if (e.type === 'hit' && e.attacker === 0) hits.push(e.move.id); });
+    }
+    check(d.name + ' Easy Combos: mash P after a launcher', hits.length >= 4 && hits[hits.length - 1] === 'jabH', hits);
+  });
+})();
+
+// Trial timing bar: each route input has a window around its planned frame.
+(function () {
+  var c = S.combos.filter(function (x) { return x.notation === 'D+H, P, P, H'; })[0];
+  var w = FG.routeWindows(S, D, c);
+  check('route windows: one per input', w.length === Object.keys(c.plan).length, w.length);
+  check('route windows contain the planned frame and are wide', w.slice(1).every(function (x) { return x.lo <= x.frame && x.hi >= x.frame && x.hi - x.lo >= 10; }), w);
 })();
 
 console.log(passes + ' passed, ' + failures + ' failed');

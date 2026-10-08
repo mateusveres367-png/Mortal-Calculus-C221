@@ -37,6 +37,7 @@
     id: 'ramos', order: 7,
     homeStage: 'campus',
     glyphs: ['[A B]', 'DET=0', 'A*I=A', '[1 0]'], // math that flies off their big hits
+    stringH: 'ROW REDUCTION', // P, P, H: the universal string ender (see FG.defineFighter)
     name: 'RAMOS', archetype: 'GRAPPLER', theme: 'MATRICES',
     bio: 'FAST, EXPLOSIVE GRAPPLER WHO CLOSES DISTANCE QUICKLY. CONFIDENT AND FOCUSED.',
     signature: ['MATRIX LOCK', 'DETERMINANT SLAM', 'IDENTITY', 'TRANSPOSE TOSS'],
@@ -71,7 +72,7 @@
         name: 'Jab 2', label: 'COLUMN ELBOW', cmd: 'P,P', level: 'high', strength: 'medium',
         startup: 10, active: 3, recovery: 16, damage: 11,
         block: -2, hit: { adv: 6 }, ch: { adv: 10 },
-        hitbox: { x: 14, w: 26, y: 64, h: 18 }, push: 6, juggle: 3.4, shake: 0.002,
+        hitbox: { x: 14, w: 32, y: 64, h: 18 }, push: 6, juggle: 3.4, shake: 0.002,
         anim: [[1, 'jab_x'], [6, 'elbow_c'], [10, 'elbow_x'], [13, 'elbow_x'], [28, 'idle']]
       },
       // Out of his fast dash: a shoulder charge that knocks down.
@@ -118,7 +119,7 @@
         name: 'Launcher', label: 'TRANSPOSE TOSS', cmd: 'D+H', level: 'mid', strength: 'launch',
         startup: 15, active: 4, recovery: 23, damage: 17,
         block: -15, hit: { launch: 7.8 }, ch: { launch: 8.4 },
-        hitbox: { x: 8, w: 28, y: 26, h: 80 }, push: 6, juggle: 5.5, carry: 0.6, shake: 0.008,
+        hitbox: { x: 8, w: 28, y: 26, h: 80 }, push: 6, juggle: 5.5, carry: 0.35, shake: 0.008,
         step: [8, 15, 1.6],
         cancels: [{ btn: 'up', into: 'jump', from: 17, to: 28, onHit: true }],
         anim: [[1, 'crouch'], [9, 'toss_c'], [15, 'toss_x'], [19, 'toss_x'], [28, 'up_r'], [41, 'idle']]
@@ -139,9 +140,9 @@
 
     combos: [
       { name: 'ROW AND COLUMN', difficulty: 'easy', notation: 'P, P', plan: { 0: 'P', 15: 'P' }, hits: ['jab', 'jab2'] },
-      { name: 'TRANSPOSE JUGGLE', difficulty: 'medium', notation: 'D+H, P, D+K ON THE GROUND', plan: { 0: 'D+H', 39: 'P', 82: 'D+K' }, hits: ['launcher', 'jab', 'low'] },
+      { name: 'TRANSPOSE JUGGLE', difficulty: 'medium', notation: 'D+H, P, P, H', plan: { 0: 'D+H', 40: 'P', 57: 'P', 70: 'H' }, hits: ['launcher', 'jab', 'jab2', 'jabH'] },
       { name: 'RANK SPIKE', difficulty: 'hard', notation: 'D+H, UP, AIR P, AIR K, AIR H, K',
-        plan: { 0: 'D+H', 17: 'UP', 32: 'P', 40: 'K', 50: 'H', 79: 'K' }, hits: ['launcher', 'airP', 'airK', 'airH', 'mid'] },
+        plan: { 0: 'D+H', 16: 'UP', 31: 'P', 36: 'K', 44: 'H', 77: 'K' }, hits: ['launcher', 'airP', 'airK', 'airH', 'mid'] },
       { name: 'IDENTITY STOMP', difficulty: 'medium', notation: 'F+P+K, D+K ON THE GROUND', plan: { 0: 'F+P+K', 66: 'D+K' }, hits: ['cmdGrab', 'low'] }
     ],
 

@@ -104,6 +104,7 @@ try { playwright = require('playwright'); } catch (e) {
   await page.screenshot({ path: path.join(out, '5-menu.png') });
   var menu2 = await page.evaluate(function () { var s = window.FG_SCENE; return { tick: s.tickCount, stance: s.dummy.label('stance') }; });
   await page.keyboard.press('Escape');
+  await page.waitForTimeout(100); // keys are handled on the next game step
   var menuOk = menu1.open && menu2.tick === menu1.tick && menu2.stance !== menu1.stance &&
     !(await page.evaluate(function () { return window.FG_SCENE.menu.open; }));
 

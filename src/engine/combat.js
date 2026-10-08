@@ -162,8 +162,12 @@
     } else {
       d.setState('hitstun');
       d.stun = m.air ? m.stunHit : attackerLeft + result.adv;
-      // Long combos lose hitstun, so no ground loop lasts forever.
-      d.stun = Math.max(1, d.stun - C.COMBO_DECAY_STUN * Math.max(0, this.combo[c.d].hits - C.COMBO_DECAY_FROM));
+      // Follow-ups in a combo get a little extra hitstun (forgiving timing);
+      // long combos lose hitstun, so no ground loop lasts forever.
+      var nth = this.combo[c.d].hits;
+      d.stringBonus = 0;
+      if (nth >= 2 && a.fromCancel) { d.stun += C.COMBO_STUN_BONUS; d.stringBonus = C.COMBO_STUN_BONUS; }
+      d.stun = Math.max(1, d.stun - C.COMBO_DECAY_STUN * Math.max(0, nth - C.COMBO_DECAY_FROM));
       d.reaction = m.level === 'low' ? 'low' : (m.strength === 'heavy' || m.level === 'mid') ? 'mid' : 'high';
       d.vx = 0;
       this.push(a, d, m.push);

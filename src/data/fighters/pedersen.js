@@ -43,6 +43,7 @@
     car: true,            // drives in for his intro; parks in the background
     homeStage: 'parking', // his stage: the faculty parking lot, his car in the reserved spot
     glyphs: ['LOG(X)', 'X*10', '90', 'E'], // math that flies off their big hits
+    stringH: 'EXPONENT RULE', // P, P, H: the universal string ender (see FG.defineFighter)
     look: {
       skin: 0xe2ad85, eyeColor: 0x7cc4f0,
       hair: { style: 'slick', color: 0x5a3c24 },
@@ -141,9 +142,9 @@
 
     combos: [
       { name: 'SQUARED', difficulty: 'easy', notation: 'P, P', plan: { 0: 'P', 16: 'P' }, hits: ['jab', 'jab2'] },
-      { name: 'LOGARITHMIC JUGGLE', difficulty: 'medium', notation: 'D+H, P, P', plan: { 0: 'D+H', 42: 'P', 59: 'P' }, hits: ['launcher', 'jab', 'jab2'] },
+      { name: 'LOGARITHMIC JUGGLE', difficulty: 'medium', notation: 'D+H, P, P, H', plan: { 0: 'D+H', 43: 'P', 57: 'P', 67: 'H' }, hits: ['launcher', 'jab', 'jab2', 'jabH'] },
       { name: 'TOWER OF POWERS', difficulty: 'hard', notation: 'D+H, UP, AIR K, AIR H, D+K ON THE GROUND',
-        plan: { 0: 'D+H', 20: 'UP', 31: 'K', 40: 'H', 94: 'D+K' }, hits: ['launcher', 'airK', 'airH', 'low'] },
+        plan: { 0: 'D+H', 19: 'UP', 27: 'K', 34: 'H', 84: 'D+K' }, hits: ['launcher', 'airK', 'airH', 'low'] },
       { name: 'EXPONENTIAL GROWTH', difficulty: 'medium', notation: 'AT THE WALL: H, D+H', queue: ['H', 'D+H'], wall: true, hits: ['heavy', 'launcher'] }
     ],
 
