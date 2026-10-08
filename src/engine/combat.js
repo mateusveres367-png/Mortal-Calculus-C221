@@ -44,19 +44,21 @@
   };
 
   // Parry: the attacker staggers and the parrying fighter counters at once.
+  // A parry can counter by the level it caught (pr.counters: { high, mid, low }).
   Match.prototype.applyParry = function (c) {
     var a = this.fighters[c.a], d = this.fighters[c.d], pr = d.move.parry, label = d.move.parryLabel;
+    var counter = pr.counters ? pr.counters[c.move.level] : pr.counter;
     a.actionable = false; d.actionable = false;
     a.contact = 'parried';
     a.setState('hitstun');
     a.stun = C.PARRY_STUN;
     a.reaction = 'high';
     a.vx = 0;
-    d.startMove(pr.counter);
+    d.startMove(counter);
     this.measure = null;
     this.hitstop = Math.max(this.hitstop, 12);
-    this.lastResult[c.d] = { move: d.def.moves[pr.counter], kind: 'PARRY', adv: null };
-    this.events.push({ type: 'parry', attacker: c.d, defender: c.a, x: (a.x + d.x) / 2, y: 70, shake: 0.004, label: label });
+    this.lastResult[c.d] = { move: d.def.moves[counter], kind: 'PARRY', adv: null };
+    this.events.push({ type: 'parry', attacker: c.d, defender: c.a, x: (a.x + d.x) / 2, y: 70, shake: 0.004, label: label, level: c.move.level, counter: counter });
   };
 
   // --- Damage -------------------------------------------------------------------

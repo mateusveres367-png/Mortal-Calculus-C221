@@ -136,6 +136,7 @@
     // How many times in a row this move has cancelled into itself (Recursive Rush).
     this.repeatCount = prev && prev.id === id ? (this.repeatCount || 0) + 1 : 0;
     this.chargeFrames = 0;
+    this.holdFrames = 0;
     this.setState('attack');
     this.move = m;
     this.moveFrame = 1;
@@ -165,6 +166,12 @@
         // Charge moves (PEDERSEN's Order of Magnitude) pause their windup while the button is held.
         if (m.charge && this.moveFrame === m.charge.at && buf.held[m.charge.btn] && this.chargeFrames < m.charge.max) {
           this.chargeFrames++;
+          this.vx = 0;
+          return;
+        }
+        // Held stances (LOPEZ's Derivative Read) stay up while the button is held.
+        if (m.hold && this.moveFrame === m.hold.at && buf.held[m.hold.btn] && this.holdFrames < m.hold.max) {
+          this.holdFrames++;
           this.vx = 0;
           return;
         }

@@ -751,11 +751,23 @@ function count(r, type, attacker) {
   r = play(LZ, S, 40, { 0: { p: true } }, {}, 30);
   ids = r.events.filter(function (e) { return e.type === 'whiff' && e.fighter === 0; }).map(function (e) { return e.move.id; });
   check('plain jab otherwise', ids.join() === 'jab', ids);
-  // Derivative Read parries mids and lows but not highs.
+  // Derivative Read reads every level and counters with a different move for each.
+  function counterOf(r) { var h = r.events.filter(function (e) { return e.type === 'hit' && e.attacker === 0; })[0]; return h && h.move.id; }
   r = play(LZ, S, 40, { 6: FG.parseInput('B+H') }, { 0: { k: true, down: true } }, 60);
-  check('null hypothesis parries a low', count(r, 'parry') === 1, types(r));
+  check('derivative read: a low gets the trapping sweep', count(r, 'parry') === 1 && counterOf(r) === 'readLow', [types(r), counterOf(r)]);
   r = play(LZ, S, 40, { 4: FG.parseInput('B+H') }, { 0: { p: true } }, 60);
-  check('null hypothesis loses to a high', count(r, 'parry') === 0 && count(r, 'hit', 1) === 1, types(r));
+  check('derivative read: a high gets the wrist lock', count(r, 'parry') === 1 && counterOf(r) === 'readHigh', [types(r), counterOf(r)]);
+  r = play(LZ, S, 40, { 8: FG.parseInput('B+H') }, { 0: { k: true } }, 60);
+  check('derivative read: a mid gets the palm', count(r, 'parry') === 1 && counterOf(r) === 'reject', [types(r), counterOf(r)]);
+  // Throws beat it.
+  r = play(LZ, S, 40, { 4: FG.parseInput('B+H') }, { 0: FG.parseInput('P+K') }, 60);
+  check('derivative read: throws beat it', count(r, 'grab', 1) === 1 && count(r, 'parry') === 0, types(r));
+  // Hold H and the stance stays up: a late jab is still read.
+  var held = function (i) { return i <= 50 ? FG.parseInput('B+H') : {}; };
+  r = play(LZ, S, 40, held, { 36: { p: true } }, 90);
+  check('derivative read: holding H keeps the stance up', count(r, 'parry') === 1, types(r));
+  r = play(LZ, S, 40, { 0: FG.parseInput('B+H') }, { 36: { p: true } }, 90);
+  check('derivative read: tapped, it ends early', count(r, 'parry') === 0 && count(r, 'hit', 1) === 1, types(r));
 })();
 
 // MIYASHIRO: Calculated bonus after the opponent whiffs; Range Check out of a dash; Domain Control range.
@@ -772,6 +784,13 @@ function count(r, type, attacker) {
   var reach = MY.moves.fK.box.x + MY.moves.fK.box.w;
   var others = FG.ROSTER.filter(function (d) { return d !== MY; }).map(function (d) { return d.moves.mid.box.x + d.moves.mid.box.w; });
   check('dot product is the longest mid', others.every(function (o) { return reach > o; }), [reach, others]);
+  // Domain Restriction: the step-back kick hits, and he ends up further away than he started.
+  var x0, sb = play(MY, S, 40, { 0: FG.parseInput('B+H') }, {}, 40, function (m) { x0 = m.fighters[0].x; });
+  check('step-back kick hits', count(sb, 'hit', 0) === 1, types(sb));
+  check('step-back kick retreats while attacking', x0 - sb.m.fighters[0].x > 20, x0 - sb.m.fighters[0].x);
+  // A strong backdash: further than BRINKHUS's.
+  function bd(def) { var x1, r = play(def, D, 200, { 0: { left: true }, 2: { left: true } }, {}, 30, function (m) { x1 = m.fighters[0].x; }); return x1 - r.m.fighters[0].x; }
+  check('strong backdash', bd(MY) > bd(S) + 10, [bd(MY), bd(S)]);
   // Vertex Kick tracks a sidestep.
   var r = play(MY, S, 44, { 0: FG.parseInput('B+K') }, { 2: { ssIn: true } }, 40);
   check('unit circle tracks', count(r, 'hit') === 1, types(r));

@@ -4,7 +4,7 @@ A retro, Tekken-inspired 2D/2.5D fighting game themed around the El Camino Real 
 
 ## Status
 
-**Phase 7 — modes and screens (playable).** All eight fighters from [`ROSTER.md`](ROSTER.md): **PEDERSEN** (power, exponents; the cover fighter), **BRINKHUS** (balanced, limits), **CHAI** (technical, geometry), **DALSASS** (tricky, functions), **LEE** (rushdown, sequences), **LOPEZ** (defensive, statistics), **MIYASHIRO** (spacing, vectors) and **RAMOS** (grappler, matrices).
+**Phase 7 — modes and screens (playable).** All eight fighters from [`ROSTER.md`](ROSTER.md): **PEDERSEN** (power, math analysis; the cover fighter), **BRINKHUS** (balanced, Algebra 1), **CHAI** (technical, geometry), **DALSASS** (tricky, triangles and proofs), **LEE** (rushdown, sequences), **LOPEZ** (defensive, calculus), **MIYASHIRO** (spacing, Algebra 2) and **RAMOS** (grappler, matrices). No two fight alike: each has their own style, stance, movement, weight, hit reactions and signature mechanic.
 
 What's in the game so far:
 
@@ -144,16 +144,17 @@ The fighters, and what they teach:
   - **Dash cancel:** once an attack connects (hit or block), forward, forward cancels its recovery into a dash (once per string).
   - **Recursive Rush** (forward + `P`) repeats on hit when you press `P` again, up to three times.
   - His normals are plus on block. He taunts mid-combo and pushes up his glasses after big hits.
-- **LOPEZ** (defensive; calculus):
+- **LOPEZ** (defensive; calculus) — a Wing Chun / aikido counter-fighter who barely moves:
   - **Asymptote Backdash:** his backdash goes further, recovers sooner, and lows can't touch it early on.
   - **Mean Value Punish:** `P` within 10 frames of blocking is a fast, heavy punisher.
-  - **Derivative Read** (back + `H`) reads your rate of change: it parries mids and lows; he squints, then counters. Highs and throws beat it.
+  - **Derivative Read** (back + `H`, hold `H` to keep it up) reads your rate of change: it parries highs, mids and lows and counters each differently (a wrist lock, a palm strike, a trapping sweep). He squints before he counters. Throws beat it.
   - **Limit Break** (down + `H`) is his launcher and **Squeeze Theorem** his throw. He takes his blazer off during his intro.
-- **MIYASHIRO** (spacing; Algebra 2):
-  - **Domain Control** (forward + `K`) is the longest mid in the game.
+- **MIYASHIRO** (spacing; Algebra 2) — traditional karate kicks from a deep, wide stance, and a strong backdash:
+  - **Domain Control** (forward + `K`, a side kick) is the longest mid in the game.
+  - **Domain Restriction** (back + `H`) is a step-back kick that retreats while it attacks.
   - **Range Check** (dash, then `P`) comes out early in a dash.
   - **Vertex Kick** (back + `K`) is a tracking spin kick. **Quadratic Launcher** (down + `H`), **Discriminant** (throw).
-  - **Calculated:** when you whiff near him, his next hit within 2.5 seconds does 30% more damage.
+  - **Calculated** (his signature): when you whiff near him, his next hit within 2.5 seconds does 30% more damage, and he glows until he lands it.
 - **RAMOS** (grappler; Algebra 2: matrices) — the fastest dash in the game, and a cardio machine. He can chain dashes back to back, and his guard meter recovers twice as fast. Long, bouncy hair that swings when he moves:
   - **Matrix Lock** (`P`+`K`) has a short break window (8 frames instead of 15).
   - **Determinant Slam** (back + `P`+`K`) is his reverse throw.

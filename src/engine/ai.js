@@ -76,7 +76,7 @@
     // A new match (next round): forget plans timed on the old one's frames.
     if (match !== this.match) {
       this.match = match;
-      this.seen = []; this.script = null; this.walk = null; this.guard = null; this.nextThink = 0;
+      this.seen = []; this.script = null; this.walk = null; this.guard = null; this.nextThink = 0; this.hold = null;
       this.wake = null; this.techRoll = null; this.breakRoll = null; this.punishRoll = null;
     }
 
@@ -122,6 +122,12 @@
     this.wake = null;
     if (self.state === 'hitstun' || self.state === 'wallsplat' || self.state === 'thrown' || self.state === 'guardbreak') { this.script = null; return raw; }
 
+    // --- A held input (a parry stance). --------------------------------------------
+    if (this.hold) {
+      if (match.frame < this.hold.until && self.state === 'attack' && self.move && self.move.hold) return Object.assign({}, this.hold.raw);
+      this.hold = null;
+    }
+
     // --- A planned sequence (string, combo, dash in). ----------------------------
     if (this.script) {
       var sc = this.script, ft = match.frame - sc.start;
@@ -159,6 +165,13 @@
         };
       }
       var gd = this.guard, st = self.def.ai || {};
+      // Style: LOPEZ steps into his Derivative Read parry stance and holds it.
+      if (gd.parry == null) gd.parry = !!(st.parry && self.def.moves.bH && self.def.moves.bH.parry && rnd() < st.parry * L.block);
+      if (gd.parry && self.actionable) {
+        gd.parry = false; gd.block = false;
+        this.hold = { raw: toRaw('B+H', self.facing), until: match.frame + 24 };
+        return toRaw('B+H', self.facing);
+      }
       // Style: DALSASS sways back out of highs and mids, then counters.
       if (gd.sway == null) gd.sway = !!(st.sway && m === opp.move && opp.move.level !== 'low' && self.def.moves.bK && self.def.moves.bK.evade && rnd() < st.sway * L.block);
       if (gd.sway && self.actionable) { gd.sway = false; gd.block = false; this.startScript({ 0: 'B+K', 8: 'P' }, match, self); return toRaw('B+K', self.facing); }
@@ -208,6 +221,8 @@
       if (dist < st.spacing - 18 && roll < 0.3 && !close) { this.walk = { dir: 'back', until: match.frame + 10 }; return raw; }
     }
     var styled = L.combo; // better CPUs play to their style more
+    // Spacing styles (MIYASHIRO) backdash out when you get close.
+    if (close && st.backdash && rnd() < st.backdash * styled) { this.startScript({ 0: 'B', 2: 'B' }, match, self); return toRaw('B', self.facing); }
     if (close && st.close && roll < a * 0.5 * styled) return this.styleAttack(pick(st.close), match, self);
     if (!close && mid && st.pokes && roll < a * 0.45 * styled) return this.styleAttack(pick(st.pokes), match, self);
     if (opp.state === 'down' && dist < 90) {

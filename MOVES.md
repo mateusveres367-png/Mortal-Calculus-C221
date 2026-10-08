@@ -207,6 +207,9 @@ Sarcastic and funny. Taunts mid-combo. Relentless pressure.
 
 Very suspicious. Always watching. Waits for you to commit, then punishes.
 
+**Style:** Counter-fighter. **Signature:** Derivative Read — a parry stance (B+H, hold H to keep it up); attack into it and he counters by level: a wrist lock for a high, a palm strike for a mid, a trapping sweep for a low; throws beat it.
+
+**Movement:** walk 1.5 forward / 1.6 back, dash 6.4 for 14 frames, backdash 12.5, jump 9.2, weight 1.04 (higher falls faster in juggles).
 
 | Input | Move | Level | i | Active | Recovery | Block | Hit | Counter hit | Damage | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -218,7 +221,7 @@ Very suspicious. Always watching. Waits for you to commit, then punishes.
 | D/B+K | Riemann Sweep | low | 21 | 3 | 26 | -18 | knockdown | knockdown | 16 | ducks highs |
 | H | Definite Integral | mid | 19 | 3 | 21 | -4 | +6 | launch | 22 | wall splats |
 | F+H | Concave Down | mid | 22 | 3 | 21 | -7 | +3 | knockdown | 19 | bounds |
-| B+H | Derivative Read | — | 33 total |  |  |  |  |  |  | parry |
+| B+H (HOLD) | Derivative Read | — | 33 total |  |  |  |  |  |  | parry (high → L'Hopital Lock, mid → Critical Point, low → Saddle Point), hold H to keep it up |
 | D+H | Limit Break | mid | 16 | 4 | 22 | -15 | launch | launch | 17 | jump cancel on hit (UP) |
 | P+K | Squeeze Theorem | throw | 12 | 2 | 26 |  |  |  | 32 | break with P |
 | B+P+K | U-Substitution | throw | 12 | 2 | 26 |  |  |  | 34 | break with K |
@@ -229,7 +232,9 @@ Very suspicious. Always watching. Waits for you to commit, then punishes.
 | P/H (DOWN) | Spring Theorem | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
 | T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
 | P AFTER BLOCK | Mean Value Punish | mid | 8 | 2 | 20 | -10 | knockdown | knockdown | 18 | wall splats |
-| PARRY | Critical Point | mid | 7 | 3 | 18 | -6 | knockdown | knockdown | 22 |  |
+| READ A HIGH | L'Hopital Lock | mid | 6 | 3 | 20 | -6 | knockdown | knockdown | 22 |  |
+| READ A MID | Critical Point | mid | 7 | 3 | 18 | -6 | knockdown | knockdown | 22 |  |
+| READ A LOW | Saddle Point | low | 7 | 3 | 20 | -12 | knockdown | knockdown | 18 | ducks highs |
 
 **Combo routes** (tested in `tests/sim.test.js`):
 
@@ -242,6 +247,9 @@ Very suspicious. Always watching. Waits for you to commit, then punishes.
 
 Very smart. Reads opponents, keeps perfect distance, punishes every mistake.
 
+**Style:** Karate. **Signature:** Calculated — when the opponent whiffs, his next hit does bonus damage and he glows until he lands it; Domain Restriction (B+H) is a step-back kick that retreats while it attacks.
+
+**Movement:** walk 1.9 forward / 2 back, dash 8, backdash 11, jump 9.3, weight 1.06 (higher falls faster in juggles).
 
 | Input | Move | Level | i | Active | Recovery | Block | Hit | Counter hit | Damage | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -256,6 +264,7 @@ Very smart. Reads opponents, keeps perfect distance, punishes every mistake.
 | D/B+K | X-Axis Sweep | low | 20 | 3 | 26 | -18 | knockdown | knockdown | 16 | ducks highs |
 | H | Complex Root | mid | 18 | 3 | 22 | -5 | +5 | launch | 20 | wall splats |
 | F+H | End Behavior | mid | 21 | 3 | 21 | -6 | +3 | knockdown | 18 | bounds |
+| B+H | Domain Restriction | mid | 13 | 3 | 16 | -2 | +5 | +10 | 12 | steps back as it attacks |
 | D+H | Quadratic Launcher | mid | 15 | 4 | 23 | -15 | launch | launch | 16 | jump cancel on hit (UP) |
 | P+K | Discriminant | throw | 12 | 2 | 26 |  |  |  | 30 | break with P |
 | B+P+K | Completing The Square | throw | 12 | 2 | 26 |  |  |  | 33 | break with K |

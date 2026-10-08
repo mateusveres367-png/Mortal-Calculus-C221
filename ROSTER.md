@@ -115,6 +115,10 @@ Every fighter needs unique normals, launcher, throw, combo routes, stance, idle 
 
 **Moves:** Derivative Read (parry: reads your rate of change; squints before countering), Asymptote Backdash, Mean Value Punish (block → punish), Limit Break (launcher), Squeeze Theorem (throw).
 
+**Style:** Defensive counter-fighter, Wing Chun / aikido-like. Short palm strikes and chain punches down the centerline, trapping hands, parries and wrist locks. He barely moves: small steps and a short dash. A calm, centered stance with both hands up on the line.
+
+**Signature — Derivative Read:** a parry stance (B+H, hold H to keep it up). If the opponent attacks into it, he auto-counters by level: a wrist lock (L'Hopital Lock) for a high, a palm strike (Critical Point) for a mid, a trapping sweep (Saddle Point) for a low. Throws beat it.
+
 **Look:** Solid build. Salt-and-pepper hair swept back and a knowing half-smile. Wears a navy blazer over a white windowpane-check shirt, and takes the blazer off before the round.
 
 **Personality:** Very suspicious: narrowed eyes, always watching. Waits for you to commit, then punishes.
@@ -132,6 +136,10 @@ Every fighter needs unique normals, launcher, throw, combo routes, stance, idle 
 ## MIYASHIRO — Spacing / Footsies — Algebra 2
 
 **Moves:** Domain Control (long poke), Range Check (dash punch), Vertex Kick (spin kick), Quadratic Launcher, Discriminant (throw), Calculated (stronger after an opponent whiffs).
+
+**Style:** Kick-based spacing, traditional karate. A long front kick, a side kick (Domain Control, the longest poke in the game), a spinning back hook kick, a back kick and foot sweeps that keep people at the edge of his range. A deep, wide, steady front stance with the rear fist at the hip. A strong backdash.
+
+**Signature — Calculated:** after the opponent whiffs, his next hit does bonus damage, and he glows until he lands it. He also has a step-back kick (Domain Restriction, B+H) that retreats while it attacks.
 
 **Look:** Sturdy. Short, neat black hair, clean-shaven, with a calm smile. Wears a blue checkered button-up with the sleeves rolled.
 

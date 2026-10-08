@@ -38,6 +38,7 @@
     var carInWorld = !!stageDef.outdoor && (FG.fighterById(this.ids.p1).car || FG.fighterById(this.ids.p2).car);
     this.stage = new FG.Stage(this, { id: this.stageId, carInWorld: carInWorld });
     this.ghosts = this.add.graphics().setDepth(-1).setAlpha(0.45); // cancel afterimages
+    this.auras = this.add.graphics().setDepth(-0.5);                // MIYASHIRO's Calculated glow
     this.world = this.add.graphics().setDepth(0);
     this.screenFlash = this.add.graphics().setScrollFactor(0).setDepth(40); // impact flashes over the world
     this.hud = new FG.Hud(this);
@@ -861,6 +862,16 @@
       this.ghosts.setAlpha(0.5 * (1 - gh.t / 10));
       FG.drawFighter(this.ghosts, { def: f[gi].def, x: gh.x, y: gh.y, z: f[gi].z, facing: gh.facing, _pose: gh.pose, _twist: 0 },
         { flash: 0x9fdcff, noShadow: true });
+    }
+    // Calculated: a pulsing blue glow around MIYASHIRO until his bonus hit lands.
+    this.auras.clear();
+    for (var ai = 0; ai < 2; ai++) {
+      var af = f[ai];
+      if (!(af.calculated > 0) || af._hidden || !af._pose) continue;
+      var pulse = 0.35 + 0.25 * Math.sin(this.tickCount * 0.25);
+      this.auras.setAlpha(pulse);
+      [-2, 2].forEach(function (dx) { FG.drawFighter(this.auras, af, { flash: 0x5fd7ff, noShadow: true, x: af.x + dx }); }, this);
+      FG.drawFighter(this.auras, af, { flash: 0x5fd7ff, noShadow: true, groundY: C.GROUND_Y - 2 });
     }
     // Draw the fighter further into the background first.
     var order = f[0].z > f[1].z ? [0, 1] : f[1].z > f[0].z ? [1, 0] : (f[0].state === 'attack' ? [1, 0] : [0, 1]);

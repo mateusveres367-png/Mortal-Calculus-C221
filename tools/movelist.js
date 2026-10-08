@@ -61,7 +61,9 @@ FG.ROSTER.forEach(function (d) {
     if (m.keepZ) notes.push('stays off the line until it hits');
     if (m.feint) notes.push('feint: cancel with P, K, H or P+K during frames 6-18');
     if (m.stanceSwitch) notes.push('switches stance');
-    if (m.parry) notes.push('parry');
+    if (m.parry) notes.push('parry' + (m.parry.counters ? ' (' + m.parry.levels.map(function (l) { return l + ' → ' + title(d.moves[m.parry.counters[l]].label); }).join(', ') + ')' : ''));
+    if (m.hold) notes.push('hold ' + m.hold.btn.toUpperCase() + ' to keep it up');
+    if (m.step && m.step[2] < 0) notes.push('steps back as it attacks');
     if (m.charge) notes.push('hold to charge');
     if (m.taunt) notes.push('says a taunt line; counter-hittable the whole time');
     if (m.kick && d.kickChain) notes.push('kick chain');
