@@ -186,7 +186,7 @@
       },
       sweep: FG.kit.sweep('ZERO PRODUCT SWEEP', { motion: 'sweep' }),
       heavy: {
-        ex: { text: 'ARMORED, LAUNCHES', armor: { hits: 1 }, hit: { launch: 6.5 } }, // enhanced (P+K during startup, 1 bar)
+        ex: { text: 'ARMORED, LAUNCHES', armor: { hits: 1 }, hit: { launch: true } }, // enhanced (P+K during startup, 1 bar)
         name: 'Stepping Straight', label: 'LINEAR RUSH', cmd: 'H', level: 'mid', strength: 'heavy', motion: 'straight', tip: 50, wallSplat: true,
         startup: 19, active: 3, recovery: 22, damage: 22,
         block: -4, hit: { adv: 6 }, ch: { launch: 6 },
@@ -224,7 +224,11 @@
       { name: 'SOLVE FOR X JUGGLE', difficulty: 'medium', notation: 'D+H, P, P, H', plan: { 0: 'D+H', 38: 'P', 56: 'P', 67: 'H' }, hits: ['launcher', 'jab', 'jab2', 'jabH'] },
       { name: 'POINT-SLOPE SPIKE', difficulty: 'hard', notation: 'D+H, UP, AIR P, AIR K, AIR H, K',
         plan: { 0: 'D+H', 17: 'UP', 32: 'P', 41: 'K', 51: 'H', 79: 'K' }, hits: ['launcher', 'airP', 'airK', 'airH', 'mid'] },
-      { name: 'ISOLATE THE VARIABLE', difficulty: 'medium', notation: 'AT THE WALL: H, P, P, D+H', queue: ['H', 'P', 'P', 'D+H'], wall: true, hits: ['heavy', 'jab', 'jab', 'launcher'] }
+      { name: 'ISOLATE THE VARIABLE', difficulty: 'medium', notation: 'AT THE WALL: H, P, P, D+H', queue: ['H', 'P', 'P', 'D+H'], wall: true, hits: ['heavy', 'jab', 'jab', 'launcher'] },
+      // Meter routes (combo trials): an enhanced special, and the ultimate.
+      { name: 'EXPANDED FORM', difficulty: 'medium', meter: 1, notation: 'H, P+K, P, P, H', steps: ['H, P+K (1 BAR)', 'P', 'P', 'H'],
+        plan: { 0: 'H', 3: 'P+K', 36: 'P', 48: 'P', 56: 'H' }, hits: ['heavyEX', 'jab', 'jab2', 'jabH'] },
+      { name: 'ORDER OF OPERATIONS', difficulty: 'hard', meter: 3, notation: 'P, D, D/F, F+P+K+H', plan: { 0: 'P', 3: 'D', 4: 'D/F', 5: 'F', 9: 'F+P+K+H' }, hits: ['jab', 'ultimate'] }
     ],
 
     intro: [[1, 'idle'], [16, 'stand'], [30, 'nod'], [40, 'stand'], [52, 'nod'], [60, 'stand'], [84, 'idle']],

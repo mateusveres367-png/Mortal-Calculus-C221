@@ -180,7 +180,7 @@
       },
       sweep: FG.kit.sweep('BASE SWEEP', { startup: 21, recovery: 26, motion: 'sweep' }),
       dfK: {
-        ex: { text: 'TWO HITS, LAUNCHES', multi: 1, hit: { launch: 6 } }, // enhanced (P+K during startup, 1 bar)
+        ex: { text: 'TWO HITS, LAUNCHES', multi: 1, hit: { launch: true } }, // enhanced (P+K during startup, 1 bar)
         name: 'Slide', label: 'SUPPLEMENTARY SLIDE', cmd: 'D/F+K', level: 'low', strength: 'heavy', motion: 'sweep', crouching: true,
         startup: 18, active: 5, recovery: 24, damage: 14,
         block: -16, hit: { knockdown: true }, ch: { knockdown: true },
@@ -282,7 +282,11 @@
       { name: 'PYTHAGOREAN JUGGLE', difficulty: 'medium', notation: 'D+H, P, P, H', plan: { 0: 'D+H', 39: 'P', 53: 'P', 61: 'H' }, hits: ['launcher', 'jab', 'jab2', 'jabH'] },
       { name: 'CENTROID SPIKE', difficulty: 'hard', notation: 'D+H, UP, AIR K, AIR H, K',
         plan: { 0: 'D+H', 17: 'UP', 31: 'K', 41: 'H', 70: 'K' }, hits: ['launcher', 'airK', 'airH', 'mid'] },
-      { name: 'SUPPLEMENTARY STOMP', difficulty: 'medium', notation: 'D/F+K, D+K ON THE GROUND', plan: { 0: 'D/F+K', 49: 'D+K' }, hits: ['dfK', 'low'] }
+      { name: 'SUPPLEMENTARY STOMP', difficulty: 'medium', notation: 'D/F+K, D+K ON THE GROUND', plan: { 0: 'D/F+K', 49: 'D+K' }, hits: ['dfK', 'low'] },
+      // Meter routes (combo trials): an enhanced special, and the ultimate.
+      { name: 'SUPPLEMENTARY LAUNCH', difficulty: 'medium', meter: 1, notation: 'D/F+K, P+K, P, P, H', steps: ['D/F+K, P+K (1 BAR)', 'SECOND HIT', 'P', 'P', 'H'],
+        plan: { 0: 'D/F+K', 3: 'P+K', 44: 'P', 56: 'P', 64: 'H' }, hits: ['dfKEX', 'dfKEX', 'jab', 'jab2', 'jabH'] },
+      { name: 'TWO-COLUMN PROOF', difficulty: 'hard', meter: 3, notation: 'P, D, D/F, F+P+K+H', plan: { 0: 'P', 3: 'D', 4: 'D/F', 5: 'F', 9: 'F+P+K+H' }, hits: ['jab', 'ultimate'] }
     ],
 
     intro: [[1, 'idle'], [14, 'point'], [36, 'point'], [50, 'shrug'], [72, 'shrug'], [86, 'idle']],

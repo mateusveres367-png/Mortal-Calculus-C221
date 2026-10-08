@@ -158,7 +158,7 @@
       },
       // Out of his fast dash: a shoulder charge that knocks down.
       dashP: {
-        ex: { text: 'ARMORED, LAUNCHES', armor: { hits: 1 }, hit: { launch: 6.5 } }, // enhanced (P+K during startup, 1 bar)
+        ex: { text: 'ARMORED, LAUNCHES', armor: { hits: 1 }, hit: { launch: true } }, // enhanced (P+K during startup, 1 bar)
         name: 'Shoulder Charge', label: 'AUGMENTED CHARGE', cmd: 'F,F+P', level: 'mid', strength: 'heavy', motion: 'lunge',
         startup: 13, active: 4, recovery: 20, damage: 17,
         block: -9, hit: { knockdown: true }, ch: { knockdown: true },
@@ -272,7 +272,11 @@
       { name: 'IDENTITY STOMP', difficulty: 'medium', notation: 'F+P+K, D+K ON THE GROUND', plan: { 0: 'F+P+K', 66: 'D+K' }, hits: ['cmdGrab', 'low'] },
       // Cardio: dash, keep holding forward to run, then the running knee and a juggle.
       { name: 'CARDIO', difficulty: 'medium', notation: 'RUN, K, P, P, H', dist: 200, hold: [[2, 32, 'F']],
-        plan: { 0: 'F', 2: 'F', 24: 'K', 55: 'P', 66: 'P', 75: 'H' }, hits: ['runK', 'jab', 'jab2', 'jabH'] }
+        plan: { 0: 'F', 2: 'F', 24: 'K', 55: 'P', 66: 'P', 75: 'H' }, hits: ['runK', 'jab', 'jab2', 'jabH'] },
+      // Meter routes (combo trials): an enhanced special, and the ultimate.
+      { name: 'AUGMENTED JUGGLE', difficulty: 'medium', meter: 1, notation: 'F, F+P, P+K, P, P, H', dist: 90, steps: ['F, F+P, P+K (1 BAR)', 'P', 'P', 'H'],
+        plan: { 0: 'F', 2: 'F', 10: 'P', 13: 'P+K', 39: 'P', 63: 'P', 69: 'H' }, hits: ['dashPEX', 'jab', 'jab2', 'jabH'] },
+      { name: 'MATRIX MULTIPLICATION', difficulty: 'hard', meter: 3, notation: 'D, D/F, F+P+K+H', plan: { 0: 'D', 1: 'D/F', 2: 'F', 3: 'F+P+K+H' }, hits: ['ultimate'] }
     ],
 
     intro: [[1, 'stand'], [12, 'knuckles'], [28, 'knuckles'], [38, 'stretch'], [56, 'stretch'], [66, 'stand'], [84, 'idle']],

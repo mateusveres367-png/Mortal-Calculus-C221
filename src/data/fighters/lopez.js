@@ -153,7 +153,7 @@
       },
       // Mean Value Punish: P right after blocking becomes this fast, heavy punisher.
       postBlockP: {
-        ex: { text: 'LAUNCHES', hit: { launch: 7 } }, // enhanced (P+K during startup, 1 bar)
+        ex: { text: 'LAUNCHES', hit: { launch: true } }, // enhanced (P+K during startup, 1 bar)
         name: 'Trap and Palm', label: 'MEAN VALUE PUNISH', cmd: 'P AFTER BLOCK', level: 'mid', strength: 'heavy', motion: 'straight', wallSplat: true,
         startup: 8, active: 2, recovery: 20, damage: 18,
         block: -10, hit: { knockdown: true }, ch: { knockdown: true },
@@ -243,7 +243,12 @@
       { name: 'INFLECTION POINT', difficulty: 'hard', notation: 'D+H, UP, AIR P, AIR K, AIR H, K',
         plan: { 0: 'D+H', 17: 'UP', 32: 'P', 38: 'K', 47: 'H', 80: 'K' }, hits: ['launcher', 'airP', 'airK', 'airH', 'mid'] },
       { name: 'MEAN VALUE PUNISH', difficulty: 'medium', notation: 'BLOCK THEIR JAB, P, D+K ON THE GROUND',
-        hold: [[0, 11, 'B']], oppPlan: { 0: 'P' }, plan: { 21: 'P', 63: 'D+K' }, hits: ['postBlockP', 'low'] }
+        hold: [[0, 11, 'B']], oppPlan: { 0: 'P' }, plan: { 21: 'P', 63: 'D+K' }, hits: ['postBlockP', 'low'] },
+      // Meter routes (combo trials): an enhanced special, and the ultimate.
+      { name: 'DOUBLE CONCAVE', difficulty: 'medium', meter: 1, notation: 'F+H, P+K', steps: ['F+H, P+K (1 BAR)', 'SECOND HIT'],
+        plan: { 0: 'F+H', 3: 'P+K' }, hits: ['fHEX', 'fHEX'] },
+      { name: 'FUNDAMENTAL THEOREM', difficulty: 'hard', meter: 3, notation: 'THEY ATTACK: D, D/F, F+P+K+H', oppPlan: { 12: 'P' },
+        plan: { 0: 'D', 1: 'D/F', 2: 'F', 3: 'F+P+K+H' }, hits: ['ultimate'] }
     ],
 
     // Takes the blazer off before the round (the intro hides it at frame 38).

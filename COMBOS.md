@@ -6,6 +6,7 @@ Every fighter's combo routes, and what the combo feel pass changed. The routes l
 
 - **Level:** easy is a basic string anyone can land; medium is a launcher juggle or a wall/setup route; hard is the big one (launcher, jump-cancel air combo, bound, follow-up) and always does the most damage.
 - **Inputs:** `UP` after a launcher is the jump cancel (chase them into the air). `D+K ON THE GROUND` is a ground hit on a downed opponent. Damage is the lowest against any opponent.
+- **Meter routes:** every fighter also has two that spend Grade meter: an enhanced special (`P+K` in its startup, 1 bar; enhanced launchers go up just like the fighter's launcher, so `P, P, H` follows) and their ultimate (`D, D/F, F+P+K+H`, 3 bars; most cancel it straight out of a jab that hits, LOPEZ's waits for them to attack into his stance, RAMOS's is a grab). In combo trials your meter stays full while you practise them.
 - Every route is a true combo (the counter climbs 1, 2, 3 and the opponent is never free), works against every fighter, and still works with any input 3 frames early or late. Combo trials show each input's window on a timing bar.
 
 <!-- routes -->
@@ -13,80 +14,96 @@ Every fighter's combo routes, and what the combo feel pass changed. The routes l
 
 ### PEDERSEN (power, math analysis)
 
-| Route | Level | Inputs | Hits | Damage |
-| --- | --- | --- | --- | --- |
-| SQUARED | easy | P, P | 2 | 25 |
-| LOGARITHMIC JUGGLE | medium | D+H, P, P, H | 4 | 55 |
-| EXPONENTIAL GROWTH | medium | AT THE WALL: H, D+H | 2 | 47 |
-| TOWER OF POWERS | hard | D+H, UP, AIR K, AIR H, D+K ON THE GROUND | 4 | 62 |
+| Route | Level | Inputs | Hits | Meter | Damage |
+| --- | --- | --- | --- | --- | --- |
+| SQUARED | easy | P, P | 2 | - | 25 |
+| LOGARITHMIC JUGGLE | medium | D+H, P, P, H | 4 | - | 55 |
+| EXPONENTIAL GROWTH | medium | AT THE WALL: H, D+H | 2 | - | 47 |
+| OVERDRIVE LAUNCH | medium | F+H, P+K, P, P, H | 4 | 1 bar | 80 |
+| TOWER OF POWERS | hard | D+H, UP, AIR K, AIR H, D+K ON THE GROUND | 4 | - | 62 |
+| EXPONENTIAL OVERDRIVE | hard | P, D, D/F, F+P+K+H | 2 | 3 bars | 61 |
 
 ### BRINKHUS (balanced, algebra 1)
 
-| Route | Level | Inputs | Hits | Damage |
-| --- | --- | --- | --- | --- |
-| DISTRIBUTIVE PROPERTY | easy | P, K, K | 3 | 32 |
-| LONG ARMS | easy | F+P, P, H | 3 | 31 |
-| SOLVE FOR X JUGGLE | medium | D+H, P, P, H | 4 | 45 |
-| ISOLATE THE VARIABLE | medium | AT THE WALL: H, P, P, D+H | 4 | 43 |
-| POINT-SLOPE SPIKE | hard | D+H, UP, AIR P, AIR K, AIR H, K | 5 | 55 |
+| Route | Level | Inputs | Hits | Meter | Damage |
+| --- | --- | --- | --- | --- | --- |
+| DISTRIBUTIVE PROPERTY | easy | P, K, K | 3 | - | 32 |
+| LONG ARMS | easy | F+P, P, H | 3 | - | 31 |
+| SOLVE FOR X JUGGLE | medium | D+H, P, P, H | 4 | - | 45 |
+| ISOLATE THE VARIABLE | medium | AT THE WALL: H, P, P, D+H | 4 | - | 43 |
+| EXPANDED FORM | medium | H, P+K, P, P, H | 4 | 1 bar | 58 |
+| POINT-SLOPE SPIKE | hard | D+H, UP, AIR P, AIR K, AIR H, K | 5 | - | 55 |
+| ORDER OF OPERATIONS | hard | P, D, D/F, F+P+K+H | 2 | 3 bars | 58 |
 
 ### CHAI (technical, geometry)
 
-| Route | Level | Inputs | Hits | Damage |
-| --- | --- | --- | --- | --- |
-| RIGHT TRIANGLE | easy | P, K | 2 | 18 |
-| KICK CHAIN | easy | K, F+K, B+K | 3 | 39 |
-| ARC JUGGLE | medium | D+H, P, P, H | 4 | 38 |
-| FULL CIRCLE | medium | D+K, K, F+K, H | 4 | 46 |
-| VERTEX SPIKE | hard | D+H, UP, AIR P, AIR K, AIR H, K | 5 | 53 |
+| Route | Level | Inputs | Hits | Meter | Damage |
+| --- | --- | --- | --- | --- | --- |
+| RIGHT TRIANGLE | easy | P, K | 2 | - | 18 |
+| KICK CHAIN | easy | K, F+K, B+K | 3 | - | 39 |
+| ARC JUGGLE | medium | D+H, P, P, H | 4 | - | 38 |
+| FULL CIRCLE | medium | D+K, K, F+K, H | 4 | - | 46 |
+| DOUBLE VERTEX | medium | F+H, P+K | 2 | 1 bar | 30 |
+| VERTEX SPIKE | hard | D+H, UP, AIR P, AIR K, AIR H, K | 5 | - | 53 |
+| CIRCLE THEOREM | hard | P, D, D/F, F+P+K+H | 2 | 3 bars | 57 |
 
 ### DALSASS (tricky, geometry proofs)
 
-| Route | Level | Inputs | Hits | Damage |
-| --- | --- | --- | --- | --- |
-| GIVEN, PROVE | easy | P, P | 2 | 17 |
-| PYTHAGOREAN JUGGLE | medium | D+H, P, P, H | 4 | 43 |
-| SUPPLEMENTARY STOMP | medium | D/F+K, D+K ON THE GROUND | 2 | 20 |
-| CENTROID SPIKE | hard | D+H, UP, AIR K, AIR H, K | 4 | 53 |
+| Route | Level | Inputs | Hits | Meter | Damage |
+| --- | --- | --- | --- | --- | --- |
+| GIVEN, PROVE | easy | P, P | 2 | - | 17 |
+| PYTHAGOREAN JUGGLE | medium | D+H, P, P, H | 4 | - | 43 |
+| SUPPLEMENTARY STOMP | medium | D/F+K, D+K ON THE GROUND | 2 | - | 20 |
+| SUPPLEMENTARY LAUNCH | medium | D/F+K, P+K, P, P, H | 5 | 1 bar | 46 |
+| CENTROID SPIKE | hard | D+H, UP, AIR K, AIR H, K | 4 | - | 53 |
+| TWO-COLUMN PROOF | hard | P, D, D/F, F+P+K+H | 2 | 3 bars | 58 |
 
 ### LEE (rushdown, sequences)
 
-| Route | Level | Inputs | Hits | Damage |
-| --- | --- | --- | --- | --- |
-| ARITHMETIC SEQUENCE | easy | P, P, P, P | 4 | 31 |
-| RECURSIVE RUSH | easy | F+P, P, P | 3 | 29 |
-| PARTIAL SUMS | medium | P, P, F, F, P, P, P | 5 | 28 |
-| FIBONACCI JUGGLE | medium | D+H, P, P, H | 4 | 37 |
-| FIBONACCI SPIKE | hard | D+H, UP, AIR P, AIR K, AIR H, K | 5 | 53 |
+| Route | Level | Inputs | Hits | Meter | Damage |
+| --- | --- | --- | --- | --- | --- |
+| ARITHMETIC SEQUENCE | easy | P, P, P, P | 4 | - | 31 |
+| RECURSIVE RUSH | easy | F+P, P, P | 3 | - | 29 |
+| PARTIAL SUMS | medium | P, P, F, F, P, P, P | 5 | - | 28 |
+| FIBONACCI JUGGLE | medium | D+H, P, P, H | 4 | - | 37 |
+| PARTIAL SUM PLUS | medium | H, P+K, P, P, H | 4 | 1 bar | 45 |
+| FIBONACCI SPIKE | hard | D+H, UP, AIR P, AIR K, AIR H, K | 5 | - | 53 |
+| GEOMETRIC SERIES | hard | P, D, D/F, F+P+K+H | 2 | 3 bars | 57 |
 
 ### LOPEZ (defensive, calculus)
 
-| Route | Level | Inputs | Hits | Damage |
-| --- | --- | --- | --- | --- |
-| FIRST DERIVATIVE | easy | P, P | 2 | 18 |
-| LIMIT BREAK JUGGLE | medium | D+H, P, P, H | 4 | 44 |
-| MEAN VALUE PUNISH | medium | BLOCK THEIR JAB, P, D+K ON THE GROUND | 2 | 25 |
-| INFLECTION POINT | hard | D+H, UP, AIR P, AIR K, AIR H, K | 5 | 62 |
+| Route | Level | Inputs | Hits | Meter | Damage |
+| --- | --- | --- | --- | --- | --- |
+| FIRST DERIVATIVE | easy | P, P | 2 | - | 18 |
+| LIMIT BREAK JUGGLE | medium | D+H, P, P, H | 4 | - | 44 |
+| MEAN VALUE PUNISH | medium | BLOCK THEIR JAB, P, D+K ON THE GROUND | 2 | - | 25 |
+| DOUBLE CONCAVE | medium | F+H, P+K | 2 | 1 bar | 32 |
+| INFLECTION POINT | hard | D+H, UP, AIR P, AIR K, AIR H, K | 5 | - | 62 |
+| FUNDAMENTAL THEOREM | hard | THEY ATTACK: D, D/F, F+P+K+H | 1 | 3 bars | 51 |
 
 ### MIYASHIRO (spacing, algebra 2)
 
-| Route | Level | Inputs | Hits | Damage |
-| --- | --- | --- | --- | --- |
-| FACTOR PAIR | easy | P, P | 2 | 16 |
-| QUADRATIC JUGGLE | medium | D+H, P, P, H | 4 | 41 |
-| CALCULATED RUSH | medium | THEY WHIFF A JAB, F, F+P (CALCULATED BONUS) | 1 | 21 |
-| DOMAIN AND RANGE | medium | AT THE WALL: H, F+K, D+H | 3 | 42 |
-| FOCUS SPIKE | hard | D+H, UP, AIR P, AIR K, AIR H, K | 5 | 54 |
+| Route | Level | Inputs | Hits | Meter | Damage |
+| --- | --- | --- | --- | --- | --- |
+| FACTOR PAIR | easy | P, P | 2 | - | 16 |
+| QUADRATIC JUGGLE | medium | D+H, P, P, H | 4 | - | 41 |
+| CALCULATED RUSH | medium | THEY WHIFF A JAB, F, F+P (CALCULATED BONUS) | 1 | - | 21 |
+| DOMAIN AND RANGE | medium | AT THE WALL: H, F+K, D+H | 3 | - | 42 |
+| DOMAIN LAUNCH | medium | F+K, P+K, P, P, H | 4 | 1 bar | 41 |
+| FOCUS SPIKE | hard | D+H, UP, AIR P, AIR K, AIR H, K | 5 | - | 54 |
+| IMAGINARY UNIT | hard | P, D, D/F, F+P+K+H | 2 | 3 bars | 58 |
 
 ### RAMOS (grappler, matrices)
 
-| Route | Level | Inputs | Hits | Damage |
-| --- | --- | --- | --- | --- |
-| ROW AND COLUMN | easy | P, P | 2 | 18 |
-| TRANSPOSE JUGGLE | medium | D+H, P, P, H | 4 | 44 |
-| IDENTITY STOMP | medium | F+P+K, D+K ON THE GROUND | 2 | 38 |
-| CARDIO | medium | RUN, K, P, P, H | 4 | 42 |
-| RANK SPIKE | hard | D+H, UP, AIR P, AIR K, AIR H, K | 5 | 55 |
+| Route | Level | Inputs | Hits | Meter | Damage |
+| --- | --- | --- | --- | --- | --- |
+| ROW AND COLUMN | easy | P, P | 2 | - | 18 |
+| TRANSPOSE JUGGLE | medium | D+H, P, P, H | 4 | - | 44 |
+| IDENTITY STOMP | medium | F+P+K, D+K ON THE GROUND | 2 | - | 38 |
+| CARDIO | medium | RUN, K, P, P, H | 4 | - | 42 |
+| AUGMENTED JUGGLE | medium | F, F+P, P+K, P, P, H | 4 | 1 bar | 49 |
+| RANK SPIKE | hard | D+H, UP, AIR P, AIR K, AIR H, K | 5 | - | 55 |
+| MATRIX MULTIPLICATION | hard | D, D/F, F+P+K+H | 1 | 3 bars | 51 |
 <!-- /routes -->
 
 ## Easier combos (the second pass)
@@ -142,6 +159,6 @@ Chaining was too hard, so:
 ## Self-check (in `tests/sim.test.js`)
 
 - Every route against every fighter: right hits, true combo, ±3 frames of slack on each input, a difficulty, one trial step per hit.
-- Damage rises easy → medium → hard, and no route takes more than 40% of anyone's health.
+- Damage rises easy → medium → hard, and no route takes more than 40% of anyone's health (meter routes aside: spending bars is allowed to hurt more).
 - Nothing infinite: juggle gravity is capped and grows with every hit, pops shrink, wall hits are limited, a mashed juggle ends, and 10+ hits into a combo hitstun starts to decay. Random button mashing (24 seeded runs per fighter, at the wall and in the open) never lands 8 hits and never keeps the dummy from being free for 400 frames.
 - Nothing too easy: mashing a single button (P, K, H or D+H) never gets more than 4 hits, even at the wall, and every hard route contains an input with no more than 14 frames of leeway (the post-bound follow-up, 9-13 frames).

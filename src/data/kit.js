@@ -83,7 +83,7 @@
   // Enhanced specials: a special with `ex` gets a powered-up version, moves[id + 'EX'],
   // that P+K turns it into during its startup for one bar of Grade meter.
   //   ex: { text, damage (multiplier, default 1.3), multi (extra hits), armor: { hits },
-  //         hit / ch (new results), wallSplat }
+  //         hit / ch (new results; launch: true launches like their launcher), wallSplat }
   // Extra hits come every MULTI_GAP frames (the active frames grow to fit them); only
   // the last one has the move's real result (the others keep the opponent in hitstun).
   // Armor covers the rest of the startup and the first active frame (so it wins trades).
@@ -99,8 +99,14 @@
     });
     m.total = m.startup + m.active - 1 + m.recovery;
     if (x.armor) m.armor = { from: 1, to: base.startup, hits: x.armor.hits || 1 };
-    if (x.hit) m.hit = x.hit;
-    m.ch = x.ch || (x.hit ? (x.hit.launch ? { launch: x.hit.launch } : x.hit.knockdown ? { knockdown: true } : { adv: x.hit.adv + 3 }) : base.ch);
+    if (x.hit) m.hit = Object.assign({}, x.hit);
+    // `launch: true`: a new launch that sends them up just like the fighter's launcher,
+    // so the same juggles follow.
+    if (m.hit.launch === true) {
+      var L = def.moves.launcher;
+      m.hit.launch = L.hit.launch; m.carry = L.carry; m.push = Math.min(m.push, L.push);
+    }
+    m.ch = x.ch || (x.hit ? (m.hit.launch ? { launch: m.hit.launch } : m.hit.knockdown ? { knockdown: true } : { adv: m.hit.adv + 3 }) : base.ch);
     if (x.wallSplat) m.wallSplat = true;
     // The animation: the strike re-fires for each extra hit, then the recovery plays late.
     if (extra) {
@@ -189,7 +195,7 @@
   //   'D+H, UP, AIR P, AIR K' -> ['D+H', 'UP, AIR P', 'AIR K'] (UP, dash taps and RUN join the next hit)
   // and pulls out a setup condition ('AT THE WALL', 'BLOCK THEIR JAB', ...).
   // A route can also list its own `steps` and `setup`.
-  var SETUPS = [/^AT THE WALL:\s*/, /^BLOCK THEIR JAB,\s*/, /^THEY WHIFF A JAB,\s*/];
+  var SETUPS = [/^AT THE WALL:\s*/, /^BLOCK THEIR JAB,\s*/, /^THEY WHIFF A JAB,\s*/, /^THEY ATTACK:\s*/];
   FG.comboSteps = function (combo) {
     if (combo.steps) return { setup: combo.setup || '', steps: combo.steps.slice() };
     var text = combo.notation, setup = '';
@@ -199,7 +205,7 @@
     });
     var tokens = text.split(/,\s*/), steps = [], carry = '';
     tokens.forEach(function (t) {
-      if (/^(UP|F|B|RUN)$/.test(t)) { carry += t + ', '; return; }
+      if (/^(UP|F|B|RUN|D|D\/F)$/.test(t)) { carry += t + ', '; return; } // dash taps and motions join the next press
       steps.push(carry + t);
       carry = '';
     });

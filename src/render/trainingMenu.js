@@ -3,11 +3,13 @@
 // Enter or a click activates it. The fight is paused while it's open.
 (function () {
   var C = FG.C;
-  var X = 150, Y = 62, W = C.VIEW_W - 300, ROW = 13;
+  var X = 150, Y = 62, W = C.VIEW_W - 300;
 
   // opts.title: heading (default TRAINING MENU).
   function TrainingMenu(scene, items, opts) {
     opts = opts || {};
+    // Rows shrink a little when there are many, so the menu fits the screen.
+    var ROW = this.row = Math.min(13, Math.floor((C.VIEW_H - Y - 52) / items.length));
     this.scene = scene;
     this.items = items;
     this.index = 0;
@@ -62,7 +64,7 @@
     var g = this.g;
     g.clear();
     if (!this.open) return;
-    var h = 54 + this.items.length * ROW;
+    var ROW = this.row, h = 54 + this.items.length * ROW;
     g.fillStyle(0x07060c, 0.92); g.fillRect(X, Y - 8, W, h);
     g.lineStyle(2, 0xffd23f, 1); g.strokeRect(X, Y - 8, W, h);
     var sy = Y + 26 + this.index * ROW - 2;

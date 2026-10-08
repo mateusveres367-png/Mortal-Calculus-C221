@@ -12,11 +12,11 @@ var FG = ctx.FG;
 var out = [];
 FG.ROSTER.forEach(function (d) {
   out.push('### ' + d.name + ' (' + d.archetype.toLowerCase() + ', ' + d.theme.toLowerCase() + ')', '');
-  out.push('| Route | Level | Inputs | Hits | Damage |', '| --- | --- | --- | --- | --- |');
+  out.push('| Route | Level | Inputs | Hits | Meter | Damage |', '| --- | --- | --- | --- | --- | --- |');
   ['easy', 'medium', 'hard'].forEach(function (lv) {
     d.combos.filter(function (c) { return c.difficulty === lv; }).forEach(function (c) {
       var dmg = Math.min.apply(null, FG.ROSTER.map(function (o) { return FG.runCombo(d, o, c).damage; }));
-      out.push('| ' + c.name + ' | ' + lv + ' | ' + c.notation + ' | ' + c.hits.length + ' | ' + dmg + ' |');
+      out.push('| ' + c.name + ' | ' + lv + ' | ' + c.notation + ' | ' + c.hits.length + ' | ' + (c.meter ? c.meter + (c.meter > 1 ? ' bars' : ' bar') : '-') + ' | ' + dmg + ' |');
     });
   });
   out.push('');

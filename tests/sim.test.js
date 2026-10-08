@@ -1116,7 +1116,8 @@ check('all eight fighters', FG.ROSTER.length === 8, FG.ROSTER.length);
 
   defs.forEach(function (d) {
     var tiers = {};
-    d.combos.forEach(function (c) { (tiers[c.difficulty] = tiers[c.difficulty] || []).push(c); });
+    // Meter routes (enhanced specials, ultimates) sit outside the damage tiers.
+    d.combos.forEach(function (c) { if (!c.meter) (tiers[c.difficulty] = tiers[c.difficulty] || []).push(c); });
     check(d.name + ' has easy, medium and hard routes', tiers.easy && tiers.medium && tiers.hard, Object.keys(tiers));
     function best(list) { return Math.max.apply(null, list.map(function (c) { return FG.runCombo(d, D, c).damage; })); }
     check(d.name + ' damage rises with difficulty', best(tiers.easy) < best(tiers.medium) && best(tiers.medium) < best(tiers.hard),
@@ -1125,10 +1126,11 @@ check('all eight fighters', FG.ROSTER.length === 8, FG.ROSTER.length);
     d.combos.forEach(function (c) {
       if (!c.plan) return;
       var keys = Object.keys(c.plan).map(Number).sort(function (x, y) { return x - y; });
-      // The opener is the first hitting input (dash taps before it, like a run-in, are setup).
-      var opener = keys.filter(function (k) { return !/^[FB]$/.test(c.plan[k]); })[0];
+      // The opener is the first hitting input (dash taps and motions before it are setup).
+      var opener = keys.filter(function (k) { return !/^(F|B|D|D\/F)$/.test(c.plan[k]); })[0];
       keys.filter(function (k) { return k > opener; }).forEach(function (k) {
-        if (/^[FB]$/.test(c.plan[k])) return; // dash taps
+        if (/^(F|B|D|D\/F)$/.test(c.plan[k])) return; // dash taps and motions
+        if (c.meter && c.plan[k] === 'P+K') return; // powering up the opener is part of it
         [-3, 3].forEach(function (dt) {
           var plan = {};
           keys.forEach(function (kk) { plan[kk === k ? k + dt : kk] = c.plan[kk]; });
@@ -1187,7 +1189,7 @@ defs.forEach(function (d) {
     });
     // Each hard route has a real timing check: an input with no more than 16 frames
     // of leeway (counted from 15 early to 15 late).
-    d.combos.filter(function (c) { return c.difficulty === 'hard' && c.plan; }).forEach(function (c) {
+    d.combos.filter(function (c) { return c.difficulty === 'hard' && c.plan && !c.meter; }).forEach(function (c) {
       var keys = Object.keys(c.plan).map(Number).sort(function (x, y) { return x - y; }), tight = 99;
       keys.slice(1).forEach(function (k) {
         var n = 0;
@@ -1203,6 +1205,7 @@ defs.forEach(function (d) {
     // No route takes more than 40% of anyone's health.
     var minHealth = Math.min.apply(null, defs.map(function (o) { return o.health; }));
     d.combos.forEach(function (c) {
+      if (c.meter) return; // spending meter is allowed to hurt more
       var dmg = FG.runCombo(d, D, c).damage;
       check(d.name + ' ' + c.name + ' damage is fair', dmg <= minHealth * 0.4, [dmg, minHealth]);
     });
@@ -1597,6 +1600,42 @@ defs.forEach(function (d) {
   for (var i = 0; i < 40; i++) { m.step([raw(i === 0 ? { t: true, left: true } : {}), raw(i === 4 ? { k: true } : {})]); m.events.forEach(function (e) { if (e.type === 'hit' && e.defender === 0) hitV = true; }); }
   check('stage object: the vault is invulnerable', !hitV);
   check('stage objects: reset each round', (function () { m.reset(); return m.props.every(function (p) { return p.cool === 0; }); })());
+})();
+
+// The CPU uses its meter, Extra Credit and stage objects.
+(function () {
+  var counts = { enhance: 0, ultstart: 0, ulthit: 0, extracredit: 0, prop: 0 }, lopezUlt = 0;
+  defs.forEach(function (d, k) {
+    var m = new FG.Match(d, defs[(k + 3) % defs.length]); m.autoReset = false;
+    m.setProps(FG.stageProps(FG.STAGES[k % FG.STAGES.length].id));
+    var a = new FG.AI('hard', 11 + k), b = new FG.AI('hard', 99 + k);
+    m.fighters[0].meter = m.fighters[1].meter = FG.C.METER_MAX;
+    for (var i = 0; i < 60 * 70 && !m.over; i++) {
+      m.step([a.input(m.fighters[0], m.fighters[1], m), b.input(m.fighters[1], m.fighters[0], m)]);
+      m.events.forEach(function (e) {
+        if (counts[e.type] != null) counts[e.type]++;
+        if (e.type === 'ultimate' && m.fighters[e.attacker].def.id === 'lopez') lopezUlt++;
+      });
+    }
+  });
+  if (process.env.SHOW_AI) console.log('CPU meter use:', JSON.stringify(counts), 'LOPEZ counter ultimates:', lopezUlt);
+  check('CPU: enhances specials', counts.enhance > 0, counts);
+  check('CPU: lands ultimates', counts.ultstart > 0 && counts.ulthit > 0, counts);
+  check('CPU: cashes in Extra Credit', counts.extracredit > 0, counts);
+  // Cornered next to an object, with the opponent in its face: it vaults out.
+  var esc = 0;
+  for (var s2 = 0; s2 < 6 && !esc; s2++) {
+    var m = new FG.Match(D, S); m.step([raw({}), raw({})]);
+    m.setProps(FG.stageProps('classroom'));
+    m.fighters[0].x = 470; m.fighters[1].x = 70; // the CPU (player 2) in the left corner
+    var ai = new FG.AI('hard', 3 + s2);
+    for (var i = 0; i < 300; i++) {
+      m.step([raw({}), ai.input(m.fighters[1], m.fighters[0], m)]);
+      if (i === 20) m.fighters[0].x = m.fighters[1].x + 60;
+      m.events.forEach(function (e) { if (e.type === 'prop' && e.fighter === 1 && e.use === 'escape') esc++; });
+    }
+  }
+  check('CPU: vaults out of the corner with a stage object', esc > 0, esc);
 })();
 
 console.log(passes + ' passed, ' + failures + ' failed');

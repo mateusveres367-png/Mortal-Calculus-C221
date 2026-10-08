@@ -319,22 +319,28 @@
   // is the opponent's script. Starts at `dist` apart, or next to the wall.
   // Frames are game frames counted from the first press: hitstop doesn't count
   // (a press during hitstop comes out on the next game frame anyway).
+  // combo.meter: bars of Grade meter the attacker starts with (enhanced specials,
+  // ultimates). An ultimate counts as one hit, 'ultimate', with all of its damage.
   FG.runCombo = function (atk, dfn, combo, frames) {
     var m = new Match(atk, dfn), i;
     for (i = 0; i < 2; i++) m.step([FG.emptyRaw(), FG.emptyRaw()]);
+    if (combo.meter) m.fighters[0].meter = combo.meter * C.METER_BAR;
     var dist = combo.dist || 40;
     if (combo.wall) { var w = C.WALL_R - 18 * dfn.scale - 10; m.fighters[1].x = w; m.fighters[0].x = w - 44; }
     else { m.fighters[0].x = 500 - dist / 2; m.fighters[1].x = 500 + dist / 2; }
     var hits = [], counts = [], damage = 0, next = 0, f0 = m.frame, fired = {}, firedOpp = {};
     function merge(r, notation) { var add = FG.parseInput(notation); for (var k in add) if (add[k]) r[k] = true; }
-    for (i = 0; i < (frames || 320); i++) {
+    for (i = 0; i < (frames || (combo.meter >= 3 ? 640 : 320)); i++) {
       var r1 = FG.emptyRaw(), r2 = FG.emptyRaw(), t = m.frame - f0;
       if (combo.plan && combo.plan[t] && !fired[t]) { merge(r1, combo.plan[t]); fired[t] = true; }
       (combo.hold || []).forEach(function (h) { if (t >= h[0] && t <= h[1]) merge(r1, h[2]); });
       if (combo.queue && next < combo.queue.length && m.fighters[0].state === 'idle' && m.hitstop === 0) merge(r1, combo.queue[next++]);
       if (combo.oppPlan && combo.oppPlan[t] && !firedOpp[t]) { merge(r2, combo.oppPlan[t]); firedOpp[t] = true; }
       m.step([r1, r2]);
-      m.events.forEach(function (e) { if (e.type === 'hit' && e.attacker === 0) { hits.push(e.move.id); damage += e.damage; counts.push(e.hits); } });
+      m.events.forEach(function (e) {
+        if (e.type === 'hit' && e.attacker === 0) { hits.push(e.move.id); damage += e.damage; counts.push(e.hits); }
+        if (e.type === 'ulthit' && e.attacker === 0) { if (e.n === 0) { hits.push('ultimate'); counts.push(e.hits); } damage += e.damage; }
+      });
     }
     // A true combo: the combo counter climbs 1, 2, 3... (the opponent never got free).
     var trueCombo = counts.every(function (n, k) { return n === k + 1; });

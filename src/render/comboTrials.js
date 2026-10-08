@@ -76,6 +76,8 @@
 
   // Hits by player 1 move the trial along.
   ComboTrials.prototype.onEvent = function (ev) {
+    // An ultimate's first hit counts as one step ('ultimate'); the rest are its cinematic.
+    if (ev.type === 'ulthit' && ev.n === 0) ev = { type: 'hit', attacker: ev.attacker, hits: ev.hits, move: { id: 'ultimate', startup: 1 } };
     if (!this.active || ev.type !== 'hit' || ev.attacker !== 0) return;
     if (this.status && this.status.complete) return;
     var c = this.current(), want = c.hits;

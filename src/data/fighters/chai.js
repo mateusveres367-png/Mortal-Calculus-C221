@@ -179,7 +179,7 @@
         anim: [[1, 'idle'], [9, 'hk_c'], [13, 'hk_x'], [16, 'hk_x'], [24, 'hk_c'], [34, 'idle']]
       },
       bK: {
-        ex: { text: 'LAUNCHES', hit: { launch: 6.8 } }, // enhanced (P+K during startup, 1 bar)
+        ex: { text: 'LAUNCHES', hit: { launch: true } }, // enhanced (P+K during startup, 1 bar)
         name: 'Spinning Back Kick', label: 'REFLEX ANGLE', cmd: 'B+K', level: 'mid', strength: 'heavy', motion: 'kick', kick: true,
         startup: 16, active: 3, recovery: 22, damage: 16,
         block: -10, hit: { knockdown: true }, ch: { knockdown: true },
@@ -261,7 +261,11 @@
       { name: 'ARC JUGGLE', difficulty: 'medium', notation: 'D+H, P, P, H', plan: { 0: 'D+H', 40: 'P', 52: 'P', 59: 'H' }, hits: ['launcher', 'jab', 'jab2', 'jabH'] },
       { name: 'FULL CIRCLE', difficulty: 'medium', notation: 'D+K, K, F+K, H', plan: { 0: 'D+K', 17: 'K', 31: 'F+K', 46: 'H' }, hits: ['low', 'mid', 'fK', 'heavy'] },
       { name: 'VERTEX SPIKE', difficulty: 'hard', notation: 'D+H, UP, AIR P, AIR K, AIR H, K',
-        plan: { 0: 'D+H', 17: 'UP', 31: 'P', 36: 'K', 43: 'H', 77: 'K' }, hits: ['launcher', 'airP', 'airK', 'airH', 'mid'] }
+        plan: { 0: 'D+H', 17: 'UP', 31: 'P', 36: 'K', 43: 'H', 77: 'K' }, hits: ['launcher', 'airP', 'airK', 'airH', 'mid'] },
+      // Meter routes (combo trials): an enhanced special, and the ultimate.
+      { name: 'DOUBLE VERTEX', difficulty: 'medium', meter: 1, notation: 'F+H, P+K', steps: ['F+H, P+K (1 BAR)', 'SECOND KICK'],
+        plan: { 0: 'F+H', 3: 'P+K' }, hits: ['fHEX', 'fHEX'] },
+      { name: 'CIRCLE THEOREM', difficulty: 'hard', meter: 3, notation: 'P, D, D/F, F+P+K+H', plan: { 0: 'P', 3: 'D', 4: 'D/F', 5: 'F', 9: 'F+P+K+H' }, hits: ['jab', 'ultimate'] }
     ],
 
     intro: [[1, 'idle'], [14, 'stand'], [30, 'bow'], [48, 'bow'], [62, 'stand'], [84, 'idle']],

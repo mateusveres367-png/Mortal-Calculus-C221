@@ -170,7 +170,7 @@
       },
       // Domain Control: the longest poke in the game. Mid, safe at its tip.
       fK: {
-        ex: { text: 'LAUNCHES', hit: { launch: 6.4 } }, // enhanced (P+K during startup, 1 bar)
+        ex: { text: 'LAUNCHES', hit: { launch: true } }, // enhanced (P+K during startup, 1 bar)
         name: 'Side Kick', label: 'DOMAIN CONTROL', cmd: 'F+K', level: 'mid', strength: 'medium', motion: 'kick',
         startup: 16, active: 3, recovery: 18, damage: 12,
         block: -6, hit: { adv: 3 }, ch: { adv: 8 },
@@ -242,7 +242,11 @@
         plan: { 0: 'D+H', 17: 'UP', 32: 'P', 41: 'K', 51: 'H', 79: 'K' }, hits: ['launcher', 'airP', 'airK', 'airH', 'mid'] },
       { name: 'CALCULATED RUSH', difficulty: 'medium', notation: 'THEY WHIFF A JAB, F, F+P (CALCULATED BONUS)',
         dist: 100, oppPlan: { 0: 'P' }, plan: { 18: 'F', 20: 'F', 27: 'P' }, hits: ['dashP'] },
-      { name: 'DOMAIN AND RANGE', difficulty: 'medium', notation: 'AT THE WALL: H, F+K, D+H', queue: ['H', 'F+K', 'D+H'], wall: true, hits: ['heavy', 'fK', 'launcher'] }
+      { name: 'DOMAIN AND RANGE', difficulty: 'medium', notation: 'AT THE WALL: H, F+K, D+H', queue: ['H', 'F+K', 'D+H'], wall: true, hits: ['heavy', 'fK', 'launcher'] },
+      // Meter routes (combo trials): an enhanced special, and the ultimate.
+      { name: 'DOMAIN LAUNCH', difficulty: 'medium', meter: 1, notation: 'F+K, P+K, P, P, H', steps: ['F+K, P+K (1 BAR)', 'P', 'P', 'H'],
+        plan: { 0: 'F+K', 3: 'P+K', 31: 'P', 55: 'P', 61: 'H' }, hits: ['fKEX', 'jab', 'jab2', 'jabH'] },
+      { name: 'IMAGINARY UNIT', difficulty: 'hard', meter: 3, notation: 'P, D, D/F, F+P+K+H', plan: { 0: 'P', 3: 'D', 4: 'D/F', 5: 'F', 9: 'F+P+K+H' }, hits: ['jab', 'ultimate'] }
     ],
 
     intro: [[1, 'stand'], [12, 'sleeve'], [26, 'sleeve'], [34, 'sleeve2'], [48, 'sleeve2'], [58, 'bow'], [70, 'stand'], [86, 'idle']],

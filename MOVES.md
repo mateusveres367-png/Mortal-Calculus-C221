@@ -56,6 +56,8 @@ Calm and friendly, but every hit is heavy. Slow, patient, devastating.
 - **Logarithmic Juggle:** D+H, P, P, H (frames: D+H @0, P @43, P @57, H @67)
 - **Tower Of Powers:** D+H, up, air K, air H, D+K on the ground (frames: D+H @0, UP @19, K @27, H @34, D+K @84)
 - **Exponential Growth:** at the wall: H, D+H (each input as soon as you can act)
+- **Overdrive Launch (1 bar):** F+H, P+K, P, P, H (frames: F+H @0, P+K @3, P @44, P @56, H @70)
+- **Exponential Overdrive (3 bars):** P, D, D/F, F+P+K+H (frames: P @0, D @3, D/F @4, F @5, F+P+K+H @9)
 
 ## BRINKHUS — Balanced — Algebra 1
 
@@ -108,6 +110,8 @@ Nice, easygoing, a good sport. Best for new players.
 - **Solve For X Juggle:** D+H, P, P, H (frames: D+H @0, P @38, P @56, H @67)
 - **Point-Slope Spike:** D+H, up, air P, air K, air H, K (frames: D+H @0, UP @17, P @32, K @41, H @51, K @79)
 - **Isolate The Variable:** at the wall: H, P, P, D+H (each input as soon as you can act)
+- **Expanded Form (1 bar):** H, P+K, P, P, H (frames: H @0, P+K @3, P @36, P @48, H @56)
+- **Order Of Operations (3 bars):** P, D, D/F, F+P+K+H (frames: P @0, D @3, D/F @4, F @5, F+P+K+H @9)
 
 ## CHAI — Technical — Geometry
 
@@ -164,6 +168,8 @@ Very kind, precise and graceful. Bows before fights.
 - **Arc Juggle:** D+H, P, P, H (frames: D+H @0, P @40, P @52, H @59)
 - **Full Circle:** D+K, K, F+K, H (frames: D+K @0, K @17, F+K @31, H @46)
 - **Vertex Spike:** D+H, up, air P, air K, air H, K (frames: D+H @0, UP @17, P @31, K @36, H @43, K @77)
+- **Double Vertex (1 bar):** F+H, P+K (frames: F+H @0, P+K @3)
+- **Circle Theorem (3 bars):** P, D, D/F, F+P+K+H (frames: P @0, D @3, D/F @4, F @5, F+P+K+H @9)
 
 ## DALSASS — Tricky — Geometry Proofs
 
@@ -220,6 +226,8 @@ Happy, sassy, everyone's favorite. Fakes you out with a grin.
 - **Pythagorean Juggle:** D+H, P, P, H (frames: D+H @0, P @39, P @53, H @61)
 - **Centroid Spike:** D+H, up, air K, air H, K (frames: D+H @0, UP @17, K @31, H @41, K @70)
 - **Supplementary Stomp:** D/F+K, D+K on the ground (frames: D/F+K @0, D+K @49)
+- **Supplementary Launch (1 bar):** D/F+K, P+K, P, P, H (frames: D/F+K @0, P+K @3, P @44, P @56, H @64)
+- **Two-Column Proof (3 bars):** P, D, D/F, F+P+K+H (frames: P @0, D @3, D/F @4, F @5, F+P+K+H @9)
 
 ## LEE — Rushdown — Sequences
 
@@ -273,6 +281,8 @@ Sarcastic and funny. Taunts mid-combo. Relentless pressure.
 - **Partial Sums:** P, P, F, F, P, P, P (frames: P @0, P @11, F @21, F @23, P @28, P @39, P @50)
 - **Fibonacci Juggle:** D+H, P, P, H (frames: D+H @0, P @38, P @50, H @59)
 - **Fibonacci Spike:** D+H, up, air P, air K, air H, K (frames: D+H @0, UP @16, P @31, K @40, H @50, K @79)
+- **Partial Sum Plus (1 bar):** H, P+K, P, P, H (frames: H @0, P+K @3, P @41, P @57, H @63)
+- **Geometric Series (3 bars):** P, D, D/F, F+P+K+H (frames: P @0, D @3, D/F @4, F @5, F+P+K+H @9)
 
 ## LOPEZ — Defensive — Calculus
 
@@ -326,6 +336,8 @@ Very suspicious. Always watching. Waits for you to commit, then punishes.
 - **Limit Break Juggle:** D+H, P, P, H (frames: D+H @0, P @40, P @58, H @69)
 - **Inflection Point:** D+H, up, air P, air K, air H, K (frames: D+H @0, UP @17, P @32, K @38, H @47, K @80)
 - **Mean Value Punish:** BLOCK THEIR JAB, P, D+K on the ground (frames: P @21, D+K @63; hold B @0-11)
+- **Double Concave (1 bar):** F+H, P+K (frames: F+H @0, P+K @3)
+- **Fundamental Theorem (3 bars):** THEY ATTACK: D, D/F, F+P+K+H (frames: D @0, D/F @1, F @2, F+P+K+H @3)
 
 ## MIYASHIRO — Spacing — Algebra 2
 
@@ -379,6 +391,8 @@ Very smart. Reads opponents, keeps perfect distance, punishes every mistake.
 - **Focus Spike:** D+H, up, air P, air K, air H, K (frames: D+H @0, UP @17, P @32, K @41, H @51, K @79)
 - **Calculated Rush:** THEY WHIFF A JAB, F, F+P (CALCULATED BONUS) (frames: F @18, F @20, P @27)
 - **Domain And Range:** at the wall: H, F+K, D+H (each input as soon as you can act)
+- **Domain Launch (1 bar):** F+K, P+K, P, P, H (frames: F+K @0, P+K @3, P @31, P @55, H @61)
+- **Imaginary Unit (3 bars):** P, D, D/F, F+P+K+H (frames: P @0, D @3, D/F @4, F @5, F+P+K+H @9)
 
 ## RAMOS — Grappler — Matrices
 
@@ -435,3 +449,5 @@ Fast, explosive grappler who closes distance quickly. Confident and focused.
 - **Rank Spike:** D+H, up, air P, air K, air H, K (frames: D+H @0, UP @16, P @31, K @36, H @44, K @77)
 - **Identity Stomp:** F+P+K, D+K on the ground (frames: F+P+K @0, D+K @66)
 - **Cardio:** RUN, K, P, P, H (frames: F @0, F @2, K @24, P @55, P @66, H @75; hold F @2-32)
+- **Augmented Juggle (1 bar):** F, F+P, P+K, P, P, H (frames: F @0, F @2, P @10, P+K @13, P @39, P @63, H @69)
+- **Matrix Multiplication (3 bars):** D, D/F, F+P+K+H (frames: D @0, D/F @1, F @2, F+P+K+H @3)

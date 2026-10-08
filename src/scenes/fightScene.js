@@ -151,6 +151,7 @@
       this.cars.push({ owner: c, parkX: park, x: park, facing: cf, door: 0, spin: 0, bounce: 0 });
       f[c]._hidden = false;
     }
+    if (this.mode === 'training') this.applyMeterOption(this.trials && this.trials.active && !!(this.trials.current() || {}).meter);
     if (opts.intro) this.startIntro();
     else { this.intro = null; if (!opts.quiet) this.hud.showBanner('FIGHT!', '', 50); }
   };
@@ -481,6 +482,19 @@
       var f = this.match.fighters, mid = (f[0].x + f[1].x) / 2;
       f[0].x = mid - c.dist / 2; f[1].x = mid + c.dist / 2;
     }
+    // Meter routes: the bars never run out while you practise them.
+    this.applyMeterOption(!!c.meter);
+  };
+
+  // Training: INFINITE METER (or a meter trial) keeps player 1's Grade meter full
+  // (and player 2's, unless it's the CPU).
+  FightScene.prototype.applyMeterOption = function (forTrial) {
+    var on = this.training.infiniteMeter || forTrial, f = this.match.fighters;
+    for (var i = 0; i < 2; i++) {
+      var inf = on && (i === 0 || !this.ai[1]);
+      f[i].infiniteMeter = inf;
+      if (inf) f[i].meter = C.METER_MAX;
+    }
   };
 
   FightScene.prototype.toSelect = function () {
@@ -505,6 +519,8 @@
       dummyItem('recovery', 'DUMMY KNOCKDOWN'),
       dummyItem('breaks', 'DUMMY THROW BREAKS'),
       { label: 'HEALTH', value: function () { return t.refill ? 'REFILL' : 'NORMAL'; }, change: function () { t.refill = !t.refill; } },
+      { label: 'INFINITE METER', value: function () { return t.infiniteMeter ? 'ON' : 'OFF'; },
+        change: function () { t.infiniteMeter = !t.infiniteMeter; self.applyMeterOption(self.trials.active && !!(self.trials.current() || {}).meter); } },
       { label: 'EASY COMBOS', value: function () { return FG.settings.easyCombos ? 'ON' : 'OFF'; }, change: function () { FG.settings.easyCombos = !FG.settings.easyCombos; FG.saveSettings(); } },
       toggle('showData', 'FRAME DATA'),
       toggle('showInputs', 'INPUT DISPLAY'),
@@ -533,6 +549,7 @@
     t.p2Human = v === 'human';
     t.p2Cpu = v === 'human' || v === 'dummy' ? null : v;
     this.ai[1] = t.p2Cpu ? new FG.AI(t.p2Cpu, Math.floor(Math.random() * 100000)) : null;
+    this.applyMeterOption(this.trials.active && !!(this.trials.current() || {}).meter);
   };
 
   // Clickable on-screen buttons: MENU and RESET.

@@ -66,7 +66,7 @@ On the title screen, press `Enter` (or click) for the menu, then up/down and `En
 - **Training:** pick your fighter, then the opponent, then a stage. In the training menu, PLAYER 2 can be the dummy, a second human, or the CPU at any level.
 - **Options:** CPU difficulty, round time, sound and Easy Combos (left/right to change).
 
-**CPU levels.** The CPU presses real inputs and plays by the same rules; it only sees what you do after a reaction delay. Each fighter plays to their style (LEE rushes in, LOPEZ waits and punishes, MIYASHIRO keeps distance, RAMOS runs in for grabs, DALSASS feints, PEDERSEN swings big through your hits, CHAI sidesteps and counters, BRINKHUS plays solid fundamentals), taunts when there's room, and uses its finisher when it wins.
+**CPU levels.** The CPU presses real inputs and plays by the same rules; it only sees what you do after a reaction delay. Each fighter plays to their style (LEE rushes in, LOPEZ waits and punishes, MIYASHIRO keeps distance, RAMOS runs in for grabs, DALSASS feints, PEDERSEN swings big through your hits, CHAI sidesteps and counters, BRINKHUS plays solid fundamentals), taunts when there's room, and uses its finisher when it wins. It spends meter too: it powers up its specials, runs its meter routes, throws out its ultimate to punish a big opening (LOPEZ sets his counter stance when you come in), cashes in Extra Credit when it's low, and uses the stage objects (vaulting out of a corner, springboarding in). Harder levels do all of that more.
 
 | Level | How it plays |
 | --- | --- |
@@ -216,6 +216,7 @@ Training starts with both fighters' round intros (any button skips) on the stage
 | Dummy knockdown | Stay down, Tech, Random wake-up |
 | Dummy throw breaks | Off, On |
 | Health | Refill a moment after each combo, or Normal (K.O. resets) |
+| Infinite meter | On keeps both Grade meters full (player 2's only when it isn't the CPU), Off |
 | Frame data / Input display / Hitboxes / Slow motion | On, Off |
 | Start position | Center, Left wall, Right wall (for wall combos) |
 | Swap sides | P1 and P2 trade fighters |

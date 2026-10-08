@@ -20,12 +20,25 @@
     hard:      { name: 'HARD',      react: 8,  block: 0.92, lowRead: 0.88, punish: 0.95, combo: 0.95, aggression: 0.6,  breakThrow: 0.7, tech: 0.85, sidestep: 0.25, think: [4, 12],  tiers: ['medium', 'hard'], wall: true, taunt: 0.04 },
     professor: { name: 'PROFESSOR', react: 4,  block: 0.97, lowRead: 0.95, punish: 1,    combo: 1,    aggression: 0.65, breakThrow: 0.9, tech: 0.95, sidestep: 0.3,  think: [2, 8],   tiers: ['medium', 'hard'], wall: true, reads: 3, taunt: 0.04 }
   };
+  // Meter and stage use by level: meter (enhanced specials and meter routes), ult
+  // (ultimates), credit (Extra Credit when it's there), props (stage objects).
+  var METER_USE = {
+    easy: { meter: 0.15, ult: 0.2, credit: 0.4, props: 0.1 },
+    normal: { meter: 0.4, ult: 0.5, credit: 0.8, props: 0.3 },
+    hard: { meter: 0.7, ult: 0.85, credit: 1, props: 0.5 },
+    professor: { meter: 0.9, ult: 1, credit: 1, props: 0.6 }
+  };
+  Object.keys(METER_USE).forEach(function (k) { Object.assign(FG.AI_LEVELS[k], METER_USE[k]); });
+  var QCF = { 0: 'D', 1: 'D/F', 2: 'F', 3: 'F+P+K+H' }; // the ultimate's input
+  // The move a style token starts (for enhancing it).
+  var TOKEN_MOVE = { 'F+P': 'fP', 'F+K': 'fK', 'F+H': 'fH', 'B+P': 'bP', 'B+K': 'bK', 'B+H': 'bH', 'D/F+K': 'dfK', H: 'heavy', K: 'mid', P: 'jab' };
   FG.AI_ORDER = ['easy', 'normal', 'hard', 'professor'];
   var HABIT_MEMORY = 10; // the opponent's last attacks the PROFESSOR remembers
 
   function AI(level, seed) {
     this.setLevel(level || 'normal');
     this.rng = mulberry(seed || 7);
+    this.mrng = mulberry((seed || 7) + 7919); // meter and stage-object decisions (kept apart from the rest)
     this.seen = [];          // what the opponent was doing, one entry per tick
     this.script = null;      // a planned input sequence (string, combo) on game frames
     this.walk = null;        // { dir, until } a short walk
@@ -72,10 +85,11 @@
   function attacking(f) { return f.state === 'attack' && f.move && f.move.box; }
 
   // Combo routes it knows: ones that start with a plain press at any spacing.
-  AI.prototype.routes = function (def, first) {
-    var L = this.L;
+  AI.prototype.routes = function (def, first, self) {
+    var L = this.L, bars = self ? Math.floor(self.meter / C.METER_BAR) : 0, useMeter = bars > 0 && this.mrng() < L.meter;
     return def.combos.filter(function (c) {
       if (!c.plan || c.wall || c.oppPlan || c.hold || c.dist || L.tiers.indexOf(c.difficulty) < 0) return false;
+      if (c.meter && (!useMeter || bars < c.meter)) return false; // meter routes need the bars (and the will)
       var keys = Object.keys(c.plan).map(Number).sort(function (a, b) { return a - b; });
       return c.plan[keys[0]] === first && keys[0] === 0;
     });
@@ -88,7 +102,7 @@
 
   // Start a combo route (or just its first hit, if it doesn't roll the combo).
   AI.prototype.startRoute = function (first, match, self) {
-    var routes = this.routes(self.def, first);
+    var routes = this.routes(self.def, first, self);
     if (routes.length && this.rng() < this.L.combo) {
       this.startScript(routes[Math.floor(this.rng() * routes.length)].plan, match, self);
     } else {
@@ -240,6 +254,9 @@
         if (gd.counter == null) gd.counter = !opp.move.armor && opp.move.startup - opp.moveFrame > jb.startup + 1 && dist < reach(self, jb) + 6 && rnd() < 0.6;
         if (gd.counter && self.actionable) { gd.counter = false; gd.block = false; this.startRoute('P', match, self); return toRaw('P', self.facing); }
       }
+      // LOPEZ with three bars: the Fundamental Theorem stance instead of a plain parry.
+      if (gd.ult == null) gd.ult = !!(self.def.ultimate && self.def.ultimate.counter && opp.move.startup - opp.moveFrame > 12 && this.hasUltimate(self));
+      if (gd.ult && self.actionable) { gd.ult = false; gd.block = false; return this.ultimate(match, self); }
       if (gd.parry == null) gd.parry = !!(st.parry && self.def.moves.bH && self.def.moves.bH.parry && rnd() < st.parry * L.block);
       if (gd.parry && self.actionable) {
         gd.parry = false; gd.block = false;
@@ -273,6 +290,9 @@
       var left = opp.move.total - opp.moveFrame, mv = self.def.moves;
       if (!this.punishRoll) this.punishRoll = { move: opp.move, go: rnd() < L.punish };
       if (this.punishRoll.move === opp.move && this.punishRoll.go) {
+        // Three bars and a big opening: the ultimate (not LOPEZ's: his is a counter).
+        var ult = mv.ultimate;
+        if (ult && !self.def.ultimate.counter && left >= ult.startup + 4 && dist < reach(self, ult) + 6 && this.hasUltimate(self)) return this.ultimate(match, self);
         if (left >= mv.launcher.startup && dist < reach(self, mv.launcher) + 10) { this.startRoute('D+H', match, self); return toRaw('D+H', self.facing); }
         if (left >= mv.jab.startup && dist < reach(self, mv.jab) + 12) { this.startRoute('P', match, self); return toRaw('P', self.facing); }
       }
@@ -290,6 +310,17 @@
     this.nextThink = match.frame + L.think[0] + Math.floor(rnd() * (L.think[1] - L.think[0]));
     this.walk = null;
     var moves = self.def.moves, st = self.def.ai || {}, a = Math.min(0.95, L.aggression * (st.aggro || 1)), roll = rnd();
+    // LOPEZ with three bars: when they come in, set the Fundamental Theorem stance.
+    if (self.def.ultimate && self.def.ultimate.counter && dist < 120 && (opp.state === 'walkF' || opp.state === 'dash' || opp.state === 'run') && self.meter >= C.METER_MAX && this.mrng() < 0.25 * L.ult) return this.ultimate(match, self);
+    // Low on health: cash in Extra Credit (P+K+H) when there's a moment.
+    if (self.canExtraCredit() && dist > 60 && this.mrng() < L.credit) return toRaw('P+K+H', self.facing);
+    // Stage objects: vault out of a corner, or springboard in from beside one.
+    var prop = (match.props || []).filter(function (p) { return p.cool === 0 && Math.abs(p.x - self.x) <= C.PROP_REACH - 4; })[0];
+    if (prop && this.mrng() < L.props) {
+      var cornered = match.wallDistance(self, -self.facing) < 50 && dist < 100;
+      if (cornered) return toRaw('B+T', self.facing);
+      if (dist > 50 && dist < 130) return toRaw('T', self.facing);
+    }
     var close = dist < reach(self, moves.jab) + 10, mid = dist < reach(self, moves.mid) + 18;
     // Each fighter's style (def.ai): the moves they like up close and at poking range,
     // the distance they like to fight from, and their tricks.
@@ -363,8 +394,24 @@
       this.script.keep = true; // the feinted move never connects: don't give up on the plan
       return toRaw(tok, self.facing);
     }
+    // With a bar to spare, power the special up (P+K in its startup).
+    var exId = TOKEN_MOVE[tok], exm = exId && self.def.moves[exId];
+    if (exm && exm.ex && self.meter >= C.METER_BAR && this.mrng() < this.L.meter * 0.5) {
+      this.startScript({ 0: tok, 3: 'P+K' }, match, self);
+      return toRaw(tok, self.facing);
+    }
     this.startRoute(tok, match, self);
     return toRaw(tok, self.facing);
+  };
+
+  // The ultimate's input as a script (it comes out 3 frames later).
+  AI.prototype.ultimate = function (match, self) {
+    this.startScript(QCF, match, self);
+    this.script.keep = true;
+    return toRaw(QCF[0], self.facing);
+  };
+  AI.prototype.hasUltimate = function (self) {
+    return !!self.def.moves.ultimate && self.meter >= C.METER_MAX && this.mrng() < this.L.ult;
   };
 
   function mulberry(a) {

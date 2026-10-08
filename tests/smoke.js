@@ -152,8 +152,29 @@ try { playwright = require('playwright'); } catch (e) {
     return first;
   });
   await page.screenshot({ path: path.join(out, '7-trial.png') });
+  // The ultimate's trial (three bars, given while you practise it) completes too.
+  var ultTrial = await page.evaluate(function () {
+    var s = window.FG_SCENE, tr = s.trials;
+    var idx = tr.list.findIndex(function (c) { return c.meter === 3; });
+    tr.select(idx);
+    var c = tr.current(), m = s.match, f0 = m.frame, fired = {};
+    m.fighters[0].x = 480; m.fighters[1].x = 520;
+    s.forceInput = function () {
+      var t = m.frame - f0, p = !fired[t] && c.plan && c.plan[t];
+      if (p) fired[t] = true;
+      var opp = c.oppPlan && !fired['o' + t] && c.oppPlan[t];
+      if (opp) fired['o' + t] = true;
+      return [p ? FG.parseInput(p) : FG.emptyRaw(), opp ? FG.parseInput(opp) : null];
+    };
+    var completed = false, meterFull = m.fighters[0].meter === FG.C.METER_MAX;
+    for (var i = 0; i < 900 && !completed; i++) { s.tick(); if (tr.status && tr.status.complete) completed = true; }
+    s.render();
+    s.forceInput = null;
+    return { name: c.name, meterFull: meterFull, completed: completed, steps: tr.lines.map(function (l) { return l.text; }).filter(Boolean).length };
+  });
+  await page.screenshot({ path: path.join(out, '7-trial-ultimate.png') });
   await page.keyboard.press('Digit7');
-  var trialOk = trial.active && /COMBO TRIAL 1\//.test(trial.title) && trial.completed && trial.done &&
+  var trialOk = trial.active && /COMBO TRIAL 1\//.test(trial.title) && trial.completed && trial.done && ultTrial.completed && ultTrial.meterFull &&
     !(await page.evaluate(function () { return window.FG_SCENE.trials.active; }));
 
   // A round-winning hit zooms the world camera in and plays in slow motion; the HUD
@@ -349,7 +370,7 @@ try { playwright = require('playwright'); } catch (e) {
   await page.screenshot({ path: path.join(out, '10-ending.png') });
 
   await browser.close();
-  console.log(JSON.stringify({ title: title, matchup: matchup, renderer: renderer, hits: hits, counter: counterText, p1: p1, menuOk: menuOk, resetX: resetX, trial: trial, ko: ko, stage: stagePick, arcade: arcade, vsPanel: vsPanel, cutFreeze: cutFreeze, cpu: cpu, ladder: ladder, enhanced: ex, ultimate: ultR, extraCredit: ecR, prop: propR, errors: errors }, null, 1));
+  console.log(JSON.stringify({ title: title, matchup: matchup, renderer: renderer, hits: hits, counter: counterText, p1: p1, menuOk: menuOk, resetX: resetX, trial: trial, ko: ko, stage: stagePick, arcade: arcade, vsPanel: vsPanel, cutFreeze: cutFreeze, cpu: cpu, ladder: ladder, enhanced: ex, ultimate: ultR, extraCredit: ecR, prop: propR, ultTrial: ultTrial, errors: errors }, null, 1));
   var ok = !errors.length && title === 'Mortal Calculus: C221' && matchup === expectMatchup && hits.join() === expectHits && counterText === String(hits.length) &&
     p1.last && p1.last.kind === 'BLOCK' && p1.last.adv === p1.jabBlock && menuOk && resetOk && trialOk && koOk && stagePick === 'classroom' && arcadeOk && attractOk && vsPanel && cutFreeze && cpuOk && ladderOk && exOk && ultOk && ecOk && propOk;
   if (!ok) console.log('checks:', JSON.stringify({ errors: errors.length, menuOk: menuOk, resetOk: resetOk, trialOk: trialOk, koOk: koOk, arcadeOk: arcadeOk, attractOk: attractOk, vsPanel: vsPanel, cutFreeze: cutFreeze, cpuOk: cpuOk, ladderOk: ladderOk, exOk: exOk, ultOk: ultOk, ecOk: ecOk, propOk: propOk }));

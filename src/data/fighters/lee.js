@@ -202,7 +202,7 @@
       },
       sweep: FG.kit.sweep('DIVERGENT SWEEP', { startup: 19, motion: 'sweep' }),
       heavy: {
-        ex: { text: 'LAUNCHES', hit: { launch: 6.5 } }, // enhanced (P+K during startup, 1 bar)
+        ex: { text: 'LAUNCHES', hit: { launch: true } }, // enhanced (P+K during startup, 1 bar)
         name: 'Liver Shot', label: 'PARTIAL SUM', cmd: 'H', level: 'mid', strength: 'heavy', motion: 'body', wallSplat: true,
         startup: 17, active: 3, recovery: 18, damage: 18,
         block: 2, hit: { adv: 7 }, ch: { launch: 5.8 },
@@ -239,7 +239,11 @@
       { name: 'PARTIAL SUMS', difficulty: 'medium', notation: 'P, P, F, F, P, P, P', plan: { 0: 'P', 11: 'P', 21: 'F', 23: 'F', 28: 'P', 39: 'P', 50: 'P' }, hits: ['jab', 'seq2', 'jab', 'seq2', 'seq3'] },
       { name: 'FIBONACCI JUGGLE', difficulty: 'medium', notation: 'D+H, P, P, H', plan: { 0: 'D+H', 38: 'P', 50: 'P', 59: 'H' }, hits: ['launcher', 'jab', 'seq2', 'jabH'] },
       { name: 'FIBONACCI SPIKE', difficulty: 'hard', notation: 'D+H, UP, AIR P, AIR K, AIR H, K',
-        plan: { 0: 'D+H', 16: 'UP', 31: 'P', 40: 'K', 50: 'H', 79: 'K' }, hits: ['launcher', 'airP', 'airK', 'airH', 'mid'] }
+        plan: { 0: 'D+H', 16: 'UP', 31: 'P', 40: 'K', 50: 'H', 79: 'K' }, hits: ['launcher', 'airP', 'airK', 'airH', 'mid'] },
+      // Meter routes (combo trials): an enhanced special, and the ultimate.
+      { name: 'PARTIAL SUM PLUS', difficulty: 'medium', meter: 1, notation: 'H, P+K, P, P, H', steps: ['H, P+K (1 BAR)', 'P', 'P', 'H'],
+        plan: { 0: 'H', 3: 'P+K', 41: 'P', 57: 'P', 63: 'H' }, hits: ['heavyEX', 'jab', 'seq2', 'jabH'] },
+      { name: 'GEOMETRIC SERIES', difficulty: 'hard', meter: 3, notation: 'P, D, D/F, F+P+K+H', plan: { 0: 'P', 3: 'D', 4: 'D/F', 5: 'F', 9: 'F+P+K+H' }, hits: ['jab', 'ultimate'] }
     ],
 
     intro: [[1, 'idle'], [14, 'stand'], [26, 'glasses2'], [44, 'glasses2'], [56, 'shrug'], [74, 'shrug'], [86, 'idle']],

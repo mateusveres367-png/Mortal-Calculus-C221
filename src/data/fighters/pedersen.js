@@ -198,7 +198,7 @@
       },
       // Exponential Haymaker: a huge, slow, wall-splatting haymaker.
       fH: {
-        ex: { text: 'ABSORBS TWO HITS, LAUNCHES', armor: { hits: 2 }, hit: { launch: 6.5 } }, // enhanced (P+K during startup, 1 bar)
+        ex: { text: 'ABSORBS TWO HITS, LAUNCHES', armor: { hits: 2 }, hit: { launch: true } }, // enhanced (P+K during startup, 1 bar)
         name: 'Haymaker', label: 'EXPONENTIAL HAYMAKER', cmd: 'F+H', level: 'mid', strength: 'heavy', motion: 'straight', wallSplat: true, guardDmg: 34,
         startup: 26, active: 4, recovery: 22, damage: 36, armor: { from: 8, to: 25, hits: 1 },
         block: -6, hit: { knockdown: true }, ch: { launch: 6.6 },
@@ -237,7 +237,11 @@
       { name: 'LOGARITHMIC JUGGLE', difficulty: 'medium', notation: 'D+H, P, P, H', plan: { 0: 'D+H', 43: 'P', 57: 'P', 67: 'H' }, hits: ['launcher', 'jab', 'jab2', 'jabH'] },
       { name: 'TOWER OF POWERS', difficulty: 'hard', notation: 'D+H, UP, AIR K, AIR H, D+K ON THE GROUND',
         plan: { 0: 'D+H', 19: 'UP', 27: 'K', 34: 'H', 84: 'D+K' }, hits: ['launcher', 'airK', 'airH', 'low'] },
-      { name: 'EXPONENTIAL GROWTH', difficulty: 'medium', notation: 'AT THE WALL: H, D+H', queue: ['H', 'D+H'], wall: true, hits: ['heavy', 'launcher'] }
+      { name: 'EXPONENTIAL GROWTH', difficulty: 'medium', notation: 'AT THE WALL: H, D+H', queue: ['H', 'D+H'], wall: true, hits: ['heavy', 'launcher'] },
+      // Meter routes (combo trials): an enhanced special, and the ultimate.
+      { name: 'OVERDRIVE LAUNCH', difficulty: 'medium', meter: 1, notation: 'F+H, P+K, P, P, H', steps: ['F+H, P+K (1 BAR)', 'P', 'P', 'H'],
+        plan: { 0: 'F+H', 3: 'P+K', 44: 'P', 56: 'P', 70: 'H' }, hits: ['fHEX', 'jab', 'jab2', 'jabH'] },
+      { name: 'EXPONENTIAL OVERDRIVE', difficulty: 'hard', meter: 3, notation: 'P, D, D/F, F+P+K+H', plan: { 0: 'P', 3: 'D', 4: 'D/F', 5: 'F', 9: 'F+P+K+H' }, hits: ['jab', 'ultimate'] }
     ],
 
     // The car drives in, he steps out (the scene handles the car), then loosens his tie.
