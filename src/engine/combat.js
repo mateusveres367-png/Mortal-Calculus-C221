@@ -17,7 +17,7 @@
       if (!m.tracks && Math.abs(a.z - d.z) > C.SIDESTEP_EVADE_Z) continue;
       // Highs (and throws) go over crouching opponents.
       if (m.level === 'high' && d.isCrouching()) continue;
-      // A backdash that evades lows early on (LOPEZ's Standard Deviation).
+      // A backdash that evades lows early on (LOPEZ's Asymptote Backdash).
       if (m.level === 'low' && d.state === 'backdash' && d.stateFrame <= (d.def.backdashLowInvuln || 0)) continue;
       // Only ground-hitting moves reach a fighter who is lying down, or tripped and falling.
       if ((d.state === 'down' || (d.state === 'juggle' && d.tripped)) && (!m.otg || d.groundHits >= C.GROUND_HITS_MAX)) continue;

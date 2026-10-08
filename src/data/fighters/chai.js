@@ -34,9 +34,10 @@
   FG.defineFighter({
     id: 'chai', order: 2,
     homeStage: 'classroom',
+    glyphs: ['360', 'C=2*PI*R', '(X,Y)->(-X,Y)', '180'], // math that flies off their big hits
     name: 'CHAI', archetype: 'TECHNICAL', theme: 'GEOMETRY',
     bio: 'VERY KIND, PRECISE AND GRACEFUL. BOWS BEFORE FIGHTS.',
-    signature: ['TANGENT STEP', 'REFLECTION COUNTER', 'PARABOLA LAUNCHER', 'TRANSFORMATION'],
+    signature: ['TANGENT STEP', 'REFLECTION COUNTER', 'ARC LAUNCHER', 'TRANSFORMATION'],
     scale: 0.96, health: 160,
     walkF: 2.2, walkB: 1.9, dashSpeed: 8.2, backdashSpeed: 9.2,
     ssAttackFrom: 6, // Tangent Step comes out early in the sidestep
@@ -128,7 +129,7 @@
         anim: [[1, 'squat'], [9, 'sweep_c'], [15, 'sweep_x'], [18, 'sweep_x'], [30, 'sweep_c'], [40, 'crouch']]
       },
       launcher: {
-        name: 'Launcher', label: 'PARABOLA LAUNCHER', cmd: 'D+H', level: 'mid', strength: 'launch',
+        name: 'Launcher', label: 'ARC LAUNCHER', cmd: 'D+H', level: 'mid', strength: 'launch',
         startup: 14, active: 4, recovery: 24, damage: 15,
         block: -16, hit: { launch: 7.8 }, ch: { launch: 8.4 },
         hitbox: { x: 10, w: 28, y: 36, h: 76 }, push: 6, juggle: 5.5, carry: 0.6, shake: 0.008,
@@ -144,7 +145,7 @@
 
     combos: [
       { name: 'RIGHT TRIANGLE', difficulty: 'easy', notation: 'P, K', plan: { 0: 'P', 11: 'K' }, hits: ['jab', 'jabK'] },
-      { name: 'PARABOLA JUGGLE', difficulty: 'medium', notation: 'D+H, P, K', plan: { 0: 'D+H', 39: 'P', 53: 'K' }, hits: ['launcher', 'jab', 'jabK'] },
+      { name: 'ARC JUGGLE', difficulty: 'medium', notation: 'D+H, P, K', plan: { 0: 'D+H', 39: 'P', 53: 'K' }, hits: ['launcher', 'jab', 'jabK'] },
       { name: 'VERTEX SPIKE', difficulty: 'hard', notation: 'D+H, UP, AIR P, AIR K, AIR H, K',
         plan: { 0: 'D+H', 17: 'UP', 32: 'P', 40: 'K', 50: 'H', 79: 'K' }, hits: ['launcher', 'airP', 'airK', 'airH', 'mid'] }
     ],

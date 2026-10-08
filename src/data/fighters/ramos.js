@@ -36,6 +36,7 @@
   FG.defineFighter({
     id: 'ramos', order: 7,
     homeStage: 'campus',
+    glyphs: ['[A B]', 'DET=0', 'A*I=A', '[1 0]'], // math that flies off their big hits
     name: 'RAMOS', archetype: 'GRAPPLER', theme: 'MATRICES',
     bio: 'FAST, EXPLOSIVE GRAPPLER WHO CLOSES DISTANCE QUICKLY. CONFIDENT AND FOCUSED.',
     signature: ['MATRIX LOCK', 'DETERMINANT SLAM', 'IDENTITY', 'TRANSPOSE TOSS'],

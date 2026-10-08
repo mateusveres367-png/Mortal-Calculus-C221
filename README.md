@@ -103,9 +103,9 @@ Every fighter uses the same input layout. What each input does, and its frame da
 | `P, P` and other strings | follow-ups, often only if the first hit connects |
 | down + `K` / down-back + `K` | low kick / knockdown sweep |
 | down + `H` | launcher; press up when it hits to jump after them |
-| forward or back + a button | fighter-specific moves (for example DALSASS's Function Feint, CHAI's parry, LEE's Recursive Rush, MIYASHIRO's Dot Product) |
-| dash, then `P` | dash attack (MIYASHIRO's Vector Rush) |
-| `P` right after blocking | LOPEZ's Confidence Interval punisher |
+| forward or back + a button | fighter-specific moves (for example DALSASS's Proof by Contradiction, CHAI's parry, LEE's Recursive Rush, MIYASHIRO's Domain Control, PEDERSEN's Right Angle Elbow) |
+| dash, then `P` | dash attack (MIYASHIRO's Range Check) |
+| `P` right after blocking | LOPEZ's Mean Value Punish |
 | sidestep, then a button | sidestep attack (CHAI's Tangent Step comes out early) |
 | `P` / `K` / `H` in the air | air attacks that chain on hit; air `H` bounds |
 | `P`+`K` / back + `P`+`K` | front throw (break with `P`) / reverse throw (break with `K`) |
@@ -114,42 +114,45 @@ Every fighter uses the same input layout. What each input does, and its frame da
 | while knocked down | up gets up, back or forward rolls, a sidestep key rolls sideways, `K` or `P` does a wake-up kick |
 | just before landing from a juggle | `P`, `K` or `H` tech rolls (not after sweeps, bounds or wall splats) |
 
-The fighters:
+The fighters, and what they teach:
 
-- **PEDERSEN** (power, exponents) — the cover fighter. Slow, with huge damage. His arch-nemesis is Vicky:
+- **PEDERSEN** (power; geometry & math analysis) — the cover fighter. Slow, with huge damage. His arch-nemesis is Vicky:
   - **Exponential Haymaker** (forward + `H`) splats the wall.
   - **Order of Magnitude** (back + `H`, hold `H` to charge) knocks down at half charge. At full charge it does over double damage and breaks the guard if blocked.
-  - **Power Rule** (down + `H`) is his launcher, and **Long Division** (`P`+`K`) is a slam throw.
-  - His intro drives his car in; he steps out and loosens his tie.
-- **BRINKHUS** (balanced, limits) — best for new players. The Epsilon-Delta string (`P, K, K`) combos naturally on hit. His launcher is Limit Break (down + `H`) and his throw is Squeeze Theorem.
-- **DALSASS** (tricky, functions):
-  - **Function Feint** (forward + `H`) looks like his overhead. Cancel it into a jab (`P`), a low (`K`), the real overhead (`H`) or a throw (`P`+`K`), or let it fizzle.
-  - **Piecewise** (back + `P`) switches to a second stance where `P`, `K` and `H` are different moves. Moving leaves the stance.
-  - **Asymptote Slide** (down-forward + `K`) slides under highs and knocks down.
+  - **Right Angle Elbow** (forward + `P`) steps in, is plus on hit, and launches on a counter hit.
+  - **Logarithmic Launcher** (down + `H`) is his launcher, and **Long Division** (`P`+`K`) is a slam throw.
+  - His intro drives his car in (on outdoor stages); he steps out and loosens his tie.
+- **BRINKHUS** (balanced; Algebra 1) — best for new players. The **Distributive Property** string (`P, K, K`) combos naturally on hit, **Linear Rush** (`H`) steps in, his launcher is **Solve for X** (down + `H`) and his throw is **FOIL**.
+- **DALSASS** (tricky; geometry: triangles and proofs):
+  - **Proof by Contradiction** (forward + `H`) is a feint that looks like his overhead. Cancel it into a jab (`P`), a low (`K`), the real overhead (`H`) or a throw (`P`+`K`), or let it fizzle.
+  - **Similar Triangles** (back + `P`) switches to a second stance where `P`, `K` and `H` are different moves. Moving leaves the stance.
+  - **Supplementary Slide** (down-forward + `K`) slides under highs and knocks down. **Pythagorean Launcher** (down + `H`), **Congruence Lock** (throw).
   - The crowd cheers louder for him, and he wags a finger when you fall for a feint.
-- **CHAI** (technical, geometry):
+- **CHAI** (technical; geometry: circles, angles, transformations):
   - **Tangent Step:** sidestep, then `P` (or `K` for a low). It comes out earlier than other fighters' sidestep attacks and stays off the line until it hits.
   - **Reflection Counter** (back + `H`) parries highs and mids during frames 2–10, then counters at once. Lows and throws beat it, and a whiffed parry is punishable.
-  - Her routes are precise; the Vertex Bound route has a 2-frame window. She winces apologetically after landing a big hit and offers a hand up when she wins.
-- **LEE** (rushdown, sequences):
+  - **Arc Launcher** (down + `H`) and **Transformation** (throw). She winces apologetically after landing a big hit and offers a hand up when she wins.
+- **LEE** (rushdown; geometry, Algebra 1 & 2: sequences):
   - **Arithmetic Sequence** (`P, P, P`, then `P` for a mid or `K` for a low) gets faster with every hit.
   - **Recursive Rush** (forward + `P`) repeats on hit when you press `P` again, up to three times.
   - His normals are plus on block. He taunts mid-combo and pushes up his glasses after big hits.
-- **LOPEZ** (defensive, statistics):
-  - **Standard Deviation:** his backdash goes further, recovers sooner, and lows can't touch it early on.
-  - **Confidence Interval:** `P` within 10 frames of blocking is a fast, heavy punisher.
-  - **Null Hypothesis** (back + `H`) parries mids and lows; he squints, then counters. Highs and throws beat it.
-  - He takes his blazer off during his intro.
-- **MIYASHIRO** (spacing, vectors):
-  - **Dot Product** (forward + `K`) is the longest mid in the game.
-  - **Vector Rush** (dash, then `P`) comes out early in a dash.
-  - **Unit Circle** (back + `K`) is a tracking spin kick.
+- **LOPEZ** (defensive; calculus):
+  - **Asymptote Backdash:** his backdash goes further, recovers sooner, and lows can't touch it early on.
+  - **Mean Value Punish:** `P` within 10 frames of blocking is a fast, heavy punisher.
+  - **Derivative Read** (back + `H`) reads your rate of change: it parries mids and lows; he squints, then counters. Highs and throws beat it.
+  - **Limit Break** (down + `H`) is his launcher and **Squeeze Theorem** his throw. He takes his blazer off during his intro.
+- **MIYASHIRO** (spacing; Algebra 2):
+  - **Domain Control** (forward + `K`) is the longest mid in the game.
+  - **Range Check** (dash, then `P`) comes out early in a dash.
+  - **Vertex Kick** (back + `K`) is a tracking spin kick. **Quadratic Launcher** (down + `H`), **Discriminant** (throw).
   - **Calculated:** when you whiff near him, his next hit within 2.5 seconds does 30% more damage.
-- **RAMOS** (grappler, matrices) — the fastest dash in the game, and a cardio machine. He can chain dashes back to back, and his guard meter recovers twice as fast. Long, bouncy hair that swings when he moves:
+- **RAMOS** (grappler; Algebra 2: matrices) — the fastest dash in the game, and a cardio machine. He can chain dashes back to back, and his guard meter recovers twice as fast. Long, bouncy hair that swings when he moves:
   - **Matrix Lock** (`P`+`K`) has a short break window (8 frames instead of 15).
   - **Determinant Slam** (back + `P`+`K`) is his reverse throw.
   - **Identity** (forward + `P`+`K`) is a command grab: slower, but it can't be broken and takes crouching opponents too.
   - **Transpose Toss** (down + `H`) is his launcher, and dash then `P` is a shoulder charge.
+
+Big hits throw a little of each teacher's math into the air (Y=MX+B, DY/DX, A*A+B*B=C*C...).
 
 ### Training mode
 

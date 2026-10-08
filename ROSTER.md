@@ -4,24 +4,26 @@ The eight fighters of the El Camino Real Math Department. Later phases build on 
 
 **PEDERSEN is the cover fighter.** He is front and center on the title screen next to his red mid-engine sports car (styled after a red C8 Corvette, no real badges or logos), and first on character select.
 
-| Fighter | Archetype | Theme |
+Each fighter's moves come from what they actually teach.
+
+| Fighter | Archetype | Teaches |
 | --- | --- | --- |
-| PEDERSEN | Power | Exponents |
-| BRINKHUS | Balanced | Limits |
-| CHAI | Technical | Geometry |
-| DALSASS | Tricky | Functions |
-| LEE | Rushdown | Sequences |
-| LOPEZ | Defensive | Statistics |
-| MIYASHIRO | Spacing / Footsies | Vectors |
-| RAMOS | Grappler | Matrices |
+| PEDERSEN | Power | Geometry & Math Analysis |
+| BRINKHUS | Balanced | Algebra 1 |
+| CHAI | Technical | Geometry (circles, angles, transformations) |
+| DALSASS | Tricky | Geometry (triangles and proofs) |
+| LEE | Rushdown | Geometry, Algebra 1 & 2 (sequences) |
+| LOPEZ | Defensive | Calculus |
+| MIYASHIRO | Spacing / Footsies | Algebra 2 |
+| RAMOS | Grappler | Algebra 2 (matrices) |
 
 Every fighter needs unique normals, launcher, throw, combo routes, stance, idle animation, and victory and defeat animations.
 
 ---
 
-## BRINKHUS — Balanced — Limits
+## BRINKHUS — Balanced — Algebra 1
 
-**Moves:** Limit Jab, Epsilon-Delta string, Limit Break (launcher), Squeeze Theorem (throw).
+**Moves:** Slope Jab, Distributive Property (string), Linear Rush, Solve for X (launcher), FOIL (throw).
 
 **Look:** Tall and athletic. Dark brown hair styled up and back, a short full dark beard and a big warm smile. Wears a black V-neck tee.
 
@@ -33,13 +35,13 @@ Every fighter needs unique normals, launcher, throw, combo routes, stance, idle 
 - "Let's keep it clean. Mostly."
 
 **Victory lines:**
-- "As you approach me, your chances approach zero."
+- "Solve for X. X equals you lose."
 - "Good hustle. Tryouts are next week."
-- "That's what we call a hard limit."
+- "Slope of your comeback: zero."
 
-## CHAI — Technical — Geometry
+## CHAI — Technical — Geometry (circles, angles, transformations)
 
-**Moves:** Tangent Step (sidestep attack), Reflection Counter (parry), Parabola Launcher, Transformation (throw).
+**Moves:** Tangent Step (sidestep attack), Reflection Counter (parry), Arc Launcher, Transformation (throw).
 
 **Look:** Slim and agile. Long wavy brown hair with blonde highlights, tied back to fight. Bright smile, small stud earrings and a small purple heart pendant. Wears a rust-orange blouse, practical slacks and flats.
 
@@ -55,9 +57,9 @@ Every fighter needs unique normals, launcher, throw, combo routes, stance, idle 
 - "That was acute attempt. Mine was just more right."
 - "Office hours are Tuesdays if you want to go over that."
 
-## DALSASS — Tricky — Functions
+## DALSASS — Tricky — Geometry (triangles and proofs)
 
-**Moves:** Piecewise (stance switch), Function Feint, Asymptote Slide, Discontinuity (launcher), Contradiction (throw).
+**Moves:** Similar Triangles (stance switch), Proof by Contradiction (feint), Supplementary Slide, Pythagorean Launcher, Congruence Lock (throw).
 
 **Look:** Solid build. Short spiky brown hair, smile lines, a short graying goatee and a huge grin. Wears a light aqua striped polo.
 
@@ -73,7 +75,7 @@ Every fighter needs unique normals, launcher, throw, combo routes, stance, idle 
 - "Oh honey, that was not on the study guide."
 - "You fell for that? It was in the syllabus."
 
-## LEE — Rushdown — Sequences
+## LEE — Rushdown — Geometry, Algebra 1 & 2 (sequences)
 
 **Moves:** Arithmetic Sequence (string that speeds up), Recursive Rush, Fibonacci Uppercut (launcher), Series Expansion (throw).
 
@@ -91,9 +93,9 @@ Every fighter needs unique normals, launcher, throw, combo routes, stance, idle 
 - "I've graded better fights on a Friday at 11 PM."
 - "I'd explain what went wrong, but we only have 52 minutes."
 
-## LOPEZ — Defensive — Statistics
+## LOPEZ — Defensive — Calculus
 
-**Moves:** Standard Deviation (backdash), Confidence Interval (block → punish), Null Hypothesis (parry; squints before countering), Outlier (launcher), Regression (throw).
+**Moves:** Derivative Read (parry: reads your rate of change; squints before countering), Asymptote Backdash, Mean Value Punish (block → punish), Limit Break (launcher), Squeeze Theorem (throw).
 
 **Look:** Solid build. Salt-and-pepper hair swept back and a knowing half-smile. Wears a navy blazer over a white windowpane-check shirt, and takes the blazer off before the round.
 
@@ -106,12 +108,12 @@ Every fighter needs unique normals, launcher, throw, combo routes, stance, idle 
 
 **Victory lines:**
 - "I knew you'd do that."
-- "Statistically, you never had a chance."
-- "Your strategy? Insignificant. P less than 0.05."
+- "I took the derivative of your chances. Decreasing."
+- "Integrate your mistakes. That's a lot of area."
 
-## MIYASHIRO — Spacing / Footsies — Vectors
+## MIYASHIRO — Spacing / Footsies — Algebra 2
 
-**Moves:** Vector Rush, Dot Product (long poke), Unit Circle (spin kick), Cross Product (launcher), Projection (throw), Calculated (stronger after an opponent whiffs).
+**Moves:** Domain Control (long poke), Range Check (dash punch), Vertex Kick (spin kick), Quadratic Launcher, Discriminant (throw), Calculated (stronger after an opponent whiffs).
 
 **Look:** Sturdy. Short, neat black hair, clean-shaven, with a calm smile. Wears a blue checkered button-up with the sleeves rolled.
 
@@ -124,12 +126,12 @@ Every fighter needs unique normals, launcher, throw, combo routes, stance, idle 
 
 **Victory lines:**
 - "I calculated this outcome before the bell rang."
-- "Your vector was correct. Your magnitude, however..."
+- "Your domain was fine. Your range, however..."
 - "Every mistake was a data point. You gave me plenty."
 
-## PEDERSEN — Power — Exponents
+## PEDERSEN — Power — Geometry & Math Analysis
 
-**Moves:** Exponential Haymaker, Order of Magnitude (charge punch), Power Rule (launcher), Long Division (slam throw).
+**Moves:** Exponential Haymaker, Order of Magnitude (charge punch), Logarithmic Launcher, Right Angle Elbow, Long Division (slam throw).
 
 **Look:** Broad and solid. Slicked-back brown hair, a short gray-brown beard, light blue eyes and a friendly smile. Signature red dress shirt with a black tie, sleeves rolled, and a pen in the chest pocket.
 
@@ -153,7 +155,7 @@ Every fighter needs unique normals, launcher, throw, combo routes, stance, idle 
 - "You can lead a horse to water, but you can't make them drink."
 - "Even Vicky lasted longer than that."
 
-## RAMOS — Grappler — Matrices
+## RAMOS — Grappler — Algebra 2 (matrices)
 
 **Moves:** Matrix Lock, Determinant Slam, Identity (command grab), Transpose Toss (launcher).
 

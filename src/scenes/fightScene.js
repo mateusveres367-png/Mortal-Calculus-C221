@@ -64,6 +64,8 @@
     this.bubbles = [new FG.SpeechBox(this, { mode: 'head' }), new FG.SpeechBox(this, { mode: 'head' })]; // taunts, quips
     this.prevCombo = [0, 0];
     this.trials = new FG.ComboTrials(this);
+    // Math that flies off big hits (each fighter's `glyphs`): a small pool of world texts.
+    this.glyphs = [0, 1, 2, 3, 4, 5].map(function () { return { text: FG.text(this, 0, 0, '', 'y').setScrollFactor(1).setOrigin(0.5, 0.5).setDepth(21), t: 0 }; }, this);
     this.newMatch({ intro: true });
     this.setupKeys();
     this.setupButtons();
@@ -402,8 +404,10 @@
     });
     kb.addCapture([K.ESC, K.ENTER, K.SPACE]);
     var self = this, t = this.training;
+    TAPS = {};
     kb.on('keydown', function (e) {
       FG.Sfx.unlock();
+      TAPS[e.keyCode] = true;
       if (self.mode === 'attract') { self.toTitle(); return; } // any key ends the demo
       if (self.menu.open) { self.menu.key(e.code); return; }
       if (self.intro) {
@@ -455,17 +459,22 @@
     return this.dummy.input(f[1], f[0], m);
   };
 
+  // A key counts as down this tick if it is held, or was tapped since the last tick
+  // (a quick tap can start and end between two ticks; taps are recorded from keydown).
+  var TAPS = {};
+  function on(key) { return key.isDown || !!TAPS[key.keyCode]; }
+
   FightScene.prototype.readP1 = function () {
     var k = this.keys1;
-    return { left: k.left.isDown, right: k.right.isDown, up: k.up.isDown, down: k.down.isDown,
-      p: k.p.isDown, k: k.k.isDown, h: k.h.isDown, ssIn: k.ssIn.isDown, ssOut: k.ssOut.isDown, t: k.t.isDown };
+    return { left: on(k.left), right: on(k.right), up: on(k.up), down: on(k.down),
+      p: on(k.p), k: on(k.k), h: on(k.h), ssIn: on(k.ssIn), ssOut: on(k.ssOut), t: on(k.t) };
   };
 
   FightScene.prototype.readP2 = function () {
     var k = this.keys2;
-    return { left: k.left.isDown, right: k.right.isDown, up: k.up.isDown, down: k.down.isDown,
-      p: k.p.isDown || k.p2.isDown, k: k.k.isDown || k.k2.isDown, h: k.h.isDown || k.h2.isDown,
-      ssIn: k.ssIn.isDown || k.ssIn2.isDown || k.ssIn3.isDown, ssOut: k.ssOut.isDown || k.ssOut2.isDown, t: k.t.isDown || k.t2.isDown };
+    return { left: on(k.left), right: on(k.right), up: on(k.up), down: on(k.down),
+      p: on(k.p) || on(k.p2), k: on(k.k) || on(k.k2), h: on(k.h) || on(k.h2),
+      ssIn: on(k.ssIn) || on(k.ssIn2) || on(k.ssIn3), ssOut: on(k.ssOut) || on(k.ssOut2), t: on(k.t) || on(k.t2) };
   };
 
   // Test hook: override inputs for the next ticks (used by the headless smoke test).
@@ -533,6 +542,7 @@
     if (this.intro || this.win) { this.presentationTick(); return; }
     var m = this.match, f = m.fighters;
     var raw1 = this.inputFor(0), raw2 = this.inputFor(1);
+    TAPS = {}; // taps since the last tick have been read
     // Nobody moves until FIGHT!, or after the round is over.
     if (this.rounds && this.phase !== 'fight') { raw1 = FG.emptyRaw(); raw2 = FG.emptyRaw(); }
     if (this.forceInput) { var fi = this.forceInput(this.tickCount); if (fi) { raw1 = fi[0] || raw1; raw2 = fi[1] || raw2; } }
@@ -560,7 +570,11 @@
         cf._ghost = { pose: cf._pose.slice(), x: cf.x, y: cf.y, facing: cf.facing, t: 0 };
       }
       if (ev.type !== 'whiff') this.effects.spawn(ev);
-      if (ev.type === 'hit') this.bigMoment(ev);
+      if (ev.type === 'hit') {
+        this.bigMoment(ev);
+        var bigHit = ev.ch || ev.launch || ev.throw || ev.finisher || (ev.move && ev.move.strength === 'heavy');
+        if (bigHit && !ev.ground) this.spawnGlyph(ev);
+      }
       else if (ev.shake) this.effects.shake(ev.shake);
       if (ev.type === 'land' || ev.type === 'bounce') this.effects.shake(ev.type === 'bounce' ? 0.006 : 0.003);
       if (ev.type === 'hit' && !ev.ground) this.impact = { who: ev.defender, frames: ev.ch ? 4 : 2, color: ev.ch ? 0xffb347 : 0xffffff };
@@ -600,6 +614,7 @@
       }
     }
     this.effects.update();
+    this.updateGlyphs();
     this.stage.update();
     this.hud.tick(m);
     if (this.impact && --this.impact.frames < 0) this.impact = null;
@@ -607,6 +622,25 @@
     var frozen = { frozen: m.hitstop > 0 };
     FG.updatePose(f[0], this.tickCount, frozen);
     FG.updatePose(f[1], this.tickCount, frozen);
+  };
+
+  // A piece of the attacker's math pops off a big hit and floats up.
+  FightScene.prototype.spawnGlyph = function (ev) {
+    var def = this.match.fighters[ev.attacker].def, list = def.glyphs;
+    if (!list || !list.length) return;
+    var slot = this.glyphs.filter(function (g) { return g.t <= 0; })[0];
+    if (!slot) return;
+    slot.t = 46; slot.vx = (Math.random() - 0.5) * 0.8; slot.x = ev.x; slot.y = C.GROUND_Y - (ev.y || 60) - 14;
+    slot.text.setText(list[Math.floor(Math.random() * list.length)]).setFont(ev.ch ? 'pf_o' : 'pf_y').setScale(ev.ch || ev.launch ? 2 : 1.5).setVisible(true);
+  };
+
+  FightScene.prototype.updateGlyphs = function () {
+    for (var i = 0; i < this.glyphs.length; i++) {
+      var g = this.glyphs[i];
+      if (g.t <= 0) { g.text.setVisible(false); continue; }
+      g.t--; g.y -= 0.8; g.x += g.vx;
+      g.text.setPosition(Math.round(g.x), Math.round(g.y)).setAlpha(Math.min(1, g.t / 12)).setVisible(g.t > 0);
+    }
   };
 
   // Screen feel for a hit: shake scales with damage; launchers and combo finishers
@@ -794,7 +828,7 @@
     // Floating labels: alternate stance.
     for (var k = 0; k < 2; k++) {
       var fk = f[k], tag = this.tags[k];
-      tag.setText(this.win ? '' : fk._tag ? fk._tag.text : fk.stance === 'B' ? 'PIECEWISE' : '');
+      tag.setText(this.win ? '' : fk._tag ? fk._tag.text : fk.stance === 'B' ? (fk.def.stanceName || 'STANCE') : '');
       tag.setPosition(Math.round(fk.x), Math.round(C.GROUND_Y - fk.y - 104 * fk.def.scale));
     }
     // Speech boxes are on the UI camera: place them where the (zoomed) world shows the fighter.

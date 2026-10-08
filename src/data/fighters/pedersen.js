@@ -1,6 +1,7 @@
-// PEDERSEN — Power — Exponents. The cover fighter. Slow, patient, and
-// devastating when he connects: the Exponential Haymaker, the chargeable
-// Order of Magnitude, the Power Rule launcher and the Long Division slam.
+// PEDERSEN — Power — Geometry & Math Analysis. The cover fighter. Slow,
+// patient, and devastating when he connects: the Exponential Haymaker, the
+// chargeable Order of Magnitude, the Logarithmic Launcher, the Right Angle
+// Elbow and the Long Division slam.
 (function () {
   var P = FG.pose;
 
@@ -22,6 +23,9 @@
     om_c: P('idle', { lean: -16, hip: [-4, 42], fe: [8, 64], fh: [12, 76], be: [-22, 60], bh: [-32, 60], fk: [12, 22], ff: [20, 0], bk: [-14, 22], bf: [-24, 0] }),
     om_x: P('hv_x', { lean: 10, all: [4, 0], be: [36, 64], bh: [58, 62] }),
     power_c: P('crouch', { lean: 4, fe: [14, 38], fh: [18, 26] }),
+    // Right Angle Elbow: the forearm square to the upper arm, driven in at chest height.
+    elbow_c: P('hook_c', { lean: -6, fe: [4, 66], fh: [4, 80] }),
+    elbow_x: P('hook_x', { lean: 14, hip: [6, 44], fe: [28, 70], fh: [28, 84], be: [0, 62], bh: [8, 72], ff: [24, 0], fk: [18, 22] }),
     power_x: P('up_x', { fe: [18, 94], fh: [24, 112], be: [4, 86], bh: [10, 100] }),
     throw_lift: P('throw_lift', { fe: [14, 92], fh: [22, 106], be: [8, 90], bh: [16, 104] }),
     throw_slam: P('throw_slam', { all: [4, -6], lean: 10 })
@@ -31,13 +35,14 @@
 
   FG.defineFighter({
     id: 'pedersen', order: 0, // the cover fighter: first on character select
-    name: 'PEDERSEN', archetype: 'POWER', theme: 'EXPONENTS',
+    name: 'PEDERSEN', archetype: 'POWER', theme: 'MATH ANALYSIS',
     bio: 'CALM AND FRIENDLY, BUT EVERY HIT IS HEAVY. SLOW, PATIENT, DEVASTATING.',
-    signature: ['EXPONENTIAL HAYMAKER', 'ORDER OF MAGNITUDE', 'POWER RULE', 'LONG DIVISION'],
+    signature: ['EXPONENTIAL HAYMAKER', 'ORDER OF MAGNITUDE', 'LOGARITHMIC LAUNCHER', 'RIGHT ANGLE ELBOW', 'LONG DIVISION'],
     scale: 1.12, health: 200,
     walkF: 1.5, walkB: 1.3, dashSpeed: 6.4, backdashSpeed: 7.4,
     car: true,            // drives in for his intro; parks in the background
     homeStage: 'parking', // his stage: the faculty parking lot, his car in the reserved spot
+    glyphs: ['LOG(X)', 'X*10', '90', 'E'], // math that flies off their big hits
     look: {
       skin: 0xe2ad85, eyeColor: 0x7cc4f0,
       hair: { style: 'slick', color: 0x5a3c24 },
@@ -90,6 +95,15 @@
         step: [12, 21, 1.5],
         anim: [[1, 'idle'], [14, 'hook_c'], [21, 'hook_x'], [25, 'hook_x'], [33, 'hv_r'], [44, 'idle']]
       },
+      // Right Angle Elbow: a stepping elbow, plus on hit; a counter hit launches.
+      fP: {
+        name: 'Elbow', label: 'RIGHT ANGLE ELBOW', cmd: 'F+P', level: 'mid', strength: 'heavy',
+        startup: 15, active: 3, recovery: 18, damage: 18,
+        block: -5, hit: { adv: 5 }, ch: { launch: 6.4 },
+        hitbox: { x: 14, w: 28, y: 56, h: 22 }, push: 14, carry: 0.8, shake: 0.006,
+        step: [6, 14, 2.2],
+        anim: [[1, 'idle'], [9, 'elbow_c'], [15, 'elbow_x'], [18, 'elbow_x'], [26, 'hv_r'], [36, 'idle']]
+      },
       // Exponential Haymaker: a huge, slow, wall-splatting haymaker.
       fH: {
         name: 'Haymaker', label: 'EXPONENTIAL HAYMAKER', cmd: 'F+H', level: 'mid', strength: 'heavy',
@@ -110,7 +124,7 @@
         anim: [[1, 'idle'], [12, 'om_c'], [20, 'om_x'], [24, 'om_x'], [34, 'hv_r'], [46, 'idle']]
       },
       launcher: {
-        name: 'Launcher', label: 'POWER RULE', cmd: 'D+H', level: 'mid', strength: 'launch',
+        name: 'Launcher', label: 'LOGARITHMIC LAUNCHER', cmd: 'D+H', level: 'mid', strength: 'launch',
         startup: 17, active: 4, recovery: 24, damage: 22,
         block: -17, hit: { launch: 8.2 }, ch: { launch: 8.8 },
         hitbox: { x: 8, w: 28, y: 30, h: 82 }, push: 6, juggle: 5.5, carry: 0.6, shake: 0.01,
@@ -127,7 +141,7 @@
 
     combos: [
       { name: 'SQUARED', difficulty: 'easy', notation: 'P, P', plan: { 0: 'P', 16: 'P' }, hits: ['jab', 'jab2'] },
-      { name: 'POWER RULE JUGGLE', difficulty: 'medium', notation: 'D+H, P, P', plan: { 0: 'D+H', 42: 'P', 59: 'P' }, hits: ['launcher', 'jab', 'jab2'] },
+      { name: 'LOGARITHMIC JUGGLE', difficulty: 'medium', notation: 'D+H, P, P', plan: { 0: 'D+H', 42: 'P', 59: 'P' }, hits: ['launcher', 'jab', 'jab2'] },
       { name: 'TOWER OF POWERS', difficulty: 'hard', notation: 'D+H, UP, AIR K, AIR H, D+K ON THE GROUND',
         plan: { 0: 'D+H', 20: 'UP', 31: 'K', 40: 'H', 94: 'D+K' }, hits: ['launcher', 'airK', 'airH', 'low'] },
       { name: 'EXPONENTIAL GROWTH', difficulty: 'medium', notation: 'AT THE WALL: H, D+H', queue: ['H', 'D+H'], wall: true, hits: ['heavy', 'launcher'] }

@@ -1,6 +1,6 @@
-// MIYASHIRO — Spacing / Footsies — Vectors. Keeps perfect distance: the
-// longest poke in the game (Dot Product), a dash punch that closes ground
-// (Vector Rush), a spin kick that tracks (Unit Circle), and Calculated:
+// MIYASHIRO — Spacing / Footsies — Algebra 2. Keeps perfect distance: the
+// longest poke in the game (Domain Control), a dash punch that closes ground
+// (Range Check), a spin kick that tracks (Vertex Kick), and Calculated:
 // whiff a move near him and his next hit does extra damage.
 (function () {
   var P = FG.pose;
@@ -33,12 +33,13 @@
   FG.defineFighter({
     id: 'miyashiro', order: 6,
     homeStage: 'lab',
-    name: 'MIYASHIRO', archetype: 'SPACING', theme: 'VECTORS',
+    glyphs: ['B*B-4AC', 'F(X)', 'I*I=-1', 'VERTEX'], // math that flies off their big hits
+    name: 'MIYASHIRO', archetype: 'SPACING', theme: 'ALGEBRA 2',
     bio: 'VERY SMART. READS OPPONENTS, KEEPS PERFECT DISTANCE, PUNISHES EVERY MISTAKE.',
-    signature: ['VECTOR RUSH', 'DOT PRODUCT', 'UNIT CIRCLE', 'CROSS PRODUCT', 'PROJECTION', 'CALCULATED'],
+    signature: ['DOMAIN CONTROL', 'RANGE CHECK', 'VERTEX KICK', 'QUADRATIC LAUNCHER', 'DISCRIMINANT', 'CALCULATED'],
     scale: 1.02, health: 172,
     walkF: 2.1, walkB: 2.0, dashSpeed: 8.4, backdashSpeed: 9.0,
-    dashAttackFrom: 4, // Vector Rush comes out early in a dash
+    dashAttackFrom: 4, // Range Check comes out early in a dash
     passive: 'calculated',
     look: {
       skin: 0xd9a87a,
@@ -53,7 +54,7 @@
 
     moves: FG.kit.moves({
       jab: {
-        name: 'Jab', label: 'UNIT VECTOR', cmd: 'P', level: 'high', strength: 'light',
+        name: 'Jab', label: 'FUNCTION JAB', cmd: 'P', level: 'high', strength: 'light',
         startup: 10, active: 3, recovery: 13, damage: 7,
         block: 0, hit: { adv: 7 }, ch: { adv: 10 },
         hitbox: { x: 22, w: 30, y: 70, h: 14 }, push: 8, juggle: 3.2,
@@ -61,15 +62,15 @@
         anim: [[1, 'idle'], [7, 'jab_c'], [10, 'jab_x'], [14, 'jab_x'], [25, 'idle']]
       },
       jab2: {
-        name: 'Jab 2', label: 'SCALAR', cmd: 'P,P', level: 'high', strength: 'light',
+        name: 'Jab 2', label: 'INVERSE', cmd: 'P,P', level: 'high', strength: 'light',
         startup: 10, active: 2, recovery: 16, damage: 9,
         block: -3, hit: { adv: 6 }, ch: { adv: 9 },
         hitbox: { x: 26, w: 28, y: 68, h: 14 }, push: 12, juggle: 3.4,
         anim: [[1, 'jab_x'], [6, 'cross_c'], [10, 'cross_x'], [13, 'cross_x'], [27, 'idle']]
       },
-      // Vector Rush: dash, then P. A lunging straight that covers ground.
+      // Range Check: dash, then P. A lunging straight that covers ground.
       dashP: {
-        name: 'Dash Punch', label: 'VECTOR RUSH', cmd: 'F,F+P', level: 'mid', strength: 'heavy',
+        name: 'Dash Punch', label: 'RANGE CHECK', cmd: 'F,F+P', level: 'mid', strength: 'heavy',
         startup: 12, active: 3, recovery: 18, damage: 16, wallSplat: true,
         block: -4, hit: { adv: 6 }, ch: { launch: 6 },
         hitbox: { x: 26, w: 30, y: 54, h: 20 }, push: 20, juggle: 3.6, carry: 1.6, shake: 0.005,
@@ -77,39 +78,39 @@
         anim: [[1, 'rush_c'], [8, 'rush_c'], [12, 'rush_x'], [15, 'rush_x'], [32, 'idle']]
       },
       mid: {
-        name: 'Mid Kick', label: 'MAGNITUDE KICK', cmd: 'K', level: 'mid', strength: 'medium',
+        name: 'Mid Kick', label: 'ROOT KICK', cmd: 'K', level: 'mid', strength: 'medium',
         startup: 14, active: 3, recovery: 18, damage: 13,
         block: -5, hit: { adv: 4 }, ch: { adv: 9 },
         hitbox: { x: 32, w: 28, y: 40, h: 18 }, push: 16, juggle: 3.8, shake: 0.002,
         anim: [[1, 'idle'], [10, 'fk_c'], [14, 'fk_x'], [17, 'fk_x'], [24, 'fk_c'], [34, 'idle']]
       },
-      // Dot Product: the longest poke in the game. Mid, safe at its tip.
+      // Domain Control: the longest poke in the game. Mid, safe at its tip.
       fK: {
-        name: 'Long Poke', label: 'DOT PRODUCT', cmd: 'F+K', level: 'mid', strength: 'medium',
+        name: 'Long Poke', label: 'DOMAIN CONTROL', cmd: 'F+K', level: 'mid', strength: 'medium',
         startup: 16, active: 3, recovery: 18, damage: 12,
         block: -6, hit: { adv: 3 }, ch: { adv: 8 },
         hitbox: { x: 40, w: 36, y: 42, h: 18 }, push: 18, juggle: 3.6, shake: 0.002,
         step: [8, 16, 1.4],
         anim: [[1, 'idle'], [10, 'poke_c'], [16, 'poke_x'], [19, 'poke_x'], [27, 'poke_c'], [37, 'idle']]
       },
-      // Unit Circle: a spinning high kick that tracks.
+      // Vertex Kick: a spinning high kick that tracks.
       bK: {
-        name: 'Spin Kick', label: 'UNIT CIRCLE', cmd: 'B+K', level: 'high', strength: 'heavy', tracks: true,
+        name: 'Spin Kick', label: 'VERTEX KICK', cmd: 'B+K', level: 'high', strength: 'heavy', tracks: true,
         startup: 17, active: 4, recovery: 20, damage: 18,
         block: -7, hit: { knockdown: true }, ch: { knockdown: true },
         hitbox: { x: 22, w: 30, y: 66, h: 22 }, push: 18, juggle: 3.6, carry: 1.6, shake: 0.006,
         anim: [[1, 'idle'], [8, 'spin_c'], [17, 'spin_x'], [21, 'spin_x'], [30, 'spin_c'], [41, 'idle']]
       },
       low: {
-        name: 'Low Kick', label: 'COMPONENT LOW', cmd: 'D+K', level: 'low', strength: 'light', crouching: true, otg: true,
+        name: 'Low Kick', label: 'Y-INTERCEPT', cmd: 'D+K', level: 'low', strength: 'light', crouching: true, otg: true,
         startup: 15, active: 3, recovery: 19, damage: 9,
         block: -11, hit: { adv: 0 }, ch: { adv: 6 },
         hitbox: { x: 30, w: 26, y: 0, h: 16 }, push: 10, juggle: 2.5, shake: 0.002,
         anim: [[1, 'crouch'], [10, 'lk_c'], [15, 'lk_x'], [18, 'lk_x'], [28, 'lk_c'], [36, 'crouch']]
       },
-      sweep: FG.kit.sweep('ORTHOGONAL SWEEP'),
+      sweep: FG.kit.sweep('X-AXIS SWEEP'),
       heavy: {
-        name: 'Heavy', label: 'RESULTANT', cmd: 'H', level: 'mid', strength: 'heavy',
+        name: 'Heavy', label: 'COMPLEX ROOT', cmd: 'H', level: 'mid', strength: 'heavy',
         startup: 18, active: 3, recovery: 22, damage: 20, wallSplat: true,
         block: -5, hit: { adv: 5 }, ch: { launch: 6 },
         hitbox: { x: 36, w: 24, y: 52, h: 16 }, push: 26, juggle: 3.6, carry: 2, shake: 0.006,
@@ -117,7 +118,7 @@
         anim: [[1, 'idle'], [12, 'hv_c'], [18, 'hv_x'], [21, 'hv_x'], [29, 'hv_r'], [42, 'idle']]
       },
       fH: {
-        name: 'Overhead', label: 'NORMAL VECTOR', cmd: 'F+H', level: 'mid', strength: 'heavy', bound: true,
+        name: 'Overhead', label: 'END BEHAVIOR', cmd: 'F+H', level: 'mid', strength: 'heavy', bound: true,
         startup: 21, active: 3, recovery: 21, damage: 18, guardDmg: 24,
         block: -6, hit: { adv: 3 }, ch: { knockdown: true },
         hitbox: { x: 30, w: 24, y: 48, h: 22 }, push: 16, juggle: 2.5, shake: 0.006,
@@ -125,7 +126,7 @@
         anim: [[1, 'idle'], [14, 'ham_c'], [21, 'ham_x'], [24, 'ham_x'], [33, 'hv_r'], [45, 'idle']]
       },
       launcher: {
-        name: 'Launcher', label: 'CROSS PRODUCT', cmd: 'D+H', level: 'mid', strength: 'launch',
+        name: 'Launcher', label: 'QUADRATIC LAUNCHER', cmd: 'D+H', level: 'mid', strength: 'launch',
         startup: 15, active: 4, recovery: 23, damage: 16,
         block: -15, hit: { launch: 7.6 }, ch: { launch: 8.2 },
         hitbox: { x: 8, w: 28, y: 30, h: 80 }, push: 6, juggle: 5.5, carry: 0.6, shake: 0.008,
@@ -134,20 +135,20 @@
         anim: [[1, 'crouch'], [10, 'xprod_c'], [15, 'xprod_x'], [19, 'xprod_x'], [28, 'up_r'], [41, 'idle']]
       }
     },
-    FG.kit.air(['COMPONENT JAB', 'DIRECTION KICK', 'PROJECTION SPIKE']),
-    FG.kit.throws('PROJECTION', 'REFLECTION MATRIX', { throw: { damage: 30 }, throwB: { damage: 33 } }),
+    FG.kit.air(['IMAGINARY JAB', 'CONJUGATE KICK', 'FOCUS SPIKE']),
+    FG.kit.throws('DISCRIMINANT', 'COMPLETING THE SQUARE', { throw: { damage: 30 }, throwB: { damage: 33 } }),
     FG.kit.wake(),
     FG.kit.taunt()),
 
     combos: [
-      { name: 'UNIT VECTORS', difficulty: 'easy', notation: 'P, P', plan: { 0: 'P', 15: 'P' }, hits: ['jab', 'jab2'] },
-      { name: 'CROSS PRODUCT JUGGLE', difficulty: 'medium', notation: 'D+H, P, P, D+K ON THE GROUND',
+      { name: 'FACTOR PAIR', difficulty: 'easy', notation: 'P, P', plan: { 0: 'P', 15: 'P' }, hits: ['jab', 'jab2'] },
+      { name: 'QUADRATIC JUGGLE', difficulty: 'medium', notation: 'D+H, P, P, D+K ON THE GROUND',
         plan: { 0: 'D+H', 38: 'P', 56: 'P', 97: 'D+K' }, hits: ['launcher', 'jab', 'jab2', 'low'] },
-      { name: 'PROJECTION SPIKE', difficulty: 'hard', notation: 'D+H, UP, AIR P, AIR K, AIR H, K',
+      { name: 'FOCUS SPIKE', difficulty: 'hard', notation: 'D+H, UP, AIR P, AIR K, AIR H, K',
         plan: { 0: 'D+H', 17: 'UP', 32: 'P', 41: 'K', 51: 'H', 79: 'K' }, hits: ['launcher', 'airP', 'airK', 'airH', 'mid'] },
       { name: 'CALCULATED RUSH', difficulty: 'medium', notation: 'THEY WHIFF A JAB, F, F+P (CALCULATED BONUS)',
         dist: 100, oppPlan: { 0: 'P' }, plan: { 18: 'F', 20: 'F', 27: 'P' }, hits: ['dashP'] },
-      { name: 'VECTOR SPACE', difficulty: 'medium', notation: 'AT THE WALL: H, F+K, D+H', queue: ['H', 'F+K', 'D+H'], wall: true, hits: ['heavy', 'fK', 'launcher'] }
+      { name: 'DOMAIN AND RANGE', difficulty: 'medium', notation: 'AT THE WALL: H, F+K, D+H', queue: ['H', 'F+K', 'D+H'], wall: true, hits: ['heavy', 'fK', 'launcher'] }
     ],
 
     intro: [[1, 'stand'], [12, 'sleeve'], [26, 'sleeve'], [34, 'sleeve2'], [48, 'sleeve2'], [58, 'bow'], [70, 'stand'], [86, 'idle']],
@@ -164,7 +165,7 @@
     },
     victoryLines: [
       'I calculated this outcome before the bell rang.',
-      'Your vector was correct. Your magnitude, however...',
+      'Your domain was fine. Your range, however...',
       'Every mistake was a data point. You gave me plenty.'
     ]
   });

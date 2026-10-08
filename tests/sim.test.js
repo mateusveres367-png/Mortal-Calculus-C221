@@ -2,7 +2,17 @@
 // that measured frame advantage matches the declared frame data, plus core rules.
 // Run with: node tests/sim.test.js
 var fs = require('fs'), path = require('path'), vm = require('vm');
-var ctx = { console: console, Math: Math };
+// Seeded Math.random, so runs are repeatable (the dummy and smack talk pick at random).
+var seededMath = Object.create(Math);
+seededMath.random = (function (a) {
+  return function () {
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    var t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+})(20261008);
+var ctx = { console: console, Math: seededMath };
 ctx.window = ctx; vm.createContext(ctx);
 // Load the same simulation and data scripts the game loads, in index.html order
 // (everything except Phaser, rendering and scenes; inputDisplay has the pure input history).
@@ -248,7 +258,7 @@ var LAUNCH = { h: true, down: true };
 
 // Air combos are skill-based: drop the jump cancel or a timing and the route fails.
 (function () {
-  var route = S.combos.filter(function (c) { return c.name === 'LIMIT AT INFINITY'; })[0];
+  var route = S.combos.filter(function (c) { return c.name === 'POINT-SLOPE SPIKE'; })[0];
   function toRaw(plan) { var o = {}; for (var f in plan) o[f] = FG.parseInput(plan[f]); return o; }
   var noJump = {}; for (var f in route.plan) if (route.plan[f] !== 'UP') noJump[f] = route.plan[f];
   var r = play(S, D, 40, toRaw(noJump), {}, 200);
@@ -263,7 +273,7 @@ var LAUNCH = { h: true, down: true };
 // One bound per combo: a second bound move just juggles.
 (function () {
   var plan = {};
-  var route = S.combos.filter(function (c) { return c.name === 'LIMIT AT INFINITY'; })[0].plan;
+  var route = S.combos.filter(function (c) { return c.name === 'POINT-SLOPE SPIKE'; })[0].plan;
   Object.keys(route).forEach(function (f) { if (+f < 100) plan[f] = FG.parseInput(route[f]); });
   var r = play(S, D, 40, plan, {}, 110, null);
   var m = r.m, d = m.fighters[1];
@@ -536,7 +546,7 @@ function count(r, type, attacker) {
 
 // =========================== Phase 4 =========================================
 
-// DALSASS: Piecewise stance, Function Feint, Asymptote Slide.
+// DALSASS: Similar Triangles stance, Proof by Contradiction (feint), Supplementary Slide.
 (function () {
   function ids(r, who) { return r.events.filter(function (e) { return e.type === 'whiff' && e.fighter === (who || 0); }).map(function (e) { return e.move.id; }); }
   // B+P enters the stance; P from the stance is Step Function and leaves the stance.
@@ -571,7 +581,7 @@ function count(r, type, attacker) {
   // The feint's real overhead bounds a juggled opponent.
   check('inverse drop bounds', D.moves.drop.bound === true);
 
-  // Asymptote Slide travels and goes under highs.
+  // Supplementary Slide travels and goes under highs.
   var x0;
   r = play(D, S, 160, { 0: FG.parseInput('D/F+K') }, {}, 30, function (m) { x0 = m.fighters[0].x; });
   check('slide travels', r.m.fighters[0].x - x0 > 40, r.m.fighters[0].x - x0);
@@ -579,12 +589,12 @@ function count(r, type, attacker) {
   check('slide ducks a jab', count(r, 'hit', 1) === 0, types(r));
 })();
 
-// BRINKHUS: Epsilon-Delta only continues when the jab connects (out of range it stops).
+// BRINKHUS: the Distributive Property string only continues when the jab connects (out of range it stops).
 (function () {
   var plan = { 0: { p: true }, 14: { k: true }, 32: { k: true } };
   var r = play(S, D, 120, plan, {}, 80);
   var ids = r.events.filter(function (e) { return e.type === 'whiff' && e.fighter === 0; }).map(function (e) { return e.move.id; });
-  check('Epsilon needs the jab to connect', ids.indexOf('eps') < 0 && ids.indexOf('delta') < 0, ids);
+  check('Distribute needs the jab to connect', ids.indexOf('eps') < 0 && ids.indexOf('delta') < 0, ids);
 })();
 
 // CHAI: Reflection Counter (parry) and Tangent Step (sidestep attack).
@@ -634,7 +644,7 @@ function count(r, type, attacker) {
   check('recursive rush only repeats on hit', ids.join() === 'fP,jab' || ids.join() === 'fP', ids);
 })();
 
-// LOPEZ: Standard Deviation backdash, Confidence Interval, Null Hypothesis.
+// LOPEZ: Asymptote Backdash, Mean Value Punish, Derivative Read (parry).
 (function () {
   var LZ = FG.fighterById('lopez');
   // His backdash goes further than BRINKHUS's.
@@ -646,7 +656,7 @@ function count(r, type, attacker) {
   // Lows can't touch it early on; a normal backdash gets hit.
   var r = play(LZ, S, 40, { 0: { left: true }, 2: { left: true } }, { 0: { k: true, down: true } }, 30);
   check('standard deviation evades a low', count(r, 'hit', 1) === 0, types(r));
-  // Confidence Interval only right after blocking.
+  // Mean Value Punish only right after blocking.
   r = play(LZ, S, 40, { 25: { p: true } }, { 0: { p: true } }, 60, null);
   var plan = { 25: { p: true } };
   r = play(LZ, S, 40, function (i) { return i <= 14 ? { left: true } : plan[i] || {}; }, { 0: { p: true } }, 60);
@@ -655,14 +665,14 @@ function count(r, type, attacker) {
   r = play(LZ, S, 40, { 0: { p: true } }, {}, 30);
   ids = r.events.filter(function (e) { return e.type === 'whiff' && e.fighter === 0; }).map(function (e) { return e.move.id; });
   check('plain jab otherwise', ids.join() === 'jab', ids);
-  // Null Hypothesis parries mids and lows but not highs.
+  // Derivative Read parries mids and lows but not highs.
   r = play(LZ, S, 40, { 6: FG.parseInput('B+H') }, { 0: { k: true, down: true } }, 60);
   check('null hypothesis parries a low', count(r, 'parry') === 1, types(r));
   r = play(LZ, S, 40, { 4: FG.parseInput('B+H') }, { 0: { p: true } }, 60);
   check('null hypothesis loses to a high', count(r, 'parry') === 0 && count(r, 'hit', 1) === 1, types(r));
 })();
 
-// MIYASHIRO: Calculated bonus after the opponent whiffs; Vector Rush out of a dash; Dot Product range.
+// MIYASHIRO: Calculated bonus after the opponent whiffs; Range Check out of a dash; Domain Control range.
 (function () {
   var MY = FG.fighterById('miyashiro');
   var route = MY.combos.filter(function (c) { return c.name === 'CALCULATED RUSH'; })[0];
@@ -672,11 +682,11 @@ function count(r, type, attacker) {
   var plain = Object.assign({}, route, { oppPlan: null });
   res = FG.runCombo(MY, S, plain);
   check('no whiff, no bonus', res.damage === MY.moves.dashP.damage, res);
-  // Dot Product outranges every other fighter's mid.
+  // Domain Control outranges every other fighter's mid.
   var reach = MY.moves.fK.box.x + MY.moves.fK.box.w;
   var others = FG.ROSTER.filter(function (d) { return d !== MY; }).map(function (d) { return d.moves.mid.box.x + d.moves.mid.box.w; });
   check('dot product is the longest mid', others.every(function (o) { return reach > o; }), [reach, others]);
-  // Unit Circle tracks a sidestep.
+  // Vertex Kick tracks a sidestep.
   var r = play(MY, S, 44, { 0: FG.parseInput('B+K') }, { 2: { ssIn: true } }, 40);
   check('unit circle tracks', count(r, 'hit') === 1, types(r));
 })();

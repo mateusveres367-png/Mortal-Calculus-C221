@@ -1,6 +1,7 @@
-// DALSASS — Tricky — Functions. Mixups from two angles: the Function Feint
-// (an overhead windup that can turn into a jab, a low, a throw or the real
-// overhead) and the Piecewise stance, which swaps his P/K/H for a second set.
+// DALSASS — Tricky — Geometry (triangles and proofs). Mixups from two angles:
+// Proof by Contradiction (a feint: an overhead windup that can turn into a jab,
+// a low, a throw or the real overhead) and the Similar Triangles stance, which
+// swaps his P/K/H for a second set.
 (function () {
   var P = FG.pose;
 
@@ -32,9 +33,11 @@
   FG.defineFighter({
     id: 'dalsass', order: 3,
     homeStage: 'hallway',
-    name: 'DALSASS', archetype: 'TRICKY', theme: 'FUNCTIONS',
+    glyphs: ['A*A+B*B=C*C', 'SAS', 'ASA', 'GIVEN:'], // math that flies off their big hits
+    name: 'DALSASS', archetype: 'TRICKY', theme: 'GEOMETRY PROOFS',
+    stanceName: 'SIMILAR TRIANGLES', // the alternate stance, shown over his head
     bio: "HAPPY, SASSY, EVERYONE'S FAVORITE. FAKES YOU OUT WITH A GRIN.",
-    signature: ['PIECEWISE', 'FUNCTION FEINT', 'ASYMPTOTE SLIDE', 'DISCONTINUITY', 'CONTRADICTION'],
+    signature: ['SIMILAR TRIANGLES', 'PROOF BY CONTRADICTION', 'SUPPLEMENTARY SLIDE', 'PYTHAGOREAN LAUNCHER', 'CONGRUENCE LOCK'],
     scale: 1.0, health: 170,
     walkF: 1.9, walkB: 1.7, dashSpeed: 8.0, backdashSpeed: 8.8,
     crowdFavorite: true, // the background students cheer louder for him
@@ -52,7 +55,7 @@
 
     moves: FG.kit.moves({
       jab: {
-        name: 'Jab', label: 'DOMAIN JAB', cmd: 'P', level: 'high', strength: 'light',
+        name: 'Jab', label: 'GIVEN', cmd: 'P', level: 'high', strength: 'light',
         startup: 10, active: 2, recovery: 13, damage: 7,
         block: 1, hit: { adv: 8 }, ch: { adv: 10 },
         hitbox: { x: 22, w: 26, y: 70, h: 14 }, push: 6, juggle: 3.2,
@@ -60,7 +63,7 @@
         anim: [[1, 'idle'], [7, 'jab_c'], [10, 'jab_x'], [13, 'jab_x'], [24, 'idle']]
       },
       jab2: {
-        name: 'Jab 2', label: 'RANGE CROSS', cmd: 'P,P', level: 'high', strength: 'light',
+        name: 'Jab 2', label: 'STATEMENT', cmd: 'P,P', level: 'high', strength: 'light',
         startup: 10, active: 2, recovery: 17, damage: 10,
         block: -4, hit: { adv: 5 }, ch: { adv: 9 },
         hitbox: { x: 26, w: 26, y: 68, h: 14 }, push: 9, juggle: 3.4,
@@ -69,22 +72,22 @@
         anim: [[1, 'jab_x'], [6, 'cross_c'], [10, 'cross_x'], [13, 'cross_x'], [28, 'idle']]
       },
       mid: {
-        name: 'Mid Kick', label: 'FUNCTION KICK', cmd: 'K', level: 'mid', strength: 'medium',
+        name: 'Mid Kick', label: 'REASON KICK', cmd: 'K', level: 'mid', strength: 'medium',
         startup: 15, active: 3, recovery: 19, damage: 15,
         block: -7, hit: { adv: 4 }, ch: { adv: 9 },
         hitbox: { x: 34, w: 28, y: 34, h: 22 }, push: 16, juggle: 3.8, shake: 0.003,
         anim: [[1, 'idle'], [10, 'sk_c'], [15, 'sk_x'], [18, 'sk_x'], [26, 'sk_c'], [37, 'idle']]
       },
       low: {
-        name: 'Low Kick', label: 'FLOOR FUNCTION', cmd: 'D+K', level: 'low', strength: 'medium',
+        name: 'Low Kick', label: 'LEG KICK', cmd: 'D+K', level: 'low', strength: 'medium',
         startup: 16, active: 3, recovery: 20, damage: 10, crouching: true, tracks: true, otg: true,
         block: -11, hit: { adv: 0 }, ch: { adv: 6 },
         hitbox: { x: 28, w: 24, y: 0, h: 16 }, push: 10, juggle: 2.5, shake: 0.002,
         anim: [[1, 'crouch'], [11, 'lk_c'], [16, 'lk_x'], [19, 'lk_x'], [29, 'lk_c'], [38, 'crouch']]
       },
-      sweep: FG.kit.sweep('ROOT SWEEP', { startup: 21, recovery: 26 }),
+      sweep: FG.kit.sweep('BASE SWEEP', { startup: 21, recovery: 26 }),
       dfK: {
-        name: 'Slide', label: 'ASYMPTOTE SLIDE', cmd: 'D/F+K', level: 'low', strength: 'heavy', crouching: true,
+        name: 'Slide', label: 'SUPPLEMENTARY SLIDE', cmd: 'D/F+K', level: 'low', strength: 'heavy', crouching: true,
         startup: 18, active: 5, recovery: 24, damage: 14,
         block: -16, hit: { knockdown: true }, ch: { knockdown: true },
         hitbox: { x: 20, w: 32, y: 0, h: 16 }, push: 10, juggle: 2.5, shake: 0.004,
@@ -92,17 +95,17 @@
         anim: [[1, 'crouch'], [8, 'sweep_c'], [18, 'slide'], [26, 'slide'], [36, 'sweep_c'], [46, 'crouch']]
       },
       heavy: {
-        name: 'Heavy', label: 'COMPOSITE HOOK', cmd: 'H', level: 'mid', strength: 'heavy',
+        name: 'Heavy', label: 'SIDE-ANGLE-SIDE', cmd: 'H', level: 'mid', strength: 'heavy',
         startup: 18, active: 3, recovery: 22, damage: 20, wallSplat: true,
         block: -5, hit: { adv: 5 }, ch: { launch: 6 },
         hitbox: { x: 20, w: 26, y: 54, h: 20 }, push: 24, juggle: 3.6, carry: 2, shake: 0.006,
         step: [10, 18, 1.6],
         anim: [[1, 'idle'], [12, 'hook_c'], [18, 'hook_x'], [21, 'hook_x'], [30, 'hv_r'], [42, 'idle']]
       },
-      // Function Feint: looks exactly like the Inverse Drop windup. Cancel it into
+      // Proof by Contradiction: looks exactly like the Indirect Proof windup. Cancel it into
       // P (jab), D+K (low), H (the real overhead) or P+K (throw), or let it fizzle.
       fH: {
-        name: 'Feint', label: 'FUNCTION FEINT', cmd: 'F+H', level: 'mid', strength: 'light', feint: true,
+        name: 'Feint', label: 'PROOF BY CONTRADICTION', cmd: 'F+H', level: 'mid', strength: 'light', feint: true,
         startup: 23, active: 1, recovery: 1,
         cancels: [
           { btn: 'throw', into: 'throw', from: 6, to: 18 },
@@ -113,42 +116,42 @@
         anim: [[1, 'idle'], [10, 'feint_c'], [18, 'feint_c'], [24, 'feint_x']]
       },
       drop: {
-        name: 'Overhead', label: 'INVERSE DROP', cmd: 'F+H, H', level: 'mid', strength: 'heavy', bound: true,
+        name: 'Overhead', label: 'INDIRECT PROOF', cmd: 'F+H, H', level: 'mid', strength: 'heavy', bound: true,
         startup: 14, active: 3, recovery: 22, damage: 18, guardDmg: 22,
         block: -8, hit: { adv: 4 }, ch: { knockdown: true },
         hitbox: { x: 26, w: 20, y: 32, h: 26 }, push: 16, juggle: 2.5, shake: 0.007,
         step: [6, 14, 1.4],
         anim: [[1, 'feint_c'], [14, 'slam_x'], [17, 'slam_x'], [26, 'hv_r'], [38, 'idle']]
       },
-      // Piecewise: back + P switches stance; in stance P/K/H become pwP/pwK/pwH.
+      // Similar Triangles: back + P switches stance; in stance P/K/H become pwP/pwK/pwH.
       bP: {
-        name: 'Stance', label: 'PIECEWISE', cmd: 'B+P', level: 'mid', strength: 'light', stanceSwitch: true,
+        name: 'Stance', label: 'SIMILAR TRIANGLES', cmd: 'B+P', level: 'mid', strength: 'light', stanceSwitch: true,
         startup: 12, active: 1, recovery: 1,
         anim: [[1, 'idle'], [6, 'spin'], [12, 'pw_idle']]
       },
       pwP: {
-        name: 'Stance Palm', label: 'STEP FUNCTION', cmd: 'STANCE P', level: 'mid', strength: 'medium',
+        name: 'Stance Palm', label: 'SIMILAR PALM', cmd: 'STANCE P', level: 'mid', strength: 'medium',
         startup: 12, active: 2, recovery: 18, damage: 12,
         block: -4, hit: { adv: 6 }, ch: { adv: 10 },
         hitbox: { x: 24, w: 22, y: 44, h: 20 }, push: 12, juggle: 3.4, shake: 0.002,
         anim: [[1, 'pw_idle'], [8, 'pw_idle'], [12, 'pw_palm'], [14, 'pw_palm'], [31, 'idle']]
       },
       pwK: {
-        name: 'Stance Low', label: 'ABSOLUTE VALUE', cmd: 'STANCE K', level: 'low', strength: 'medium', crouching: true,
+        name: 'Stance Low', label: 'SCALE FACTOR', cmd: 'STANCE K', level: 'low', strength: 'medium', crouching: true,
         startup: 13, active: 3, recovery: 20, damage: 11, otg: true,
         block: -12, hit: { adv: 1 }, ch: { adv: 6 },
         hitbox: { x: 26, w: 24, y: 0, h: 16 }, push: 10, juggle: 2.5, shake: 0.002,
         anim: [[1, 'pw_idle'], [9, 'lk_c'], [13, 'lk_x'], [16, 'lk_x'], [26, 'crouch'], [35, 'idle']]
       },
       pwH: {
-        name: 'Stance Axe Kick', label: 'JUMP DISCONTINUITY', cmd: 'STANCE H', level: 'mid', strength: 'heavy', bound: true,
+        name: 'Stance Axe Kick', label: 'ANGLE-ANGLE', cmd: 'STANCE H', level: 'mid', strength: 'heavy', bound: true,
         startup: 20, active: 3, recovery: 20, damage: 20, guardDmg: 22,
         block: -6, hit: { adv: 4 }, ch: { launch: 6 },
         hitbox: { x: 30, w: 22, y: 30, h: 30 }, push: 14, juggle: 2.5, shake: 0.007,
         anim: [[1, 'pw_idle'], [12, 'axe_c'], [20, 'axe_x'], [23, 'axe_x'], [32, 'hv_r'], [42, 'idle']]
       },
       launcher: {
-        name: 'Launcher', label: 'DISCONTINUITY', cmd: 'D+H', level: 'mid', strength: 'launch',
+        name: 'Launcher', label: 'PYTHAGOREAN LAUNCHER', cmd: 'D+H', level: 'mid', strength: 'launch',
         startup: 15, active: 4, recovery: 23, damage: 17,
         block: -15, hit: { launch: 7.6 }, ch: { launch: 8.2 },
         hitbox: { x: 8, w: 26, y: 30, h: 78 }, push: 6, juggle: 5.5, carry: 0.6, shake: 0.008,
@@ -157,17 +160,17 @@
         anim: [[1, 'crouch'], [10, 'up_c'], [15, 'up_x'], [19, 'up_x'], [28, 'up_r'], [41, 'idle']]
       }
     },
-    FG.kit.air(['IMAGE JAB', 'PREIMAGE KICK', 'INVERSE SPIKE'], { chain: { airP: ['h'], airK: ['h'] } }),
-    FG.kit.throws('CONTRADICTION', 'COUNTEREXAMPLE', { throwB: { damage: 33 } }),
+    FG.kit.air(['ANGLE BISECTOR', 'MEDIAN KICK', 'CENTROID SPIKE'], { chain: { airP: ['h'], airK: ['h'] } }),
+    FG.kit.throws('CONGRUENCE LOCK', 'COUNTEREXAMPLE', { throwB: { damage: 33 } }),
     FG.kit.wake(),
     FG.kit.taunt()),
 
     combos: [
-      { name: 'COMPOSITION', difficulty: 'easy', notation: 'P, P', plan: { 0: 'P', 15: 'P' }, hits: ['jab', 'jab2'] },
-      { name: 'DISCONTINUITY JUGGLE', difficulty: 'medium', notation: 'D+H, P, P', plan: { 0: 'D+H', 38: 'P', 56: 'P' }, hits: ['launcher', 'jab', 'jab2'] },
-      { name: 'INVERSE SPIKE', difficulty: 'hard', notation: 'D+H, UP, AIR K, AIR H, K',
+      { name: 'GIVEN, PROVE', difficulty: 'easy', notation: 'P, P', plan: { 0: 'P', 15: 'P' }, hits: ['jab', 'jab2'] },
+      { name: 'PYTHAGOREAN JUGGLE', difficulty: 'medium', notation: 'D+H, P, P', plan: { 0: 'D+H', 38: 'P', 56: 'P' }, hits: ['launcher', 'jab', 'jab2'] },
+      { name: 'CENTROID SPIKE', difficulty: 'hard', notation: 'D+H, UP, AIR K, AIR H, K',
         plan: { 0: 'D+H', 17: 'UP', 31: 'K', 41: 'H', 70: 'K' }, hits: ['launcher', 'airK', 'airH', 'mid'] },
-      { name: 'SLIDE AND STOMP', difficulty: 'medium', notation: 'D/F+K, D+K ON THE GROUND', plan: { 0: 'D/F+K', 49: 'D+K' }, hits: ['dfK', 'low'] }
+      { name: 'SUPPLEMENTARY STOMP', difficulty: 'medium', notation: 'D/F+K, D+K ON THE GROUND', plan: { 0: 'D/F+K', 49: 'D+K' }, hits: ['dfK', 'low'] }
     ],
 
 

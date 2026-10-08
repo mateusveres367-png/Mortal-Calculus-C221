@@ -42,7 +42,7 @@
     this.guard = 0;        // guard pressure meter
     this.guardDelay = 0;
     this.holdGuard = false; // set by the training dummy
-    this.stance = 'A';      // 'B' = alternate stance (e.g. DALSASS's Piecewise)
+    this.stance = 'A';      // 'B' = alternate stance (e.g. DALSASS's Similar Triangles)
     this.fromFeint = false; // current move was cancelled out of a feint
     this.blockEndFrame = -999; // last frame this fighter came out of blockstun
     this.whiffed = false;      // an attack just ended without touching anything (read by the match)
@@ -97,7 +97,7 @@
     return this.state === 'attack' && this.moveFrame <= this.move.startup + this.move.active - 1;
   };
 
-  // In the active window of a parry move (CHAI's Reflection Counter, LOPEZ's Null Hypothesis)?
+  // In the active window of a parry move (CHAI's Reflection Counter, LOPEZ's Derivative Read)?
   Fighter.prototype.parryWindow = function () {
     if (this.state !== 'attack' || !this.move.parry) return null;
     var pr = this.move.parry;
@@ -195,7 +195,7 @@
         if (this.stateFrame >= (this.def.dashAttackFrom || DASH_ACT_FROM) && this.tryAttack(buf, frame)) return;
         return;
       case 'backdash':
-        // Fighters can have their own backdash (LOPEZ's Standard Deviation).
+        // Fighters can have their own backdash (LOPEZ's Asymptote Backdash).
         this.vx *= this.def.backdashDecay || 0.87;
         if (this.stateFrame >= (this.def.backdashFrames || BACKDASH_FRAMES)) { this.setState('idle'); break; }
         if (this.stateFrame >= (this.def.backdashActFrom || BACKDASH_ACT_FROM) && this.tryAttack(buf, frame)) return;
@@ -303,7 +303,7 @@
     var dirs = buf.dirsFor(btn, frame);
     var down = dirs.down, back = buf.back(this.facing, dirs), fwd = buf.forward(this.facing, dirs);
     var B = btn.toUpperCase();
-    // Right after blocking (LOPEZ's Confidence Interval).
+    // Right after blocking (LOPEZ's Mean Value Punish).
     if (btn === 'p' && this.def.moves.postBlockP && frame - this.blockEndFrame <= this.def.postBlockWindow) return 'postBlockP';
     if (this.stance === 'B') {
       if (btn === 'p' && back && this.def.moves.bP) return 'bP'; // switch back

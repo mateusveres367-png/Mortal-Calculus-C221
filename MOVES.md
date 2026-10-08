@@ -4,7 +4,7 @@ Generated from the fighter data by `node tools/movelist.js`; don't edit by hand.
 
 Frame data: **i** is startup (the frame the move hits, counting the press as frame 1), then active and recovery frames. Block / hit / counter hit are frame advantage for the attacker. Inputs assume you face right: F = toward the opponent, B = away, D = down.
 
-## PEDERSEN — Power — Exponents
+## PEDERSEN — Power — Math Analysis
 
 Calm and friendly, but every hit is heavy. Slow, patient, devastating.
 
@@ -12,13 +12,14 @@ Calm and friendly, but every hit is heavy. Slow, patient, devastating.
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | P | Power Jab | high | 11 | 2 | 14 | 0 | +7 | +10 | 10 |  |
 | P,P | Squared | high | 12 | 3 | 19 | -5 | +4 | +10 | 15 |  |
+| F+P | Right Angle Elbow | mid | 15 | 3 | 18 | -5 | +5 | launch | 18 |  |
 | K | Exponent Kick | mid | 16 | 3 | 20 | -7 | +5 | +10 | 19 |  |
 | D+K | Negative Exponent | low | 18 | 3 | 22 | -13 | 0 | +6 | 13 | hits downed opponents, ducks highs |
 | D/B+K | Zero Power Sweep | low | 22 | 3 | 26 | -18 | knockdown | knockdown | 20 | ducks highs |
 | H | Base Hook | mid | 21 | 4 | 20 | +1 | +8 | launch | 28 | wall splats |
 | F+H | Exponential Haymaker | mid | 26 | 4 | 22 | -6 | knockdown | launch | 36 | wall splats |
 | B+H (HOLD) | Order Of Magnitude | mid | 20 | 4 | 22 | -8 | +4 | knockdown | 20 | wall splats, hold to charge |
-| D+H | Power Rule | mid | 17 | 4 | 24 | -17 | launch | launch | 22 | jump cancel on hit (UP) |
+| D+H | Logarithmic Launcher | mid | 17 | 4 | 24 | -17 | launch | launch | 22 | jump cancel on hit (UP) |
 | P+K | Long Division | throw | 12 | 2 | 28 |  |  |  | 40 | break with P |
 | B+P+K | Synthetic Division | throw | 12 | 2 | 28 |  |  |  | 38 | break with K |
 | AIR P | Exponent Drop | mid | 9 | 4 | 10 |  |  |  | 12 | hitstun 16, blockstun 10, landing 6 |
@@ -31,41 +32,41 @@ Calm and friendly, but every hit is heavy. Slow, patient, devastating.
 **Combo routes** (tested in `tests/sim.test.js`):
 
 - **Squared:** P, P (frames: P @0, P @16)
-- **Power Rule Juggle:** D+H, P, P (frames: D+H @0, P @42, P @59)
+- **Logarithmic Juggle:** D+H, P, P (frames: D+H @0, P @42, P @59)
 - **Tower Of Powers:** D+H, up, air K, air H, D+K on the ground (frames: D+H @0, UP @20, K @31, H @40, D+K @94)
 - **Exponential Growth:** at the wall: H, D+H (each input as soon as you can act)
 
-## BRINKHUS — Balanced — Limits
+## BRINKHUS — Balanced — Algebra 1
 
 Nice, easygoing, a good sport. Best for new players.
 
 | Input | Move | Level | i | Active | Recovery | Block | Hit | Counter hit | Damage | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| P | Limit Jab | high | 10 | 2 | 13 | +1 | +8 | +10 | 7 |  |
-| P,P | One-Sided Limit | high | 9 | 2 | 16 | -3 | +6 | +9 | 9 |  |
-| P,K | Epsilon | mid | 11 | 3 | 18 | -7 | +4 | +8 | 11 |  |
-| P,K,K | Delta | mid | 13 | 3 | 22 | -13 | knockdown | knockdown | 16 | wall splats |
-| K | Convergent Kick | mid | 14 | 3 | 18 | -6 | +4 | +9 | 14 |  |
-| D+K | Lower Bound | low | 16 | 3 | 21 | -12 | -1 | +5 | 10 | tracks, hits downed opponents, ducks highs |
-| D/B+K | Zero Sweep | low | 20 | 3 | 26 | -18 | knockdown | knockdown | 16 | ducks highs |
-| H | L'Hopital Hook | mid | 19 | 3 | 22 | -4 | +6 | launch | 22 | wall splats |
-| F+H | Infinite Limit | mid | 21 | 3 | 21 | -6 | +3 | knockdown | 18 | bounds |
-| D+H | Limit Break | mid | 15 | 4 | 22 | -15 | launch | launch | 16 | jump cancel on hit (UP) |
-| P+K | Squeeze Theorem | throw | 12 | 2 | 26 |  |  |  | 30 | break with P |
-| B+P+K | Direct Substitution | throw | 12 | 2 | 26 |  |  |  | 34 | break with K |
-| AIR P | Left Limit | mid | 7 | 4 | 10 |  |  |  | 8 | hitstun 16, blockstun 10, landing 4 |
-| AIR K | Right Limit | mid | 9 | 5 | 12 |  |  |  | 11 | hitstun 18, blockstun 12, landing 6 |
-| AIR H | Limit At Infinity | mid | 12 | 4 | 16 |  |  |  | 16 | bounds, hitstun 22, blockstun 14, landing 10 |
+| P | Slope Jab | high | 10 | 2 | 13 | +1 | +8 | +10 | 7 |  |
+| P,P | Rise Over Run | high | 9 | 2 | 16 | -3 | +6 | +9 | 9 |  |
+| P,K | Distribute | mid | 11 | 3 | 18 | -7 | +4 | +8 | 11 |  |
+| P,K,K | Distributive Property | mid | 13 | 3 | 22 | -13 | knockdown | knockdown | 16 | wall splats |
+| K | Variable Kick | mid | 14 | 3 | 18 | -6 | +4 | +9 | 14 |  |
+| D+K | Inequality | low | 16 | 3 | 21 | -12 | -1 | +5 | 10 | tracks, hits downed opponents, ducks highs |
+| D/B+K | Zero Product Sweep | low | 20 | 3 | 26 | -18 | knockdown | knockdown | 16 | ducks highs |
+| H | Linear Rush | mid | 19 | 3 | 22 | -4 | +6 | launch | 22 | wall splats |
+| F+H | Order Of Operations | mid | 21 | 3 | 21 | -6 | +3 | knockdown | 18 | bounds |
+| D+H | Solve For X | mid | 15 | 4 | 22 | -15 | launch | launch | 16 | jump cancel on hit (UP) |
+| P+K | Foil | throw | 12 | 2 | 26 |  |  |  | 30 | break with P |
+| B+P+K | Substitution | throw | 12 | 2 | 26 |  |  |  | 34 | break with K |
+| AIR P | X-Intercept | mid | 7 | 4 | 10 |  |  |  | 8 | hitstun 16, blockstun 10, landing 4 |
+| AIR K | Y-Intercept | mid | 9 | 5 | 12 |  |  |  | 11 | hitstun 18, blockstun 12, landing 6 |
+| AIR H | Point-Slope Spike | mid | 12 | 4 | 16 |  |  |  | 16 | bounds, hitstun 22, blockstun 14, landing 10 |
 | K (DOWN) | Rolling Zero | low | 14 | 3 | 22 | -14 | -2 | +1 | 10 | ducks highs |
 | P/H (DOWN) | Spring Theorem | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
 | T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
 
 **Combo routes** (tested in `tests/sim.test.js`):
 
-- **Epsilon-Delta:** P, K, K (frames: P @0, K @12, K @24)
-- **Limit Break Juggle:** D+H, P, P, D+K on the ground (frames: D+H @0, P @38, P @55, D+K @95)
-- **Limit At Infinity:** D+H, up, air P, air K, air H, K (frames: D+H @0, UP @17, P @32, K @41, H @51, K @79)
-- **Hard Limit:** at the wall: H, P, P, D+H (each input as soon as you can act)
+- **Distributive Property:** P, K, K (frames: P @0, K @12, K @24)
+- **Solve For X Juggle:** D+H, P, P, D+K on the ground (frames: D+H @0, P @38, P @55, D+K @95)
+- **Point-Slope Spike:** D+H, up, air P, air K, air H, K (frames: D+H @0, UP @17, P @32, K @41, H @51, K @79)
+- **Isolate The Variable:** at the wall: H, P, P, D+H (each input as soon as you can act)
 
 ## CHAI — Technical — Geometry
 
@@ -83,7 +84,7 @@ Very kind, precise and graceful. Bows before fights.
 | H | Hypotenuse | mid | 17 | 3 | 22 | -6 | +5 | launch | 19 | wall splats |
 | F+H | Vertex Drop | mid | 20 | 3 | 20 | -7 | +3 | knockdown | 17 | bounds |
 | B+H | Reflection Counter | — | 31 total |  |  |  |  |  |  | parry |
-| D+H | Parabola Launcher | mid | 14 | 4 | 24 | -16 | launch | launch | 15 | jump cancel on hit (UP) |
+| D+H | Arc Launcher | mid | 14 | 4 | 24 | -16 | launch | launch | 15 | jump cancel on hit (UP) |
 | P+K | Transformation | throw | 12 | 2 | 26 |  |  |  | 28 | break with P |
 | B+P+K | Rotation | throw | 12 | 2 | 26 |  |  |  | 32 | break with K |
 | AIR P | Tangent Jab | mid | 7 | 4 | 10 |  |  |  | 8 | hitstun 16, blockstun 10, landing 4 |
@@ -97,44 +98,44 @@ Very kind, precise and graceful. Bows before fights.
 **Combo routes** (tested in `tests/sim.test.js`):
 
 - **Right Triangle:** P, K (frames: P @0, K @11)
-- **Parabola Juggle:** D+H, P, K (frames: D+H @0, P @39, K @53)
+- **Arc Juggle:** D+H, P, K (frames: D+H @0, P @39, K @53)
 - **Vertex Spike:** D+H, up, air P, air K, air H, K (frames: D+H @0, UP @17, P @32, K @40, H @50, K @79)
 
-## DALSASS — Tricky — Functions
+## DALSASS — Tricky — Geometry Proofs
 
 Happy, sassy, everyone's favorite. Fakes you out with a grin.
 
 | Input | Move | Level | i | Active | Recovery | Block | Hit | Counter hit | Damage | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| P | Domain Jab | high | 10 | 2 | 13 | +1 | +8 | +10 | 7 |  |
-| P,P | Range Cross | high | 10 | 2 | 17 | -4 | +5 | +9 | 10 |  |
-| B+P | Piecewise | — | 13 total |  |  |  |  |  |  | switches stance |
-| STANCE P | Step Function | mid | 12 | 2 | 18 | -4 | +6 | +10 | 12 |  |
-| STANCE K | Absolute Value | low | 13 | 3 | 20 | -12 | +1 | +6 | 11 | hits downed opponents, ducks highs |
-| STANCE H | Jump Discontinuity | mid | 20 | 3 | 20 | -6 | +4 | launch | 20 | bounds |
-| K | Function Kick | mid | 15 | 3 | 19 | -7 | +4 | +9 | 15 |  |
-| D+K | Floor Function | low | 16 | 3 | 20 | -11 | 0 | +6 | 10 | tracks, hits downed opponents, ducks highs |
-| D/F+K | Asymptote Slide | low | 18 | 5 | 24 | -16 | knockdown | knockdown | 14 | ducks highs |
-| D/B+K | Root Sweep | low | 21 | 3 | 26 | -18 | knockdown | knockdown | 16 | ducks highs |
-| H | Composite Hook | mid | 18 | 3 | 22 | -5 | +5 | launch | 20 | wall splats |
-| F+H | Function Feint | — | 24 total |  |  |  |  |  |  | feint: cancel with P, K, H or P+K during frames 6-18 |
-| F+H, H | Inverse Drop | mid | 14 | 3 | 22 | -8 | +4 | knockdown | 18 | bounds |
-| D+H | Discontinuity | mid | 15 | 4 | 23 | -15 | launch | launch | 17 | jump cancel on hit (UP) |
-| P+K | Contradiction | throw | 12 | 2 | 26 |  |  |  | 30 | break with P |
+| P | Given | high | 10 | 2 | 13 | +1 | +8 | +10 | 7 |  |
+| P,P | Statement | high | 10 | 2 | 17 | -4 | +5 | +9 | 10 |  |
+| B+P | Similar Triangles | — | 13 total |  |  |  |  |  |  | switches stance |
+| STANCE P | Similar Palm | mid | 12 | 2 | 18 | -4 | +6 | +10 | 12 |  |
+| STANCE K | Scale Factor | low | 13 | 3 | 20 | -12 | +1 | +6 | 11 | hits downed opponents, ducks highs |
+| STANCE H | Angle-Angle | mid | 20 | 3 | 20 | -6 | +4 | launch | 20 | bounds |
+| K | Reason Kick | mid | 15 | 3 | 19 | -7 | +4 | +9 | 15 |  |
+| D+K | Leg Kick | low | 16 | 3 | 20 | -11 | 0 | +6 | 10 | tracks, hits downed opponents, ducks highs |
+| D/F+K | Supplementary Slide | low | 18 | 5 | 24 | -16 | knockdown | knockdown | 14 | ducks highs |
+| D/B+K | Base Sweep | low | 21 | 3 | 26 | -18 | knockdown | knockdown | 16 | ducks highs |
+| H | Side-Angle-Side | mid | 18 | 3 | 22 | -5 | +5 | launch | 20 | wall splats |
+| F+H | Proof By Contradiction | — | 24 total |  |  |  |  |  |  | feint: cancel with P, K, H or P+K during frames 6-18 |
+| F+H, H | Indirect Proof | mid | 14 | 3 | 22 | -8 | +4 | knockdown | 18 | bounds |
+| D+H | Pythagorean Launcher | mid | 15 | 4 | 23 | -15 | launch | launch | 17 | jump cancel on hit (UP) |
+| P+K | Congruence Lock | throw | 12 | 2 | 26 |  |  |  | 30 | break with P |
 | B+P+K | Counterexample | throw | 12 | 2 | 26 |  |  |  | 33 | break with K |
-| AIR P | Image Jab | mid | 7 | 4 | 10 |  |  |  | 8 | hitstun 16, blockstun 10, landing 4 |
-| AIR K | Preimage Kick | mid | 9 | 5 | 12 |  |  |  | 11 | hitstun 18, blockstun 12, landing 6 |
-| AIR H | Inverse Spike | mid | 12 | 4 | 16 |  |  |  | 16 | bounds, hitstun 22, blockstun 14, landing 10 |
+| AIR P | Angle Bisector | mid | 7 | 4 | 10 |  |  |  | 8 | hitstun 16, blockstun 10, landing 4 |
+| AIR K | Median Kick | mid | 9 | 5 | 12 |  |  |  | 11 | hitstun 18, blockstun 12, landing 6 |
+| AIR H | Centroid Spike | mid | 12 | 4 | 16 |  |  |  | 16 | bounds, hitstun 22, blockstun 14, landing 10 |
 | K (DOWN) | Rolling Zero | low | 14 | 3 | 22 | -14 | -2 | +1 | 10 | ducks highs |
 | P/H (DOWN) | Spring Theorem | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
 | T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
 
 **Combo routes** (tested in `tests/sim.test.js`):
 
-- **Composition:** P, P (frames: P @0, P @15)
-- **Discontinuity Juggle:** D+H, P, P (frames: D+H @0, P @38, P @56)
-- **Inverse Spike:** D+H, up, air K, air H, K (frames: D+H @0, UP @17, K @31, H @41, K @70)
-- **Slide And Stomp:** D/F+K, D+K on the ground (frames: D/F+K @0, D+K @49)
+- **Given, Prove:** P, P (frames: P @0, P @15)
+- **Pythagorean Juggle:** D+H, P, P (frames: D+H @0, P @38, P @56)
+- **Centroid Spike:** D+H, up, air K, air H, K (frames: D+H @0, UP @17, K @31, H @41, K @70)
+- **Supplementary Stomp:** D/F+K, D+K on the ground (frames: D/F+K @0, D+K @49)
 
 ## LEE — Rushdown — Sequences
 
@@ -170,72 +171,72 @@ Sarcastic and funny. Taunts mid-combo. Relentless pressure.
 - **Fibonacci Juggle:** D+H, P, P, P, D+K on the ground (frames: D+H @0, P @37, P @50, P @57, D+K @99)
 - **Fibonacci Spike:** D+H, up, air P, air K, air H, K (frames: D+H @0, UP @16, P @31, K @40, H @50, K @79)
 
-## LOPEZ — Defensive — Statistics
+## LOPEZ — Defensive — Calculus
 
 Very suspicious. Always watching. Waits for you to commit, then punishes.
 
 | Input | Move | Level | i | Active | Recovery | Block | Hit | Counter hit | Damage | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| P | Sample Jab | high | 10 | 2 | 14 | 0 | +7 | +10 | 8 |  |
-| P,P | Mean Straight | high | 10 | 2 | 16 | -3 | +6 | +9 | 10 |  |
-| K | Regression Kick | mid | 15 | 3 | 18 | -5 | +4 | +9 | 15 |  |
-| D+K | Lower Quartile | low | 16 | 3 | 20 | -12 | 0 | +6 | 11 | hits downed opponents, ducks highs |
-| D/B+K | Bell Curve Sweep | low | 21 | 3 | 26 | -18 | knockdown | knockdown | 16 | ducks highs |
-| H | Significant Figure | mid | 19 | 3 | 21 | -4 | +6 | launch | 22 | wall splats |
-| F+H | Median Drop | mid | 22 | 3 | 21 | -7 | +3 | knockdown | 19 | bounds |
-| B+H | Null Hypothesis | — | 33 total |  |  |  |  |  |  | parry |
-| D+H | Outlier | mid | 16 | 4 | 22 | -15 | launch | launch | 17 | jump cancel on hit (UP) |
-| P+K | Regression | throw | 12 | 2 | 26 |  |  |  | 32 | break with P |
-| B+P+K | Residual | throw | 12 | 2 | 26 |  |  |  | 34 | break with K |
-| AIR P | Sample Drop | mid | 8 | 4 | 10 |  |  |  | 10 | hitstun 16, blockstun 10, landing 5 |
-| AIR K | Variance Kick | mid | 10 | 5 | 12 |  |  |  | 13 | hitstun 18, blockstun 12, landing 7 |
-| AIR H | Normal Distribution | mid | 13 | 4 | 16 |  |  |  | 19 | bounds, hitstun 22, blockstun 14, landing 11 |
+| P | Differential Jab | high | 10 | 2 | 14 | 0 | +7 | +10 | 8 |  |
+| P,P | Second Derivative | high | 10 | 2 | 16 | -3 | +6 | +9 | 10 |  |
+| K | Chain Rule Kick | mid | 15 | 3 | 18 | -5 | +4 | +9 | 15 |  |
+| D+K | Lower Sum | low | 16 | 3 | 20 | -12 | 0 | +6 | 11 | hits downed opponents, ducks highs |
+| D/B+K | Riemann Sweep | low | 21 | 3 | 26 | -18 | knockdown | knockdown | 16 | ducks highs |
+| H | Definite Integral | mid | 19 | 3 | 21 | -4 | +6 | launch | 22 | wall splats |
+| F+H | Concave Down | mid | 22 | 3 | 21 | -7 | +3 | knockdown | 19 | bounds |
+| B+H | Derivative Read | — | 33 total |  |  |  |  |  |  | parry |
+| D+H | Limit Break | mid | 16 | 4 | 22 | -15 | launch | launch | 17 | jump cancel on hit (UP) |
+| P+K | Squeeze Theorem | throw | 12 | 2 | 26 |  |  |  | 32 | break with P |
+| B+P+K | U-Substitution | throw | 12 | 2 | 26 |  |  |  | 34 | break with K |
+| AIR P | Left-Hand Limit | mid | 8 | 4 | 10 |  |  |  | 10 | hitstun 16, blockstun 10, landing 5 |
+| AIR K | Right-Hand Limit | mid | 10 | 5 | 12 |  |  |  | 13 | hitstun 18, blockstun 12, landing 7 |
+| AIR H | Inflection Spike | mid | 13 | 4 | 16 |  |  |  | 19 | bounds, hitstun 22, blockstun 14, landing 11 |
 | K (DOWN) | Rolling Zero | low | 14 | 3 | 22 | -14 | -2 | +1 | 10 | ducks highs |
 | P/H (DOWN) | Spring Theorem | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
 | T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
-| P AFTER BLOCK | Confidence Interval | mid | 8 | 2 | 20 | -10 | knockdown | knockdown | 18 | wall splats |
-| PARRY | Rejection | mid | 7 | 3 | 18 | -6 | knockdown | knockdown | 22 |  |
+| P AFTER BLOCK | Mean Value Punish | mid | 8 | 2 | 20 | -10 | knockdown | knockdown | 18 | wall splats |
+| PARRY | Critical Point | mid | 7 | 3 | 18 | -6 | knockdown | knockdown | 22 |  |
 
 **Combo routes** (tested in `tests/sim.test.js`):
 
-- **Sample Mean:** P, P (frames: P @0, P @15)
-- **Outlier Juggle:** D+H, P, P, D+K on the ground (frames: D+H @0, P @39, P @56, D+K @97)
-- **Normal Distribution:** D+H, up, air P, air K, air H, K (frames: D+H @0, UP @18, P @28, K @41, H @52, K @81)
-- **Confidence Interval:** BLOCK THEIR JAB, P, D+K on the ground (frames: P @21, D+K @63; hold B @0-11)
+- **First Derivative:** P, P (frames: P @0, P @15)
+- **Limit Break Juggle:** D+H, P, P, D+K on the ground (frames: D+H @0, P @39, P @56, D+K @97)
+- **Inflection Point:** D+H, up, air P, air K, air H, K (frames: D+H @0, UP @18, P @28, K @41, H @52, K @81)
+- **Mean Value Punish:** BLOCK THEIR JAB, P, D+K on the ground (frames: P @21, D+K @63; hold B @0-11)
 
-## MIYASHIRO — Spacing — Vectors
+## MIYASHIRO — Spacing — Algebra 2
 
 Very smart. Reads opponents, keeps perfect distance, punishes every mistake.
 
 | Input | Move | Level | i | Active | Recovery | Block | Hit | Counter hit | Damage | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| P | Unit Vector | high | 10 | 3 | 13 | 0 | +7 | +10 | 7 |  |
-| P,P | Scalar | high | 10 | 2 | 16 | -3 | +6 | +9 | 9 |  |
-| F,F+P | Vector Rush | mid | 12 | 3 | 18 | -4 | +6 | launch | 16 | wall splats |
-| K | Magnitude Kick | mid | 14 | 3 | 18 | -5 | +4 | +9 | 13 |  |
-| F+K | Dot Product | mid | 16 | 3 | 18 | -6 | +3 | +8 | 12 |  |
-| B+K | Unit Circle | high | 17 | 4 | 20 | -7 | knockdown | knockdown | 18 | tracks |
-| D+K | Component Low | low | 15 | 3 | 19 | -11 | 0 | +6 | 9 | hits downed opponents, ducks highs |
-| D/B+K | Orthogonal Sweep | low | 20 | 3 | 26 | -18 | knockdown | knockdown | 16 | ducks highs |
-| H | Resultant | mid | 18 | 3 | 22 | -5 | +5 | launch | 20 | wall splats |
-| F+H | Normal Vector | mid | 21 | 3 | 21 | -6 | +3 | knockdown | 18 | bounds |
-| D+H | Cross Product | mid | 15 | 4 | 23 | -15 | launch | launch | 16 | jump cancel on hit (UP) |
-| P+K | Projection | throw | 12 | 2 | 26 |  |  |  | 30 | break with P |
-| B+P+K | Reflection Matrix | throw | 12 | 2 | 26 |  |  |  | 33 | break with K |
-| AIR P | Component Jab | mid | 7 | 4 | 10 |  |  |  | 8 | hitstun 16, blockstun 10, landing 4 |
-| AIR K | Direction Kick | mid | 9 | 5 | 12 |  |  |  | 11 | hitstun 18, blockstun 12, landing 6 |
-| AIR H | Projection Spike | mid | 12 | 4 | 16 |  |  |  | 16 | bounds, hitstun 22, blockstun 14, landing 10 |
+| P | Function Jab | high | 10 | 3 | 13 | 0 | +7 | +10 | 7 |  |
+| P,P | Inverse | high | 10 | 2 | 16 | -3 | +6 | +9 | 9 |  |
+| F,F+P | Range Check | mid | 12 | 3 | 18 | -4 | +6 | launch | 16 | wall splats |
+| K | Root Kick | mid | 14 | 3 | 18 | -5 | +4 | +9 | 13 |  |
+| F+K | Domain Control | mid | 16 | 3 | 18 | -6 | +3 | +8 | 12 |  |
+| B+K | Vertex Kick | high | 17 | 4 | 20 | -7 | knockdown | knockdown | 18 | tracks |
+| D+K | Y-Intercept | low | 15 | 3 | 19 | -11 | 0 | +6 | 9 | hits downed opponents, ducks highs |
+| D/B+K | X-Axis Sweep | low | 20 | 3 | 26 | -18 | knockdown | knockdown | 16 | ducks highs |
+| H | Complex Root | mid | 18 | 3 | 22 | -5 | +5 | launch | 20 | wall splats |
+| F+H | End Behavior | mid | 21 | 3 | 21 | -6 | +3 | knockdown | 18 | bounds |
+| D+H | Quadratic Launcher | mid | 15 | 4 | 23 | -15 | launch | launch | 16 | jump cancel on hit (UP) |
+| P+K | Discriminant | throw | 12 | 2 | 26 |  |  |  | 30 | break with P |
+| B+P+K | Completing The Square | throw | 12 | 2 | 26 |  |  |  | 33 | break with K |
+| AIR P | Imaginary Jab | mid | 7 | 4 | 10 |  |  |  | 8 | hitstun 16, blockstun 10, landing 4 |
+| AIR K | Conjugate Kick | mid | 9 | 5 | 12 |  |  |  | 11 | hitstun 18, blockstun 12, landing 6 |
+| AIR H | Focus Spike | mid | 12 | 4 | 16 |  |  |  | 16 | bounds, hitstun 22, blockstun 14, landing 10 |
 | K (DOWN) | Rolling Zero | low | 14 | 3 | 22 | -14 | -2 | +1 | 10 | ducks highs |
 | P/H (DOWN) | Spring Theorem | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
 | T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
 
 **Combo routes** (tested in `tests/sim.test.js`):
 
-- **Unit Vectors:** P, P (frames: P @0, P @15)
-- **Cross Product Juggle:** D+H, P, P, D+K on the ground (frames: D+H @0, P @38, P @56, D+K @97)
-- **Projection Spike:** D+H, up, air P, air K, air H, K (frames: D+H @0, UP @17, P @32, K @41, H @51, K @79)
+- **Factor Pair:** P, P (frames: P @0, P @15)
+- **Quadratic Juggle:** D+H, P, P, D+K on the ground (frames: D+H @0, P @38, P @56, D+K @97)
+- **Focus Spike:** D+H, up, air P, air K, air H, K (frames: D+H @0, UP @17, P @32, K @41, H @51, K @79)
 - **Calculated Rush:** THEY WHIFF A JAB, F, F+P (CALCULATED BONUS) (frames: F @18, F @20, P @27)
-- **Vector Space:** at the wall: H, F+K, D+H (each input as soon as you can act)
+- **Domain And Range:** at the wall: H, F+K, D+H (each input as soon as you can act)
 
 ## RAMOS — Grappler — Matrices
 

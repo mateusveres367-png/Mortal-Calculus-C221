@@ -34,6 +34,7 @@
   FG.defineFighter({
     id: 'lee', order: 4,
     homeStage: 'hallway',
+    glyphs: ['A(N)=A+(N-1)D', '1,1,2,3,5', 'SUM', '...'], // math that flies off their big hits
     name: 'LEE', archetype: 'RUSHDOWN', theme: 'SEQUENCES',
     bio: 'SARCASTIC AND FUNNY. TAUNTS MID-COMBO. RELENTLESS PRESSURE.',
     signature: ['ARITHMETIC SEQUENCE', 'RECURSIVE RUSH', 'FIBONACCI UPPERCUT', 'SERIES EXPANSION'],
