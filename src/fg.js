@@ -104,6 +104,14 @@ FG.C = {
   // leaves the opponent in hitstun a few frames less.
   COMBO_DECAY_FROM: 10,
   COMBO_DECAY_STUN: 3,
+  // Grade meter: 3 bars (C, B, A) of METER_BAR each.
+  METER_BAR: 100,
+  METER_MAX: 300,
+  METER_HIT: 1.1,       // per point of damage dealt
+  METER_TAKEN: 0.6,     // per point of damage taken
+  METER_BLOCK: 4,       // for blocking an attack
+  METER_BLOCKED: 2,     // for an attack that was blocked
+  METER_LOSING: 1.25,   // gain multiplier while you're behind on health
   TIP_BONUS: 1.25,
   ARMOR_DAMAGE: 0.7,    // Exponential Armor: share of an absorbed hit's damage taken
   ARMOR_HITSTOP: 8,      // Long Arms: damage for landing with the tip of a straight

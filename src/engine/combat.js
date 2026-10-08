@@ -70,6 +70,8 @@
     var scale = combo.hits <= 2 ? 1 : Math.max(0.3, 1 - 0.12 * (combo.hits - 2));
     var dmg = Math.max(1, Math.round(base * scale * (mult || 1)));
     combo.damage += dmg;
+    this.gainMeter(ai, dmg * C.METER_HIT);
+    this.gainMeter(di, dmg * C.METER_TAKEN);
     d.comboHits = combo.hits;
     d.health = Math.max(0, d.health - dmg);
     if (d.health <= 0 && !d.ko) {
@@ -78,6 +80,26 @@
       this.koTimer = C.KO_RESET_FRAMES;
     }
     return dmg;
+  };
+
+  // Grade meter: fills by landing hits, blocking and taking damage, a little faster
+  // for whoever is behind on health. Filling a bar is an event (a sound and a flash).
+  Match.prototype.gainMeter = function (i, amount) {
+    var f = this.fighters[i], o = this.fighters[1 - i];
+    if (f.infiniteMeter) { f.meter = C.METER_MAX; return; }
+    var behind = f.health / f.def.health < o.health / o.def.health;
+    var before = Math.floor(f.meter / C.METER_BAR);
+    f.meter = Math.min(C.METER_MAX, f.meter + amount * (behind ? C.METER_LOSING : 1));
+    var after = Math.floor(f.meter / C.METER_BAR);
+    if (after > before) this.events.push({ type: 'meter', fighter: i, bars: after, x: f.x });
+  };
+
+  // Spend `bars` bars of meter if there is enough. Returns whether it was spent.
+  Match.prototype.spendMeter = function (i, bars) {
+    var f = this.fighters[i];
+    if (f.meter < bars * C.METER_BAR) return false;
+    if (!f.infiniteMeter) f.meter -= bars * C.METER_BAR;
+    return true;
   };
 
   // --- Strikes ------------------------------------------------------------------
@@ -197,6 +219,8 @@
     d.armorHits++;
     var dmg = Math.max(1, Math.round(m.damage * C.ARMOR_DAMAGE));
     d.health -= dmg;
+    this.gainMeter(c.a, dmg * C.METER_HIT);
+    this.gainMeter(c.d, dmg * C.METER_TAKEN);
     this.hitstop = Math.max(this.hitstop, C.ARMOR_HITSTOP);
     this.push(a, d, m.push * 0.5);
     this.lastResult[c.a] = { move: m, kind: 'ARMORED', adv: null };
@@ -270,6 +294,8 @@
   Match.prototype.addGuardPressure = function (c, m, attackerLeft) {
     var a = this.fighters[c.a], d = this.fighters[c.d];
     d.guard += m.guardDmg != null ? m.guardDmg : GUARD_DMG[m.strength] || 8;
+    this.gainMeter(c.d, C.METER_BLOCK);
+    this.gainMeter(c.a, C.METER_BLOCKED);
     d.guardDelay = C.GUARD_REGEN_DELAY;
     this.combo[c.d] = { hits: 0, damage: 0 };
 

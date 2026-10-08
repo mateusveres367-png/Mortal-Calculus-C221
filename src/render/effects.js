@@ -457,6 +457,10 @@
       case 'feint':
         burst(0.05, 1800, 2, 0.1, 'bandpass');
         break;
+      case 'meter': // a Grade bar filled: a rising chalk chime, higher for each grade
+        sweep(0.12, 520 + ev.bars * 180, 900 + ev.bars * 260, 0.05, 'triangle');
+        sweep(0.2, 1040 + ev.bars * 260, 1100 + ev.bars * 260, 0.03, 'square');
+        break;
     }
   };
 

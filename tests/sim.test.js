@@ -1363,5 +1363,38 @@ defs.forEach(function (d) {
   check('route windows contain the planned frame and are wide', w.slice(1).every(function (x) { return x.lo <= x.frame && x.hi >= x.frame && x.hi - x.lo >= 10; }), w);
 })();
 
+// Grade meter: landing hits, blocking and taking damage fill it; faster when behind.
+(function () {
+  var m = setup(S, D, 40), ev = [];
+  run(m, 40, function (i) { return [raw(i === 0 ? { p: true } : {}), raw({})]; });
+  var a = m.fighters[0], d = m.fighters[1];
+  check('meter: landing a hit fills it', a.meter > 0, a.meter);
+  check('meter: taking damage fills it', d.meter > 0 && d.meter < a.meter, [a.meter, d.meter]);
+  var b = setup(S, D, 40);
+  for (var i = 0; i < 40; i++) b.step([raw(i === 0 ? { p: true } : {}), raw(i >= 2 ? { right: true } : {})]);
+  check('meter: blocking fills it', b.fighters[1].meter >= FG.C.METER_BLOCK && b.fighters[0].meter > 0, [b.fighters[0].meter, b.fighters[1].meter]);
+  // Behind on health: the same hit gives more.
+  var e = setup(S, D, 40);
+  e.fighters[0].health = 50;
+  run(e, 40, function (i) { return [raw(i === 0 ? { p: true } : {}), raw({})]; });
+  check('meter: fills faster when losing', Math.abs(e.fighters[0].meter - a.meter * FG.C.METER_LOSING) < 0.01, [e.fighters[0].meter, a.meter]);
+  // Bars: an event for each bar filled, capped at three.
+  var g = setup(S, D, 40);
+  g.fighters[0].meter = FG.C.METER_BAR - 1;
+  run(g, 40, function (i) { return [raw(i === 0 ? { p: true } : {}), raw({})]; });
+  var me = []; g.gainMeter(0, 1000); me = g.events.filter(function (x) { return x.type === 'meter'; });
+  check('meter: capped at three bars', g.fighters[0].meter === FG.C.METER_MAX, g.fighters[0].meter);
+  check('meter: filling a bar is an event', me.length === 1 && me[0].bars === 3, me);
+  check('meter: spend takes whole bars', g.spendMeter(0, 2) && g.fighters[0].meter === FG.C.METER_BAR && !g.spendMeter(0, 2) && g.fighters[0].meter === FG.C.METER_BAR, g.fighters[0].meter);
+  var inf = setup(S, D, 40);
+  inf.fighters[0].infiniteMeter = true; inf.gainMeter(0, 0);
+  check('meter: infinite meter stays full', inf.spendMeter(0, 3) && inf.fighters[0].meter === FG.C.METER_MAX, inf.fighters[0].meter);
+  // Armored hits fill it too.
+  var P = FG.fighterById('pedersen'), am = setup(S, P, 40);
+  am.fighters[1].meter = 0;
+  am.absorb({ a: 0, d: 1, hb: { y1: 40, y2: 60 } }, am.fighters[0], am.fighters[1], S.moves.jab);
+  check('meter: armored hits fill both', am.fighters[0].meter > 0 && am.fighters[1].meter > 0, [am.fighters[0].meter, am.fighters[1].meter]);
+})();
+
 console.log(passes + ' passed, ' + failures + ' failed');
 process.exit(failures ? 1 : 0);

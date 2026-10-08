@@ -107,6 +107,8 @@
     this.match.autoReset = false; // K.O. shows the win screen instead
     this.match.fighters[1].alt = this.ids.p1 === this.ids.p2; // a mirror match: player 2 in other colours
     this.match.reset(this.training.startPos);
+    // What carries from one round to the next (the Grade meter).
+    if (opts.carry) for (var ci = 0; ci < 2; ci++) for (var key in opts.carry[ci]) this.match.fighters[ci][key] = opts.carry[ci][key];
     this.effects = new FG.Effects();
     this.impact = null;
     this.zoom = null;     // { t, amount, x, y, hold }: a quick zoom-in on a big hit
@@ -134,6 +136,11 @@
     }
     if (opts.intro) this.startIntro();
     else { this.intro = null; if (!opts.quiet) this.hud.showBanner('FIGHT!', '', 50); }
+  };
+
+  // Fighter state that lasts the whole match, not just a round.
+  FightScene.prototype.carryOver = function () {
+    return this.match.fighters.map(function (f) { return { meter: f.meter }; });
   };
 
   // The car intro: drive in, stop, open the door, PEDERSEN steps out, door closes.
@@ -265,7 +272,7 @@
         var mw = r.matchWinner();
         if (mw !== null) { this.startWin(mw); return; }
         r.next();
-        this.newMatch({ quiet: true });
+        this.newMatch({ quiet: true, carry: this.carryOver() });
         this.startRound();
       }
     }

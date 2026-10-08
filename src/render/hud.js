@@ -46,6 +46,12 @@
     }
     this.slowText = T(C.VIEW_W - 8, 34, '', 'r').setOrigin(1, 0);
 
+    // Grade meter letters, one per bar (C, B, A from the outside in).
+    this.meterText = [0, 1].map(function (i) {
+      return Hud.GRADES.map(function (gr, k) { return T(Hud.meterSegX(i, k) + Hud.SEG_W / 2, Hud.METER_Y + 1, gr[0], 'g').setOrigin(0.5, 0); });
+    });
+    this.meterPop = [0, 0]; this.meterPopSeg = [0, 0];
+
     this.trail = [null, null];
     this.trailDelay = [0, 0];
     this.blink = 0;
@@ -59,6 +65,14 @@
     }
     this.setOverlay(false);
   }
+
+  // Grade meter layout: three bars under the round pips.
+  Hud.GRADES = [['C', 0x5fd7ff], ['B', 0x7dff6a], ['A', 0xffd23f]];
+  Hud.SEG_W = 44; Hud.SEG_GAP = 4; Hud.METER_Y = 46; Hud.METER_H = 9;
+  Hud.meterSegX = function (i, k) {
+    var step = Hud.SEG_W + Hud.SEG_GAP;
+    return i === 0 ? 16 + k * step : C.VIEW_W - 16 - Hud.SEG_W - k * step;
+  };
 
   Hud.CONTROLS = [
     ['CONTROLS', 'y'],
@@ -130,6 +144,7 @@
       case 'guardbreak': this.setLabel(ev.attacker, 'GUARD BREAK!'); return;
       case 'break': this.setLabel(ev.defender, ev.clash ? 'THROW CLASH' : 'THROW BREAK!'); return;
       case 'tech': this.setLabel(ev.fighter, 'TECH ROLL'); return;
+      case 'meter': this.meterPop[ev.fighter] = 14; this.meterPopSeg[ev.fighter] = ev.bars - 1; return;
       case 'hit': break;
       default: return;
     }
@@ -186,6 +201,34 @@
     }
   };
 
+  // The Grade meter: C, B and A bars. Full bars glow in their grade's colour; a bar
+  // that just filled flashes white; all three full pulses.
+  Hud.prototype.drawMeter = function (i, f) {
+    var g = this.g, y = Hud.METER_Y, h = Hud.METER_H, full = f.meter >= C.METER_MAX;
+    if (this.meterPop[i] > 0) this.meterPop[i]--;
+    for (var k = 0; k < 3; k++) {
+      var x = Hud.meterSegX(i, k), w = Hud.SEG_W, col = Hud.GRADES[k][1];
+      var part = Math.max(0, Math.min(1, (f.meter - k * C.METER_BAR) / C.METER_BAR));
+      g.fillStyle(0x000000, 1); g.fillRect(x - 1, y - 1, w + 2, h + 2);
+      g.fillStyle(0x16131f, 1); g.fillRect(x, y, w, h);
+      var pw = Math.round(w * part);
+      if (part >= 1) {
+        var pulse = full && this.blink % 24 < 12;
+        g.fillStyle(pulse ? 0xffffff : col, 1); g.fillRect(x, y, w, h);
+        g.fillStyle(0xffffff, 0.4); g.fillRect(x, y + 1, w, 2);
+      } else if (pw > 0) {
+        g.fillStyle(col, 0.45); g.fillRect(i === 0 ? x : x + w - pw, y, pw, h);
+      }
+      if (this.meterPop[i] > 0 && this.meterPopSeg[i] === k) {
+        var pp = this.meterPop[i] / 14;
+        g.fillStyle(0xffffff, pp); g.fillRect(x - 2, y - 2, w + 4, h + 4);
+        g.lineStyle(1, 0xffffff, pp); g.strokeRect(x - 2 - (1 - pp) * 6, y - 2 - (1 - pp) * 4, w + 4 + (1 - pp) * 12, h + 4 + (1 - pp) * 8);
+      }
+      g.lineStyle(1, part >= 1 ? 0xffffff : 0x5a4b2c, 1); g.strokeRect(x - 1, y - 1, w + 2, h + 2);
+      this.meterText[i][k].setFont(part >= 1 ? 'pf_k' : 'pf_g');
+    }
+  };
+
   // Rank labels by combo length.
   Hud.RANKS = [[15, 'PROOF COMPLETE', 'r'], [12, 'INCREDIBLE', 'o'], [8, 'GREAT', 'y'], [5, 'NICE', 'c']];
   Hud.rankTier = function (hits) {
@@ -230,6 +273,7 @@
   Hud.prototype.draw = function (match, opts) {
     var g = this.g;
     g.clear();
+    this.blink++;
 
     for (var i = 0; i < 2; i++) {
       var f = match.fighters[i];
@@ -249,10 +293,11 @@
       var gw = Math.round(BAR_W * 0.6 * f.guard / C.GUARD_MAX), gx = i === 0 ? x + BAR_W - Math.round(BAR_W * 0.6) : x;
       g.fillStyle(0x000000, 1); g.fillRect(gx - 1, BAR_Y + BAR_H + 3, Math.round(BAR_W * 0.6) + 2, 5);
       var danger = f.guard > C.GUARD_MAX * 0.7;
-      g.fillStyle(danger ? (this.blink++ % 16 < 8 ? 0xff8a1f : 0xffd23f) : 0x5fd7ff, 1);
+      g.fillStyle(danger ? (this.blink % 16 < 8 ? 0xff8a1f : 0xffd23f) : 0x5fd7ff, 1);
       g.fillRect(i === 0 ? gx + Math.round(BAR_W * 0.6) - gw : gx, BAR_Y + BAR_H + 4, gw, 3);
 
       this.names[i].setText((i === 0 ? 'P1 ' : 'P2 ') + f.def.name + '  ' + f.def.archetype);
+      this.drawMeter(i, f);
 
       this.drawCounter(i);
     }

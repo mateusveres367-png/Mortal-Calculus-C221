@@ -52,6 +52,8 @@
     this.blockEndFrame = -999; // last frame this fighter came out of blockstun
     this.whiffed = false;      // an attack just ended without touching anything (read by the match)
     this.calculated = 0;       // MIYASHIRO's Calculated: frames left of the damage bonus
+    this.meter = 0;            // Grade meter, 0..METER_MAX (C, B, A: one bar each)
+    this.infiniteMeter = false; // training: the meter stays full
     this.feintPending = 0;     // DALSASS feinted a move: frames in which the next one counts as out of a feint
     this.swayed = false;       // DALSASS's sway made an attack miss (opens the sway counter)
     this.clearComboFlags();

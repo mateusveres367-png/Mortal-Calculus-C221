@@ -126,6 +126,10 @@ Every fighter uses the same input layout. What each input does, and its frame da
 | while knocked down | up gets up, back or forward rolls, a sidestep key rolls sideways, `K` or `P` does a wake-up kick |
 | just before landing from a juggle | `P`, `K` or `H` tech rolls (not after sweeps, bounds or wall splats) |
 
+### Meter and big moves
+
+- **Grade meter:** three bars under your health bar, graded **C**, **B** and **A**. It fills when you land hits, when you block and when you take damage, and a little faster (×1.25) while you're behind on health. A bar chimes and flashes when it fills, and all three full pulses. The meter carries over between rounds.
+
 The fighters, and what they teach:
 
 - **PEDERSEN** (power; geometry & math analysis) — the cover fighter, a power brawler with his tie loosened. Slow, heavy, with huge damage. His arch-nemesis is Vicky:
