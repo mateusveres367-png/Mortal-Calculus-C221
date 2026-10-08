@@ -150,7 +150,7 @@
 
   // Fighter state that lasts the whole match, not just a round.
   FightScene.prototype.carryOver = function () {
-    return this.match.fighters.map(function (f) { return { meter: f.meter }; });
+    return this.match.fighters.map(function (f) { return { meter: f.meter, extraCredit: f.extraCredit }; });
   };
 
   // The car intro: drive in, stop, open the door, PEDERSEN steps out, door closes.
@@ -756,6 +756,7 @@
         dfn._react = ev.type === 'block' ? { kind: 'block', t: 0 } : { kind: ev.impact, t: 0, scale: ev.ch ? 1.3 : 1 };
       }
       if (ev.type === 'enhance' || ev.type === 'ultstart') ev.color = FG.fighterGlow(f[ev.fighter].def);
+      if (ev.type === 'extracredit') this.extraCreditCutIn(ev);
       if (ev.type === 'ultstart') this.ultFlash = { t: 0, wi: ev.fighter, color: ev.color };
       if (ev.type === 'ultimate') this.startUltimate(ev);
       if (ev.type === 'ulthit') this.impact = { who: ev.defender, frames: 2, color: 0xffffff };
@@ -1044,9 +1045,10 @@
     this.auras.clear();
     for (var ai = 0; ai < 2; ai++) {
       var af = f[ai], ex = (af.state === 'attack' && af.move && (af.move.enhanced || af.move.ultimate)) || (this.ult && this.ult.wi === ai);
-      if (!(af.calculated > 0 || ex) || af._hidden || !af._pose) continue;
-      var pulse = ex ? 0.5 + 0.3 * Math.sin(this.tickCount * 0.6) : 0.35 + 0.25 * Math.sin(this.tickCount * 0.25);
-      var col = ex ? FG.fighterGlow(af.def) : 0x5fd7ff, ax = af._drawX != null ? af._drawX : af.x;
+      var boosted = af.boost > 0; // Extra Credit: a gold glow
+      if (!(af.calculated > 0 || ex || boosted) || af._hidden || !af._pose) continue;
+      var pulse = ex ? 0.5 + 0.3 * Math.sin(this.tickCount * 0.6) : boosted ? 0.4 + 0.25 * Math.sin(this.tickCount * 0.35) : 0.35 + 0.25 * Math.sin(this.tickCount * 0.25);
+      var col = ex ? FG.fighterGlow(af.def) : boosted ? 0xffd23f : 0x5fd7ff, ax = af._drawX != null ? af._drawX : af.x;
       this.auras.setAlpha(pulse);
       [-2, 2].forEach(function (ox) { this.drawFigure(this.auras, af, { flash: col, noShadow: true, x: ax + ox }); }, this);
       this.drawFigure(this.auras, af, { flash: col, noShadow: true, groundY: C.GROUND_Y - 2, x: ax });
@@ -1127,6 +1129,16 @@
   };
 
   // --- Ultimates ------------------------------------------------------------------
+
+  // Extra Credit: a big cut-in, then a banner; they glow gold while the boost lasts.
+  FightScene.prototype.extraCreditCutIn = function (ev) {
+    var f = this.match.fighters, w = f[ev.fighter];
+    ev.color = 0xffd23f;
+    this.cutinCool = C.CUTIN_COOLDOWN;
+    this.cutin.play(w.def, w.x <= f[1 - ev.fighter].x ? 0 : 1, 'EXTRA CREDIT');
+    this.hud.showBanner('EXTRA CREDIT', 'METER FULL   DAMAGE UP', 110, { scale: 4, y: 130 });
+    this.stage.cheer(3, true);
+  };
 
   // It connected: cut-in, then the cinematic (the match drives its frames).
   FightScene.prototype.startUltimate = function (ev) {

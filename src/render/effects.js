@@ -78,6 +78,14 @@
         this.flashes.push({ x: x, y: y, r: 18, life: 9, max: 9, color: 0xffffff, star: true });
         this.flashes.push({ x: x, y: y, r: 14, life: 10, max: 10, color: 0x5fd7ff, ring: true });
         return;
+      case 'extracredit': // Extra Credit: gold rings and a shower of sparks
+        this.flashes.push({ x: x, y: y, r: 70, life: 26, max: 26, color: 0xffd23f, ring: true, thick: 4 });
+        this.flashes.push({ x: x, y: y, r: 40, life: 18, max: 18, color: 0xffffff, ring: true, thick: 3 });
+        for (var ec = 0; ec < 18; ec++) {
+          var eca = Math.random() * Math.PI * 2;
+          this.parts.push({ x: x, y: y, vx: Math.cos(eca) * 3.4, vy: Math.sin(eca) * 3.4 - 1.5, life: 24, max: 24, size: 2, color: ec % 2 ? 0xffd23f : 0xffffff });
+        }
+        return;
       case 'ultstart': // an ultimate starting: two big rings in the fighter's colour
         this.flashes.push({ x: x, y: y, r: 60, life: 22, max: 22, color: ev.color || 0xffffff, ring: true, thick: 4 });
         this.flashes.push({ x: x, y: y, r: 34, life: 14, max: 14, color: 0xffffff, ring: true, thick: 3 });
@@ -469,6 +477,10 @@
         break;
       case 'feint':
         burst(0.05, 1800, 2, 0.1, 'bandpass');
+        break;
+      case 'extracredit': // Extra Credit: a bright fanfare up the scale
+        [523, 659, 784, 1047].forEach(function (fr, k) { setTimeout(function () { sweep(0.18, fr, fr * 1.01, 0.06, 'square'); }, k * 70); });
+        thump(0.3, 180, 60, 0.4);
         break;
       case 'ultstart': // an ultimate: a deep charge-up and a bright sting
         thump(0.35, 140, 40, 0.6);

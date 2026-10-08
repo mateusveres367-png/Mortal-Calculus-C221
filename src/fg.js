@@ -116,6 +116,9 @@ FG.C = {
   QCF_FRAMES: 24,       // frames for a down, down-forward, forward motion (ultimates)
   ULT_DAMAGE: 0.32,     // an ultimate takes this share of the opponent's full health
   ULT_EXTRA_RECOVERY: 30, // a blocked or whiffed ultimate leaves them open this much longer
+  EXTRA_CREDIT_HEALTH: 0.25, // Extra Credit: available below this share of health, once a match
+  BOOST_FRAMES: 420,    // Extra Credit: how long the damage boost lasts (7 seconds)
+  BOOST_DAMAGE: 1.2,    // Extra Credit: damage multiplier while boosted
   TIP_BONUS: 1.25,      // Long Arms: damage for landing with the tip of a straight
   ARMOR_DAMAGE: 0.7,    // Exponential Armor: share of an absorbed hit's damage taken
   ARMOR_HITSTOP: 8,     // Exponential Armor: the freeze on an absorbed hit

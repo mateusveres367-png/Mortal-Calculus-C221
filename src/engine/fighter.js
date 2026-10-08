@@ -54,6 +54,8 @@
     this.calculated = 0;       // MIYASHIRO's Calculated: frames left of the damage bonus
     this.meter = 0;            // Grade meter, 0..METER_MAX (C, B, A: one bar each)
     this.infiniteMeter = false; // training: the meter stays full
+    this.extraCredit = false;  // Extra Credit used this match (the scene carries it between rounds)
+    this.boost = 0;            // Extra Credit: frames left of the damage boost
     this.feintPending = 0;     // DALSASS feinted a move: frames in which the next one counts as out of a feint
     this.swayed = false;       // DALSASS's sway made an attack miss (opens the sway counter)
     this.clearComboFlags();
@@ -162,6 +164,7 @@
     this.actionable = false;
     this.whiffed = false;
     if (this.calculated > 0) this.calculated--;
+    if (this.boost > 0) this.boost--;
     if (this.feintPending > 0) this.feintPending--;
     this.stateFrame++;
     var s = this.state;
@@ -463,8 +466,24 @@
     return true;
   };
 
+  // Extra Credit: below a quarter of their health, once a match, P+K+H refills the
+  // Grade meter and boosts their damage for a while.
+  Fighter.prototype.canExtraCredit = function () {
+    return !this.extraCredit && !this.ko && this.health <= this.def.health * C.EXTRA_CREDIT_HEALTH;
+  };
+  Fighter.prototype.tryExtraCredit = function (buf, frame) {
+    if (!this.canExtraCredit() || !buf.allThree(frame)) return false;
+    buf.consume('p'); buf.consume('k'); buf.consume('h');
+    this.extraCredit = true;
+    this.meter = C.METER_MAX;
+    this.boost = C.BOOST_FRAMES;
+    this.extraCreditNow = true; // read (and cleared) by the match for the event
+    return true;
+  };
+
   Fighter.prototype.tryAttack = function (buf, frame) {
     if (this.tryUltimate(buf, frame)) return true;
+    if (this.tryExtraCredit(buf, frame)) return true;
     if (throwPressed(buf, frame)) { this.startThrow(buf, frame); return true; }
     if (buf.wasPressed('t', frame) && this.def.moves.taunt && this.state !== 'sidestep') {
       buf.consume('t');

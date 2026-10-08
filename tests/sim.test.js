@@ -1525,5 +1525,41 @@ defs.forEach(function (d) {
   check('input: too slow is not', !b.qcf(1, f + FG.C.QCF_FRAMES + 2));
 })();
 
+// Extra Credit: under a quarter of their health, once a match, P+K+H refills the
+// meter and boosts damage for a while.
+(function () {
+  function ec(health, used) {
+    var m = setup(S, D, 40), ev = [];
+    m.fighters[0].health = health; m.fighters[0].extraCredit = !!used;
+    m.step([raw({ p: true, k: true, h: true }), raw({})]); ev = ev.concat(m.events);
+    for (var i = 0; i < 4; i++) { m.step([raw({}), raw({})]); ev = ev.concat(m.events); }
+    return { m: m, ev: ev, on: ev.some(function (e) { return e.type === 'extracredit'; }) };
+  }
+  var low = Math.floor(S.health * FG.C.EXTRA_CREDIT_HEALTH);
+  var r = ec(low);
+  check('extra credit: under a quarter of health', r.on && r.m.fighters[0].meter === FG.C.METER_MAX && r.m.fighters[0].boost > 0 && r.m.fighters[0].extraCredit, r.ev.map(function (e) { return e.type; }));
+  check('extra credit: not with more health', !ec(low + 2).on);
+  check('extra credit: once a match', !ec(low, true).on);
+  // P+K+H at full health is still just a throw attempt.
+  var full = ec(S.health);
+  check('extra credit: P+K+H at full health throws', !full.on && full.m.fighters[0].lastMove && /throw/.test(full.m.fighters[0].lastMove.id), full.m.fighters[0].lastMove && full.m.fighters[0].lastMove.id);
+  // The boost: the same jab does more damage, until it runs out.
+  function jab(boost) {
+    var m = setup(S, D, 40); m.fighters[0].boost = boost;
+    var d = 0;
+    for (var i = 0; i < 30; i++) { m.step([raw(i === 0 ? { p: true } : {}), raw({})]); m.events.forEach(function (e) { if (e.type === 'hit') d += e.damage; }); }
+    return d;
+  }
+  check('extra credit: damage boost', jab(100) === Math.round(S.moves.jab.damage * FG.C.BOOST_DAMAGE) && jab(0) === S.moves.jab.damage, [jab(100), jab(0)]);
+  var b = ec(low).m.fighters[0];
+  check('extra credit: the boost runs out', b.boost < FG.C.BOOST_FRAMES && b.boost > FG.C.BOOST_FRAMES - 10, b.boost);
+  // With the meter it gives, the ultimate comes right after.
+  var m = setup(S, D, 40), seen = [];
+  m.fighters[0].health = low;
+  var seq = { 0: 'P+K+H', 8: 'D', 9: 'D/F', 10: 'F', 11: 'F+P+K+H' };
+  for (var i = 0; i < 60; i++) { m.step([seq[i] ? FG.parseInput(seq[i]) : raw({}), raw({})]); m.events.forEach(function (e) { seen.push(e.type); }); }
+  check('extra credit: then an ultimate', seen.indexOf('extracredit') >= 0 && seen.indexOf('ultstart') > seen.indexOf('extracredit'), seen);
+})();
+
 console.log(passes + ' passed, ' + failures + ' failed');
 process.exit(failures ? 1 : 0);

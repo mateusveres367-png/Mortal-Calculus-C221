@@ -68,6 +68,7 @@
   // Applies combo-scaled damage and handles KO. Returns the damage dealt.
   Match.prototype.dealDamage = function (ai, di, base, mult) {
     var d = this.fighters[di], combo = this.combo[di];
+    if (this.fighters[ai].boost > 0) mult = (mult || 1) * C.BOOST_DAMAGE; // Extra Credit
     combo.hits++;
     var scale = combo.hits <= 2 ? 1 : Math.max(0.3, 1 - 0.12 * (combo.hits - 2));
     var dmg = Math.max(1, Math.round(base * scale * (mult || 1)));

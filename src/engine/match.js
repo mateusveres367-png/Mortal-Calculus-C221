@@ -77,6 +77,7 @@
     }
     for (i = 0; i < 2; i++) {
       if (f[i].cancelled) { this.events.push({ type: f[i].cancelled === 'feint' ? 'feint' : 'cancel', fighter: i, into: f[i].cancelled, x: f[i].x }); f[i].cancelled = null; }
+      if (f[i].extraCreditNow) { this.events.push({ type: 'extracredit', fighter: i, x: f[i].x, y: 60 }); f[i].extraCreditNow = false; }
       if (f[i].ultStarted) { this.events.push({ type: 'ultstart', fighter: i, move: f[i].move, x: f[i].x, y: 60 }); f[i].ultStarted = false; }
       if (f[i].enhancedNow) { this.events.push({ type: 'enhance', fighter: i, move: f[i].move, x: f[i].x, y: 60 }); f[i].enhancedNow = false; }
       if (f[i].startedMove) { this.events.push({ type: 'whiff', fighter: i, move: f[i].startedMove }); f[i].startedMove = null; }
@@ -121,7 +122,7 @@
     var a = this.fighters[ai], d = this.fighters[di], u = a.def.ultimate, combo = this.combo[di];
     var scale = combo.hits <= 2 ? 1 : Math.max(0.5, 1 - 0.08 * (combo.hits - 2));
     var w = u.weights || u.hits.map(function (t, k) { return k === u.hits.length - 1 ? 2 : 1; });
-    var sum = w.reduce(function (s, x) { return s + x; }, 0), total = Math.round(d.def.health * C.ULT_DAMAGE * scale);
+    var sum = w.reduce(function (s, x) { return s + x; }, 0), total = Math.round(d.def.health * C.ULT_DAMAGE * scale * (a.boost > 0 ? C.BOOST_DAMAGE : 1));
     var parts = w.map(function (x) { return Math.max(1, Math.floor(total * x / sum)); });
     parts[parts.length - 1] += total - parts.reduce(function (s, x) { return s + x; }, 0);
     a.actionable = false; d.actionable = false;

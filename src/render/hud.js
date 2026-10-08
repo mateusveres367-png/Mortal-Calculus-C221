@@ -54,6 +54,8 @@
       return Hud.GRADES.map(function (gr, k) { return T(Hud.meterSegX(i, k) + Hud.SEG_W / 2, Hud.METER_Y + 1, gr[0], 'g').setOrigin(0.5, 0); });
     });
     this.meterPop = [0, 0]; this.meterPopSeg = [0, 0];
+    // Extra Credit: a prompt when it's available.
+    this.ecText = [T(16, Hud.METER_Y + Hud.METER_H + 6, '', 'y'), T(C.VIEW_W - 16, Hud.METER_Y + Hud.METER_H + 6, '', 'y').setOrigin(1, 0)];
 
     this.trail = [null, null];
     this.trailDelay = [0, 0];
@@ -251,6 +253,16 @@
       }
       g.lineStyle(1, part >= 1 ? 0xffffff : 0x5a4b2c, 1); g.strokeRect(x - 1, y - 1, w + 2, h + 2);
       this.meterText[i][k].setFont(part >= 1 ? 'pf_k' : 'pf_g');
+    }
+    // Extra Credit: the boost draining under the meter, or a prompt while it's available.
+    var full = Hud.SEG_W * 3 + Hud.SEG_GAP * 2, bx = i === 0 ? 16 : C.VIEW_W - 16 - full, by = y + h + 3;
+    if (f.boost > 0) {
+      var bw = Math.round(full * f.boost / C.BOOST_FRAMES);
+      g.fillStyle(0x000000, 1); g.fillRect(bx - 1, by - 1, full + 2, 5);
+      g.fillStyle(this.blink % 10 < 5 ? 0xffd23f : 0xfff2a0, 1); g.fillRect(i === 0 ? bx : bx + full - bw, by, bw, 3);
+      this.ecText[i].setText('');
+    } else {
+      this.ecText[i].setText(f.canExtraCredit && f.canExtraCredit() ? 'EXTRA CREDIT: P+K+H' : '').setVisible(this.blink % 40 < 28);
     }
   };
 

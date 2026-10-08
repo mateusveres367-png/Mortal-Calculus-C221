@@ -139,6 +139,7 @@ Every fighter uses the same input layout. What each input does, and its frame da
   - **MIYASHIRO — Imaginary Unit:** he vanishes, reappears behind them and combos; "i² = −1" stamps as they flip upside down.
   - **PEDERSEN — Exponential Overdrive:** off come the sunglasses; three punches marked 2¹, 2², 2³; the last cracks the screen like glass.
   - **RAMOS — Matrix Multiplication:** a grab, then slams across the stage in a 3×3 grid, row by column, and a hair flip.
+- **Extra Credit (last chance):** under 25% health, once per match, press `P`+`K`+`H` (no motion): a big EXTRA CREDIT cut-in, your meter refills to three bars, and you hit 20% harder for 7 seconds (you glow gold while it lasts). The HUD tells you when it's ready.
 
 The fighters, and what they teach:
 
