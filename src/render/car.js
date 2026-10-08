@@ -11,7 +11,7 @@
   var INTAKE = [[50, 30], [64, 34], [68, 22], [52, 18]];
   var DOOR = [[64, 33], [114, 33], [112, 16], [70, 14]];
 
-  // opts: { scale, facing (1 = nose to the right), door (0..1 open), wheelSpin (radians), alpha }
+  // opts: { scale, facing (1 = nose to the right), door (0..1 open), wheelSpin (radians), alpha, lights (0..1) }
   FG.drawCar = function (g, x, groundY, opts) {
     opts = opts || {};
     var s = opts.scale || 1, dir = opts.facing || 1, a = opts.alpha == null ? 1 : opts.alpha;
@@ -46,6 +46,12 @@
     poly([[110, 34], [116, 34], [116, 31], [110, 31]], TRIM);
     poly([[0, 22], [3, 22], [3, 27], [0, 26]], 0xff5a2a);       // tail light
     poly([[138, 25], [148, 22], [148, 20], [138, 22]], 0xfff4c8); // headlight slit
+    // Lights on (opts.lights 0..1): a glow around the headlight and tail light.
+    if (opts.lights > 0) {
+      var hl = P([145, 22]), tl = P([1, 24]), L = opts.lights;
+      g.fillStyle(0xfff4c8, 0.25 * L * a); g.fillCircle(hl.x, hl.y, 14 * s); g.fillStyle(0xffffff, 0.6 * L * a); g.fillCircle(hl.x, hl.y, 5 * s);
+      g.fillStyle(0xff3a1a, 0.25 * L * a); g.fillCircle(tl.x, tl.y, 11 * s); g.fillStyle(0xff8a6a, 0.6 * L * a); g.fillCircle(tl.x, tl.y, 4 * s);
+    }
     // Wheels: tyre, rim, spokes.
     [[30, 11], [122, 11]].forEach(function (w) {
       var c = P([w[0], w[1]]), r = 11 * s;

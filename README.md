@@ -34,7 +34,7 @@ What's in the game so far:
   - **Faculty Parking:** PEDERSEN's stage; his red sports car sits in his reserved spot, cars pass on the road behind
   - each fighter has a home stage (player 2's is used); PEDERSEN drives in only on outdoor stages and walks in indoors
 - **Modes and screens (phase 7):**
-  - title screen with PEDERSEN and his car, and a menu: **Arcade**, **Versus**, **Training**, **Options**; leave it alone and an attract demo plays (two CPU fighters), any key comes back
+  - a late-90s arcade title screen: the faculty lot at sunset, PEDERSEN in sunglasses leaning on his red sports car with a smoking cigar, the other seven in silhouette behind him catching rim light in their colours, a chrome MORTAL CALCULUS logo that slams in with a red C221 stamp, PRESS START, CRT scanlines and a synth-rock loop (Web Audio). The menu: **Arcade**, **Versus**, **Training**, **Options**. Leave it for 15 seconds and the attract demo plays three short CPU vs CPU clips with cut-ins, then comes back; any key ends it
   - character select with pixel portraits (both players pick at the same time in versus), then stage select with a live, panning preview of each stage (or RANDOM)
   - **Arcade:** fight the whole department, one CPU opponent at a time on their home stage, PEDERSEN last; win to see who's next, lose and you get a 10-second CONTINUE?; beat everyone for the ending
   - **Versus:** player 1 against player 2 on one keyboard

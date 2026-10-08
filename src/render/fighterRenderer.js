@@ -188,7 +188,7 @@
     }
   }
 
-  function drawFace(g, hx, hy, s, dir, look, c, face, flash) {
+  function drawFace(g, hx, hy, s, dir, look, c, face, flash, props) {
     var R = function (dx, dy, w, h, col, a) { headRect(g, hx, hy, s, dir, dx, dy, w, h, c(col), a); };
     var skinDark = shade(look.skin, 0.78);
     // Beard under everything else on the face.
@@ -234,6 +234,24 @@
       case 'calm': R(3, 3, 3, 1, 0x3a1010); break;
       case 'flat': R(3, 3, 4, 1, 0x3a1010); R(4, 4, 1, 1, 0x3a1010); break;
       default: R(3, 3, 3, 1, 0x3a1010); R(6, 2, 1, 1, 0x3a1010); R(2, 2, 1, 1, 0x3a1010);
+    }
+    if (props) drawProps(R, hx, hy, s, dir, props);
+  }
+
+  // Title-screen props (f._props): dark sunglasses that catch the sunset, with a
+  // glint sweeping across (glint 0..1, or -1 for none), and a cigar whose tip glows
+  // brighter on a puff. The cigar tip's screen position is left in props.tip.
+  function drawProps(R, hx, hy, s, dir, p) {
+    if (p.shades) {
+      p.lens = { x: hx + (dir > 0 ? 3 : -3) * s, y: hy - 2.5 * s };
+      R(1, -3, 7, 3, 0x0b0b10); R(-1, -3, 2, 1, 0x0b0b10);      // lenses, temple arm
+      R(2, -1, 5, 1, 0xd8602a, 0.75); R(2, -2, 3, 1, 0x7a3a6a, 0.6); // sunset in the lenses
+      if (p.glint >= 0 && p.glint <= 1) R(1 + Math.floor(p.glint * 6), -3, 1, 2, 0xffffff);
+    }
+    if (p.cigar) {
+      R(5, 3, 6, 1, 0x6a3c22); R(5, 3, 1, 1, 0xc8a060);
+      R(11, 3, 1, 1, p.puff ? 0xffd23f : 0xff5a1a);
+      p.tip = { x: hx + (dir > 0 ? 11.5 : -11.5) * s, y: hy + 3.5 * s };
     }
   }
 
@@ -454,7 +472,7 @@
     g.lineBetween(cx, cy, Math.round((cx + hdx) / 2), Math.round((cy + hdy) / 2));
     g.fillStyle(c(skin), 1);
     g.fillCircle(hdx, hdy, Math.round(7 * s));
-    drawFace(g, hdx, hdy, s, dir, look, c, f._face, flash);
+    drawFace(g, hdx, hdy, s, dir, look, c, f._face, flash, flash == null ? f._props : null);
     drawHair(g, hdx, hdy, s, dir, look.hair, c);
 
     // Front limbs on top.

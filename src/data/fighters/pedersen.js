@@ -15,6 +15,10 @@
     tie2: P(stand, { fe: [12, 70], fh: [8, 76], be: [-2, 58], bh: [2, 48], head: [2, 87] }),
     wave: P(stand, { fe: [16, 78], fh: [22, 94] }),
     calm: P(stand, { head: [5, 85] }),
+    // Title screen: leaning back on the hood of his car, arms crossed, ankles crossed;
+    // now and then a puff on the cigar.
+    lean: P('idle', { hip: [-5, 40], chest: [-8, 66], head: [-8, 78], fe: [0, 57], fh: [-12, 60], be: [-15, 58], bh: [-3, 61], fk: [4, 21], ff: [10, 0], bk: [2, 20], bf: [12, 1] }),
+    lean_puff: P('idle', { hip: [-5, 40], chest: [-8, 66], head: [-7, 79], fe: [2, 63], fh: [-1, 75], be: [-15, 58], bh: [-3, 61], fk: [4, 21], ff: [10, 0], bk: [2, 20], bf: [12, 1] }),
     sit: [0, 12, -4, 38, -2, 50, 6, 30, 14, 22, -12, 28, -18, 16, 18, 26, 32, 2, 12, 22, 26, 0],
     sit2: [0, 12, -5, 37, -4, 48, 6, 30, 14, 22, -12, 28, -18, 16, 18, 26, 32, 2, 12, 22, 26, 0],
     jab_x: P('jab_x', { lean: 4, fh: [42, 76] }),

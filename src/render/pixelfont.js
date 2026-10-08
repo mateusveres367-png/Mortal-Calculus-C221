@@ -33,6 +33,7 @@
     '*': '.....#.#.#.###.#####.###.#.#.#.....', '|': '..#....#....#....#....#....#....#..'
   };
   var CHARS = Object.keys(G).join('');
+  FG.GLYPHS = G; // 5x7 patterns, row by row (the title logo is built from them)
   var CW = 7, CH = 9; // cell: 5x7 glyph + 1px drop shadow + 1px gap
 
   FG.FONT_COLORS = {

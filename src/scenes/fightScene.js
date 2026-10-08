@@ -3,10 +3,17 @@
 //   training  practice with the dummy, frame data, combo trials (no rounds)
 //   arcade    player 1 against a ladder of CPU opponents, best of three each
 //   versus    player 1 against player 2, best of three
-//   attract   the title screen's demo: two CPU fighters; any key goes back
+//   attract   the title screen's demo: short CPU vs CPU clips; any key goes back
 (function () {
   var C = FG.C;
   var STEP_MS = 1000 / C.FPS;
+  var ATTRACT_CLIPS = 3, CLIP_TICKS = 60 * 15; // demo: three clips of about 15 seconds
+
+  // Scene data for attract clip n: a random matchup on a random stage.
+  FG.attractClip = function (n) {
+    var r = FG.ROSTER, a = Math.floor(Math.random() * r.length), b = (a + 1 + Math.floor(Math.random() * (r.length - 1))) % r.length;
+    return { mode: 'attract', clip: n, p1: r[a].id, p2: r[b].id, stage: FG.STAGES[Math.floor(Math.random() * FG.STAGES.length)].id };
+  };
 
   var FightScene = function () { Phaser.Scene.call(this, { key: 'fight' }); };
   FightScene.prototype = Object.create(Phaser.Scene.prototype);
@@ -17,6 +24,7 @@
     data = data || {};
     this.mode = data.mode || 'training';
     this.arcade = data.arcade || null;
+    this.clip = data.clip || 0;
     var roster = FG.ROSTER;
     this.ids = { p1: data.p1 || roster[0].id, p2: data.p2 || roster[Math.min(1, roster.length - 1)].id };
     // The stage: picked on stage select, or player 2's home stage.
@@ -39,7 +47,7 @@
     this.ai = [null, null];
     var seed = Math.floor(Math.random() * 100000);
     if (this.mode === 'arcade') this.ai[1] = new FG.AI(this.cpuLevel(), seed);
-    if (this.mode === 'attract') { this.ai[0] = new FG.AI('normal', seed); this.ai[1] = new FG.AI('normal', seed + 1); }
+    if (this.mode === 'attract') { this.ai[0] = new FG.AI('hard', seed); this.ai[1] = new FG.AI('hard', seed + 1); }
     // Rounds: best of three with a timer, outside training.
     this.rounds = this.mode === 'training' ? null : new FG.Rounds({ seconds: this.mode === 'attract' ? 60 : FG.settings.time, toWin: 2 });
     this.phase = 'fight'; // round modes: 'announce' | 'fight' | 'roundEnd'
@@ -257,6 +265,12 @@
   FightScene.prototype.rematch = function () {
     if (this.rounds) this.rounds = new FG.Rounds({ seconds: this.rounds.seconds, toWin: this.rounds.toWin });
     this.newMatch({ intro: true });
+  };
+
+  // Attract: the next clip, or back to the title after the last.
+  FightScene.prototype.nextClip = function () {
+    if (this.clip + 1 >= ATTRACT_CLIPS) { this.toTitle(); return; }
+    this.scene.start('fight', FG.attractClip(this.clip + 1));
   };
 
   FightScene.prototype.toTitle = function () {
@@ -516,8 +530,9 @@
       if (f[i]._override) f[i]._override.t++;
       FG.updatePose(f[i], this.tickCount);
     }
-    // The intro waits while the VS panel is up.
+    // The intro waits while the VS panel is up (the demo skips the rest of it).
     if (this.intro && this.cutin.busy()) this.cutin.tick();
+    else if (this.intro && this.mode === 'attract') this.endIntro();
     else if (this.intro) {
       this.intro.t++;
       // Intro events, e.g. LOPEZ taking off his blazer.
@@ -549,7 +564,7 @@
         this.toTitle();
         return;
       }
-      if (this.mode === 'attract' && this.win.t > 200) { this.toTitle(); return; }
+      if (this.mode === 'attract' && this.win.t > 150) { this.nextClip(); return; }
     }
     this.bubbles[0].tick(); this.bubbles[1].tick();
     this.effects.update();
@@ -616,7 +631,7 @@
     this.trials.tick(m);
     if (this.zoom) this.zoom.t++;
     if (m.over && !this.win && !this.rounds) this.startWin();
-    if (this.mode === 'attract' && this.tickCount > 60 * 75) { this.toTitle(); return; }
+    if (this.mode === 'attract' && this.tickCount > CLIP_TICKS) { this.nextClip(); return; }
     this.chargeFeedback();
     this.bubbles[0].tick(); this.bubbles[1].tick();
     // A big combo just ended: the attacker may say something.
@@ -653,8 +668,9 @@
   FightScene.prototype.cutInFor = function (ev) {
     if (this.trials.active || this.cutinCool > 0 || this.cutinUsed[ev.attacker] || ev.ko || !ev.move) return;
     var text = null;
-    if (ev.ch && ev.launch) text = ev.move.label;
-    else if (ev.hits === C.CUTIN_HITS) text = ev.hits + ' HIT COMBO';
+    var demo = this.mode === 'attract'; // the demo shows them off more often
+    if (ev.ch && ev.launch || demo && ev.launch) text = ev.move.label;
+    else if (ev.hits === (demo ? 6 : C.CUTIN_HITS)) text = ev.hits + ' HIT COMBO';
     if (!text) return;
     this.playCutIn(ev.attacker, text);
   };
