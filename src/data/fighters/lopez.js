@@ -103,6 +103,8 @@
     glyphs: ['DY/DX', "F'(X)", 'LIM', 'DX'], // math that flies off their big hits
     stringH: 'FUNDAMENTAL THEOREM', // P, P, H: the universal string ender (see FG.defineFighter)
     cutIn: { a: 0x1a2a5a, b: 0xffffff }, // cut-in colours: main and accent
+    // KO finisher: after winning the final round, this input within 2 seconds of the K.O.
+    finisher: { name: 'AREA UNDER THE CURVE', input: 'B, B, H' },
     name: 'LOPEZ', archetype: 'DEFENSIVE', theme: 'CALCULUS',
     style: 'COUNTER-FIGHTER', signatureMechanic: 'DERIVATIVE READ',
     signatureText: 'a parry stance (B+H, hold H to keep it up); attack into it and he counters by level: a wrist lock for a high, a palm strike for a mid, a trapping sweep for a low; throws beat it',

@@ -77,6 +77,13 @@
     this.glyphs = [0, 1, 2, 3, 4, 5].map(function () { return { text: FG.text(this, 0, 0, '', 'y').setScrollFactor(1).setOrigin(0.5, 0.5).setDepth(21), t: 0 }; }, this);
     // Full-screen cut-ins for big moments and the round-start VS panel.
     this.cutin = new FG.CutIn(this);
+    // KO finishers: overlays behind and in front of the fighters, on screen, and big text.
+    this.finBack = this.add.graphics().setDepth(-0.3);
+    this.finFront = this.add.graphics().setDepth(0.6);
+    this.finScreen = this.add.graphics().setScrollFactor(0).setDepth(44);
+    this.finTexts = [0, 1, 2].map(function () { return FG.text(this, 0, 0, '', 'w', 3).setOrigin(0.5, 0.5).setDepth(46).setVisible(false); }, this);
+    this.finishWin = null;  // { wi, t, len, tokens, prev } the input window after the final K.O.
+    this.finisher = null;   // { fx, script, t, len } the cinematic
     this.newMatch({ intro: true });
     this.setupKeys();
     this.setupButtons();
@@ -104,6 +111,7 @@
     this.bubbles[0].hide(); this.bubbles[1].hide();
     this.prevCombo = [0, 0];
     this.cutin.stop();
+    this.finishWin = null; this.finisher = null; this.finishPractice = false;
     this.cutinUsed = [false, false]; // one cut-in per combo
     this.cutinCool = 0;              // ticks before another may play
     this.histories[0].clear(); this.histories[1].clear();
@@ -240,6 +248,11 @@
       return;
     }
     if (this.phase === 'roundEnd') {
+      // The match is won by a K.O.: the winner gets 2 seconds to enter their finisher.
+      if (this.phaseT === 50 && r.result.how === 'ko' && r.matchWinner() !== null && FG.FINISHERS[m.fighters[r.matchWinner()].def.id]) {
+        this.openFinishWindow(r.matchWinner());
+        return;
+      }
       if (this.phaseT === 80 && r.result.perfect) { this.hud.showBanner('PERFECT', '', 60, { scale: 4, y: 160 }); this.stage.cheer(3, true); }
       if (this.phaseT >= 170) {
         var mw = r.matchWinner();
@@ -249,6 +262,95 @@
         this.startRound();
       }
     }
+  };
+
+  // --- KO finishers ---------------------------------------------------------------
+
+  // The input window: the loser staggers up, dazed; FINISH IT!
+  FightScene.prototype.openFinishWindow = function (wi, opts) {
+    opts = opts || {};
+    var f = this.match.fighters, w = f[wi], l = f[1 - wi], fin = w.def.finisher;
+    this.finishWin = { wi: wi, t: 0, len: opts.len || C.FINISH_WINDOW, tokens: [], prev: FG.emptyRaw() };
+    this.finishPractice = !!opts.practice;
+    w._override = null; w._gesture = null; w.y = 0;
+    l._override = { anim: [[1, 'down'], [16, 'crouch'], [30, 'hit_mid']], t: 0 };
+    l.y = 0; l.facing = -w.facing;
+    l.x = Math.max(C.WALL_L + 30, Math.min(C.WALL_R - 30, w.x + w.facing * 46));
+    this.slowmo = null; this.zoom = null;
+    this.hud.showBanner('FINISH IT!', opts.practice ? 'INPUT: ' + fin.input : '', this.finishWin.len, { scale: 5, y: 112 });
+    FG.Sfx.ui('confirm');
+    // A CPU winner goes for it (harder CPUs more often).
+    var ai = this.ai[wi];
+    if (ai) {
+      var go = { easy: 0.4, normal: 0.75, hard: 1 }[ai.level];
+      this.finishWin.ai = { at: 30 + Math.floor(Math.random() * 40), go: Math.random() < (go == null ? 1 : go) };
+    }
+  };
+
+  // Training: practise the finisher on the dummy.
+  FightScene.prototype.practiceFinisher = function () {
+    this.newMatch({ quiet: true });
+    this.openFinishWindow(0, { len: 6 * 60, practice: true });
+  };
+
+  FightScene.prototype.startFinisher = function (wi) {
+    var f = this.match.fighters, w = f[wi], l = f[1 - wi], script = FG.FINISHERS[w.def.id];
+    this.finishWin = null;
+    var fx = FG.finisherFx(this, wi);
+    this.finisher = { fx: fx, script: script, t: 0, len: script.len, wi: wi };
+    l._override = { anim: FG.dazedAnim, t: 0, loop: true };
+    if (script.start) script.start(fx);
+    this.hud.showBanner('', '', 1);
+    this.cutin.play(w.def, w.x <= l.x ? 0 : 1, w.def.finisher.name);
+  };
+
+  // While the window is open or the finisher plays, the fight itself stands still.
+  FightScene.prototype.finishTick = function (raws) {
+    var f = this.match.fighters, fw = this.finishWin;
+    this.tickCount++;
+    if (fw) {
+      fw.t++;
+      var w = f[fw.wi], l = f[1 - fw.wi], raw = raws[fw.wi] || FG.emptyRaw();
+      if (fw.t === 30) l._override = { anim: FG.dazedAnim, t: 0, loop: true };
+      fw.tokens = fw.tokens.concat(FG.inputTokens(fw.prev, raw, w.facing)).slice(-8);
+      fw.prev = Object.assign({}, raw);
+      var hit = FG.matchesCommand(fw.tokens, w.def.finisher.input) || (fw.ai && fw.ai.go && fw.t === fw.ai.at);
+      if (hit) { this.startFinisher(fw.wi); return; }
+      if (fw.t >= fw.len) { this.endFinish(false); return; }
+    }
+    var fin = this.finisher;
+    if (fin) {
+      fin.t++;
+      fin.script.step(fin.fx, fin.t);
+      if (fin.t >= fin.len || fin.fx.done) { this.endFinish(true); return; }
+    }
+    for (var i = 0; i < 2; i++) {
+      if (f[i]._override) f[i]._override.t++;
+      FG.updatePose(f[i], this.tickCount);
+    }
+    if (this.slowmo && --this.slowmo.frames <= 0) this.slowmo = null;
+    if (this.impact && --this.impact.frames < 0) this.impact = null;
+    this.speech.tick();
+    this.bubbles[0].tick(); this.bubbles[1].tick();
+    this.effects.update();
+    this.stage.update();
+    this.hud.tick(this.match);
+  };
+
+  // The finisher (or the window) is over: on to the win screen, or back to training.
+  FightScene.prototype.endFinish = function (did) {
+    var wi = this.finisher ? this.finisher.wi : this.finishWin ? this.finishWin.wi : 0;
+    this.finisher = null; this.finishWin = null;
+    this.slowmo = null;
+    this.finTexts.forEach(function (t) { t.setVisible(false); });
+    this.speech.hide();
+    if (this.finishPractice) {
+      this.newMatch({ quiet: true });
+      if (did) this.hud.setLabel(0, 'FINISHER!');
+      return;
+    }
+    if (this.rounds) this.startWin(this.rounds.matchWinner() != null ? this.rounds.matchWinner() : wi);
+    if (did) this.win.finisher = true;
   };
 
   // Rows of the pause menu (arcade, versus).
@@ -377,6 +479,8 @@
       { label: 'COMBO TRIALS (7)', value: function () { return self.trials.active ? 'ON' : 'OFF'; }, change: function () { self.toggleTrials(); } },
       { label: 'TRIAL (8/9)', value: function () { var c = self.trials.active && self.trials.current(); return c ? (self.trials.index + 1) + '/' + self.trials.list.length + ' ' + c.name : '-'; },
         change: function (delta) { if (self.trials.active) self.trials.select(self.trials.index + delta); } },
+      { label: 'FINISHER', value: function () { var fn = self.match.fighters[0].def.finisher; return fn ? fn.input + '  ' + fn.name : '-'; },
+        change: function () { self.menu.setOpen(false); self.practiceFinisher(); } },
       { label: 'SWAP SIDES', value: function () { var f = self.match.fighters; return f[0].def.name + ' VS ' + f[1].def.name; },
         change: function () { self.swapSides(); } },
       { label: 'CHARACTER SELECT', value: function () { return ''; }, change: function () { self.toSelect(); } },
@@ -581,6 +685,12 @@
     if (this.cutinCool > 0) this.cutinCool--;
     var raw1 = this.inputFor(0), raw2 = this.inputFor(1);
     TAPS = {}; // taps since the last tick have been read
+    if (this.finishWin || this.finisher) {
+      var ffi = this.forceInput && this.forceInput(this.tickCount); // tests drive the command too
+      if (ffi) { raw1 = ffi[0] || raw1; raw2 = ffi[1] || raw2; }
+      this.finishTick([raw1, raw2]);
+      return;
+    }
     // Nobody moves until FIGHT!, or after the round is over.
     if (this.rounds && this.phase !== 'fight') { raw1 = FG.emptyRaw(); raw2 = FG.emptyRaw(); }
     if (this.forceInput) { var fi = this.forceInput(this.tickCount); if (fi) { raw1 = fi[0] || raw1; raw2 = fi[1] || raw2; } }
@@ -911,7 +1021,7 @@
     for (var bi = 0; bi < 2; bi++) this.bubbles[bi].draw(f[bi], camX, onScreen(f[bi].x));
 
     var modeLabel = this.modeLabel();
-    var clean = !!(this.intro || this.win);
+    var clean = !!(this.intro || this.win || this.finisher || this.finishWin);
     var r = this.rounds;
     this.hud.draw(m, { modeLabel: clean && this.mode === 'training' ? '' : modeLabel, showData: t.showData && !clean, slow: t.slow,
       rounds: r ? { wins: r.wins, toWin: r.toWin, time: r.timeLeft(), low: r.seconds && r.frames < 10 * 60 && this.phase === 'fight' } : null });
@@ -920,7 +1030,18 @@
     this.inputDisplays[1].draw(this.histories[1], t.showInputs && !clean && !this.trials.active); // the trial panel sits there
     this.drawButtons(clean || this.mode !== 'training');
     if (clean) this.trials.hide(); else this.trials.draw();
+    this.drawFinisher(camX, onScreen);
     this.cutin.draw();
+  };
+
+  // The finisher's overlays, and its speech box.
+  FightScene.prototype.drawFinisher = function (camX, onScreen) {
+    this.finBack.clear(); this.finFront.clear(); this.finScreen.clear();
+    var fin = this.finisher;
+    if (!fin) { this.finTexts.forEach(function (t) { t.setVisible(false); }); return; }
+    fin.script.draw(fin.fx, fin.t);
+    var sp = fin.fx.speaker;
+    if (sp) this.speech.draw(sp, camX, onScreen(sp.x));
   };
 
   FightScene.prototype.modeLabel = function () {

@@ -104,6 +104,8 @@
     glyphs: ['A(N)=A+(N-1)D', '1,1,2,3,5', 'SUM', '...'], // math that flies off their big hits
     stringH: 'NEXT TERM', // P, P, H: the universal string ender (see FG.defineFighter)
     cutIn: { a: 0x111111, b: 0x39ff5a }, // cut-in colours: main and accent
+    // KO finisher: after winning the final round, this input within 2 seconds of the K.O.
+    finisher: { name: 'INFINITE SERIES', input: 'F, B, F, P' },
     name: 'LEE', archetype: 'RUSHDOWN', theme: 'SEQUENCES',
     style: 'MUAY THAI BOXER', signatureMechanic: 'ARITHMETIC SEQUENCE',
     signatureText: 'his strings get faster with every hit, and once an attack connects (hit or block) forward, forward dash-cancels its recovery to keep the pressure on (once per string)',

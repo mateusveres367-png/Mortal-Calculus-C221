@@ -929,6 +929,23 @@ function count(r, type, attacker) {
   check('ramos has the fastest dash', others.every(function (o) { return dashDist(RM) > o; }), [dashDist(RM), others]);
 })();
 
+// KO finishers: every fighter has one, with its own input; the command reader works
+// relative to facing.
+(function () {
+  var inputs = {};
+  defs.forEach(function (d) {
+    check(d.name + ' has a finisher', d.finisher && d.finisher.name && /^[FBDUPKH](, [FBDUPKH])+$/.test(d.finisher.input), d.finisher);
+    check(d.name + "'s finisher input is their own", !inputs[d.finisher.input], d.finisher.input);
+    inputs[d.finisher.input] = true;
+  });
+  var none = FG.emptyRaw();
+  check('command tokens: forward when facing right', FG.inputTokens(none, FG.parseInput('F'), 1).join() === 'F');
+  check('command tokens: right is back when facing left', FG.inputTokens(none, FG.parseInput('F'), -1).join() === 'B');
+  check('command tokens: only new presses', FG.inputTokens(FG.parseInput('F'), FG.parseInput('F'), 1).length === 0);
+  check('command tokens: buttons', FG.inputTokens(none, FG.parseInput('D+H'), 1).join() === 'D,H');
+  check('command match: the end of the history', FG.matchesCommand(['K', 'B', 'F', 'H'], 'B, F, H') && !FG.matchesCommand(['B', 'F', 'K'], 'B, F, H'));
+})();
+
 // PEDERSEN is the cover fighter: first on the roster.
 check('pedersen is first on character select', FG.ROSTER[0].id === 'pedersen', FG.ROSTER.map(function (d) { return d.id; }));
 check('all eight fighters', FG.ROSTER.length === 8, FG.ROSTER.length);

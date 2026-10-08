@@ -197,11 +197,24 @@ try { playwright = require('playwright'); } catch (e) {
     s.match.dealDamage(0, 1, 9999); // K.O.
     for (i = 0; i < 400 && s.rounds.round === 1; i++) s.tick();
     out.round = s.rounds.round; out.wins = s.rounds.wins.slice();
+    // Win round 2 by K.O. too: the finisher window opens; enter the command.
+    for (i = 0; i < 300 && s.phase !== 'fight'; i++) s.tick();
+    s.match.dealDamage(0, 1, 9999);
+    for (i = 0; i < 300 && !s.finishWin; i++) s.tick();
+    out.window = !!s.finishWin;
+    var cmd = s.match.fighters[0].def.finisher.input.split(/,\s*/), k = 0, T0 = s.tickCount;
+    s.forceInput = function (tc) { var j = tc - T0; if (j % 4 || k >= cmd.length) return [FG.emptyRaw(), null]; return [FG.parseInput(cmd[k++]), null]; };
+    for (i = 0; i < 60 && !s.finisher; i++) s.tick();
+    out.finisher = !!s.finisher;
+    for (i = 0; i < 900 && !s.win; i++) s.tick();
+    s.forceInput = null;
+    out.finisherWin = !!(s.win && s.win.finisher);
     s.render();
     return out;
   });
   await page.screenshot({ path: path.join(out, '9-arcade.png') });
-  var arcadeOk = arcade.announce === 'announce' && arcade.phase === 'fight' && /^\d+$/.test(arcade.timer) && arcade.cpuMoves && arcade.round === 2 && arcade.wins.join() === '1,0';
+  var arcadeOk = arcade.announce === 'announce' && arcade.phase === 'fight' && /^\d+$/.test(arcade.timer) && arcade.cpuMoves && arcade.round === 2 && arcade.wins.join() === '1,0' &&
+    arcade.window && arcade.finisher && arcade.finisherWin;
 
   // The attract demo from the title: two CPU fighters; a key press goes back.
   await page.evaluate(function () { window.FG_SCENE.scene.start('title'); });

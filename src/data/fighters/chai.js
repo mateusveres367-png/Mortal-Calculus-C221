@@ -109,6 +109,8 @@
     glyphs: ['360', 'C=2*PI*R', '(X,Y)->(-X,Y)', '180'], // math that flies off their big hits
     stringH: 'CENTRAL ANGLE', // P, P, H: the universal string ender (see FG.defineFighter)
     cutIn: { a: 0xe2702a, b: 0xf6ecd0 }, // cut-in colours: main and accent
+    // KO finisher: after winning the final round, this input within 2 seconds of the K.O.
+    finisher: { name: 'Q.E.D.', input: 'B, F, K' },
     name: 'CHAI', archetype: 'TECHNICAL', theme: 'GEOMETRY',
     style: 'TAEKWONDO', signatureMechanic: 'KICK CHAIN',
     signatureText: 'once a kick connects, K or H into a different kick cancels it, up to four kicks in a row; and the best sidestep in the game',

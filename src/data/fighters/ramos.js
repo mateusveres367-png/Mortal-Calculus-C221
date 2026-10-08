@@ -19,6 +19,8 @@
     stand: stand,
     knuckles: R({ hip: [0, 46], lean: 2, fa: { hand: [14, 70] }, ba: { hand: [10, 70] }, fl: { foot: [6, 0] }, bl: { foot: [-6, 0] } }),
     stretch: R({ hip: [0, 46], lean: -4, fa: [85, 95], ba: [95, 92], fl: { foot: [6, 0] }, bl: { foot: [-6, 0] } }),
+    hairflip: R({ hip: [0, 46], lean: 14, neck: 20, fa: [60, 140], ba: [-96, -92], fl: { foot: [6, 0] }, bl: { foot: [-6, 0] } }),
+    hairflip2: R({ hip: [0, 46], lean: -14, neck: -24, fa: [80, 160], ba: [-96, -92], fl: { foot: [6, 0] }, bl: { foot: [-6, 0] } }),
     pump: R({ hip: [0, 46], lean: 0, fa: [70, 100], ba: [-96, -92], fl: { foot: [6, 0] }, bl: { foot: [-6, 0] } }),
     pump2: R({ hip: [0, 46], lean: 0, fa: [40, 100], ba: [-96, -92], fl: { foot: [6, 0] }, bl: { foot: [-6, 0] } }),
     kneel: [0, 26, 6, 50, 10, 60, 12, 40, 14, 30, 0, 40, 4, 30, 14, 26, 18, 0, -6, 4, -22, 0],
@@ -105,6 +107,8 @@
     glyphs: ['[A B]', 'DET=0', 'A*I=A', '[1 0]'], // math that flies off their big hits
     stringH: 'ROW REDUCTION', // P, P, H: the universal string ender (see FG.defineFighter)
     cutIn: { a: 0xd8283a, b: 0xffffff }, // cut-in colours: main and accent
+    // KO finisher: after winning the final round, this input within 2 seconds of the K.O.
+    finisher: { name: 'CARDIO FINALE', input: 'F, D, F, P' },
     name: 'RAMOS', archetype: 'GRAPPLER', theme: 'MATRICES',
     style: 'WRESTLER', signatureMechanic: 'CARDIO',
     signatureText: 'he never slows down: the fastest walk and dash, chained dashes, a guard that recovers twice as fast, and a run he can keep up for as long as he likes (dash, then hold forward), with a tackle, a running knee, a slide, a plancha and a running command grab out of it',

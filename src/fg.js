@@ -107,6 +107,7 @@ FG.C = {
   TIP_BONUS: 1.25,
   ARMOR_DAMAGE: 0.7,    // Exponential Armor: share of an absorbed hit's damage taken
   ARMOR_HITSTOP: 8,      // Long Arms: damage for landing with the tip of a straight
+  FINISH_WINDOW: 120,   // frames after the final K.O. to enter a finisher (2 seconds)
   CUTIN_HITS: 10,       // a combo this long gets a cut-in
   CUTIN_COOLDOWN: 240,  // ticks between cut-ins
   BIG_COMBO: 5,         // hits for a combo to count as big (slow-mo finish, NICE label)

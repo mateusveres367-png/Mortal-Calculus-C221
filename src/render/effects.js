@@ -482,7 +482,13 @@
     thump(0.2, 160, 50, 0.4);
   };
 
-  // Menu blips.
+  // Car alarm: a two-tone whoop (high: which half of the cycle).
+  Sfx.alarm = function (high) {
+    if (!Sfx.ctx || Sfx.muted) return;
+    sweep(0.24, high ? 900 : 600, high ? 1300 : 800, 0.08, 'square');
+  };
+
+    // Menu blips.
   Sfx.ui = function (kind) {
     if (!Sfx.ctx || Sfx.muted) return;
     var ctx = Sfx.ctx, t = ctx.currentTime;

@@ -163,6 +163,19 @@ The fighters, and what they teach:
   - **Identity** (forward + `P`+`K`) is a command grab: slower, but it can't be broken and takes crouching opponents too.
   - **Transpose Toss** (down + `H`) is his launcher, and dash then `P` is a shoulder charge.
 
+**KO finishers.** When a fighter wins the final round by K.O., FINISH IT! appears: enter their finisher within 2 seconds for a cinematic (a cut-in, slow motion and a big pixel effect, no gore). The CPU uses its finisher when it wins. Practise them in training (menu, FINISHER); the inputs are also in [`MOVES.md`](MOVES.md).
+
+| Fighter | Finisher | Input |
+| --- | --- | --- |
+| PEDERSEN | Horse to Water: loosens his tie, one massive Exponential Haymaker into his red sports car, car alarm, and his line | `B, F, H` |
+| BRINKHUS | Solve for X: a flurry, an uppercut off the top of the screen, a giant X stamp | `F, F, H` |
+| CHAI | Q.E.D.: a spinning combo of kicks, a Q.E.D. box, a bow and a hand up | `B, F, K` |
+| DALSASS | Pop Quiz: three fake punches (they flinch every time), a finger flick, a red 0/10 | `D, D, P` |
+| LEE | Infinite Series: hits that speed up into a blur while the sum climbs, then he fixes his glasses | `F, B, F, P` |
+| LOPEZ | Area Under the Curve: he waits, catches their swing, punishes once; a graph shades the area as they fall | `B, B, H` |
+| MIYASHIRO | Calculated: a glowing parabola, one strike at the exact point, into the whiteboard | `D, F, K` |
+| RAMOS | Cardio Finale: grabs them, runs a full lap of the stage carrying them, slams, hair flip | `F, D, F, P` |
+
 Big hits throw a little of each teacher's math into the air (Y=MX+B, DY/DX, A*A+B*B=C*C...).
 
 ### Training mode

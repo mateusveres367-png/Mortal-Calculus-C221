@@ -12,7 +12,7 @@ var FG = ctx.FG;
 function fmt(n) { return n > 0 ? '+' + n : String(n); }
 function result(r) { return r.launch ? 'launch' : r.knockdown ? 'knockdown' : fmt(r.adv); }
 function sentence(s) { return s.toLowerCase().replace(/(^|[.!?]\s+)([a-z])/g, function (m, a, b) { return a + b.toUpperCase(); }); }
-function title(s) { return s.toLowerCase().replace(/(^|[\s-])([a-z])/g, function (m, a, b) { return a + b.toUpperCase(); }).replace("L'hopital", "L'Hopital"); }
+function title(s) { return s.toLowerCase().replace(/(^|[\s-])([a-z])/g, function (m, a, b) { return a + b.toUpperCase(); }).replace("L'hopital", "L'Hopital").replace('Q.e.d.', 'Q.E.D.'); }
 
 var ORDER = ['jab', 'jab2', 'fP', 'bP', 'dP', 'dashP', 'runP', 'runK', 'runDK', 'runH', 'runGrab', 'ssP', 'ssK', 'mid', 'fK', 'bK', 'low', 'dfK', 'sweep',
   'heavy', 'fH', 'bH', 'launcher', 'throw', 'throwB', 'cmdGrab', 'airP', 'airK', 'airH', 'wakeLow', 'wakeMid', 'taunt'];
@@ -81,6 +81,10 @@ FG.ROSTER.forEach(function (d) {
     out.push('| ' + [m.cmd, title(m.label), level].concat(frameCols, adv, [noHit ? '' : m.damage, notes.join(', ')]).join(' | ') + ' |');
   });
   out.push('');
+  if (d.finisher) {
+    out.push('**KO finisher:** ' + title(d.finisher.name) + ' — `' + d.finisher.input + '` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).');
+    out.push('');
+  }
   out.push('**Combo routes** (tested in `tests/sim.test.js`):');
   out.push('');
   d.combos.forEach(function (c) {

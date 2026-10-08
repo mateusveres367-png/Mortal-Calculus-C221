@@ -35,6 +35,8 @@ Calm and friendly, but every hit is heavy. Slow, patient, devastating.
 | P/H (DOWN) | Spring Theorem | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
 | T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
 
+**KO finisher:** Horse To Water — `B, F, H` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).
+
 **Combo routes** (tested in `tests/sim.test.js`):
 
 - **Squared:** P, P (frames: P @0, P @16)
@@ -72,6 +74,8 @@ Nice, easygoing, a good sport. Best for new players.
 | K (DOWN) | Rolling Zero | low | 14 | 3 | 22 | -14 | -2 | +1 | 10 | ducks highs |
 | P/H (DOWN) | Spring Theorem | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
 | T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
+
+**KO finisher:** Solve For X — `F, F, H` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).
 
 **Combo routes** (tested in `tests/sim.test.js`):
 
@@ -115,6 +119,8 @@ Very kind, precise and graceful. Bows before fights.
 | P/H (DOWN) | Spring Theorem | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
 | T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
 | PARRY | Reflection | mid | 6 | 3 | 18 | -6 | knockdown | knockdown | 20 |  |
+
+**KO finisher:** Q.E.D. — `B, F, K` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).
 
 **Combo routes** (tested in `tests/sim.test.js`):
 
@@ -160,6 +166,8 @@ Happy, sassy, everyone's favorite. Fakes you out with a grin.
 | T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
 | B+K, P | The Converse | mid | 8 | 3 | 18 | -6 | launch | launch | 16 |  |
 
+**KO finisher:** Pop Quiz — `D, D, P` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).
+
 **Combo routes** (tested in `tests/sim.test.js`):
 
 - **Given, Prove:** P, P (frames: P @0, P @15)
@@ -198,6 +206,8 @@ Sarcastic and funny. Taunts mid-combo. Relentless pressure.
 | K (DOWN) | Rolling Zero | low | 14 | 3 | 22 | -14 | -2 | +1 | 10 | ducks highs |
 | P/H (DOWN) | Spring Theorem | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
 | T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
+
+**KO finisher:** Infinite Series — `F, B, F, P` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).
 
 **Combo routes** (tested in `tests/sim.test.js`):
 
@@ -240,6 +250,8 @@ Very suspicious. Always watching. Waits for you to commit, then punishes.
 | READ A MID | Critical Point | mid | 7 | 3 | 18 | -6 | knockdown | knockdown | 22 |  |
 | READ A LOW | Saddle Point | low | 7 | 3 | 20 | -12 | knockdown | knockdown | 18 | ducks highs |
 
+**KO finisher:** Area Under The Curve — `B, B, H` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).
+
 **Combo routes** (tested in `tests/sim.test.js`):
 
 - **First Derivative:** P, P (frames: P @0, P @15)
@@ -278,6 +290,8 @@ Very smart. Reads opponents, keeps perfect distance, punishes every mistake.
 | K (DOWN) | Rolling Zero | low | 14 | 3 | 22 | -14 | -2 | +1 | 10 | ducks highs |
 | P/H (DOWN) | Spring Theorem | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
 | T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
+
+**KO finisher:** Calculated — `D, F, K` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).
 
 **Combo routes** (tested in `tests/sim.test.js`):
 
@@ -321,6 +335,8 @@ Fast, explosive grappler who closes distance quickly. Confident and focused.
 | K (DOWN) | Rolling Zero | low | 14 | 3 | 22 | -14 | -2 | +1 | 10 | ducks highs |
 | P/H (DOWN) | Spring Theorem | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
 | T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
+
+**KO finisher:** Cardio Finale — `F, D, F, P` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).
 
 **Combo routes** (tested in `tests/sim.test.js`):
 

@@ -114,6 +114,8 @@
     glyphs: ['A*A+B*B=C*C', 'SAS', 'ASA', 'GIVEN:'], // math that flies off their big hits
     stringH: 'THEREFORE', // P, P, H: the universal string ender (see FG.defineFighter)
     cutIn: { a: 0x2fc4c0, b: 0xffffff }, // cut-in colours: main and accent
+    // KO finisher: after winning the final round, this input within 2 seconds of the K.O.
+    finisher: { name: 'POP QUIZ', input: 'D, D, P' },
     name: 'DALSASS', archetype: 'TRICKY', theme: 'GEOMETRY PROOFS',
     style: 'TRICKSTER', signatureMechanic: 'SIMILAR TRIANGLES',
     signatureText: 'a second stance (B+P) with its own moves; tap back during any attack\'s startup to feint it; Assume the Contrary (B+K) sways out of highs and mids, then P counters with The Converse',

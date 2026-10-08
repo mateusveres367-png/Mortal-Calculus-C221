@@ -107,6 +107,27 @@
     return r;
   }
 
+  // Command input (KO finishers): the presses that are new this tick, as tokens
+  // relative to facing: F, B, D, U, P, K, H.
+  function inputTokens(prev, raw, facing) {
+    var fwd = facing > 0 ? 'right' : 'left', back = facing > 0 ? 'left' : 'right', out = [];
+    if (raw[fwd] && !prev[fwd]) out.push('F');
+    if (raw[back] && !prev[back]) out.push('B');
+    if (raw.down && !prev.down) out.push('D');
+    if (raw.up && !prev.up) out.push('U');
+    if (raw.p && !prev.p) out.push('P');
+    if (raw.k && !prev.k) out.push('K');
+    if (raw.h && !prev.h) out.push('H');
+    return out;
+  }
+  // Does the token history end with this command ('B, F, H')?
+  function matchesCommand(tokens, notation) {
+    var want = notation.split(/,\s*/);
+    return tokens.length >= want.length && tokens.slice(-want.length).join() === want.join();
+  }
+
+  FG.inputTokens = inputTokens;
+  FG.matchesCommand = matchesCommand;
   FG.InputBuffer = InputBuffer;
   FG.emptyRaw = emptyRaw;
   FG.parseInput = parseInput;

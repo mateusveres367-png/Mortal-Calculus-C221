@@ -106,6 +106,8 @@
     glyphs: ['B*B-4AC', 'F(X)', 'I*I=-1', 'VERTEX'], // math that flies off their big hits
     stringH: 'SOLUTION SET', // P, P, H: the universal string ender (see FG.defineFighter)
     cutIn: { a: 0x2a5ad8, b: 0xc8ccd8 }, // cut-in colours: main and accent
+    // KO finisher: after winning the final round, this input within 2 seconds of the K.O.
+    finisher: { name: 'CALCULATED', input: 'D, F, K' },
     name: 'MIYASHIRO', archetype: 'SPACING', theme: 'ALGEBRA 2',
     style: 'KARATE', signatureMechanic: 'CALCULATED',
     signatureText: 'when the opponent whiffs, his next hit does bonus damage and he glows until he lands it; Domain Restriction (B+H) is a step-back kick that retreats while it attacks',
