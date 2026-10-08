@@ -151,6 +151,7 @@
       },
       // Mean Value Punish: P right after blocking becomes this fast, heavy punisher.
       postBlockP: {
+        ex: { text: 'LAUNCHES', hit: { launch: 7 } }, // enhanced (P+K during startup, 1 bar)
         name: 'Trap and Palm', label: 'MEAN VALUE PUNISH', cmd: 'P AFTER BLOCK', level: 'mid', strength: 'heavy', motion: 'straight', wallSplat: true,
         startup: 8, active: 2, recovery: 20, damage: 18,
         block: -10, hit: { knockdown: true }, ch: { knockdown: true },
@@ -173,6 +174,7 @@
       },
       sweep: FG.kit.sweep('RIEMANN SWEEP', { startup: 21, motion: 'sweep' }),
       heavy: {
+        ex: { text: 'ARMORED, KNOCKDOWN', armor: { hits: 1 }, hit: { knockdown: true } }, // enhanced (P+K during startup, 1 bar)
         name: 'Double Palm', label: 'DEFINITE INTEGRAL', cmd: 'H', level: 'mid', strength: 'heavy', motion: 'straight', wallSplat: true,
         startup: 19, active: 3, recovery: 21, damage: 22,
         block: -4, hit: { adv: 6 }, ch: { launch: 6 },
@@ -181,6 +183,7 @@
         anim: [[1, 'idle'], [13, 'hv_c'], [19, 'hv_x'], [22, 'hv_x'], [30, 'hv_r'], [42, 'idle']]
       },
       fH: {
+        ex: { text: 'TWO HITS, WALL SPLAT', multi: 1, wallSplat: true }, // enhanced (P+K during startup, 1 bar)
         name: 'Chopping Palm', label: 'CONCAVE DOWN', cmd: 'F+H', level: 'mid', strength: 'heavy', motion: 'overhead', bound: true,
         startup: 22, active: 3, recovery: 21, damage: 19, guardDmg: 24,
         block: -7, hit: { adv: 3 }, ch: { knockdown: true },

@@ -176,6 +176,27 @@ try { playwright = require('playwright'); } catch (e) {
   await page.waitForTimeout(150);
   await page.screenshot({ path: path.join(out, '8-ko.png') });
 
+  // Grade meter and an enhanced special: F+P, then P+K in its startup, for one bar.
+  var ex = await page.evaluate(function () {
+    var s = window.FG_SCENE, m;
+    s.newMatch(); m = s.match;
+    m.fighters[0].x = 480; m.fighters[1].x = 520; m.fighters[0].meter = 150;
+    var seen = { enhance: false, plus: false, label: '', hits: 0 };
+    for (var t = 0; t < 60; t++) {
+      var r1 = t === 0 ? FG.parseInput('F+P') : t === 3 ? FG.parseInput('P+K') : FG.emptyRaw();
+      s.forceInput = function () { return [r1, FG.emptyRaw()]; };
+      s.tick(); s.render();
+      m.events.forEach(function (e) { if (e.type === 'enhance') seen.enhance = true; if (e.type === 'hit' && e.attacker === 0 && e.move.enhanced) seen.hits++; });
+      if (s.hud.plus[0].visible) { seen.plus = true; seen.label = s.hud.label[0].text; }
+    }
+    s.forceInput = null;
+    seen.meter = Math.round(m.fighters[0].meter);
+    seen.letters = s.hud.meterText[0].map(function (t) { return t.text; }).join('');
+    return seen;
+  });
+  await page.screenshot({ path: path.join(out, '8-enhanced.png') });
+  var exOk = ex.enhance && ex.plus && ex.hits >= 1 && ex.meter < 150 && ex.letters === 'CBA';
+
   // Arcade: a CPU opponent, ROUND 1 / READY / FIGHT, a timer, best of three.
   var arcade = await page.evaluate(function () {
     var s = window.FG_SCENE;
@@ -234,6 +255,8 @@ try { playwright = require('playwright'); } catch (e) {
   await page.waitForFunction(function () { return window.FG_STAGE && window.FG_STAGE.sys.isActive() && window.FG_STAGE.t > 5; }, null, { timeout: 15000 });
   var levelBefore = await page.evaluate(function () { return window.FG_STAGE.level; });
   await page.keyboard.press('ArrowUp');
+  await page.waitForFunction(function (b) { return window.FG_STAGE.level !== b; }, levelBefore, { timeout: 5000 });
+  await page.waitForTimeout(100);
   var levelPicked = await page.evaluate(function () { return window.FG_STAGE.level; });
   await page.keyboard.press('Enter');
   await page.waitForFunction(function () { var s = window.FG_SCENE; return s && s.sys.isActive() && s.mode === 'cpu'; }, null, { timeout: 15000 });
@@ -265,9 +288,9 @@ try { playwright = require('playwright'); } catch (e) {
   await page.screenshot({ path: path.join(out, '10-ending.png') });
 
   await browser.close();
-  console.log(JSON.stringify({ title: title, matchup: matchup, renderer: renderer, hits: hits, counter: counterText, p1: p1, menuOk: menuOk, resetX: resetX, trial: trial, ko: ko, stage: stagePick, arcade: arcade, vsPanel: vsPanel, cutFreeze: cutFreeze, cpu: cpu, ladder: ladder, errors: errors }, null, 1));
+  console.log(JSON.stringify({ title: title, matchup: matchup, renderer: renderer, hits: hits, counter: counterText, p1: p1, menuOk: menuOk, resetX: resetX, trial: trial, ko: ko, stage: stagePick, arcade: arcade, vsPanel: vsPanel, cutFreeze: cutFreeze, cpu: cpu, ladder: ladder, enhanced: ex, errors: errors }, null, 1));
   var ok = !errors.length && title === 'Mortal Calculus: C221' && matchup === expectMatchup && hits.join() === expectHits && counterText === String(hits.length) &&
-    p1.last && p1.last.kind === 'BLOCK' && p1.last.adv === p1.jabBlock && menuOk && resetOk && trialOk && koOk && stagePick === 'classroom' && arcadeOk && attractOk && vsPanel && cutFreeze && cpuOk && ladderOk;
+    p1.last && p1.last.kind === 'BLOCK' && p1.last.adv === p1.jabBlock && menuOk && resetOk && trialOk && koOk && stagePick === 'classroom' && arcadeOk && attractOk && vsPanel && cutFreeze && cpuOk && ladderOk && exOk;
   console.log(ok ? 'SMOKE OK' : 'SMOKE FAILED');
   if (!ok) process.exit(1);
 })().catch(function (e) { console.error(e); process.exit(1); });

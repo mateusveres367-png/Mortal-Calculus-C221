@@ -44,6 +44,7 @@
     def.combos = def.combos || [];
     if (def.stringH) addStringHeavy(def);
     for (var key in def.moves) prepareMove(def, key, def.moves[key]);
+    for (key in def.moves) if (def.moves[key].ex) addEnhanced(def, key, def.moves[key]);
     FG.ROSTER.push(def);
     FG.ROSTER.sort(function (a, b) { return a.order - b.order; });
     return def;
@@ -75,6 +76,43 @@
       m2.cancels = (m2.cancels || []).filter(function (c) { return c.btn !== 'h'; });
       m2.cancels.push({ btn: 'h', into: 'jabH', from: m2.startup, to: m2.startup + 14, onContact: true });
     }
+  }
+
+  // Enhanced specials: a special with `ex` gets a powered-up version, moves[id + 'EX'],
+  // that P+K turns it into during its startup for one bar of Grade meter.
+  //   ex: { text, damage (multiplier, default 1.3), multi (extra hits), armor: { hits },
+  //         hit / ch (new results), wallSplat }
+  // Extra hits come every MULTI_GAP frames (the active frames grow to fit them); only
+  // the last one has the move's real result (the others keep the opponent in hitstun).
+  // Armor covers the rest of the startup and the first active frame (so it wins trades).
+  FG.EX_SUFFIX = 'EX';
+  function addEnhanced(def, key, base) {
+    var x = base.ex, gap = FG.C.MULTI_GAP, multi = x.multi || 0, extra = multi * gap;
+    var m = Object.assign({}, base, {
+      id: key + FG.EX_SUFFIX, base: key, enhanced: true, ex: null, label: base.label + '+', exText: x.text,
+      active: base.active + extra, multi: multi,
+      // Total damage grows; with extra hits it's shared out between them.
+      damage: Math.max(4, Math.round(base.damage * (x.damage || 1.3) / (1 + multi * 0.5))),
+      push: multi ? base.push * 0.35 : base.push
+    });
+    m.total = m.startup + m.active - 1 + m.recovery;
+    if (x.armor) m.armor = { from: 1, to: base.startup, hits: x.armor.hits || 1 };
+    if (x.hit) m.hit = x.hit;
+    m.ch = x.ch || (x.hit ? (x.hit.launch ? { launch: x.hit.launch } : x.hit.knockdown ? { knockdown: true } : { adv: x.hit.adv + 3 }) : base.ch);
+    if (x.wallSplat) m.wallSplat = true;
+    // The animation: the strike re-fires for each extra hit, then the recovery plays late.
+    if (extra) {
+      var end = base.startup + base.active - 1, a = base.anim, strike = null, wind = null, out = [];
+      a.forEach(function (k) { if (k[0] <= end) { wind = strike; strike = k[1]; } });
+      a.forEach(function (k) { if (k[0] <= end) out.push(k); });
+      for (var h = 1; h <= multi; h++) {
+        out.push([end + h * gap - Math.ceil(gap / 2), wind || strike]);
+        out.push([end + h * gap, strike]);
+      }
+      a.forEach(function (k) { if (k[0] > end) out.push([k[0] + extra, k[1]]); });
+      m.anim = out;
+    }
+    def.moves[m.id] = m;
   }
 
   function prepareMove(def, key, m) {

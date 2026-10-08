@@ -141,6 +141,8 @@
     this.chargeFrames = 0;
     this.holdFrames = 0;
     this.armorHits = 0; // hits absorbed by this move's armor (PEDERSEN)
+    this.multiHits = 0; // extra hits a multi-hit move has made
+    this.contactAt = 0; // move frame of the latest contact
     this.setState('attack');
     this.move = m;
     this.moveFrame = 1;
@@ -181,6 +183,12 @@
         }
         this.moveFrame++;
         if (!m.air) this.vx = (m.step && this.moveFrame >= m.step[0] && this.moveFrame <= m.step[1]) ? m.step[2] * this.facing : 0;
+        // A multi-hit move gets another hit in a few frames after each contact.
+        if (m.multi && this.contact && this.multiHits < m.multi && this.moveFrame - this.contactAt >= C.MULTI_GAP && this.isActiveFrame()) {
+          this.contact = null;
+          this.multiHits++;
+        }
+        if (this.tryEnhance(buf, frame)) return;
         if (this.tryThrowConversion(buf, frame)) return;
         if (this.tryFeint(buf, frame)) return;
         if (this.tryKickChain(buf, frame)) return;
@@ -329,6 +337,20 @@
     // Out of a run (RAMOS): the running command grab.
     if (this.state === 'run' && this.def.moves.runGrab) { this.startMove('runGrab'); return; }
     this.startMove(buf.back(this.facing, dirs) ? 'throwB' : this.pick(buf.forward(this.facing, dirs) ? ['cmdGrab', 'throw'] : ['throw']));
+  };
+
+  // Enhanced specials: P+K during a special's startup powers it up (moves[id + 'EX'])
+  // for one bar of Grade meter. The move keeps its timing; the match reports it.
+  Fighter.prototype.tryEnhance = function (buf, frame) {
+    var m = this.move, ex = m.ex && this.def.moves[m.id + FG.EX_SUFFIX];
+    if (!ex || this.contact || this.moveFrame >= m.startup || !throwPressed(buf, frame)) return false;
+    if (this.meter < C.METER_BAR) return false;
+    if (!this.infiniteMeter) this.meter -= C.METER_BAR;
+    buf.consume('p'); buf.consume('k');
+    this.move = ex;
+    this.lastMove = ex;
+    this.enhancedNow = true; // read (and cleared) by the match for the event
+    return true;
   };
 
   // Feint (DALSASS): tapping back during a move's startup cancels it before it

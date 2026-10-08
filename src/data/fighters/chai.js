@@ -177,6 +177,7 @@
         anim: [[1, 'idle'], [9, 'hk_c'], [13, 'hk_x'], [16, 'hk_x'], [24, 'hk_c'], [34, 'idle']]
       },
       bK: {
+        ex: { text: 'LAUNCHES', hit: { launch: 6.8 } }, // enhanced (P+K during startup, 1 bar)
         name: 'Spinning Back Kick', label: 'REFLEX ANGLE', cmd: 'B+K', level: 'mid', strength: 'heavy', motion: 'kick', kick: true,
         startup: 16, active: 3, recovery: 22, damage: 16,
         block: -10, hit: { knockdown: true }, ch: { knockdown: true },
@@ -200,6 +201,7 @@
         anim: [[1, 'idle'], [11, 'hv_c'], [17, 'hv_x'], [20, 'hv_x'], [28, 'hv_r'], [41, 'idle']]
       },
       fH: {
+        ex: { text: 'TWO HITS, KNOCKDOWN', multi: 1, hit: { knockdown: true } }, // enhanced (P+K during startup, 1 bar)
         name: 'Axe Kick', label: 'VERTEX DROP', cmd: 'F+H', level: 'mid', strength: 'heavy', motion: 'overhead', kick: true, bound: true,
         startup: 20, active: 3, recovery: 20, damage: 17, guardDmg: 22,
         block: -7, hit: { adv: 3 }, ch: { knockdown: true },
@@ -222,6 +224,7 @@
       },
       // Tangent Step: a spinning hook kick out of a sidestep (sidestep, then P). Tracks.
       ssP: {
+        ex: { text: 'THREE KICKS', multi: 2 }, // enhanced (P+K during startup, 1 bar)
         name: 'Sidestep Kick', label: 'TANGENT STEP', cmd: 'SS, P', level: 'mid', strength: 'medium', motion: 'roundhouse', kick: true, tracks: true, keepZ: true,
         startup: 12, active: 3, recovery: 16, damage: 15,
         block: -3, hit: { adv: 6 }, ch: { knockdown: true },

@@ -22,6 +22,8 @@ out.push('# Mortal Calculus: C221 — Move lists');
 out.push('');
 out.push('Generated from the fighter data by `node tools/movelist.js`; don\'t edit by hand. Identity, looks and lines are in [`ROSTER.md`](ROSTER.md).');
 out.push('');
+out.push('**Grade meter:** three bars, C, B and A, under your health bar. They fill as you land hits, block and take damage, a little faster while you\'re behind, and carry over between rounds. **Enhanced specials** cost one bar: press P+K during the startup of a special that has one (listed under each fighter) and it powers up, the fighter flashing in their colour.');
+out.push('');
 out.push('Frame data: **i** is startup (the frame the move hits, counting the press as frame 1), then active and recovery frames. Block / hit / counter hit are frame advantage for the attacker. Inputs assume you face right: F = toward the opponent, B = away, D = down.');
 out.push('');
 FG.ROSTER.forEach(function (d) {
@@ -48,7 +50,7 @@ FG.ROSTER.forEach(function (d) {
     if (/^F\+H,/.test(cmd)) return ORDER.indexOf('fH') + 0.5;
     return 40;
   }
-  var ids = Object.keys(d.moves).sort(function (a, b) {
+  var ids = Object.keys(d.moves).filter(function (id) { return !d.moves[id].enhanced; }).sort(function (a, b) {
     return rank(a) - rank(b);
   });
   ids.forEach(function (id) {
@@ -66,6 +68,7 @@ FG.ROSTER.forEach(function (d) {
     if (m.step && m.step[2] < 0) notes.push('steps back as it attacks');
     if (m.armor) notes.push('armor: absorbs ' + m.armor.hits + ' hit on frames ' + m.armor.from + '-' + m.armor.to + (m.charge ? ' (2 at full charge)' : ''));
     if (m.charge) notes.push('hold to charge');
+    if (m.ex) notes.push('enhance with P+K');
     if (m.taunt) notes.push('says a taunt line; counter-hittable the whole time');
     if (m.kick && d.kickChain) notes.push('kick chain');
     if (m.tip) notes.push('Long Arms: +' + Math.round((FG.C.TIP_BONUS - 1) * 100) + '% damage at the tip');
@@ -81,6 +84,20 @@ FG.ROSTER.forEach(function (d) {
     out.push('| ' + [m.cmd, title(m.label), level].concat(frameCols, adv, [noHit ? '' : m.damage, notes.join(', ')]).join(' | ') + ' |');
   });
   out.push('');
+  var exIds = ids.filter(function (id) { return d.moves[id].ex; });
+  if (exIds.length) {
+    out.push('**Enhanced specials** (P+K during the startup, 1 bar):');
+    out.push('');
+    exIds.forEach(function (id) {
+      var b = d.moves[id], x = d.moves[id + FG.EX_SUFFIX];
+      var dmg = x.multi ? (x.multi + 1) + ' hits of ' + x.damage : x.damage + ' damage (from ' + b.damage + ')';
+      var res = result(x.hit) !== result(b.hit) ? ', hit: ' + result(x.hit) : '';
+      out.push('- **' + title(x.label) + '** (`' + b.cmd + '`, then `P+K`): ' + sentence(x.exText) + ' — ' + dmg + res +
+        (x.armor ? ', armor on frames ' + x.armor.from + '-' + x.armor.to + ' (' + x.armor.hits + (x.armor.hits > 1 ? ' hits' : ' hit') + ')' : '') +
+        (x.wallSplat && !b.wallSplat ? ', wall splats' : '') + '.');
+    });
+    out.push('');
+  }
   if (d.finisher) {
     out.push('**KO finisher:** ' + title(d.finisher.name) + ' — `' + d.finisher.input + '` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).');
     out.push('');

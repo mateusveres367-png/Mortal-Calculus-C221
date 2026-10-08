@@ -178,6 +178,7 @@
       },
       sweep: FG.kit.sweep('BASE SWEEP', { startup: 21, recovery: 26, motion: 'sweep' }),
       dfK: {
+        ex: { text: 'TWO HITS, LAUNCHES', multi: 1, hit: { launch: 6 } }, // enhanced (P+K during startup, 1 bar)
         name: 'Slide', label: 'SUPPLEMENTARY SLIDE', cmd: 'D/F+K', level: 'low', strength: 'heavy', motion: 'sweep', crouching: true,
         startup: 18, active: 5, recovery: 24, damage: 14,
         block: -16, hit: { knockdown: true }, ch: { knockdown: true },
@@ -207,6 +208,7 @@
         anim: [[1, 'idle'], [10, 'feint_c'], [18, 'feint_c'], [24, 'feint_x']]
       },
       drop: {
+        ex: { text: 'ARMORED, KNOCKDOWN', armor: { hits: 1 }, hit: { knockdown: true } }, // enhanced (P+K during startup, 1 bar)
         name: 'Overhead', label: 'INDIRECT PROOF', cmd: 'F+H, H', level: 'mid', strength: 'heavy', motion: 'overhead', bound: true,
         startup: 14, active: 3, recovery: 22, damage: 18, guardDmg: 22,
         block: -8, hit: { adv: 4 }, ch: { knockdown: true },
@@ -223,6 +225,7 @@
         anim: [[1, 'idle'], [4, 'sway'], [16, 'sway'], [26, 'idle']]
       },
       swayP: {
+        ex: { text: 'HIGHER LAUNCH', hit: { launch: 7.6 } }, // enhanced (P+K during startup, 1 bar)
         name: 'Sway Counter', label: 'THE CONVERSE', cmd: 'B+K, P', level: 'mid', strength: 'heavy', motion: 'straight',
         startup: 8, active: 3, recovery: 18, damage: 16,
         block: -6, hit: { launch: 6.2 }, ch: { launch: 6.8 },

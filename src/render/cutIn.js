@@ -205,5 +205,13 @@
     this.vsText.setText('VS').setScale(6 + (1 - vsU) * 6).setAngle(-6).setPosition(W / 2, 150).setTint(0xffd23f).setVisible(t >= 8 && outU < 1);
   };
 
+  // A fighter's signature colour: their cut-in colour, the brighter one if the main is
+  // near black (ladder chips, enhanced-special flashes, ultimate auras).
+  FG.fighterGlow = function (d) {
+    if (!d.cutIn) return 0xffd23f;
+    var lum = function (c) { return ((c >> 16) & 255) * 0.3 + ((c >> 8) & 255) * 0.59 + (c & 255) * 0.11; };
+    return lum(d.cutIn.a) < 40 ? d.cutIn.b : d.cutIn.a;
+  };
+
   FG.CutIn = CutIn;
 })();

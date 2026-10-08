@@ -159,6 +159,7 @@
         anim: [[1, 'cross_x'], [5, 'body_c'], [8, 'body_x'], [10, 'body_x'], [25, 'idle']]
       },
       seqP: {
+        ex: { text: 'THREE HITS, WALL SPLAT', multi: 2, wallSplat: true }, // enhanced (P+K during startup, 1 bar)
         name: 'Elbow', label: 'NTH TERM', cmd: 'P,P,P,P', level: 'mid', strength: 'heavy', motion: 'hook',
         startup: 7, active: 3, recovery: 22, damage: 14,
         block: -12, hit: { knockdown: true }, ch: { knockdown: true },
@@ -174,6 +175,7 @@
       },
       // Recursive Rush: forward + P lunges in; press P again on hit to repeat it (up to 3).
       fP: {
+        ex: { text: 'TWO HITS', multi: 1 }, // enhanced (P+K during startup, 1 bar)
         name: 'Rush', label: 'RECURSIVE RUSH', cmd: 'F+P', level: 'mid', strength: 'medium', motion: 'lunge',
         startup: 13, active: 3, recovery: 15, damage: 10,
         block: 1, hit: { adv: 5 }, ch: { adv: 9 },
@@ -198,6 +200,7 @@
       },
       sweep: FG.kit.sweep('DIVERGENT SWEEP', { startup: 19, motion: 'sweep' }),
       heavy: {
+        ex: { text: 'LAUNCHES', hit: { launch: 6.5 } }, // enhanced (P+K during startup, 1 bar)
         name: 'Liver Shot', label: 'PARTIAL SUM', cmd: 'H', level: 'mid', strength: 'heavy', motion: 'body', wallSplat: true,
         startup: 17, active: 3, recovery: 18, damage: 18,
         block: 2, hit: { adv: 7 }, ch: { launch: 5.8 },

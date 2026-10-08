@@ -738,6 +738,7 @@
         var dfn = f[ev.defender];
         dfn._react = ev.type === 'block' ? { kind: 'block', t: 0 } : { kind: ev.impact, t: 0, scale: ev.ch ? 1.3 : 1 };
       }
+      if (ev.type === 'enhance') ev.color = FG.fighterGlow(f[ev.fighter].def);
       FG.Sfx.play(ev);
       // A cancel leaves an afterimage of the move it came out of.
       if (ev.type === 'cancel' && f[ev.fighter]._pose) {
@@ -946,6 +947,12 @@
       var tf = f[ev.fighter], tl = tf.def.talk.lines;
       this.bubbles[ev.fighter].show(tf.def.name, tl[Math.floor(Math.random() * tl.length)], 120);
     }
+    // Enhanced special: the fighter flashes their colour and the name gets its +.
+    if (ev.type === 'enhance') {
+      this.hud.setEnhanced(ev.fighter, ev.move.label.replace(/\+$/, ''));
+      this.impact = { who: ev.fighter, frames: 5, color: ev.color };
+      this.effects.shake(0.004);
+    }
     if (ev.type === 'calculated') {
       f[ev.fighter]._tag = { text: 'CALCULATED', t: 60 };
     }
@@ -1002,14 +1009,16 @@
         { flash: 0x9fdcff, noShadow: true });
     }
     // Calculated: a pulsing blue glow around MIYASHIRO until his bonus hit lands.
+    // An enhanced special glows in the fighter's colour while it plays.
     this.auras.clear();
     for (var ai = 0; ai < 2; ai++) {
-      var af = f[ai];
-      if (!(af.calculated > 0) || af._hidden || !af._pose) continue;
-      var pulse = 0.35 + 0.25 * Math.sin(this.tickCount * 0.25);
+      var af = f[ai], ex = af.state === 'attack' && af.move && af.move.enhanced;
+      if (!(af.calculated > 0 || ex) || af._hidden || !af._pose) continue;
+      var pulse = ex ? 0.5 + 0.3 * Math.sin(this.tickCount * 0.6) : 0.35 + 0.25 * Math.sin(this.tickCount * 0.25);
+      var col = ex ? FG.fighterGlow(af.def) : 0x5fd7ff, ax = af._drawX != null ? af._drawX : af.x;
       this.auras.setAlpha(pulse);
-      [-2, 2].forEach(function (dx) { FG.drawFighter(this.auras, af, { flash: 0x5fd7ff, noShadow: true, x: af.x + dx }); }, this);
-      FG.drawFighter(this.auras, af, { flash: 0x5fd7ff, noShadow: true, groundY: C.GROUND_Y - 2 });
+      [-2, 2].forEach(function (dx) { FG.drawFighter(this.auras, af, { flash: col, noShadow: true, x: ax + dx }); }, this);
+      FG.drawFighter(this.auras, af, { flash: col, noShadow: true, groundY: C.GROUND_Y - 2, x: ax });
     }
     // Draw the fighter further into the background first.
     var order = f[0].z > f[1].z ? [0, 1] : f[1].z > f[0].z ? [1, 0] : (f[0].state === 'attack' ? [1, 0] : [0, 1]);

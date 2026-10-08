@@ -106,6 +106,7 @@
 
   Match.prototype.applyContact = function (c) {
     var a = this.fighters[c.a], d = this.fighters[c.d], m = c.move;
+    a.contactAt = c.moveFrame;
     // Neither side is free on a frame where contact happens.
     a.actionable = false;
     d.actionable = false;
@@ -141,6 +142,9 @@
     var ch = c.ch;
     ev.feint = a.fromFeint; // the hit came out of a feint: the opponent fell for it
     var result = ch ? m.ch : m.hit;
+    // A multi-hit move: only the last hit has the real result; the others hold them.
+    if (m.multi && a.multiHits < m.multi) { result = { adv: 0 }; ev.multi = true; }
+    if (m.enhanced) ev.enhanced = true;
     var state = d.state;
     var mult = (ch ? 1.2 : 1) * (state === 'down' ? 0.6 : 1) * (state === 'wallsplat' ? 0.85 : 1);
     if (a.calculated > 0) { mult *= C.CALCULATED_BONUS; a.calculated = 0; ev.calculated = true; }
@@ -216,6 +220,7 @@
   // move is spent.
   Match.prototype.absorb = function (c, a, d, m) {
     a.contact = 'hit';
+    a.contactAt = c.moveFrame;
     d.armorHits++;
     var dmg = Math.max(1, Math.round(m.damage * C.ARMOR_DAMAGE));
     d.health -= dmg;

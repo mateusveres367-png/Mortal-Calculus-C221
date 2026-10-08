@@ -78,6 +78,14 @@
         this.flashes.push({ x: x, y: y, r: 18, life: 9, max: 9, color: 0xffffff, star: true });
         this.flashes.push({ x: x, y: y, r: 14, life: 10, max: 10, color: 0x5fd7ff, ring: true });
         return;
+      case 'enhance': // an enhanced special: a ring and sparks in the fighter's colour
+        this.flashes.push({ x: x, y: y, r: 30, life: 14, max: 14, color: ev.color || 0xffffff, ring: true, thick: 3 });
+        this.flashes.push({ x: x, y: y, r: 16, life: 8, max: 8, color: 0xffffff, star: true });
+        for (var en = 0; en < 12; en++) {
+          var ea = Math.random() * Math.PI * 2;
+          this.parts.push({ x: x, y: y, vx: Math.cos(ea) * 3, vy: Math.sin(ea) * 3 - 1, life: 16, max: 16, size: 2, color: en % 2 ? (ev.color || 0xffffff) : 0xffffff });
+        }
+        return;
       case 'armor': // Exponential Armor: the hit glances off in a gold ring
         this.flashes.push({ x: x, y: y, r: 20, life: 10, max: 10, color: 0xffd23f, ring: true, thick: 3 });
         this.flashes.push({ x: x, y: y, r: 12, life: 6, max: 6, color: 0xffffff, star: true });
@@ -456,6 +464,11 @@
         break;
       case 'feint':
         burst(0.05, 1800, 2, 0.1, 'bandpass');
+        break;
+      case 'enhance': // an enhanced special: a bright rising surge
+        sweep(0.18, 300, 1500, 0.07, 'sawtooth');
+        sweep(0.24, 600, 2400, 0.04, 'square');
+        burst(0.16, 5200, 3, 0.12, 'bandpass');
         break;
       case 'meter': // a Grade bar filled: a rising chalk chime, higher for each grade
         sweep(0.12, 520 + ev.bars * 180, 900 + ev.bars * 260, 0.05, 'triangle');

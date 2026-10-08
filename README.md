@@ -129,6 +129,7 @@ Every fighter uses the same input layout. What each input does, and its frame da
 ### Meter and big moves
 
 - **Grade meter:** three bars under your health bar, graded **C**, **B** and **A**. It fills when you land hits, when you block and when you take damage, and a little faster (×1.25) while you're behind on health. A bar chimes and flashes when it fills, and all three full pulses. The meter carries over between rounds.
+- **Enhanced specials (1 bar):** press `P`+`K` during the startup of a special to power it up: more damage plus extra hits, armor, a launch or a wall splat, depending on the move. The fighter flashes in their colour and a `+` pops onto the move's name. Every fighter has three; they're listed in [`MOVES.md`](MOVES.md).
 
 The fighters, and what they teach:
 

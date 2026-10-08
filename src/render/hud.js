@@ -28,6 +28,9 @@
     });
     this.label = [T(16, 148, '', 'o', 2), T(C.VIEW_W - 16, 148, '', 'o', 2).setOrigin(1, 0)];
     this.labelTimer = [0, 0];
+    // Enhanced specials: a "+" that pops onto the end of the move name.
+    this.plus = [0, 1].map(function () { return T(0, 0, '+', 'y', 2).setOrigin(0.5, 0.5).setVisible(false); });
+    this.plusT = [0, 0];
     this.comboShow = [{ hits: 0, damage: 0, timer: 0 }, { hits: 0, damage: 0, timer: 0 }];
 
     // Big COUNTER! callout on counter hits, on the attacker's side.
@@ -114,6 +117,7 @@
     for (var i = 0; i < 2; i++) {
       this.label[i].setText('');
       this.labelTimer[i] = 0;
+      this.plusT[i] = 0;
       this.comboShow[i] = { hits: 0, damage: 0, timer: 0 };
       this.counter[i].tier = 0; this.counter[i].pop = 0; this.counter[i].rankPop = 0;
       this.trail[i] = null;
@@ -136,6 +140,23 @@
   Hud.prototype.setLabel = function (i, text) {
     this.label[i].setText(text);
     this.labelTimer[i] = 70;
+    this.plusT[i] = 0;
+  };
+
+  // An enhanced special: its name, and a "+" that pops onto the end of it.
+  Hud.prototype.setEnhanced = function (i, name) {
+    this.setLabel(i, name + ' ');
+    this.plusT[i] = 1;
+  };
+
+  Hud.prototype.drawPlus = function (i) {
+    var p = this.plus[i], t = this.plusT[i], lb = this.label[i];
+    if (!t || !this.labelTimer[i]) { p.setVisible(false); this.plusT[i] = 0; return; }
+    this.plusT[i]++;
+    var cw = lb.width / Math.max(1, lb.text.length);
+    var x = i === 0 ? lb.x + lb.width - cw / 2 : lb.x - cw / 2, y = lb.y + lb.height / 2;
+    var sc = t < 8 ? 6 - t * 0.5 : 2 + (t < 14 ? Math.sin((t - 8) * 1.2) * 0.4 : 0);
+    p.setVisible(true).setScale(sc).setPosition(x, y).setFont(t % 6 < 3 ? 'pf_w' : 'pf_y');
   };
 
   Hud.prototype.onEvent = function (ev) {
@@ -298,6 +319,7 @@
 
       this.names[i].setText((i === 0 ? 'P1 ' : 'P2 ') + f.def.name + '  ' + f.def.archetype);
       this.drawMeter(i, f);
+      this.drawPlus(i);
 
       this.drawCounter(i);
     }

@@ -143,6 +143,7 @@
       },
       // Long Arms: the longest poke in the game. P continues into Rise Over Run.
       fP: {
+        ex: { text: 'TWO HITS, KNOCKDOWN', multi: 1, hit: { knockdown: true } }, // enhanced (P+K during startup, 1 bar)
         name: 'Long Poke', label: 'LONG ARMS', cmd: 'F+P', level: 'high', strength: 'medium', motion: 'jab', tip: 60,
         startup: 13, active: 3, recovery: 18, damage: 11,
         block: -4, hit: { adv: 4 }, ch: { adv: 8 },
@@ -160,6 +161,7 @@
         anim: [[1, 'jab_x'], [7, 'eps_c'], [11, 'eps_x'], [14, 'eps_x'], [31, 'idle']]
       },
       delta: {
+        ex: { text: 'THREE HITS', multi: 2 }, // enhanced (P+K during startup, 1 bar)
         name: 'Spinning Back Kick', label: 'DISTRIBUTIVE PROPERTY', cmd: 'P,K,K', level: 'mid', strength: 'heavy', motion: 'kick', wallSplat: true,
         startup: 13, active: 3, recovery: 22, damage: 16,
         block: -13, hit: { knockdown: true }, ch: { knockdown: true },
@@ -182,6 +184,7 @@
       },
       sweep: FG.kit.sweep('ZERO PRODUCT SWEEP', { motion: 'sweep' }),
       heavy: {
+        ex: { text: 'ARMORED, LAUNCHES', armor: { hits: 1 }, hit: { launch: 6.5 } }, // enhanced (P+K during startup, 1 bar)
         name: 'Stepping Straight', label: 'LINEAR RUSH', cmd: 'H', level: 'mid', strength: 'heavy', motion: 'straight', tip: 50, wallSplat: true,
         startup: 19, active: 3, recovery: 22, damage: 22,
         block: -4, hit: { adv: 6 }, ch: { launch: 6 },

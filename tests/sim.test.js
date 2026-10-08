@@ -867,7 +867,7 @@ function count(r, type, attacker) {
   check('full charge absorbs two hits', count(r, 'armor') === 2 && hits(r, 0).length === 1, types(r));
   // Nobody else has armor.
   defs.filter(function (d) { return d !== PD; }).forEach(function (d) {
-    check(d.name + ' has no armor', Object.keys(d.moves).every(function (id) { return !d.moves[id].armor; }));
+    check(d.name + ' has no armor', Object.keys(d.moves).every(function (id) { return !d.moves[id].armor || d.moves[id].enhanced; }));
   });
 })();
 
@@ -1162,6 +1162,7 @@ defs.forEach(function (d) {
     var best = 0, longest = 0, since = null;
     for (var i = 0; i < frames; i++) {
       var tok = pick(i);
+      m.fighters[0].meter = 0; // without meter (enhanced specials add hits by design)
       m.step([tok ? FG.parseInput(tok) : raw({}), raw({})]);
       m.events.forEach(function (e) { if (e.type === 'hit' && e.attacker === 0) { best = Math.max(best, e.hits); if (e.hits === 1) since = i; } });
       if (m.fighters[1].actionable) since = null; else if (since !== null) longest = Math.max(longest, i - since);
@@ -1394,6 +1395,59 @@ defs.forEach(function (d) {
   am.fighters[1].meter = 0;
   am.absorb({ a: 0, d: 1, hb: { y1: 40, y2: 60 } }, am.fighters[0], am.fighters[1], S.moves.jab);
   check('meter: armored hits fill both', am.fighters[0].meter > 0 && am.fighters[1].meter > 0, [am.fighters[0].meter, am.fighters[1].meter]);
+})();
+
+// Enhanced specials: P+K in a special's startup powers it up for one bar.
+(function () {
+  function enhanced(d, id, meter, opts) {
+    opts = opts || {};
+    var m = setup(d, opts.opp || D, opts.dist || 36), ev = [];
+    m.fighters[0].meter = meter;
+    m.fighters[0].startMove(id);
+    for (var i = 0; i < 90; i++) {
+      m.step([raw(i === 1 && !opts.noPress ? { p: true, k: true } : {}), raw(opts.oppPress && i === opts.oppPress[0] ? opts.oppPress[1] : {})]);
+      ev = ev.concat(m.events);
+    }
+    return { m: m, ev: ev, hits: ev.filter(function (e) { return e.type === 'hit' && e.attacker === 0; }) };
+  }
+  defs.forEach(function (d) {
+    var exIds = Object.keys(d.moves).filter(function (id) { return d.moves[id].ex; });
+    check(d.name + ' has three enhanced specials', exIds.length === 3, exIds);
+    exIds.forEach(function (id) {
+      var base = d.moves[id], ex = d.moves[id + 'EX'], tag = d.name + ' ' + id + '+: ';
+      check(tag + 'labelled with a +', ex && ex.label === base.label + '+' && ex.exText, ex && ex.label);
+      var r = enhanced(d, id, FG.C.METER_BAR);
+      var en = r.ev.filter(function (e) { return e.type === 'enhance'; });
+      check(tag + 'P+K powers it up', en.length === 1 && en[0].move === ex, r.ev.map(function (e) { return e.type; }));
+      check(tag + 'costs one bar', r.m.fighters[0].meter < FG.C.METER_BAR, r.m.fighters[0].meter);
+      check(tag + 'it lands', r.hits.length >= 1 && r.hits.every(function (h) { return h.move === ex; }), r.hits.map(function (h) { return h.move.id; }));
+      var plain = enhanced(d, id, 0);
+      check(tag + 'no meter, no power-up', plain.ev.every(function (e) { return e.type !== 'enhance'; }) && plain.hits.length && plain.hits[0].move === base);
+      var dmg = function (x) { return x.hits.reduce(function (t, h) { return t + h.damage; }, 0); };
+      var basic = enhanced(d, id, 0, { noPress: true });
+      check(tag + 'more damage', dmg(r) > dmg(basic), [dmg(r), dmg(basic)]);
+      if (ex.multi) check(tag + (ex.multi + 1) + ' hits', r.hits.length === ex.multi + 1 && r.hits.every(function (h, k) { return h.hits === k + 1; }), r.hits.length);
+      if (ex.hit.launch) check(tag + 'launches', r.hits[r.hits.length - 1].launch, r.hits.map(function (h) { return h.launch; }));
+      if (ex.hit.knockdown && !base.hit.knockdown) check(tag + 'knocks down', r.hits[r.hits.length - 1].knockdown || r.hits[r.hits.length - 1].launch);
+      if (ex.armor) {
+        // The opponent jabs into the startup: it's absorbed and the move still lands.
+        var ar = enhanced(d, id, FG.C.METER_BAR, { opp: S, oppPress: [0, { p: true }], dist: 34 });
+        check(tag + 'armored', ar.ev.some(function (e) { return e.type === 'armor' && e.defender === 0; }) && ar.hits.length >= 1, ar.ev.map(function (e) { return e.type; }));
+      }
+    });
+  });
+  var inf = setup(S, D, 36);
+  inf.fighters[0].infiniteMeter = true; inf.fighters[0].meter = FG.C.METER_MAX;
+  inf.fighters[0].startMove('fP');
+  run(inf, 30, function (i) { return [raw(i === 1 ? { p: true, k: true } : {}), raw({})]; });
+  check('enhanced: infinite meter never runs out', inf.fighters[0].meter === FG.C.METER_MAX && inf.fighters[0].lastMove.id === 'fPEX', inf.fighters[0].meter);
+  // Too late: once the special is active, P+K does nothing.
+  var late = setup(S, D, 36);
+  late.fighters[0].meter = FG.C.METER_BAR;
+  late.fighters[0].startMove('heavy');
+  var lateEv = [];
+  run(late, 40, function (i) { lateEv = lateEv.concat(late.events); return [raw(i === S.moves.heavy.startup ? { p: true, k: true } : {}), raw({})]; });
+  check('enhanced: only during startup', lateEv.every(function (e) { return e.type !== 'enhance'; }) && late.fighters[0].lastMove.id === 'heavy', late.fighters[0].lastMove.id);
 })();
 
 console.log(passes + ' passed, ' + failures + ' failed');

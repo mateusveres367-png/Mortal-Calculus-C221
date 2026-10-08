@@ -20,12 +20,8 @@
     return lines.length ? lines[lines.length - 1].text : cpu.talk.lines[0];
   };
 
-  // A fighter's colour chip: their cut-in colour, the brighter one if the main is near black.
-  function chip(d) {
-    if (!d.cutIn) return 0x444444;
-    var lum = function (c) { return ((c >> 16) & 255) * 0.3 + ((c >> 8) & 255) * 0.59 + (c & 255) * 0.11; };
-    return lum(d.cutIn.a) < 40 ? d.cutIn.b : d.cutIn.a;
-  }
+  // A fighter's colour chip.
+  function chip(d) { return d.cutIn ? FG.fighterGlow(d) : 0x444444; }
 
   LadderScene.prototype.create = function () {
     FG.makeFonts(this);

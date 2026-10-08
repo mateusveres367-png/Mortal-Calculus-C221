@@ -112,9 +112,10 @@ FG.C = {
   METER_BLOCK: 4,       // for blocking an attack
   METER_BLOCKED: 2,     // for an attack that was blocked
   METER_LOSING: 1.25,   // gain multiplier while you're behind on health
-  TIP_BONUS: 1.25,
+  MULTI_GAP: 5,         // frames between the hits of a multi-hit (enhanced) move
+  TIP_BONUS: 1.25,      // Long Arms: damage for landing with the tip of a straight
   ARMOR_DAMAGE: 0.7,    // Exponential Armor: share of an absorbed hit's damage taken
-  ARMOR_HITSTOP: 8,      // Long Arms: damage for landing with the tip of a straight
+  ARMOR_HITSTOP: 8,     // Exponential Armor: the freeze on an absorbed hit
   FINISH_WINDOW: 120,   // frames after the final K.O. to enter a finisher (2 seconds)
   CUTIN_HITS: 10,       // a combo this long gets a cut-in
   CUTIN_COOLDOWN: 240,  // ticks between cut-ins

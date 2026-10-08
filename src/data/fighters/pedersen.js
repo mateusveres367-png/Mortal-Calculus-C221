@@ -152,6 +152,7 @@
       },
       // Common Log: dash, then P. A shoulder charge that knocks down.
       dashP: {
+        ex: { text: 'ARMORED, WALL SPLAT', armor: { hits: 1 }, wallSplat: true }, // enhanced (P+K during startup, 1 bar)
         name: 'Shoulder Charge', label: 'COMMON LOG', cmd: 'F,F+P', level: 'mid', strength: 'heavy', motion: 'lunge',
         startup: 14, active: 4, recovery: 22, damage: 20,
         block: -10, hit: { knockdown: true }, ch: { knockdown: true },
@@ -185,6 +186,7 @@
       },
       // Right Angle Elbow: a stepping elbow, plus on hit; a counter hit launches.
       fP: {
+        ex: { text: 'TWO ELBOWS, KNOCKDOWN', multi: 1, hit: { knockdown: true } }, // enhanced (P+K during startup, 1 bar)
         name: 'Elbow', label: 'RIGHT ANGLE ELBOW', cmd: 'F+P', level: 'mid', strength: 'heavy', motion: 'hook',
         startup: 15, active: 3, recovery: 18, damage: 18,
         block: -5, hit: { adv: 5 }, ch: { launch: 6.4 },
@@ -194,6 +196,7 @@
       },
       // Exponential Haymaker: a huge, slow, wall-splatting haymaker.
       fH: {
+        ex: { text: 'ABSORBS TWO HITS, LAUNCHES', armor: { hits: 2 }, hit: { launch: 6.5 } }, // enhanced (P+K during startup, 1 bar)
         name: 'Haymaker', label: 'EXPONENTIAL HAYMAKER', cmd: 'F+H', level: 'mid', strength: 'heavy', motion: 'straight', wallSplat: true, guardDmg: 34,
         startup: 26, active: 4, recovery: 22, damage: 36, armor: { from: 8, to: 25, hits: 1 },
         block: -6, hit: { knockdown: true }, ch: { launch: 6.6 },

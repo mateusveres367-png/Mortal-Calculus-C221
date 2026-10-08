@@ -151,6 +151,7 @@
       },
       // Range Check: dash, then P. A lunging straight that covers ground.
       dashP: {
+        ex: { text: 'TWO HITS, KNOCKDOWN', multi: 1, hit: { knockdown: true } }, // enhanced (P+K during startup, 1 bar)
         name: 'Lunge Punch', label: 'RANGE CHECK', cmd: 'F,F+P', level: 'mid', strength: 'heavy', motion: 'lunge', wallSplat: true,
         startup: 12, active: 3, recovery: 18, damage: 16,
         block: -4, hit: { adv: 6 }, ch: { launch: 6 },
@@ -167,6 +168,7 @@
       },
       // Domain Control: the longest poke in the game. Mid, safe at its tip.
       fK: {
+        ex: { text: 'LAUNCHES', hit: { launch: 6.4 } }, // enhanced (P+K during startup, 1 bar)
         name: 'Side Kick', label: 'DOMAIN CONTROL', cmd: 'F+K', level: 'mid', strength: 'medium', motion: 'kick',
         startup: 16, active: 3, recovery: 18, damage: 12,
         block: -6, hit: { adv: 3 }, ch: { adv: 8 },
@@ -184,6 +186,7 @@
       },
       // Domain Restriction: a front kick that steps back as it goes, keeping them at range.
       bH: {
+        ex: { text: 'ARMORED, WALL SPLAT', armor: { hits: 1 }, wallSplat: true }, // enhanced (P+K during startup, 1 bar)
         name: 'Step-Back Kick', label: 'DOMAIN RESTRICTION', cmd: 'B+H', level: 'mid', strength: 'medium', motion: 'kick',
         startup: 13, active: 3, recovery: 16, damage: 12,
         block: -2, hit: { adv: 5 }, ch: { adv: 10 },

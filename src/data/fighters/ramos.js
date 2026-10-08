@@ -156,6 +156,7 @@
       },
       // Out of his fast dash: a shoulder charge that knocks down.
       dashP: {
+        ex: { text: 'ARMORED, LAUNCHES', armor: { hits: 1 }, hit: { launch: 6.5 } }, // enhanced (P+K during startup, 1 bar)
         name: 'Shoulder Charge', label: 'AUGMENTED CHARGE', cmd: 'F,F+P', level: 'mid', strength: 'heavy', motion: 'lunge',
         startup: 13, active: 4, recovery: 20, damage: 17,
         block: -9, hit: { knockdown: true }, ch: { knockdown: true },
@@ -212,6 +213,7 @@
       },
       // Out of a run (dash, then hold forward).
       runP: {
+        ex: { text: 'TWO HITS, WALL SPLAT', multi: 1, wallSplat: true }, // enhanced (P+K during startup, 1 bar)
         name: 'Spear Tackle', label: 'ROW OPERATION', cmd: 'RUN, P', level: 'mid', strength: 'heavy', motion: 'lunge',
         startup: 10, active: 4, recovery: 22, damage: 16,
         block: -8, hit: { knockdown: true }, ch: { knockdown: true },
@@ -220,6 +222,7 @@
         anim: [[1, 'run1'], [6, 'spear'], [10, 'spear'], [14, 'spear'], [36, 'idle']]
       },
       runK: {
+        ex: { text: 'HIGHER LAUNCH', hit: { launch: 8.4 } }, // enhanced (P+K during startup, 1 bar)
         name: 'Running Knee', label: 'ELEMENTARY KNEE', cmd: 'RUN, K', level: 'mid', strength: 'launch', motion: 'launcher',
         startup: 9, active: 3, recovery: 22, damage: 15,
         block: -12, hit: { launch: 7 }, ch: { launch: 7.6 },
