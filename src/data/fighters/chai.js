@@ -136,7 +136,7 @@
     idleAnim: { breath: 0.8, bob: 1.6, rate: 0.13 }, // a light bounce on her toes
     poses: poses,
     // How the CPU plays her: sidesteps and counters, then kick chains.
-    ai: { spacing: 52, pokes: ['K', 'F+K', 'D+K'], close: ['P', 'K', 'B+K', 'P+K'], aggro: 0.9, sidestep: 3, ssFollow: 'P' },
+    ai: { spacing: 52, pokes: ['K', 'F+K', 'D+K'], close: ['P', 'K', 'B+K', 'P+K'], aggro: 0.9, sidestep: 3, ssFollow: 'P', parry: 0.2 },
 
     moves: FG.kit.moves({
       jab: {

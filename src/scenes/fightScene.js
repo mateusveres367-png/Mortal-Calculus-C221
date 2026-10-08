@@ -3,6 +3,7 @@
 //   training  practice with the dummy, frame data, combo trials (no rounds)
 //   arcade    player 1 against a ladder of CPU opponents, best of three each
 //   versus    player 1 against player 2, best of three
+//   cpu       player 1 against a CPU (both fighters, stage and level picked), best of three
 //   attract   the title screen's demo: short CPU vs CPU clips; any key goes back
 (function () {
   var C = FG.C;
@@ -19,10 +20,12 @@
   FightScene.prototype = Object.create(Phaser.Scene.prototype);
   FightScene.prototype.constructor = FightScene;
 
-  // data: { mode, p1, p2, stage, arcade } (arcade: the run, see FG.arcadeStart).
+  // data: { mode, p1, p2, stage, arcade, level } (arcade: the run, see FG.arcadeRun;
+  // level: the CPU's level in VS CPU).
   FightScene.prototype.init = function (data) {
     data = data || {};
     this.mode = data.mode || 'training';
+    this.level = data.level || null;
     this.arcade = data.arcade || null;
     this.clip = data.clip || 0;
     var roster = FG.ROSTER;
@@ -48,6 +51,7 @@
     this.ai = [null, null];
     var seed = Math.floor(Math.random() * 100000);
     if (this.mode === 'arcade') this.ai[1] = new FG.AI(this.cpuLevel(), seed);
+    if (this.mode === 'cpu') this.ai[1] = new FG.AI(this.level || FG.settings.difficulty, seed);
     if (this.mode === 'attract') { this.ai[0] = new FG.AI('hard', seed); this.ai[1] = new FG.AI('hard', seed + 1); }
     // Rounds: best of three with a timer, outside training.
     this.rounds = this.mode === 'training' ? null : new FG.Rounds({ seconds: this.mode === 'attract' ? 60 : FG.settings.time, toWin: 2 });
@@ -101,6 +105,7 @@
     opts = opts || {};
     this.match = new FG.Match(FG.fighterById(this.ids.p1), FG.fighterById(this.ids.p2));
     this.match.autoReset = false; // K.O. shows the win screen instead
+    this.match.fighters[1].alt = this.ids.p1 === this.ids.p2; // a mirror match: player 2 in other colours
     this.match.reset(this.training.startPos);
     this.effects = new FG.Effects();
     this.impact = null;
@@ -209,12 +214,14 @@
 
   // --- Rounds (arcade, versus, attract) -------------------------------------------
 
-  // How hard the CPU fights: the OPTIONS setting, a notch easier for the first
-  // two arcade opponents.
+  // How hard the arcade CPU fights: it gets harder with every fight, from EASY up to
+  // one level above the OPTIONS setting by the last fights.
   FightScene.prototype.cpuLevel = function () {
-    var order = FG.AI_ORDER, base = order.indexOf(FG.settings.difficulty);
-    if (this.arcade && this.arcade.index < 2) base = Math.max(0, base - 1);
-    return order[Math.max(0, base)];
+    return FG.arcadeLevel(this.arcade ? this.arcade.index : 0, this.arcade ? this.arcade.ladder.length : 1);
+  };
+  FG.arcadeLevel = function (index, count) {
+    var order = FG.AI_ORDER, top = Math.min(order.length - 1, Math.max(0, order.indexOf(FG.settings.difficulty)) + 1);
+    return order[Math.min(top, Math.floor(index * (top + 1) / Math.max(1, count)))];
   };
 
   // ROUND n (or FINAL ROUND), READY, FIGHT.
@@ -357,7 +364,7 @@
   FightScene.prototype.pauseItems = function () {
     var self = this;
     var items = [{ label: 'RESUME', value: function () { return ''; }, change: function () { self.menu.setOpen(false); } }];
-    if (this.mode === 'versus') items.push({ label: 'RESTART MATCH', value: function () { return ''; }, change: function () { self.menu.setOpen(false); self.rematch(); } });
+    if (this.mode === 'versus' || this.mode === 'cpu') items.push({ label: 'RESTART MATCH', value: function () { return ''; }, change: function () { self.menu.setOpen(false); self.rematch(); } });
     items.push({ label: 'EASY COMBOS', value: function () { return FG.settings.easyCombos ? 'ON' : 'OFF'; }, change: function () { FG.settings.easyCombos = !FG.settings.easyCombos; FG.saveSettings(); } });
     items.push({ label: 'SOUND', value: function () { return FG.Sfx.muted ? 'OFF' : 'ON'; }, change: function () { FG.Sfx.muted = !FG.Sfx.muted; FG.settings.sound = !FG.Sfx.muted; FG.saveSettings(); } });
     items.push({ label: 'CHARACTER SELECT', value: function () { return ''; }, change: function () { self.toSelect(); } });
@@ -385,13 +392,13 @@
     var run = this.arcade;
     run.index++;
     if (run.index >= run.ladder.length) { this.scene.start('ending', run); return; }
-    this.scene.start('fight', FG.arcadeFight(run));
+    this.scene.start('ladder', run);
   };
 
   // Arcade: lost the match. Continue (same opponent) or game over.
   FightScene.prototype.continueArcade = function () {
     this.arcade.continues++;
-    this.scene.start('fight', FG.arcadeFight(this.arcade));
+    this.scene.start('ladder', this.arcade);
   };
 
   // Win screen: the winner's victory animation and a random victory line.
@@ -463,7 +470,8 @@
     }
     var positions = ['center', 'left', 'right'], posLabel = { center: 'CENTER', left: 'LEFT WALL', right: 'RIGHT WALL' };
     return [
-      { label: 'PLAYER 2', value: function () { return t.p2Human ? 'HUMAN' : 'DUMMY'; }, change: function () { t.p2Human = !t.p2Human; } },
+      { label: 'PLAYER 2', value: function () { return t.p2Cpu ? 'CPU ' + FG.AI_LEVELS[t.p2Cpu].name : t.p2Human ? 'HUMAN' : 'DUMMY'; },
+        change: function (delta) { self.setP2(delta || 1); } },
       dummyItem('stance', 'DUMMY STANCE'),
       dummyItem('action', 'DUMMY ACTION'),
       dummyItem('recovery', 'DUMMY KNOCKDOWN'),
@@ -487,6 +495,16 @@
       { label: 'RESET (R)', value: function () { return ''; }, change: function () { self.newMatch(); self.menu.setOpen(false); } },
       { label: 'CLOSE (ESC)', value: function () { return ''; }, change: function () { self.menu.setOpen(false); } }
     ];
+  };
+
+  // Training: player 2 is the dummy, a second human, or the CPU at any level.
+  FightScene.prototype.setP2 = function (delta) {
+    var t = this.training, opts = ['dummy', 'human'].concat(FG.AI_ORDER);
+    var cur = t.p2Cpu || (t.p2Human ? 'human' : 'dummy');
+    var v = opts[(opts.indexOf(cur) + delta + opts.length) % opts.length];
+    t.p2Human = v === 'human';
+    t.p2Cpu = v === 'human' || v === 'dummy' ? null : v;
+    this.ai[1] = t.p2Cpu ? new FG.AI(t.p2Cpu, Math.floor(Math.random() * 100000)) : null;
   };
 
   // Clickable on-screen buttons: MENU and RESET.
@@ -685,6 +703,8 @@
     if (this.cutinCool > 0) this.cutinCool--;
     var raw1 = this.inputFor(0), raw2 = this.inputFor(1);
     TAPS = {}; // taps since the last tick have been read
+    // The PROFESSOR just learned one of your moves: say so over its head.
+    for (var ai = 0; ai < 2; ai++) if (this.ai[ai] && this.ai[ai].noticed) { f[ai]._tag = { text: 'READ: ' + this.ai[ai].noticed, t: 100 }; this.ai[ai].noticed = null; }
     if (this.finishWin || this.finisher) {
       var ffi = this.forceInput && this.forceInput(this.tickCount); // tests drive the command too
       if (ffi) { raw1 = ffi[0] || raw1; raw2 = ffi[1] || raw2; }
@@ -1049,9 +1069,11 @@
     switch (this.mode) {
       case 'arcade': return 'ARCADE   ' + (this.arcade.index + 1) + '/' + this.arcade.ladder.length + '   CPU ' + FG.AI_LEVELS[this.ai[1].level].name;
       case 'versus': return 'VERSUS';
+      case 'cpu': return 'VS CPU   ' + FG.AI_LEVELS[this.ai[1].level].name;
       case 'attract': return this.tickCount % 60 < 40 ? 'DEMO PLAY   PRESS ENTER' : 'DEMO PLAY';
     }
     if (this.trials.active) return 'TRAINING   COMBO TRIALS';
+    if (t.p2Cpu) return 'TRAINING   P2: CPU ' + FG.AI_LEVELS[t.p2Cpu].name;
     return 'TRAINING   P2: ' + (t.p2Human ? 'HUMAN' : this.dummy.label('stance') + (this.dummy.get('action') !== 'none' ? ' + ' + this.dummy.label('action') : ''));
   };
 

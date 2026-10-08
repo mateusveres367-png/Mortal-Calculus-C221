@@ -1261,13 +1261,33 @@ defs.forEach(function (d) {
     }
     return { wins: w, ends: ends, n: defs.length * 6, blocks: blocks, combo: combo };
   }
-  var hn = series('hard', 'normal'), ne = series('normal', 'easy'), hh = series('hard', 'hard');
+  var hn = series('hard', 'normal'), ne = series('normal', 'easy'), hh = series('hard', 'hard'), ph = series('professor', 'hard');
+  check('professor beats hard more often than not', ph.wins[0] > ph.wins[1], ph.wins);
   check('AI fights always end in a K.O.', hn.ends === hn.n && ne.ends === ne.n && hh.ends === hh.n, [hn.ends, ne.ends, hh.ends]);
   check('hard beats normal most of the time', hn.wins[0] >= hn.n * 0.65, hn.wins);
   check('normal beats easy most of the time', ne.wins[0] >= ne.n * 0.65, ne.wins);
   check('hard AI guards a lot', hh.blocks[0] > 40 && hh.blocks[1] > 40, hh.blocks);
   check('hard AI lands real combos', Math.max(hh.combo[0], hh.combo[1]) >= 5, hh.combo);
   check('every level is defined', FG.AI_ORDER.every(function (l) { return !!FG.AI_LEVELS[l]; }));
+  check('four levels: easy, normal, hard, professor', FG.AI_ORDER.join() === 'easy,normal,hard,professor');
+  // The PROFESSOR learns a repeated move: it stops landing once it's been seen a few times.
+  function repeatHeavy(level) {
+    var m = new FG.Match(S, FG.fighterById('lopez')), ai = new FG.AI(level, 5), res = [], last = -99;
+    m.step([raw({}), raw({})]);
+    m.fighters[0].x = 480; m.fighters[1].x = 525;
+    for (var i = 0; i < 60 * 60; i++) {
+      var f = m.fighters, r1 = raw({});
+      if (f[0].actionable && i - last > 70) { if (Math.abs(f[0].x - f[1].x) > 55) r1 = raw({ right: true }); else { r1 = raw({ h: true }); last = i; res.push('-'); } }
+      m.step([r1, ai.input(f[1], f[0], m)]);
+      m.events.forEach(function (e) { if (e.attacker === 0 && e.move && e.move.id === 'heavy' && e.type === 'hit') res[res.length - 1] = 'H'; });
+      f[0].health = S.health; f[1].health = f[1].def.health;
+    }
+    return { res: res, ai: ai };
+  }
+  var prof = repeatHeavy('professor'), late = prof.res.slice(-12).filter(function (x) { return x === 'H'; }).length;
+  check('professor learns a repeated move', prof.ai.learned.heavy && prof.ai.noticed === S.moves.heavy.label, prof.ai.noticed);
+  check('a learned move stops landing', late <= 2, prof.res.join(''));
+  check('hard does not read habits', !Object.keys(repeatHeavy('hard').ai.learned).length);
   // The same CPU keeps fighting into the next round (a new match).
   var ai = new FG.AI('normal', 3), acted = 0;
   [0, 1].forEach(function (round) {

@@ -1,5 +1,6 @@
 // Character select, with pixel portraits of every fighter in roster order.
-//   arcade:   player 1 picks; the CPU ladder is everyone else (PEDERSEN last)
+//   arcade:   player 1 picks; the CPU ladder is all eight (PEDERSEN last)
+//   cpu:      VS CPU: pick your fighter, then the CPU's
 //   versus:   both players pick at the same time, each with their own cursor
 //             (P1: WASD + J, K to undo; P2: arrows + NUM1 or ',', NUM2 or '.' to undo)
 //   training: pick your fighter, then the opponent
@@ -37,7 +38,7 @@
     for (var y = 0; y < C.VIEW_H; y += 8) bg.lineBetween(0, y, C.VIEW_W, y);
     bg.fillStyle(0x000000, 0.5); bg.fillRect(0, 0, C.VIEW_W, 30);
 
-    var title = { arcade: 'ARCADE', versus: 'VERSUS', training: 'TRAINING' }[this.mode];
+    var title = { arcade: 'ARCADE', versus: 'VERSUS', training: 'TRAINING', cpu: 'VS CPU' }[this.mode];
     FG.text(this, C.VIEW_W / 2, 7, 'CHOOSE YOUR FIGHTER', 'y', 2).setOrigin(0.5, 0);
     FG.text(this, 8, 10, title, 'c');
     this.stepText = FG.text(this, C.VIEW_W / 2, 36, '', 'c').setOrigin(0.5, 0);
@@ -64,7 +65,7 @@
       (function (idx) {
         zone.on('pointerdown', function () {
           FG.Sfx.unlock();
-          var side = self.mode === 'training' ? self.step : 0;
+          var side = self.twoStep() ? self.step : 0;
           if (self.cursor[side] === idx) self.confirm(side); else { self.cursor[side] = idx; FG.Sfx.ui('move'); self.refresh(); }
         });
       })(i);
@@ -107,7 +108,7 @@
       else if (code === 'Enter') { side = this.chosen[0] ? 1 : 0; act = 'ok'; }
       else return;
     } else {
-      side = this.mode === 'training' ? this.step : 0;
+      side = this.twoStep() ? this.step : 0;
       act = P1KEYS[code] || P2KEYS[code] || (code === 'Enter' ? 'ok' : null);
       if (!act) return;
     }
@@ -128,7 +129,7 @@
     if (this.chosen[side] && this.mode === 'versus') return;
     FG.Sfx.ui('confirm');
     this.chosen[side] = FG.ROSTER[this.cursor[side]].id;
-    if (this.mode === 'training' && side === 0) { this.step = 1; this.refresh(); return; }
+    if (this.twoStep() && side === 0) { this.step = 1; this.refresh(); return; }
     if (this.mode === 'versus' && !(this.chosen[0] && this.chosen[1])) { this.refresh(); return; }
     this.refresh();
     this.leaving = true;
@@ -138,16 +139,16 @@
 
   SelectScene.prototype.next = function () {
     if (this.mode === 'arcade') {
-      this.scene.start('fight', FG.arcadeStart(this.chosen[0]));
+      this.scene.start('ladder', FG.arcadeRun(this.chosen[0]));
       return;
     }
-    this.scene.start('stage', { mode: this.mode, p1: this.chosen[0], p2: this.chosen[1], stage: this.prev.stage });
+    this.scene.start('stage', { mode: this.mode, p1: this.chosen[0], p2: this.chosen[1], stage: this.prev.stage, level: this.prev.level });
   };
 
   // side: which player backs out (null: Esc in versus).
   SelectScene.prototype.back = function (side) {
     FG.Sfx.ui('move');
-    if (this.mode === 'training' && this.step === 1) { this.step = 0; this.chosen[0] = null; this.refresh(); return; }
+    if (this.twoStep() && this.step === 1) { this.step = 0; this.chosen[0] = null; this.refresh(); return; }
     if (this.mode === 'versus' && side !== null && this.chosen[side]) { this.chosen[side] = null; this.refresh(); return; }
     this.leaving = true;
     this.scene.start('title', { menu: true });
@@ -157,7 +158,7 @@
     var m = this.mode, txt, col = 'pf_c';
     if (m === 'arcade') txt = 'PLAYER 1: CHOOSE YOUR FIGHTER';
     else if (m === 'versus') txt = (this.chosen[0] ? 'P1 READY' : 'P1 CHOOSING') + '      ' + (this.chosen[1] ? 'P2 READY' : 'P2 CHOOSING');
-    else { txt = this.step === 0 ? 'PLAYER 1: CHOOSE YOUR FIGHTER' : 'CHOOSE YOUR OPPONENT'; col = this.step === 0 ? 'pf_c' : 'pf_r'; }
+    else { txt = this.step === 0 ? 'PLAYER 1: CHOOSE YOUR FIGHTER' : m === 'cpu' ? "CHOOSE THE CPU'S FIGHTER" : 'CHOOSE YOUR OPPONENT'; col = this.step === 0 ? 'pf_c' : 'pf_r'; }
     this.stepText.setText(txt).setFont(col);
     this.footer.setText(m === 'versus' ? 'P1: WASD + J (K UNDO)    P2: ARROWS + NUM1 OR , (NUM2 OR . UNDO)    ESC BACK' : 'ARROWS MOVE   ENTER CONFIRM   ESC BACK');
     for (var side = 0; side < 2; side++) {
@@ -170,15 +171,18 @@
       p.name.setText(showing ? def.name : '');
       p.sub.setText(showing ? def.archetype + '  ' + def.theme : '');
       for (var k = 0; k < p.moves.length; k++) p.moves[k].setText(showing && def.signature[k] ? def.signature[k] : '');
-      p.tag.setText(!showing ? '' : side === 0 ? 'P1' : m === 'versus' ? 'P2' : 'OPPONENT').setVisible(showing);
-      p.ready.setText(showing && this.chosen[side] && m !== 'training' ? 'READY!' : '');
+      p.tag.setText(!showing ? '' : side === 0 ? 'P1' : m === 'versus' ? 'P2' : m === 'cpu' ? 'CPU' : 'OPPONENT').setVisible(showing);
+      p.ready.setText(showing && this.chosen[side] && !this.twoStep() ? 'READY!' : '');
     }
   };
 
   SelectScene.prototype.showing = function (side) {
     if (side === 0) return true;
-    return this.mode === 'versus' || (this.mode === 'training' && this.step === 1);
+    return this.mode === 'versus' || (this.twoStep() && this.step === 1);
   };
+
+  // Training and VS CPU: one player picks both fighters, one after the other.
+  SelectScene.prototype.twoStep = function () { return this.mode === 'training' || this.mode === 'cpu'; };
 
   SelectScene.prototype.update = function () {
     this.t++;
@@ -222,14 +226,18 @@
     }
   };
 
-  // Arcade: the ladder is everyone else in a shuffled order, with PEDERSEN, the
-  // cover fighter, waiting at the end (unless you are him).
-  FG.arcadeStart = function (p1) {
+  // Arcade: all eight fighters in a row. Everyone else in a shuffled order, then
+  // your own mirror match, then PEDERSEN, the cover fighter, waiting at the end (if
+  // you are him, the mirror match is last).
+  FG.arcadeRun = function (p1) {
     var others = FG.ROSTER.filter(function (d) { return d.id !== p1 && d.id !== 'pedersen'; }).map(function (d) { return d.id; });
     for (var i = others.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), x = others[i]; others[i] = others[j]; others[j] = x; }
+    others.push(p1);
     if (p1 !== 'pedersen' && FG.fighterById('pedersen')) others.push('pedersen');
-    return FG.arcadeFight({ p1: p1, ladder: others, index: 0, continues: 0, started: Date.now() });
+    return { p1: p1, ladder: others, index: 0, continues: 0, started: Date.now() };
   };
+  // Straight into the first fight (skipping the ladder screen).
+  FG.arcadeStart = function (p1) { return FG.arcadeFight(FG.arcadeRun(p1)); };
   // Scene data for the arcade fight at run.index.
   FG.arcadeFight = function (run) {
     var p2 = run.ladder[run.index];

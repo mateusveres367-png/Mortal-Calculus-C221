@@ -12,6 +12,6 @@
     banner: false,
     audio: { noAudio: true }, // sounds are synthesized directly with Web Audio
     scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-    scene: [FG.TitleScene, FG.SelectScene, FG.StageSelectScene, FG.FightScene, FG.EndingScene]
+    scene: [FG.TitleScene, FG.SelectScene, FG.StageSelectScene, FG.LadderScene, FG.FightScene, FG.EndingScene]
   });
 })();

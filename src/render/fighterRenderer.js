@@ -308,12 +308,26 @@
 
   // --- Body ---------------------------------------------------------------------
 
+  // Mirror matches: player 2 wears the same outfit in other colours.
+  function rot(c) { return ((c & 0xff) << 16) | (((c >> 16) & 0xff) << 8) | ((c >> 8) & 0xff); }
+  function altLook(def) {
+    if (def._altLook) return def._altLook;
+    var l = Object.assign({}, def.look);
+    l.top = Object.assign({}, l.top, { color: rot(l.top.color) });
+    if (l.top.patternColor != null) l.top.patternColor = rot(l.top.patternColor);
+    if (l.top.collar != null) l.top.collar = rot(l.top.collar);
+    l.legs = rot(l.legs);
+    if (l.blazer) l.blazer = rot(l.blazer);
+    def._altLook = l;
+    return l;
+  }
+
   // Draw one fighter. opts: { flash: color|null, jitter: px, scale: mult, groundY, noShadow, x }
   FG.drawFighter = function (g, f, opts) {
     var p = f._pose;
     if (!p) return;
     opts = opts || {};
-    var def = f.def, look = def.look, build = look.build;
+    var def = f.def, look = f.alt ? altLook(def) : def.look, build = look.build;
     var depth = 1 - f.z * 0.004;
     var s = def.scale * depth * (opts.scale || 1);
     var dir = f.facing;

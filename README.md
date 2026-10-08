@@ -60,12 +60,22 @@ Open `index.html` directly in a modern browser (double-click it, or drag it into
 
 On the title screen, press `Enter` (or click) for the menu, then up/down and `Enter`:
 
-- **Arcade:** pick your fighter (arrows or WASD, `Enter` or `J`), then fight the CPU ladder.
+- **Arcade:** pick your fighter (arrows or WASD, `Enter` or `J`), then fight all eight in a row (your own mirror match included, PEDERSEN last). The CPU gets harder with every fight; a ladder screen before each one shows the tower and the next opponent's line for you. Lose and CONTINUE? counts down; win them all for the ending and your fighter's victory line.
+- **VS CPU:** pick your fighter, then the CPU's, then a stage; up/down on stage select sets the CPU's level.
 - **Versus:** both players pick at once: player 1 with `WASD` and `J` (`K` to undo), player 2 with the arrows and `Numpad 1` or `,` (`Numpad 2` or `.` to undo). Then pick a stage.
-- **Training:** pick your fighter, then the opponent, then a stage.
+- **Training:** pick your fighter, then the opponent, then a stage. In the training menu, PLAYER 2 can be the dummy, a second human, or the CPU at any level.
 - **Options:** CPU difficulty, round time, sound and Easy Combos (left/right to change).
 
-`Esc` goes back a screen. In a fight, `Esc` pauses (arcade and versus) or opens the training menu. After a match: `Enter` for a rematch (or the next arcade fight), `Esc` for character select.
+**CPU levels.** The CPU presses real inputs and plays by the same rules; it only sees what you do after a reaction delay. Each fighter plays to their style (LEE rushes in, LOPEZ waits and punishes, MIYASHIRO keeps distance, RAMOS runs in for grabs, DALSASS feints, PEDERSEN swings big through your hits, CHAI sidesteps and counters, BRINKHUS plays solid fundamentals), taunts when there's room, and uses its finisher when it wins.
+
+| Level | How it plays |
+| --- | --- |
+| Easy | slow reactions, rarely blocks, short combos |
+| Normal | blocks most highs and mids, punishes some whiffs, mid-length combos |
+| Hard | blocks lows too, sidesteps, punishes whiffs, full combos and wall combos |
+| Professor | Hard, and it reads your habits: repeat a move and it learns it (READ: over its head), then sees it coming, guards it right, beats it to the punch or punishes it |
+
+`Esc` goes back a screen. In a fight, `Esc` pauses (arcade, VS CPU and versus) or opens the training menu. After a match: `Enter` for a rematch (or the next arcade fight), `Esc` for character select.
 
 ## Controls
 

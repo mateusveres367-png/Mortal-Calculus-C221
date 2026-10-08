@@ -24,7 +24,8 @@ try { playwright = require('playwright'); } catch (e) {
   var title = await page.title();
   await page.screenshot({ path: path.join(out, '0-title.png') });
   await page.keyboard.press('Enter');      // PRESS ENTER: the main menu
-  await page.keyboard.press('ArrowDown');  // ARCADE > VERSUS
+  await page.keyboard.press('ArrowDown');  // ARCADE > VS CPU
+  await page.keyboard.press('ArrowDown');  // > VERSUS
   await page.keyboard.press('ArrowDown');  // > TRAINING
   await page.screenshot({ path: path.join(out, '0-menu.png') });
   await page.keyboard.press('Enter');
@@ -225,15 +226,48 @@ try { playwright = require('playwright'); } catch (e) {
   await page.waitForFunction(function () { return window.FG_TITLE && window.FG_TITLE.sys.isActive(); }, null, { timeout: 15000 });
   var attractOk = true;
 
+  // VS CPU: pick both fighters, a stage and the CPU's level (up: one level harder).
+  await page.evaluate(function () { window.FG_TITLE.go('cpu'); });
+  await page.waitForFunction(function () { return window.FG_SELECT && window.FG_SELECT.sys.isActive() && window.FG_SELECT.mode === 'cpu' && window.FG_SELECT.t > 5; }, null, { timeout: 15000 });
+  await page.keyboard.press('Enter');
+  await page.keyboard.press('Enter');
+  await page.waitForFunction(function () { return window.FG_STAGE && window.FG_STAGE.sys.isActive() && window.FG_STAGE.t > 5; }, null, { timeout: 15000 });
+  var levelBefore = await page.evaluate(function () { return window.FG_STAGE.level; });
+  await page.keyboard.press('ArrowUp');
+  var levelPicked = await page.evaluate(function () { return window.FG_STAGE.level; });
+  await page.keyboard.press('Enter');
+  await page.waitForFunction(function () { var s = window.FG_SCENE; return s && s.sys.isActive() && s.mode === 'cpu'; }, null, { timeout: 15000 });
+  var cpu = await page.evaluate(function (before) {
+    var s = window.FG_SCENE, L = FG.AI_ORDER;
+    return { level: s.ai[1] && s.ai[1].level, want: L[(L.indexOf(before) + 1) % L.length], rounds: !!s.rounds };
+  }, levelBefore);
+  cpu.before = levelBefore; cpu.picked = levelPicked;
+  var cpuOk = cpu.level === cpu.want && cpu.rounds;
+  await page.evaluate(function (before) { FG.settings.difficulty = before; FG.saveSettings(); return true; }, levelBefore);
+  // Arcade: all eight in a row, with the ladder screen before each fight.
+  var ladder = await page.evaluate(function () {
+    var run = FG.arcadeRun('brinkhus');
+    window.FG_SCENE.scene.start('ladder', run);
+    return { n: run.ladder.length, mirror: run.ladder.indexOf('brinkhus') >= 0, last: run.ladder[run.ladder.length - 1],
+      levels: run.ladder.map(function (id, i) { return FG.arcadeLevel(i, run.ladder.length); }) };
+  });
+  await page.waitForFunction(function () { return window.FG_LADDER && window.FG_LADDER.sys.isActive() && window.FG_LADDER.t > 10; }, null, { timeout: 15000 });
+  await page.screenshot({ path: path.join(out, '10-ladder.png') });
+  await page.keyboard.press('Enter');
+  await page.waitForFunction(function () { var s = window.FG_SCENE; return s && s.sys.isActive() && s.mode === 'arcade'; }, null, { timeout: 15000 });
+  var L4 = await page.evaluate(function () { return FG.AI_ORDER; });
+  var ladderOk = ladder.n === 8 && ladder.mirror && ladder.last === 'pedersen' &&
+    ladder.levels.every(function (l, i) { return i === 0 || L4.indexOf(l) >= L4.indexOf(ladder.levels[i - 1]); }) && ladder.levels[0] === 'easy';
+
   // The arcade ending.
   await page.evaluate(function () { window.FG_TITLE.scene.start('ending', { p1: 'pedersen', ladder: ['a', 'b'], continues: 1, started: Date.now() - 65000 }); });
   await page.waitForFunction(function () { return window.FG_ENDING && window.FG_ENDING.sys.isActive() && window.FG_ENDING.t > 30; }, null, { timeout: 15000 });
   await page.screenshot({ path: path.join(out, '10-ending.png') });
 
   await browser.close();
-  console.log(JSON.stringify({ title: title, matchup: matchup, renderer: renderer, hits: hits, counter: counterText, p1: p1, menuOk: menuOk, resetX: resetX, trial: trial, ko: ko, stage: stagePick, arcade: arcade, vsPanel: vsPanel, cutFreeze: cutFreeze, errors: errors }, null, 1));
+  console.log(JSON.stringify({ title: title, matchup: matchup, renderer: renderer, hits: hits, counter: counterText, p1: p1, menuOk: menuOk, resetX: resetX, trial: trial, ko: ko, stage: stagePick, arcade: arcade, vsPanel: vsPanel, cutFreeze: cutFreeze, cpu: cpu, ladder: ladder, errors: errors }, null, 1));
   var ok = !errors.length && title === 'Mortal Calculus: C221' && matchup === expectMatchup && hits.join() === expectHits && counterText === String(hits.length) &&
-    p1.last && p1.last.kind === 'BLOCK' && p1.last.adv === p1.jabBlock && menuOk && resetOk && trialOk && koOk && stagePick === 'classroom' && arcadeOk && attractOk && vsPanel && cutFreeze;
+    p1.last && p1.last.kind === 'BLOCK' && p1.last.adv === p1.jabBlock && menuOk && resetOk && trialOk && koOk && stagePick === 'classroom' && arcadeOk && attractOk && vsPanel && cutFreeze && cpuOk && ladderOk;
   console.log(ok ? 'SMOKE OK' : 'SMOKE FAILED');
   if (!ok) process.exit(1);
 })().catch(function (e) { console.error(e); process.exit(1); });

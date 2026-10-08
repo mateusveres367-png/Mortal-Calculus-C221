@@ -3,12 +3,12 @@
 // seven fighters in silhouette behind him (each catching a flash of rim light in
 // their colour), a chrome MORTAL CALCULUS logo that slams in with a red C221 stamp,
 // PRESS START, CRT scanlines and a synth-rock loop. Press Enter for the main menu:
-// ARCADE, VERSUS, TRAINING, OPTIONS. Left alone for 15 seconds, it runs the attract
+// ARCADE, VS CPU, VERSUS, TRAINING, OPTIONS. Left alone for 15 seconds, it runs the attract
 // demo (CPU vs CPU clips), then comes back.
 (function () {
   var C = FG.C, W = C.VIEW_W, H = C.VIEW_H;
   var IDLE_DEMO = 15 * 60; // frames on the title before the demo starts
-  var BOX = { x: 452, y: 150, w: 170, h: 108 };
+  var BOX = { x: 452, y: 150, w: 170, h: 126 };
   var OPTION_ROWS = 5;
   var HY = 214;            // horizon
   var SUN = { x: 330, y: HY + 6, r: 74 };
@@ -44,7 +44,8 @@
   ];
 
   var MENU = [
-    { id: 'arcade', label: 'ARCADE', help: 'FIGHT THROUGH THE WHOLE DEPARTMENT' },
+    { id: 'arcade', label: 'ARCADE', help: 'FIGHT ALL EIGHT IN A ROW. IT GETS HARDER EVERY FIGHT' },
+    { id: 'cpu', label: 'VS CPU', help: 'YOU AGAINST THE COMPUTER: BOTH FIGHTERS, A STAGE, A LEVEL' },
     { id: 'versus', label: 'VERSUS', help: 'PLAYER 1 VS PLAYER 2, BEST OF THREE' },
     { id: 'training', label: 'TRAINING', help: 'PRACTICE, FRAME DATA AND COMBO TRIALS' },
     { id: 'options', label: 'OPTIONS', help: 'DIFFICULTY, ROUND TIME, SOUND, EASY COMBOS' }

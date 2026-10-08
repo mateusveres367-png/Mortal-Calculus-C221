@@ -1,7 +1,13 @@
 // CPU opponent. Like the training dummy, it produces raw inputs every tick, as a
 // keyboard would; it only sees the match the way a player does, with a reaction
-// delay. Difficulty sets how fast it reacts and how well it guards, punishes,
-// breaks throws and finishes combos.
+// delay, and plays by the same rules. Difficulty sets how fast it reacts and how
+// well it guards, punishes, breaks throws and finishes combos:
+//   EASY       slow reactions, rarely blocks, short combos
+//   NORMAL     blocks most highs and mids, punishes some whiffs, mid-length combos
+//   HARD       blocks lows too, sidesteps, punishes whiffs, full combos and wall combos
+//   PROFESSOR  HARD, and it reads your habits: repeat a move and it learns it,
+//              then sees it coming, guards it correctly and punishes it
+// Each fighter's def.ai gives its style (spacing, favourite moves, tricks).
 //
 //   var ai = new FG.AI('normal', seed);   raw = ai.input(self, opp, match);
 (function () {
@@ -9,11 +15,13 @@
 
   FG.AI_LEVELS = {
     //        react: frames before it sees an attack coming; block/lowRead/punish/combo/...: chances
-    easy:   { name: 'EASY',   react: 22, block: 0.3,  lowRead: 0.25, punish: 0.2,  combo: 0.25, aggression: 0.35, breakThrow: 0.1,  tech: 0.15, sidestep: 0.04, think: [14, 30], tiers: ['easy'] },
-    normal: { name: 'NORMAL', react: 15, block: 0.5,  lowRead: 0.45, punish: 0.45, combo: 0.55, aggression: 0.5,  breakThrow: 0.3,  tech: 0.45, sidestep: 0.08, think: [9, 22],  tiers: ['easy', 'medium'] },
-    hard:   { name: 'HARD',   react: 7,  block: 0.9,  lowRead: 0.85, punish: 0.95, combo: 0.95, aggression: 0.6,  breakThrow: 0.7,  tech: 0.85, sidestep: 0.2,  think: [4, 12],  tiers: ['medium', 'hard'] }
+    easy:      { name: 'EASY',      react: 24, block: 0.2,  lowRead: 0.15, punish: 0.15, combo: 0.3,  aggression: 0.35, breakThrow: 0.1, tech: 0.1,  sidestep: 0.02, think: [16, 32], tiers: ['easy'], taunt: 0.06 },
+    normal:    { name: 'NORMAL',    react: 14, block: 0.8,  lowRead: 0.3,  punish: 0.45, combo: 0.6,  aggression: 0.5,  breakThrow: 0.3, tech: 0.45, sidestep: 0.06, think: [9, 22],  tiers: ['easy', 'medium'], taunt: 0.05 },
+    hard:      { name: 'HARD',      react: 8,  block: 0.92, lowRead: 0.88, punish: 0.95, combo: 0.95, aggression: 0.6,  breakThrow: 0.7, tech: 0.85, sidestep: 0.25, think: [4, 12],  tiers: ['medium', 'hard'], wall: true, taunt: 0.04 },
+    professor: { name: 'PROFESSOR', react: 4,  block: 0.97, lowRead: 0.95, punish: 1,    combo: 1,    aggression: 0.65, breakThrow: 0.9, tech: 0.95, sidestep: 0.3,  think: [2, 8],   tiers: ['medium', 'hard'], wall: true, reads: 3, taunt: 0.04 }
   };
-  FG.AI_ORDER = ['easy', 'normal', 'hard'];
+  FG.AI_ORDER = ['easy', 'normal', 'hard', 'professor'];
+  var HABIT_MEMORY = 10; // the opponent's last attacks the PROFESSOR remembers
 
   function AI(level, seed) {
     this.setLevel(level || 'normal');
@@ -26,7 +34,27 @@
     this.techRoll = null;
     this.breakRoll = null;
     this.nextThink = 0;
+    this.habits = [];        // PROFESSOR: the opponent's recent attacks (move ids)
+    this.learned = {};       // move ids it has learned
+    this.noticed = null;     // the label of a move it just learned (the scene shows it)
   }
+
+  // PROFESSOR: the learned move the opponent uses most.
+  AI.prototype.favourite = function (opp) {
+    var count = {}, best = null, n = 0;
+    for (var i = 0; i < this.habits.length; i++) count[this.habits[i]] = (count[this.habits[i]] || 0) + 1;
+    for (var id in count) if (this.learned[id] && count[id] > n && opp.def.moves[id]) { n = count[id]; best = opp.def.moves[id]; }
+    return n >= 4 ? best : null; // only a real habit
+  };
+
+  // PROFESSOR: has it seen this move often enough to read it?
+  AI.prototype.knows = function (m) {
+    if (!this.L.reads || !m) return false;
+    var n = 0;
+    for (var i = 0; i < this.habits.length; i++) if (this.habits[i] === m.id) n++;
+    if (n >= this.L.reads && !this.learned[m.id]) { this.learned[m.id] = true; this.noticed = m.label; }
+    return n >= this.L.reads;
+  };
 
   AI.prototype.setLevel = function (level) {
     this.level = level;
@@ -80,6 +108,12 @@
       this.wake = null; this.techRoll = null; this.breakRoll = null; this.punishRoll = null;
     }
 
+    // Habits: every attack the opponent starts (the PROFESSOR learns from them).
+    var last = this.seen[this.seen.length - 1];
+    if (attacking(opp) && opp.move && !(last && last.move === opp.move && last.frame <= opp.moveFrame && last.attacking)) {
+      this.habits.push(opp.move.id);
+      if (this.habits.length > HABIT_MEMORY) this.habits.shift();
+    }
     // Perception: what the opponent was doing `react` ticks ago.
     this.seen.push({ attacking: attacking(opp), move: opp.move, frame: opp.moveFrame, state: opp.state });
     if (this.seen.length > 60) this.seen.shift();
@@ -146,6 +180,15 @@
     }
 
     // --- A planned sequence (string, combo, dash in). ----------------------------
+    if (this.script && this.script.queue) {
+      // A queued route (wall combos): each input as soon as it can act again.
+      var qs = this.script;
+      if (qs.qi >= qs.queue.length || (qs.qi > 0 && match.combo[opp.index].hits === 0 && self.actionable) || match.frame - qs.start > 240) this.script = null;
+      else {
+        if (self.state === 'idle' && match.hitstop === 0) return toRaw(qs.queue[qs.qi++], self.facing);
+        return raw;
+      }
+    }
     if (this.script) {
       var sc = this.script, ft = match.frame - sc.start;
       // Give up on a combo that was blocked or whiffed.
@@ -170,10 +213,17 @@
 
     // --- Guarding: an attack is coming (seen with the reaction delay). ---------------
     var threat = seen.attacking && seen.move && seen.frame <= seen.move.startup + seen.move.active - 1 && attacking(opp);
+    // A move the PROFESSOR has learned: it sees it coming at once.
+    var read = attacking(opp) && opp.moveFrame <= opp.move.startup + opp.move.active - 1 && this.knows(opp.move);
+    threat = threat || read;
     if (threat && dist < reach(opp, opp.move) + 40) {
       if (!this.guard || this.guard.move !== opp.move) {
         var m = opp.move, low = m.level === 'low', st = self.def.ai || {};
-        this.guard = {
+        this.guard = read ? {
+          // A learned move: guarded right, or sidestepped if it's slow and linear.
+          move: m, block: true, low: low, read: true,
+          step: !m.tracks && m.startup >= 16 && rnd() < 0.5
+        } : {
           move: m,
           block: rnd() < L.block,
           // Lows need a read; highs can be ducked.
@@ -183,6 +233,13 @@
       }
       var gd = this.guard, st = self.def.ai || {};
       // Style: LOPEZ steps into his Derivative Read parry stance and holds it.
+      if (gd.read) {
+        gd.parry = gd.parry || false; gd.sway = gd.sway || false; gd.armor = gd.armor || false;
+        // ...or beat it to the punch: a slow move it knows gets a counter-hit jab.
+        var jb = self.def.moves.jab;
+        if (gd.counter == null) gd.counter = !opp.move.armor && opp.move.startup - opp.moveFrame > jb.startup + 1 && dist < reach(self, jb) + 6 && rnd() < 0.6;
+        if (gd.counter && self.actionable) { gd.counter = false; gd.block = false; this.startRoute('P', match, self); return toRaw('P', self.facing); }
+      }
       if (gd.parry == null) gd.parry = !!(st.parry && self.def.moves.bH && self.def.moves.bH.parry && rnd() < st.parry * L.block);
       if (gd.parry && self.actionable) {
         gd.parry = false; gd.block = false;
@@ -243,8 +300,25 @@
     var styled = L.combo; // better CPUs play to their style more
     // Spacing styles (MIYASHIRO) backdash out when you get close.
     if (close && st.backdash && rnd() < st.backdash * styled) { this.startScript({ 0: 'B', 2: 'B' }, match, self); return toRaw('B', self.facing); }
+    // Wall combos (HARD and up): with them against the wall, start a wall route.
+    if (close && L.wall && match.wallDistance(opp, self.facing) < 30 && roll < a * 0.6) {
+      var wr = self.def.combos.filter(function (c) { return c.wall && c.queue && L.tiers.indexOf(c.difficulty) >= 0; });
+      if (!wr.length) wr = self.def.combos.filter(function (c) { return c.wall && c.queue; });
+      if (wr.length) {
+        var q = wr[Math.floor(rnd() * wr.length)].queue;
+        this.script = { queue: q, qi: 1, start: match.frame };
+        return toRaw(q[0], self.facing);
+      }
+    }
     if (close && st.close && roll < a * 0.5 * styled) return this.styleAttack(pick(st.close), match, self);
     if (!close && mid && st.pokes && roll < a * 0.45 * styled) return this.styleAttack(pick(st.pokes), match, self);
+    // PROFESSOR: in range of a move it has learned, it waits for it, guard up.
+    if (L.reads && opp.actionable) {
+      var fav = this.favourite(opp);
+      if (fav && dist < reach(opp, fav) + 12 && roll < 0.55) { this.walk = { dir: 'back', until: match.frame + 8 }; self.holdGuard = true; raw[backKey] = true; raw.down = fav.level === 'low'; return raw; }
+    }
+    // A taunt when there's room (they're down, or far away).
+    if ((opp.state === 'down' || dist > 200) && rnd() < L.taunt && self.def.moves.taunt && dist > 110) return toRaw('T', self.facing);
     if (opp.state === 'down' && dist < 90) {
       // They're down: a low ground hit, or wait for them to get up.
       if (moves.low && moves.low.otg && dist < reach(self, moves.low) + 6 && roll < 0.5) return toRaw('D+K', self.facing);
