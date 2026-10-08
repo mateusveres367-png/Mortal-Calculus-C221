@@ -78,6 +78,11 @@
         this.flashes.push({ x: x, y: y, r: 18, life: 9, max: 9, color: 0xffffff, star: true });
         this.flashes.push({ x: x, y: y, r: 14, life: 10, max: 10, color: 0x5fd7ff, ring: true });
         return;
+      case 'ultstart': // an ultimate starting: two big rings in the fighter's colour
+        this.flashes.push({ x: x, y: y, r: 60, life: 22, max: 22, color: ev.color || 0xffffff, ring: true, thick: 4 });
+        this.flashes.push({ x: x, y: y, r: 34, life: 14, max: 14, color: 0xffffff, ring: true, thick: 3 });
+        this.flashes.push({ x: x, y: y, r: 22, life: 10, max: 10, color: 0xffffff, star: true });
+        return;
       case 'enhance': // an enhanced special: a ring and sparks in the fighter's colour
         this.flashes.push({ x: x, y: y, r: 30, life: 14, max: 14, color: ev.color || 0xffffff, ring: true, thick: 3 });
         this.flashes.push({ x: x, y: y, r: 16, life: 8, max: 8, color: 0xffffff, star: true });
@@ -465,6 +470,12 @@
       case 'feint':
         burst(0.05, 1800, 2, 0.1, 'bandpass');
         break;
+      case 'ultstart': // an ultimate: a deep charge-up and a bright sting
+        thump(0.35, 140, 40, 0.6);
+        sweep(0.4, 120, 1800, 0.08, 'sawtooth');
+        sweep(0.5, 240, 3600, 0.04, 'square');
+        burst(0.3, 6000, 2, 0.12, 'bandpass');
+        break;
       case 'enhance': // an enhanced special: a bright rising surge
         sweep(0.18, 300, 1500, 0.07, 'sawtooth');
         sweep(0.24, 600, 2400, 0.04, 'square');
@@ -497,6 +508,30 @@
     sweep(0.16, 220, 1400, 0.08, 'sawtooth');
     sweep(0.3, 1320, 1240, 0.06, 'square');
     thump(0.2, 160, 50, 0.4);
+  };
+
+  // Chalk on a board: a few short scratches (DIAGRAM VIEW, proofs being written).
+  Sfx.chalk = function () {
+    if (!Sfx.ctx || Sfx.muted) return;
+    burst(0.07, 5200, 6, 0.16, 'bandpass');
+    burst(0.05, 7400, 8, 0.1, 'bandpass');
+    sweep(0.08, 3200, 2600, 0.015, 'square');
+  };
+
+  // Breaking glass: a crack, then tinkles.
+  Sfx.glass = function () {
+    if (!Sfx.ctx || Sfx.muted) return;
+    burst(0.22, 4800, 1.2, 0.5, 'highpass');
+    thump(0.2, 220, 60, 0.6);
+    [3100, 4200, 5300, 3700].forEach(function (f, i) { sweep(0.18 + i * 0.05, f, f * 0.96, 0.03, 'triangle'); });
+  };
+
+  // A big boom (LEE's chalk-dust explosion).
+  Sfx.boom = function () {
+    if (!Sfx.ctx || Sfx.muted) return;
+    thump(0.6, 120, 30, 0.9);
+    burst(0.6, 900, 0.5, 0.5, 'lowpass');
+    burst(0.3, 3000, 1, 0.2, 'bandpass');
   };
 
   // Car alarm: a two-tone whoop (high: which half of the cycle).

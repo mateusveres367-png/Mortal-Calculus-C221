@@ -111,6 +111,8 @@
     cutIn: { a: 0xe2702a, b: 0xf6ecd0 }, // cut-in colours: main and accent
     // KO finisher: after winning the final round, this input within 2 seconds of the K.O.
     finisher: { name: 'Q.E.D.', input: 'B, F, K' },
+    // Ultimate (D, D/F, F + P+K+H, three bars): a cinematic in src/render/ultimates.js.
+    ultimate: { name: 'CIRCLE THEOREM', text: 'a full 360-degree sidestep around them with a kick from every sixth of the circle, the circle and its radius drawn behind, then an arc kick', from: 'fK', len: 250, hits: [44, 64, 84, 104, 124, 182], end: { gap: 84, down: true } },
     name: 'CHAI', archetype: 'TECHNICAL', theme: 'GEOMETRY',
     style: 'TAEKWONDO', signatureMechanic: 'KICK CHAIN',
     signatureText: 'once a kick connects, K or H into a different kick cancels it, up to four kicks in a row; and the best sidestep in the game',

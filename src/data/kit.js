@@ -45,6 +45,7 @@
     if (def.stringH) addStringHeavy(def);
     for (var key in def.moves) prepareMove(def, key, def.moves[key]);
     for (key in def.moves) if (def.moves[key].ex) addEnhanced(def, key, def.moves[key]);
+    if (def.ultimate) addUltimate(def);
     FG.ROSTER.push(def);
     FG.ROSTER.sort(function (a, b) { return a.order - b.order; });
     return def;
@@ -113,6 +114,32 @@
       m.anim = out;
     }
     def.moves[m.id] = m;
+  }
+
+  // Ultimates: def.ultimate { name, from, len, hits, weights, end, counter } becomes
+  // moves.ultimate, the opening strike (or grab, or counter stance) built from the move
+  // it names. It costs all three bars (down, down-forward, forward + P+K+H); if it
+  // connects the match plays the cinematic (match.js), and blocked or whiffed it
+  // leaves them open for ULT_EXTRA_RECOVERY frames more.
+  function addUltimate(def) {
+    var u = def.ultimate, base = def.moves[u.from], extra = FG.C.ULT_EXTRA_RECOVERY;
+    var m = Object.assign({}, base, {
+      id: 'ultimate', name: 'Ultimate', label: u.name, cmd: 'D,D/F,F+P+K+H', ultimate: true, strength: 'heavy',
+      cancels: null, ex: null, feint: false, charge: null, hold: null, kick: false, multi: 0, evade: null,
+      recovery: base.recovery + extra, block: (base.block || 0) - extra
+    });
+    if (u.counter) {
+      // A counter stance: any strike that touches it starts the cinematic.
+      m.parry = { from: 4, to: u.window || 44, levels: ['high', 'mid', 'low'], ult: true };
+      m.startup = m.parry.to; m.active = 1; m.recovery = 20 + extra;
+      m.box = null;
+    }
+    m.total = m.startup + m.active - 1 + m.recovery;
+    // The recovery plays out slower.
+    var end = base.startup + base.active - 1;
+    m.anim = base.anim.map(function (k) { return [k[0] > end ? k[0] + extra : k[0], k[1]]; });
+    if (u.counter) m.anim = [[1, base.anim[0][1]], [4, u.pose || 'parry'], [m.parry.to, u.pose || 'parry'], [m.total, 'idle']];
+    def.moves.ultimate = m;
   }
 
   function prepareMove(def, key, m) {

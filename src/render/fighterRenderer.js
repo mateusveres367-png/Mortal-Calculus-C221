@@ -322,7 +322,7 @@
     return l;
   }
 
-  // Draw one fighter. opts: { flash: color|null, jitter: px, scale: mult, groundY, noShadow, x }
+  // Draw one fighter. opts: { flash: color|null, jitter: px, scale: mult, groundY, noShadow, x, y (height), facing }
   FG.drawFighter = function (g, f, opts) {
     var p = f._pose;
     if (!p) return;
@@ -330,10 +330,10 @@
     var def = f.def, look = f.alt ? altLook(def) : def.look, build = look.build;
     var depth = 1 - f.z * 0.004;
     var s = def.scale * depth * (opts.scale || 1);
-    var dir = f.facing;
+    var dir = opts.facing || f.facing;
     var ox = Math.round((opts.x != null ? opts.x : f.x) + (opts.jitter || 0));
     var oy = Math.round((opts.groundY != null ? opts.groundY : C.GROUND_Y) - f.z * 0.5);
-    var lift = f.y * (opts.scale || 1);
+    var lift = (opts.y != null ? opts.y : f.y) * (opts.scale || 1);
     // Shoulder and hip rotation (motion layer): the back shoulder and hip swing
     // forward as the body turns into a strike. Joints 11-14 are the front / back
     // shoulder and front / back hip.

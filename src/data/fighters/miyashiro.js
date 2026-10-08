@@ -108,6 +108,8 @@
     cutIn: { a: 0x2a5ad8, b: 0xc8ccd8 }, // cut-in colours: main and accent
     // KO finisher: after winning the final round, this input within 2 seconds of the K.O.
     finisher: { name: 'CALCULATED', input: 'D, F, K' },
+    // Ultimate (D, D/F, F + P+K+H, three bars): a cinematic in src/render/ultimates.js.
+    ultimate: { name: 'IMAGINARY UNIT', text: 'he vanishes, appears behind them and combos; two quarter turns and they\'re upside down: i squared = -1', from: 'dashP', len: 236, hits: [52, 66, 80, 150], end: { gap: 70, down: true, swap: true } },
     name: 'MIYASHIRO', archetype: 'SPACING', theme: 'ALGEBRA 2',
     style: 'KARATE', signatureMechanic: 'CALCULATED',
     signatureText: 'when the opponent whiffs, his next hit does bonus damage and he glows until he lands it; Domain Restriction (B+H) is a step-back kick that retreats while it attacks',

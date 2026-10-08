@@ -116,6 +116,8 @@
     cutIn: { a: 0x2fc4c0, b: 0xffffff }, // cut-in colours: main and accent
     // KO finisher: after winning the final round, this input within 2 seconds of the K.O.
     finisher: { name: 'POP QUIZ', input: 'D, D, P' },
+    // Ultimate (D, D/F, F + P+K+H, three bars): a cinematic in src/render/ultimates.js.
+    ultimate: { name: 'TWO-COLUMN PROOF', text: 'the screen splits into STATEMENTS | REASONS; every hit proves a line, and the last one stamps the conclusion', from: 'heavy', len: 262, hits: [40, 72, 104, 136, 196], end: { gap: 76, down: true } },
     name: 'DALSASS', archetype: 'TRICKY', theme: 'GEOMETRY PROOFS',
     style: 'TRICKSTER', signatureMechanic: 'SIMILAR TRIANGLES',
     signatureText: 'a second stance (B+P) with its own moves; tap back during any attack\'s startup to feint it; Assume the Contrary (B+K) sways out of highs and mids, then P counters with The Converse',

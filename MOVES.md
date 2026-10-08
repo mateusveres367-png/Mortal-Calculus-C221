@@ -2,7 +2,7 @@
 
 Generated from the fighter data by `node tools/movelist.js`; don't edit by hand. Identity, looks and lines are in [`ROSTER.md`](ROSTER.md).
 
-**Grade meter:** three bars, C, B and A, under your health bar. They fill as you land hits, block and take damage, a little faster while you're behind, and carry over between rounds. **Enhanced specials** cost one bar: press P+K during the startup of a special that has one (listed under each fighter) and it powers up, the fighter flashing in their colour.
+**Grade meter:** three bars, C, B and A, under your health bar. They fill as you land hits, block and take damage, a little faster while you're behind, and carry over between rounds. **Enhanced specials** cost one bar: press P+K during the startup of a special that has one (listed under each fighter) and it powers up, the fighter flashing in their colour. **Ultimates** cost all three: down, down-forward, forward + P+K+H (also straight out of a move that hits). If it connects, a cinematic plays (a cut-in, slow motion and DIAGRAM VIEW freeze frames) and takes about a third of their health; blocked or whiffed, it leaves you wide open.
 
 Frame data: **i** is startup (the frame the move hits, counting the press as frame 1), then active and recovery frames. Block / hit / counter hit are frame advantage for the attacker. Inputs assume you face right: F = toward the opponent, B = away, D = down.
 
@@ -36,12 +36,15 @@ Calm and friendly, but every hit is heavy. Slow, patient, devastating.
 | K (DOWN) | Rolling Zero | low | 14 | 3 | 22 | -14 | -2 | +1 | 10 | ducks highs |
 | P/H (DOWN) | Spring Theorem | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
 | T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
+| D,D/F,F+P+K+H | Exponential Overdrive | mid | 21 | 4 | 50 | -29 | +8 | launch | 28 | wall splats, armor: absorbs 1 hit on frames 6-20 |
 
 **Enhanced specials** (P+K during the startup, 1 bar):
 
 - **Right Angle Elbow+** (`F+P`, then `P+K`): Two elbows, knockdown — 2 hits of 16, hit: knockdown.
 - **Common Log+** (`F,F+P`, then `P+K`): Armored, wall splat — 26 damage (from 20), armor on frames 1-14 (1 hit), wall splats.
 - **Exponential Haymaker+** (`F+H`, then `P+K`): Absorbs two hits, launches — 47 damage (from 36), hit: launch, armor on frames 1-26 (2 hits).
+
+**Ultimate:** Exponential Overdrive — `D, D/F, F + P+K+H` with all three bars: off come the sunglasses; three punches worth 2, 4 and 8, and the last cracks the screen. 3 hits, 32% of their health; blocked -29, whiffed 74 frames.
 
 **KO finisher:** Horse To Water — `B, F, H` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).
 
@@ -82,12 +85,15 @@ Nice, easygoing, a good sport. Best for new players.
 | K (DOWN) | Rolling Zero | low | 14 | 3 | 22 | -14 | -2 | +1 | 10 | ducks highs |
 | P/H (DOWN) | Spring Theorem | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
 | T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
+| D,D/F,F+P+K+H | Order Of Operations | mid | 19 | 3 | 52 | -34 | +6 | launch | 22 | wall splats, Long Arms: +25% damage at the tip |
 
 **Enhanced specials** (P+K during the startup, 1 bar):
 
 - **Distributive Property+** (`P,K,K`, then `P+K`): Three hits — 3 hits of 10.
 - **Long Arms+** (`F+P`, then `P+K`): Two hits, knockdown — 2 hits of 10, hit: knockdown.
 - **Linear Rush+** (`H`, then `P+K`): Armored, launches — 29 damage (from 22), hit: launch, armor on frames 1-19 (1 hit).
+
+**Ultimate:** Order Of Operations — `D, D/F, F + P+K+H` with all three bars: six hits in PEMDAS order, a letter for each: Parentheses, Exponents, Multiplication, Division, Addition, and a Subtraction launch. 6 hits, 32% of their health; blocked -34, whiffed 73 frames.
 
 **KO finisher:** Solve For X — `F, F, H` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).
 
@@ -133,12 +139,15 @@ Very kind, precise and graceful. Bows before fights.
 | P/H (DOWN) | Spring Theorem | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
 | T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
 | PARRY | Reflection | mid | 6 | 3 | 18 | -6 | knockdown | knockdown | 20 |  |
+| D,D/F,F+P+K+H | Circle Theorem | high | 13 | 3 | 48 | -34 | +5 | +10 | 13 |  |
 
 **Enhanced specials** (P+K during the startup, 1 bar):
 
 - **Tangent Step+** (`SS, P`, then `P+K`): Three kicks — 3 hits of 10.
 - **Reflex Angle+** (`B+K`, then `P+K`): Launches — 21 damage (from 16), hit: launch.
 - **Vertex Drop+** (`F+H`, then `P+K`): Two hits, knockdown — 2 hits of 15, hit: knockdown.
+
+**Ultimate:** Circle Theorem — `D, D/F, F + P+K+H` with all three bars: a full 360-degree sidestep around them with a kick from every sixth of the circle, the circle and its radius drawn behind, then an arc kick. 6 hits, 32% of their health; blocked -34, whiffed 63 frames.
 
 **KO finisher:** Q.E.D. — `B, F, K` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).
 
@@ -185,12 +194,15 @@ Happy, sassy, everyone's favorite. Fakes you out with a grin.
 | P/H (DOWN) | Spring Theorem | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
 | T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
 | B+K, P | The Converse | mid | 8 | 3 | 18 | -6 | launch | launch | 16 | enhance with P+K |
+| D,D/F,F+P+K+H | Two-Column Proof | mid | 18 | 3 | 52 | -35 | +5 | launch | 20 | wall splats |
 
 **Enhanced specials** (P+K during the startup, 1 bar):
 
 - **Supplementary Slide+** (`D/F+K`, then `P+K`): Two hits, launches — 2 hits of 12, hit: launch.
 - **Indirect Proof+** (`F+H, H`, then `P+K`): Armored, knockdown — 23 damage (from 18), hit: knockdown, armor on frames 1-14 (1 hit).
 - **The Converse+** (`B+K, P`, then `P+K`): Higher launch — 21 damage (from 16).
+
+**Ultimate:** Two-Column Proof — `D, D/F, F + P+K+H` with all three bars: the screen splits into STATEMENTS | REASONS; every hit proves a line, and the last one stamps the conclusion. 5 hits, 32% of their health; blocked -35, whiffed 72 frames.
 
 **KO finisher:** Pop Quiz — `D, D, P` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).
 
@@ -232,12 +244,15 @@ Sarcastic and funny. Taunts mid-combo. Relentless pressure.
 | K (DOWN) | Rolling Zero | low | 14 | 3 | 22 | -14 | -2 | +1 | 10 | ducks highs |
 | P/H (DOWN) | Spring Theorem | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
 | T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
+| D,D/F,F+P+K+H | Geometric Series | mid | 13 | 3 | 45 | -29 | +5 | +9 | 10 |  |
 
 **Enhanced specials** (P+K during the startup, 1 bar):
 
 - **Nth Term+** (`P,P,P,P`, then `P+K`): Three hits, wall splat — 3 hits of 9, wall splats.
 - **Recursive Rush+** (`F+P`, then `P+K`): Two hits — 2 hits of 9.
 - **Partial Sum+** (`H`, then `P+K`): Launches — 23 damage (from 18), hit: launch.
+
+**Ultimate:** Geometric Series — `D, D/F, F + P+K+H` with all three bars: every hit twice as fast as the last until he blurs, r > 1: DIVERGES, then a chalk-dust explosion. 8 hits, 32% of their health; blocked -29, whiffed 60 frames.
 
 **KO finisher:** Infinite Series — `F, B, F, P` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).
 
@@ -281,12 +296,15 @@ Very suspicious. Always watching. Waits for you to commit, then punishes.
 | READ A HIGH | L'Hopital Lock | mid | 6 | 3 | 20 | -6 | knockdown | knockdown | 22 |  |
 | READ A MID | Critical Point | mid | 7 | 3 | 18 | -6 | knockdown | knockdown | 22 |  |
 | READ A LOW | Saddle Point | low | 7 | 3 | 20 | -12 | knockdown | knockdown | 18 | ducks highs |
+| D,D/F,F+P+K+H | Fundamental Theorem | — | 100 total |  |  |  |  |  |  | parry |
 
 **Enhanced specials** (P+K during the startup, 1 bar):
 
 - **Definite Integral+** (`H`, then `P+K`): Armored, knockdown — 29 damage (from 22), hit: knockdown, armor on frames 1-19 (1 hit).
 - **Concave Down+** (`F+H`, then `P+K`): Two hits, wall splat — 2 hits of 16, wall splats.
 - **Mean Value Punish+** (`P AFTER BLOCK`, then `P+K`): Launches — 23 damage (from 18), hit: launch.
+
+**Ultimate:** Fundamental Theorem — `D, D/F, F + P+K+H` with all three bars (a counter stance, frames 4-50): hit him in it and time stops, the derivative and the integral flash up, then the punish. 2 hits, 32% of their health; whiffed, 100 frames.
 
 **KO finisher:** Area Under The Curve — `B, B, H` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).
 
@@ -328,12 +346,15 @@ Very smart. Reads opponents, keeps perfect distance, punishes every mistake.
 | K (DOWN) | Rolling Zero | low | 14 | 3 | 22 | -14 | -2 | +1 | 10 | ducks highs |
 | P/H (DOWN) | Spring Theorem | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
 | T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
+| D,D/F,F+P+K+H | Imaginary Unit | mid | 12 | 3 | 48 | -34 | +6 | launch | 16 | wall splats |
 
 **Enhanced specials** (P+K during the startup, 1 bar):
 
 - **Range Check+** (`F,F+P`, then `P+K`): Two hits, knockdown — 2 hits of 14, hit: knockdown.
 - **Domain Control+** (`F+K`, then `P+K`): Launches — 16 damage (from 12), hit: launch.
 - **Domain Restriction+** (`B+H`, then `P+K`): Armored, wall splat — 16 damage (from 12), armor on frames 1-13 (1 hit), wall splats.
+
+**Ultimate:** Imaginary Unit — `D, D/F, F + P+K+H` with all three bars: he vanishes, appears behind them and combos; two quarter turns and they're upside down: i squared = -1. 4 hits, 32% of their health; blocked -34, whiffed 62 frames.
 
 **KO finisher:** Calculated — `D, F, K` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).
 
@@ -379,12 +400,15 @@ Fast, explosive grappler who closes distance quickly. Confident and focused.
 | K (DOWN) | Rolling Zero | low | 14 | 3 | 22 | -14 | -2 | +1 | 10 | ducks highs |
 | P/H (DOWN) | Spring Theorem | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
 | T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
+| D,D/F,F+P+K+H | Matrix Multiplication | throw | 16 | 3 | 62 |  |  |  | 32 | unbreakable |
 
 **Enhanced specials** (P+K during the startup, 1 bar):
 
 - **Augmented Charge+** (`F,F+P`, then `P+K`): Armored, launches — 22 damage (from 17), hit: launch, armor on frames 1-13 (1 hit).
 - **Row Operation+** (`RUN, P`, then `P+K`): Two hits, wall splat — 2 hits of 14, wall splats.
 - **Elementary Knee+** (`RUN, K`, then `P+K`): Higher launch — 20 damage (from 15).
+
+**Ultimate:** Matrix Multiplication — `D, D/F, F + P+K+H` with all three bars: he grabs them and slams them across the stage in a 3x3 grid, row by column, then flips his hair. 9 hits, 32% of their health; a grab, so it can't be blocked.
 
 **KO finisher:** Cardio Finale — `F, D, F, P` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).
 

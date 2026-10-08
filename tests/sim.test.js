@@ -1450,5 +1450,80 @@ defs.forEach(function (d) {
   check('enhanced: only during startup', lateEv.every(function (e) { return e.type !== 'enhance'; }) && late.fighters[0].lastMove.id === 'heavy', late.fighters[0].lastMove.id);
 })();
 
+// Ultimates: down, down-forward, forward + P+K+H with three bars; a cinematic on hit.
+(function () {
+  var QCF = ['D', 'D/F', 'F', 'F+P+K+H'];
+  function ult(d, opp, opts) {
+    opts = opts || {};
+    var m = setup(d, opp, opts.dist || 40), ev = [];
+    m.autoReset = false;
+    m.fighters[1].holdGuard = !!opts.holdGuard; // guard in place, like the training dummy
+    m.fighters[0].meter = opts.meter == null ? FG.C.METER_MAX : opts.meter;
+    if (opts.oppHealth) m.fighters[1].health = opts.oppHealth;
+    var seq = opts.seq || (d.ultimate.counter ? ['D', 'D/F', 'F', 'P+K+H'] : QCF), cinFrames = 0;
+    for (var i = 0; i < (opts.frames || 520); i++) {
+      var r1 = i < seq.length ? FG.parseInput(seq[i]) : raw({});
+      var r2 = opts.opp2 ? opts.opp2(i, m) : raw({});
+      m.step([r1, r2]);
+      if (m.cinematic) cinFrames++;
+      ev = ev.concat(m.events);
+    }
+    return { m: m, ev: ev, cinFrames: cinFrames, type: function (t) { return ev.filter(function (e) { return e.type === t; }); } };
+  }
+  defs.forEach(function (d) {
+    var u = d.ultimate, tag = d.name + ' ultimate: ';
+    check(tag + 'has a cinematic script entry', !!u && u.hits.length >= 2 && u.len > u.hits[u.hits.length - 1], u);
+    // The opponent attacks into LOPEZ's counter stance.
+    var poke = u.counter ? function (i) { return raw(i === 10 ? { p: true } : {}); } : null;
+    var r = ult(d, D, { opp2: poke });
+    var st = r.type('ultstart'), cin = r.type('ultimate'), hits = r.type('ulthit'), end = r.type('ultend');
+    check(tag + 'starts with three bars', st.length === 1 && r.m.fighters[0].meter < FG.C.METER_MAX, [st.length, r.m.fighters[0].meter]);
+    check(tag + 'connects and plays', cin.length === 1 && end.length === 1, r.ev.map(function (e) { return e.type; }).filter(function (t) { return /ult/.test(t); }));
+    check(tag + 'one hit per beat', hits.length === u.hits.length, hits.length);
+    var dmg = hits.reduce(function (t, h) { return t + h.damage; }, 0), want = Math.round(D.health * FG.C.ULT_DAMAGE);
+    check(tag + 'takes about a third of their health', dmg === want && dmg / D.health >= 0.3 && dmg / D.health <= 0.35, [dmg, want]);
+    check(tag + 'the counter climbs', hits.every(function (h, k) { return h.hits === k + 1 + (hits[0].hits - 1); }), hits.map(function (h) { return h.hits; }));
+    check(tag + 'the fight stands still while it plays', r.cinFrames >= u.len, r.cinFrames);
+    var a = r.m.fighters[0], o = r.m.fighters[1];
+    check(tag + 'both are free again after', a.actionable && (o.actionable || o.state === 'down' || o.state === 'getup'), [a.state, o.state]);
+    // Not enough meter: nothing.
+    var poor = ult(d, D, { meter: FG.C.METER_MAX - 1, opp2: poke });
+    check(tag + 'needs all three bars', poor.type('ultstart').length === 0 && poor.type('ultimate').length === 0);
+    // The motion matters: F, D/F, D (backwards) doesn't do it.
+    var wrong = ult(d, D, { seq: ['F', 'D/F', 'D', 'P+K+H'], opp2: poke });
+    check(tag + 'needs the motion', wrong.type('ultstart').length === 0);
+    if (u.counter) {
+      // Nobody attacks: the stance runs out and leaves him open.
+      var idle = ult(d, D, { frames: 200 });
+      check(tag + 'whiffs if nobody attacks', idle.type('ultimate').length === 0 && idle.type('ultstart').length === 1);
+      return;
+    }
+    // Blocked: a huge disadvantage (a grab ultimate can't be blocked at all).
+    var guard = ult(d, D, { holdGuard: true, opp2: function () { return raw({ right: true }); } });
+    var res = guard.m.lastResult[0];
+    if (d.moves.ultimate.throw) { check(tag + 'a grab: guarding does not stop it', guard.type('ultimate').length === 1); return; }
+    check(tag + 'blocked leaves them wide open', guard.type('ultimate').length === 0 && res && res.adv <= -25, res && [res.kind, res.adv]);
+    // Whiffed from far away: a long recovery.
+    var far = ult(d, D, { dist: 260, frames: 30 });
+    check(tag + 'whiffed is a long recovery', far.m.fighters[0].state === 'attack' && d.moves.ultimate.total >= d.moves[u.from].total + FG.C.ULT_EXTRA_RECOVERY, d.moves.ultimate.total);
+  });
+  // A K.O. in the middle: the cinematic plays out, then the match is over.
+  var ko = ult(S, D, { oppHealth: 20 });
+  check('ultimate: a K.O. waits for the cinematic', ko.type('ultend').length === 1 && ko.m.fighters[1].ko && ko.m.winner === 0, [ko.m.winner, ko.m.fighters[1].ko]);
+  // Cancelled from a jab that hits.
+  var m = setup(S, D, 40), ev = [];
+  m.fighters[0].meter = FG.C.METER_MAX;
+  var seq = { 0: 'P', 4: 'D', 5: 'D/F', 6: 'F', 11: 'F+P+K+H' };
+  for (var i = 0; i < 400; i++) { m.step([seq[i] ? FG.parseInput(seq[i]) : raw({}), raw({})]); ev = ev.concat(m.events); }
+  var uh = ev.filter(function (e) { return e.type === 'ulthit'; });
+  check('ultimate: cancels from a hit into a combo', uh.length === S.ultimate.hits.length && uh[0].hits === 2, uh.map(function (e) { return e.hits; }));
+  check('ultimate: less damage at the end of a combo', ult(S, D).type('ulthit').reduce(function (t, e) { return t + e.damage; }, 0) >= uh.reduce(function (t, e) { return t + e.damage; }, 0));
+  // The motion itself, in the input buffer.
+  var b = new FG.InputBuffer(), f = 100;
+  ['D', 'D/F', 'F'].forEach(function (x) { b.update(FG.parseInput(x), f++); });
+  check('input: down, down-forward, forward is a quarter circle', b.qcf(1, f) && !b.qcf(-1, f));
+  check('input: too slow is not', !b.qcf(1, f + FG.C.QCF_FRAMES + 2));
+})();
+
 console.log(passes + ' passed, ' + failures + ' failed');
 process.exit(failures ? 1 : 0);

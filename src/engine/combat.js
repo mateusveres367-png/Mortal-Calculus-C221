@@ -47,6 +47,8 @@
   // A parry can counter by the level it caught (pr.counters: { high, mid, low }).
   Match.prototype.applyParry = function (c) {
     var a = this.fighters[c.a], d = this.fighters[c.d], pr = d.move.parry, label = d.move.parryLabel;
+    // A counter ultimate (LOPEZ): getting hit in the stance starts the cinematic.
+    if (pr.ult) { this.startCinematic(c.d, c.a); return; }
     var counter = pr.counters ? pr.counters[c.move.level] : pr.counter;
     a.actionable = false; d.actionable = false;
     a.contact = 'parried';
@@ -114,6 +116,8 @@
     var blocked = grounded && c.guard &&
       ((m.level === 'low' && c.guard === 'crouch') || (m.level !== 'low' && c.guard === 'stand'));
 
+    // An ultimate that connects plays its cinematic.
+    if (m.ultimate && !blocked) { this.startCinematic(c.a, c.d); return; }
     // Exponential Armor: the defender soaks the hit and keeps going (not a lethal one).
     if (!blocked && d.armorUp(m) && d.health > Math.round(m.damage * C.ARMOR_DAMAGE)) { this.absorb(c, a, d, m); return; }
 
@@ -341,6 +345,7 @@
 
   Match.prototype.startGrab = function (c) {
     var a = this.fighters[c.a], d = this.fighters[c.d], m = c.move || a.move;
+    if (m.ultimate) { this.startCinematic(c.a, c.d); return; } // a grab ultimate (RAMOS)
     a.actionable = false; d.actionable = false;
     a.contact = 'hit';
     a.setState('throwing');

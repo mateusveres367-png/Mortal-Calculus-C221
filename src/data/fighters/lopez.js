@@ -105,6 +105,8 @@
     cutIn: { a: 0x1a2a5a, b: 0xffffff }, // cut-in colours: main and accent
     // KO finisher: after winning the final round, this input within 2 seconds of the K.O.
     finisher: { name: 'AREA UNDER THE CURVE', input: 'B, B, H' },
+    // Ultimate (D, D/F, F + P+K+H, three bars): a cinematic in src/render/ultimates.js.
+    ultimate: { name: 'FUNDAMENTAL THEOREM', text: 'hit him in it and time stops, the derivative and the integral flash up, then the punish', from: 'bH', counter: true, window: 50, pose: 'parry', len: 230, hits: [96, 168], weights: [1, 3], end: { gap: 80, down: true } },
     name: 'LOPEZ', archetype: 'DEFENSIVE', theme: 'CALCULUS',
     style: 'COUNTER-FIGHTER', signatureMechanic: 'DERIVATIVE READ',
     signatureText: 'a parry stance (B+H, hold H to keep it up); attack into it and he counters by level: a wrist lock for a high, a palm strike for a mid, a trapping sweep for a low; throws beat it',

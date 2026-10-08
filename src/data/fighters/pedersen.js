@@ -119,6 +119,8 @@
     cutIn: { a: 0xc8202a, b: 0x111111 }, // cut-in colours: main and accent
     // KO finisher: after winning the final round, this input within 2 seconds of the K.O.
     finisher: { name: 'HORSE TO WATER', input: 'B, F, H' },
+    // Ultimate (D, D/F, F + P+K+H, three bars): a cinematic in src/render/ultimates.js.
+    ultimate: { name: 'EXPONENTIAL OVERDRIVE', text: 'off come the sunglasses; three punches worth 2, 4 and 8, and the last cracks the screen', from: 'heavy', len: 250, hits: [74, 118, 176], weights: [2, 4, 8], end: { gap: 120, launch: 7, height: 40 } },
     look: {
       skin: 0xe2ad85, eyeColor: 0x7cc4f0,
       hair: { style: 'slick', color: 0x5a3c24 },

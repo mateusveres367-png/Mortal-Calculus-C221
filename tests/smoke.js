@@ -197,6 +197,32 @@ try { playwright = require('playwright'); } catch (e) {
   await page.screenshot({ path: path.join(out, '8-enhanced.png') });
   var exOk = ex.enhance && ex.plus && ex.hits >= 1 && ex.meter < 150 && ex.letters === 'CBA';
 
+  // An ultimate: down, down-forward, forward + P+K+H with three bars: a cut-in, DIAGRAM
+  // VIEW freeze frames and about a third of their health.
+  var ultR = await page.evaluate(function () {
+    var s = window.FG_SCENE, m;
+    s.training.refill = false; s.newMatch(); m = s.match;
+    m.fighters[0].x = 480; m.fighters[1].x = 520; m.fighters[0].meter = FG.C.METER_MAX;
+    var hp0 = m.fighters[1].health, seq = ['D', 'D/F', 'F', 'F+P+K+H'], out = { cutin: false, diagram: 0, texts: false, ended: false };
+    var wasDiag = false;
+    for (var t = 0; t < 900 && !out.ended; t++) {
+      var r1 = t < seq.length ? FG.parseInput(seq[t]) : FG.emptyRaw();
+      s.forceInput = function () { return [r1, FG.emptyRaw()]; };
+      s.tick(); s.render();
+      if (s.ult && s.cutin.busy()) out.cutin = true;
+      if (s.diagram && !wasDiag) out.diagram++;
+      wasDiag = !!s.diagram;
+      if (s.ultTexts.some(function (x) { return x.visible; })) out.texts = true;
+      if (out.cutin && !s.ult && !m.cinematic) out.ended = true;
+    }
+    s.forceInput = null; s.training.refill = true;
+    out.share = Math.round((hp0 - m.fighters[1].health) / m.fighters[1].def.health * 100);
+    out.meter = m.fighters[0].meter;
+    return out;
+  });
+  await page.screenshot({ path: path.join(out, '8-ultimate.png') });
+  var ultOk = ultR.cutin && ultR.diagram >= 1 && ultR.texts && ultR.ended && ultR.share >= 30 && ultR.share <= 35;
+
   // Arcade: a CPU opponent, ROUND 1 / READY / FIGHT, a timer, best of three.
   var arcade = await page.evaluate(function () {
     var s = window.FG_SCENE;
@@ -288,9 +314,9 @@ try { playwright = require('playwright'); } catch (e) {
   await page.screenshot({ path: path.join(out, '10-ending.png') });
 
   await browser.close();
-  console.log(JSON.stringify({ title: title, matchup: matchup, renderer: renderer, hits: hits, counter: counterText, p1: p1, menuOk: menuOk, resetX: resetX, trial: trial, ko: ko, stage: stagePick, arcade: arcade, vsPanel: vsPanel, cutFreeze: cutFreeze, cpu: cpu, ladder: ladder, enhanced: ex, errors: errors }, null, 1));
+  console.log(JSON.stringify({ title: title, matchup: matchup, renderer: renderer, hits: hits, counter: counterText, p1: p1, menuOk: menuOk, resetX: resetX, trial: trial, ko: ko, stage: stagePick, arcade: arcade, vsPanel: vsPanel, cutFreeze: cutFreeze, cpu: cpu, ladder: ladder, enhanced: ex, ultimate: ultR, errors: errors }, null, 1));
   var ok = !errors.length && title === 'Mortal Calculus: C221' && matchup === expectMatchup && hits.join() === expectHits && counterText === String(hits.length) &&
-    p1.last && p1.last.kind === 'BLOCK' && p1.last.adv === p1.jabBlock && menuOk && resetOk && trialOk && koOk && stagePick === 'classroom' && arcadeOk && attractOk && vsPanel && cutFreeze && cpuOk && ladderOk && exOk;
+    p1.last && p1.last.kind === 'BLOCK' && p1.last.adv === p1.jabBlock && menuOk && resetOk && trialOk && koOk && stagePick === 'classroom' && arcadeOk && attractOk && vsPanel && cutFreeze && cpuOk && ladderOk && exOk && ultOk;
   console.log(ok ? 'SMOKE OK' : 'SMOKE FAILED');
   if (!ok) process.exit(1);
 })().catch(function (e) { console.error(e); process.exit(1); });

@@ -32,12 +32,22 @@
     this.koTimer = 0;
     this.winner = null;
     this.over = false;
+    this.cinematic = null; // an ultimate playing: { a, d, t, len, hits, done, total }
   };
 
   // raws: [rawInputP1, rawInputP2]. Events produced by this step are in this.events.
   Match.prototype.step = function (raws) {
     this.events = [];
     var f = this.fighters, b = this.buffers, i;
+
+    // An ultimate's cinematic: the fight stands still (like a long hitstop) while its
+    // hits land on their frames.
+    if (this.cinematic) {
+      b[0].update(raws[0], this.frame + 1);
+      b[1].update(raws[1], this.frame + 1);
+      this.stepCinematic();
+      return;
+    }
 
     if (this.hitstop > 0) {
       // Frozen: presses are buffered and come out on the next real frame.
@@ -67,6 +77,7 @@
     }
     for (i = 0; i < 2; i++) {
       if (f[i].cancelled) { this.events.push({ type: f[i].cancelled === 'feint' ? 'feint' : 'cancel', fighter: i, into: f[i].cancelled, x: f[i].x }); f[i].cancelled = null; }
+      if (f[i].ultStarted) { this.events.push({ type: 'ultstart', fighter: i, move: f[i].move, x: f[i].x, y: 60 }); f[i].ultStarted = false; }
       if (f[i].enhancedNow) { this.events.push({ type: 'enhance', fighter: i, move: f[i].move, x: f[i].x, y: 60 }); f[i].enhancedNow = false; }
       if (f[i].startedMove) { this.events.push({ type: 'whiff', fighter: i, move: f[i].startedMove }); f[i].startedMove = null; }
       // MIYASHIRO's Calculated: an opponent's whiff makes his next hit stronger.
@@ -97,6 +108,79 @@
       // The scene turns autoReset off and shows a win screen when `over` is set.
       if (this.autoReset) this.reset(); else this.over = true;
     }
+  };
+
+  // --- Ultimates ------------------------------------------------------------------
+  // def.ultimate: { name, len, hits: [t...], weights: [...], end: { gap, down, launch, height, swap } }:
+  // the defender ends `gap` in front of the attacker (who has swapped sides with them
+  // if `swap`), lying down, or falling from `height` with an upward `launch`.
+  // The damage (ULT_DAMAGE of the defender's full health, less late in a combo) is
+  // shared out over the hits, the last one weighing double unless weights say otherwise.
+
+  Match.prototype.startCinematic = function (ai, di) {
+    var a = this.fighters[ai], d = this.fighters[di], u = a.def.ultimate, combo = this.combo[di];
+    var scale = combo.hits <= 2 ? 1 : Math.max(0.5, 1 - 0.08 * (combo.hits - 2));
+    var w = u.weights || u.hits.map(function (t, k) { return k === u.hits.length - 1 ? 2 : 1; });
+    var sum = w.reduce(function (s, x) { return s + x; }, 0), total = Math.round(d.def.health * C.ULT_DAMAGE * scale);
+    var parts = w.map(function (x) { return Math.max(1, Math.floor(total * x / sum)); });
+    parts[parts.length - 1] += total - parts.reduce(function (s, x) { return s + x; }, 0);
+    a.actionable = false; d.actionable = false;
+    a.contact = 'hit';
+    a.setState('cinematic'); d.setState('cinematic');
+    a.vx = d.vx = a.vy = d.vy = 0; a.slide = d.slide = 0;
+    d.stance = 'A';
+    this.throwState = null;
+    this.measure = null;
+    this.hitstop = 0;
+    this.cinematic = { a: ai, d: di, t: 0, len: u.len, hits: u.hits, parts: parts, total: total, x0: a.x, y0: d.y, dx0: d.x, dir: a.facing };
+    this.lastResult[ai] = { move: a.lastMove, kind: 'ULTIMATE', adv: null };
+    this.events.push({ type: 'ultimate', attacker: ai, defender: di, name: u.name, x: d.x, y: 60 });
+  };
+
+  Match.prototype.stepCinematic = function () {
+    var cin = this.cinematic, a = this.fighters[cin.a], d = this.fighters[cin.d], combo = this.combo[cin.d];
+    cin.t++;
+    var k = cin.hits.indexOf(cin.t);
+    if (k >= 0 && !d.ko) {
+      var dmg = Math.min(d.health, cin.parts[k]);
+      combo.hits++; combo.damage += dmg;
+      d.comboHits = combo.hits;
+      d.health -= dmg;
+      this.gainMeter(cin.a, dmg * C.METER_HIT * 0.25); // an ultimate builds a little back
+      this.gainMeter(cin.d, dmg * C.METER_TAKEN);
+      var last = k === cin.hits.length - 1;
+      if (d.health <= 0) { d.ko = true; this.winner = cin.a; this.koTimer = C.KO_RESET_FRAMES; }
+      this.events.push({ type: 'ulthit', attacker: cin.a, defender: cin.d, n: k, last: last, damage: dmg, hits: combo.hits, ko: d.ko, x: d.x, y: 60 });
+    }
+    if (cin.t < cin.len) return;
+    // The end: the defender lands some way off (or the fighters have swapped sides).
+    var end = a.def.ultimate.end || {}, dir = cin.dir;
+    if (end.swap) {
+      a.x = cin.dx0 + dir * (end.gap || 50);
+      a.facing = -dir;
+      dir = -dir;
+    }
+    var w = C.PUSH_WIDTH * d.def.scale;
+    d.x = Math.max(C.WALL_L + w, Math.min(C.WALL_R - w, a.x + dir * (end.gap || 70)));
+    d.facing = -dir;
+    if (end.down) {
+      // They're already on the floor.
+      d.setState('down');
+      d.y = 0; d.vy = 0; d.vx = 0;
+      d.groundHits = 0;
+    } else {
+      // Still in the air: they fall from where the cinematic left them.
+      d.setState('juggle');
+      d.y = Math.max(1, end.height || 30);
+      d.vy = end.launch || 4;
+      d.vx = dir * 0.6;
+      d.noTech = true; d.tripped = true; d.bounding = false;
+    }
+    a.y = 0;
+    a.setState('land');
+    a.landLag = 10;
+    this.cinematic = null;
+    this.events.push({ type: 'ultend', attacker: cin.a, defender: cin.d, x: d.x });
   };
 
   // Landing results: floor bounces, knockdowns and tech rolls.

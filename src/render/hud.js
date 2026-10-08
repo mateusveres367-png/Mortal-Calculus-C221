@@ -177,7 +177,11 @@
     else if (ev.ground) text = 'GROUND HIT';
     else if (ev.launch) text = 'LAUNCH!';
     if (text) this.setLabel(i, text);
-    if (ev.ko) this.showBanner('K.O.', this.roundMode ? '' : (ev.attacker === 0 ? 'P1 ' : 'P2 ') + 'WINS', this.roundMode ? 120 : C.KO_RESET_FRAMES, this.roundMode ? { scale: 5, y: 116 } : null);
+    if (ev.ko) this.koBanner(ev.attacker);
+  };
+
+  Hud.prototype.koBanner = function (attacker) {
+    this.showBanner('K.O.', this.roundMode ? '' : (attacker === 0 ? 'P1 ' : 'P2 ') + 'WINS', this.roundMode ? 120 : C.KO_RESET_FRAMES, this.roundMode ? { scale: 5, y: 116 } : null);
   };
 
   // Called once per display tick.

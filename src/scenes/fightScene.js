@@ -86,6 +86,13 @@
     this.finFront = this.add.graphics().setDepth(0.6);
     this.finScreen = this.add.graphics().setScrollFactor(0).setDepth(44);
     this.finTexts = [0, 1, 2].map(function () { return FG.text(this, 0, 0, '', 'w', 3).setOrigin(0.5, 0.5).setDepth(46).setVisible(false); }, this);
+    // Ultimates: a layer over everything on screen (PEDERSEN's cracked glass), DIAGRAM
+    // VIEW (the chalkboard, chalk outlines of the fighters, the diagram) and text.
+    this.ultTop = this.add.graphics().setScrollFactor(0).setDepth(45.5);
+    this.diagG = this.add.graphics().setScrollFactor(0).setDepth(44.5);
+    this.diagFig = this.add.graphics().setScrollFactor(0).setDepth(44.6);
+    this.diagTop = this.add.graphics().setScrollFactor(0).setDepth(44.7);
+    this.ultTexts = []; for (var ut = 0; ut < 21; ut++) this.ultTexts.push(FG.text(this, 0, 0, '', 'w', 2).setOrigin(0.5, 0.5).setDepth(47).setVisible(false));
     this.finishWin = null;  // { wi, t, len, tokens, prev } the input window after the final K.O.
     this.finisher = null;   // { fx, script, t, len } the cinematic
     this.newMatch({ intro: true });
@@ -119,6 +126,9 @@
     this.prevCombo = [0, 0];
     this.cutin.stop();
     this.finishWin = null; this.finisher = null; this.finishPractice = false;
+    this.ult = null;      // { fx, script, wi, t } an ultimate's cinematic (src/render/ultimates.js)
+    this.diagram = null;  // { spec, t, len } a DIAGRAM VIEW freeze frame
+    this.ultFlash = null; // { t, wi, color } the flash as an ultimate starts
     this.cutinUsed = [false, false]; // one cut-in per combo
     this.cutinCool = 0;              // ticks before another may play
     this.histories[0].clear(); this.histories[1].clear();
@@ -243,6 +253,7 @@
   // Called every tick in round modes, after the match steps.
   FightScene.prototype.roundTick = function (advanced) {
     var r = this.rounds, m = this.match;
+    if (m.cinematic) return; // the round waits for an ultimate to finish
     this.phaseT++;
     if (this.phase === 'announce') {
       if (this.phaseT === 50) this.hud.showBanner('READY', '', 34, { scale: 4, y: 120 });
@@ -707,6 +718,12 @@
     var m = this.match, f = m.fighters;
     // A cut-in freezes the fight while it plays (presses still buffer: TAPS are kept).
     if (this.cutin.busy()) { this.cutin.tick(); this.tickCount++; this.stage.update(); return; }
+    // So does DIAGRAM VIEW.
+    if (this.diagram) {
+      this.tickCount++;
+      if (++this.diagram.t >= this.diagram.len) this.diagram = null;
+      return;
+    }
     if (this.cutinCool > 0) this.cutinCool--;
     var raw1 = this.inputFor(0), raw2 = this.inputFor(1);
     TAPS = {}; // taps since the last tick have been read
@@ -738,7 +755,11 @@
         var dfn = f[ev.defender];
         dfn._react = ev.type === 'block' ? { kind: 'block', t: 0 } : { kind: ev.impact, t: 0, scale: ev.ch ? 1.3 : 1 };
       }
-      if (ev.type === 'enhance') ev.color = FG.fighterGlow(f[ev.fighter].def);
+      if (ev.type === 'enhance' || ev.type === 'ultstart') ev.color = FG.fighterGlow(f[ev.fighter].def);
+      if (ev.type === 'ultstart') this.ultFlash = { t: 0, wi: ev.fighter, color: ev.color };
+      if (ev.type === 'ultimate') this.startUltimate(ev);
+      if (ev.type === 'ulthit') this.impact = { who: ev.defender, frames: 2, color: 0xffffff };
+      if (ev.type === 'ultend') this.endUltimate(ev);
       FG.Sfx.play(ev);
       // A cancel leaves an afterimage of the move it came out of.
       if (ev.type === 'cancel' && f[ev.fighter]._pose) {
@@ -760,6 +781,15 @@
       this.hud.onEvent(ev);
       this.trials.onEvent(ev);
     }
+
+    // The cinematic moves on one frame each time the match does.
+    var ult = this.ult;
+    if (ult && m.cinematic && m.cinematic.t !== ult.t) {
+      ult.t = m.cinematic.t;
+      for (var uo = 0; uo < 2; uo++) if (f[uo]._override) f[uo]._override.t++;
+      ult.script.step(ult.fx, ult.t);
+    }
+    if (this.ultFlash && ++this.ultFlash.t > 30) this.ultFlash = null;
 
     // A big juggle combo that just ended: the landing plays in slow motion.
     for (var lj = 0; lj < m.events.length; lj++) {
@@ -982,7 +1012,8 @@
 
   FightScene.prototype.render = function () {
     var m = this.match, f = m.fighters, g = this.world;
-    var mid = (f[0].x + f[1].x) / 2;
+    var dx = function (fi) { return fi._drawX != null ? fi._drawX : fi.x; };
+    var mid = (dx(f[0]) + dx(f[1])) / 2;
     var shake = this.effects.shakeOffset();
     var cam = this.cameras.main;
     // The camera centres between the fighters; a zoom pulls it toward the impact.
@@ -1012,16 +1043,17 @@
     // An enhanced special glows in the fighter's colour while it plays.
     this.auras.clear();
     for (var ai = 0; ai < 2; ai++) {
-      var af = f[ai], ex = af.state === 'attack' && af.move && af.move.enhanced;
+      var af = f[ai], ex = (af.state === 'attack' && af.move && (af.move.enhanced || af.move.ultimate)) || (this.ult && this.ult.wi === ai);
       if (!(af.calculated > 0 || ex) || af._hidden || !af._pose) continue;
       var pulse = ex ? 0.5 + 0.3 * Math.sin(this.tickCount * 0.6) : 0.35 + 0.25 * Math.sin(this.tickCount * 0.25);
       var col = ex ? FG.fighterGlow(af.def) : 0x5fd7ff, ax = af._drawX != null ? af._drawX : af.x;
       this.auras.setAlpha(pulse);
-      [-2, 2].forEach(function (dx) { FG.drawFighter(this.auras, af, { flash: col, noShadow: true, x: ax + dx }); }, this);
-      FG.drawFighter(this.auras, af, { flash: col, noShadow: true, groundY: C.GROUND_Y - 2, x: ax });
+      [-2, 2].forEach(function (ox) { this.drawFigure(this.auras, af, { flash: col, noShadow: true, x: ax + ox }); }, this);
+      this.drawFigure(this.auras, af, { flash: col, noShadow: true, groundY: C.GROUND_Y - 2, x: ax });
     }
     // Draw the fighter further into the background first.
     var order = f[0].z > f[1].z ? [0, 1] : f[1].z > f[0].z ? [1, 0] : (f[0].state === 'attack' ? [1, 0] : [0, 1]);
+    if (f[0]._drawBehind) order = [0, 1]; else if (f[1]._drawBehind) order = [1, 0];
     for (var i = 0; i < 2; i++) {
       var idx = order[i], fi = f[idx];
       var opts = { flash: null, jitter: 0 };
@@ -1032,8 +1064,7 @@
       }
       if (fi._hidden) continue;
       if (!fi._pose) FG.updatePose(fi, this.tickCount);
-      if (fi._drawX != null) opts.x = fi._drawX;
-      FG.drawFighter(g, fi, opts);
+      this.drawFigure(g, fi, opts);
     }
     this.effects.draw(g);
     var sf = this.effects.screen, fl = this.screenFlash;
@@ -1067,7 +1098,80 @@
     this.drawButtons(clean || this.mode !== 'training');
     if (clean) this.trials.hide(); else this.trials.draw();
     this.drawFinisher(camX, onScreen);
+    this.drawUltimate();
     this.cutin.draw();
+  };
+
+  // Draw a fighter where the screen wants them: an ultimate can move, lift, turn,
+  // flip or shrink them on screen only (_drawX, _drawY, _drawFacing, _drawRot,
+  // _drawScale). opts.screen: draw on a screen layer (DIAGRAM VIEW), zoom included.
+  FightScene.prototype.drawFigure = function (g, fi, opts) {
+    opts = Object.assign({}, opts);
+    if (opts.x == null && fi._drawX != null) opts.x = fi._drawX;
+    if (fi._drawY != null) opts.y = fi._drawY;
+    if (fi._drawFacing) opts.facing = fi._drawFacing;
+    if (fi._drawScale) opts.scale = (opts.scale || 1) * fi._drawScale;
+    var cam = this.cameras.main;
+    if (opts.screen) {
+      var wx = opts.x != null ? opts.x : fi.x;
+      opts.x = (wx - cam.scrollX - C.VIEW_W / 2) * cam.zoom + C.VIEW_W / 2;
+      opts.groundY = (C.GROUND_Y - cam.scrollY - C.VIEW_H / 2) * cam.zoom + C.VIEW_H / 2;
+      opts.scale = (opts.scale || 1) * cam.zoom;
+    }
+    if (!fi._drawRot) { FG.drawFighter(g, fi, opts); return; }
+    // Turned over (MIYASHIRO's i² = −1): rotate about their middle.
+    var px = opts.x != null ? opts.x : fi.x, py = (opts.groundY != null ? opts.groundY : C.GROUND_Y) - ((opts.y != null ? opts.y : fi.y) + 50 * fi.def.scale) * (opts.scale || 1);
+    g.save(); g.translateCanvas(px, py); g.rotateCanvas(fi._drawRot); g.translateCanvas(-px, -py);
+    FG.drawFighter(g, fi, opts);
+    g.restore();
+  };
+
+  // --- Ultimates ------------------------------------------------------------------
+
+  // It connected: cut-in, then the cinematic (the match drives its frames).
+  FightScene.prototype.startUltimate = function (ev) {
+    var f = this.match.fighters, w = f[ev.attacker], script = FG.ULTIMATES[w.def.id];
+    this.ultFlash = null;
+    if (!script) return;
+    var fx = FG.ultimateFx(this, ev.attacker);
+    this.ult = { fx: fx, script: script, wi: ev.attacker, t: 0 };
+    f.forEach(function (fi) { fi._gesture = null; fi._react = null; });
+    if (script.start) script.start(fx);
+    this.cutinUsed[ev.attacker] = true; this.cutinCool = C.CUTIN_COOLDOWN;
+    this.cutin.play(w.def, w.x <= f[ev.defender].x ? 0 : 1, w.def.ultimate.name);
+    FG.Sfx.cutIn();
+  };
+
+  FightScene.prototype.endUltimate = function (ev) {
+    var f = this.match.fighters;
+    FG.clearUltimateDraw(f);
+    this.ult = null; this.diagram = null;
+    this.ultTexts.forEach(function (t) { t.setVisible(false); });
+    if (f[ev.defender].ko) this.hud.koBanner(ev.attacker);
+  };
+
+  // DIAGRAM VIEW: the fight freezes on a chalkboard drawing of the hit.
+  FightScene.prototype.startDiagram = function (spec) {
+    this.diagram = { spec: spec, t: 0, len: spec.len || 54 };
+    FG.Sfx.chalk();
+  };
+
+  FightScene.prototype.drawUltimate = function () {
+    this.ultTop.clear(); this.diagG.clear(); this.diagFig.clear(); this.diagTop.clear();
+    this.ultTexts.forEach(function (t) { t.setVisible(false); });
+    var cam = this.cameras.main;
+    // An ultimate starting: the stage goes dark behind the fighters for a moment.
+    var uf = this.ultFlash;
+    if (uf) {
+      var a = 0.6 * (1 - uf.t / 30);
+      this.finBack.fillStyle(0x000000, a); this.finBack.fillRect(cam.scrollX - C.VIEW_W, cam.scrollY - C.VIEW_H, C.VIEW_W * 3, C.VIEW_H * 3);
+    }
+    var u = this.ult;
+    if (!u) return;
+    [this.finBack, this.finFront, this.finScreen, this.ultTop].forEach(function (g) { g.setAlpha(1); });
+    if (!this.diagram) u.script.draw(u.fx, u.t);
+    if (u.script.drawTop) u.script.drawTop(u.fx, u.t);
+    if (this.diagram) FG.drawDiagram(this, this.diagram);
   };
 
   // The finisher's overlays, and its speech box.

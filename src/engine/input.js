@@ -20,6 +20,7 @@
     // Last two press frames for each horizontal direction, for dash detection.
     this.leftTaps = [-9999, -9999];
     this.rightTaps = [-9999, -9999];
+    this.dirHist = []; // [{ f, down, left, right }] every change of the held directions, for motions
   }
 
   // Called once per simulation tick (including hitstop ticks) with the raw state.
@@ -36,6 +37,10 @@
         var d = this.pressDirs[b];
         d.left = d.left || raw.left; d.right = d.right || raw.right; d.up = d.up || raw.up; d.down = d.down || raw.down;
       }
+    }
+    if (raw.down !== this.prev.down || raw.left !== this.prev.left || raw.right !== this.prev.right) {
+      this.dirHist.push({ f: frame, down: raw.down, left: raw.left, right: raw.right });
+      if (this.dirHist.length > 16) this.dirHist.shift();
     }
     if (raw.left && !this.prev.left) { this.leftTaps[0] = this.leftTaps[1]; this.leftTaps[1] = frame; }
     if (raw.right && !this.prev.right) { this.rightTaps[0] = this.rightTaps[1]; this.rightTaps[1] = frame; }
@@ -77,6 +82,28 @@
   InputBuffer.prototype.doubleTap = function (dir, facing, frame) {
     var taps = (dir === 'forward') === (facing > 0) ? this.rightTaps : this.leftTaps;
     return frame - taps[1] <= 2 && taps[1] - taps[0] <= C.DASH_TAP_WINDOW;
+  };
+
+  // Quarter circle forward: down, down-forward, forward, in that order within the
+  // last QCF_FRAMES frames (relative to facing).
+  InputBuffer.prototype.qcf = function (facing, frame) {
+    var stage = 0, h = this.dirHist;
+    for (var i = 0; i < h.length; i++) {
+      var e = h[i];
+      if (frame - e.f > C.QCF_FRAMES) continue;
+      var fw = fwd(e, facing), bk = bck(e, facing);
+      if (stage === 0 && e.down && !fw && !bk) stage = 1;
+      else if (stage === 1 && e.down && fw) stage = 2;
+      else if (stage === 2 && fw && !e.down) return true;
+    }
+    return false;
+  };
+
+  // P, K and H pressed together (within a few frames of each other).
+  InputBuffer.prototype.allThree = function (frame) {
+    var p = this.pressed.p, k = this.pressed.k, h = this.pressed.h;
+    if (!this.wasPressed('p', frame) || !this.wasPressed('k', frame) || !this.wasPressed('h', frame)) return false;
+    return Math.max(p, k, h) - Math.min(p, k, h) <= 3;
   };
 
   InputBuffer.prototype.clearTaps = function () {

@@ -101,6 +101,8 @@
     cutIn: { a: 0x15151a, b: 0xd4a933 }, // cut-in colours: main and accent
     // KO finisher: after winning the final round, this input within 2 seconds of the K.O.
     finisher: { name: 'SOLVE FOR X', input: 'F, F, H' },
+    // Ultimate (D, D/F, F + P+K+H, three bars): a cinematic in src/render/ultimates.js.
+    ultimate: { name: 'ORDER OF OPERATIONS', text: 'six hits in PEMDAS order, a letter for each: Parentheses, Exponents, Multiplication, Division, Addition, and a Subtraction launch', from: 'heavy', len: 236, hits: [34, 54, 74, 94, 114, 160], end: { gap: 96, launch: 9, height: 70 } },
     name: 'BRINKHUS', archetype: 'BALANCED', theme: 'ALGEBRA 1',
     style: 'KICKBOXER', signatureMechanic: 'LONG ARMS',
     signatureText: 'his straights outrange everyone\'s, and landing one with the very tip hits 25% harder',

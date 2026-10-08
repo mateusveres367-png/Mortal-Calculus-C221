@@ -113,6 +113,9 @@ FG.C = {
   METER_BLOCKED: 2,     // for an attack that was blocked
   METER_LOSING: 1.25,   // gain multiplier while you're behind on health
   MULTI_GAP: 5,         // frames between the hits of a multi-hit (enhanced) move
+  QCF_FRAMES: 24,       // frames for a down, down-forward, forward motion (ultimates)
+  ULT_DAMAGE: 0.32,     // an ultimate takes this share of the opponent's full health
+  ULT_EXTRA_RECOVERY: 30, // a blocked or whiffed ultimate leaves them open this much longer
   TIP_BONUS: 1.25,      // Long Arms: damage for landing with the tip of a straight
   ARMOR_DAMAGE: 0.7,    // Exponential Armor: share of an absorbed hit's damage taken
   ARMOR_HITSTOP: 8,     // Exponential Armor: the freeze on an absorbed hit

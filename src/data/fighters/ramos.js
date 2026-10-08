@@ -109,6 +109,8 @@
     cutIn: { a: 0xd8283a, b: 0xffffff }, // cut-in colours: main and accent
     // KO finisher: after winning the final round, this input within 2 seconds of the K.O.
     finisher: { name: 'CARDIO FINALE', input: 'F, D, F, P' },
+    // Ultimate (D, D/F, F + P+K+H, three bars): a cinematic in src/render/ultimates.js.
+    ultimate: { name: 'MATRIX MULTIPLICATION', text: 'he grabs them and slams them across the stage in a 3x3 grid, row by column, then flips his hair', from: 'cmdGrab', len: 250, hits: [30, 46, 62, 84, 100, 116, 138, 154, 170], end: { gap: 70, down: true } },
     name: 'RAMOS', archetype: 'GRAPPLER', theme: 'MATRICES',
     style: 'WRESTLER', signatureMechanic: 'CARDIO',
     signatureText: 'he never slows down: the fastest walk and dash, chained dashes, a guard that recovers twice as fast, and a run he can keep up for as long as he likes (dash, then hold forward), with a tackle, a running knee, a slide, a plancha and a running command grab out of it',

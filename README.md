@@ -130,6 +130,15 @@ Every fighter uses the same input layout. What each input does, and its frame da
 
 - **Grade meter:** three bars under your health bar, graded **C**, **B** and **A**. It fills when you land hits, when you block and when you take damage, and a little faster (×1.25) while you're behind on health. A bar chimes and flashes when it fills, and all three full pulses. The meter carries over between rounds.
 - **Enhanced specials (1 bar):** press `P`+`K` during the startup of a special to power it up: more damage plus extra hits, armor, a launch or a wall splat, depending on the move. The fighter flashes in their colour and a `+` pops onto the move's name. Every fighter has three; they're listed in [`MOVES.md`](MOVES.md).
+- **Ultimates (3 bars):** down, down-forward, forward + `P`+`K`+`H` (also straight out of a move that hits). If it connects, a cinematic plays: a cut-in, a camera zoom, slow motion, and **DIAGRAM VIEW** freeze frames where the impact is drawn as a glowing chalkboard diagram. It takes about a third of their health; blocked or whiffed, it leaves you wide open.
+  - **BRINKHUS — Order of Operations:** six hits labelled P, E, M, D, A, S, the last a launch.
+  - **CHAI — Circle Theorem:** a 360° sidestep around them, kicking from every angle, the circle and its radius drawn behind; an arc kick finishes.
+  - **DALSASS — Two-Column Proof:** the screen splits into STATEMENTS | REASONS, each hit proves a line, and the last stamps "∴ YOU LOSE."
+  - **LEE — Geometric Series:** each hit twice as fast as the last until he blurs; "r > 1: DIVERGES"; a chalk-dust explosion.
+  - **LOPEZ — Fundamental Theorem:** a counter stance: hit him in it and time freezes, the derivative and integral panels flash, then the punish.
+  - **MIYASHIRO — Imaginary Unit:** he vanishes, reappears behind them and combos; "i² = −1" stamps as they flip upside down.
+  - **PEDERSEN — Exponential Overdrive:** off come the sunglasses; three punches marked 2¹, 2², 2³; the last cracks the screen like glass.
+  - **RAMOS — Matrix Multiplication:** a grab, then slams across the stage in a 3×3 grid, row by column, and a hair flip.
 
 The fighters, and what they teach:
 

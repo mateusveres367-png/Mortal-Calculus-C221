@@ -106,6 +106,8 @@
     cutIn: { a: 0x111111, b: 0x39ff5a }, // cut-in colours: main and accent
     // KO finisher: after winning the final round, this input within 2 seconds of the K.O.
     finisher: { name: 'INFINITE SERIES', input: 'F, B, F, P' },
+    // Ultimate (D, D/F, F + P+K+H, three bars): a cinematic in src/render/ultimates.js.
+    ultimate: { name: 'GEOMETRIC SERIES', text: 'every hit twice as fast as the last until he blurs, r > 1: DIVERGES, then a chalk-dust explosion', from: 'fP', len: 220, hits: [24, 56, 72, 80, 84, 86, 87, 150], weights: [1, 1, 1, 1, 1, 1, 1, 5], end: { gap: 110, launch: 8, height: 50 } },
     name: 'LEE', archetype: 'RUSHDOWN', theme: 'SEQUENCES',
     style: 'MUAY THAI BOXER', signatureMechanic: 'ARITHMETIC SEQUENCE',
     signatureText: 'his strings get faster with every hit, and once an attack connects (hit or block) forward, forward dash-cancels its recovery to keep the pressure on (once per string)',

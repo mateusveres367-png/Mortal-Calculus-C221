@@ -189,6 +189,7 @@
           this.multiHits++;
         }
         if (this.tryEnhance(buf, frame)) return;
+        if (this.contact === 'hit' && this.tryUltimate(buf, frame)) return; // cancel a hit into the ultimate
         if (this.tryThrowConversion(buf, frame)) return;
         if (this.tryFeint(buf, frame)) return;
         if (this.tryKickChain(buf, frame)) return;
@@ -268,6 +269,7 @@
       case 'ko':
       case 'throwing':
       case 'thrown':
+      case 'cinematic': // an ultimate is playing (the match drives it)
         return;
       case 'land':
         this.vx = 0;
@@ -449,7 +451,20 @@
     return this.pick(fwd ? ['fH', 'heavy'] : back ? ['bH', 'heavy'] : ['heavy']);
   };
 
+  // Ultimate: down, down-forward, forward + P+K+H with all three bars of Grade meter.
+  Fighter.prototype.tryUltimate = function (buf, frame) {
+    if (!this.def.moves.ultimate || !buf.allThree(frame) || !buf.qcf(this.facing, frame)) return false;
+    if (this.meter < C.METER_MAX) return false;
+    if (!this.infiniteMeter) this.meter = 0;
+    buf.consume('p'); buf.consume('k'); buf.consume('h');
+    this.stance = 'A';
+    this.startMove('ultimate');
+    this.ultStarted = true; // read (and cleared) by the match for the event
+    return true;
+  };
+
   Fighter.prototype.tryAttack = function (buf, frame) {
+    if (this.tryUltimate(buf, frame)) return true;
     if (throwPressed(buf, frame)) { this.startThrow(buf, frame); return true; }
     if (buf.wasPressed('t', frame) && this.def.moves.taunt && this.state !== 'sidestep') {
       buf.consume('t');
