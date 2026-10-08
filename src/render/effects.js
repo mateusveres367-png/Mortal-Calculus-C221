@@ -522,6 +522,21 @@
     thump(0.2, 160, 50, 0.4);
   };
 
+  // Stage objects being used.
+  Sfx.prop = function (kind) {
+    if (!Sfx.ctx || Sfx.muted) return;
+    switch (kind) {
+      case 'lockers': case 'cabinet': case 'trashcan': case 'barrier': // metal
+        burst(0.2, 2400, 6, 0.3, 'bandpass'); thump(0.12, 300, 120, 0.4); sweep(0.25, 1320, 1300, 0.04, 'square'); break;
+      case 'whiteboard': case 'chair': // squeaky wheels
+        sweep(0.18, 2200, 2900, 0.04, 'triangle'); sweep(0.2, 2600, 2100, 0.03, 'triangle'); thump(0.1, 200, 90, 0.3); break;
+      case 'vending': case 'crt': // a hum and a clunk
+        sweep(0.3, 120, 110, 0.08, 'sawtooth'); thump(0.15, 180, 70, 0.4); break;
+      default: // wood and paper
+        thump(0.14, 220, 90, 0.45); burst(0.12, 3800, 1, 0.12, 'highpass');
+    }
+  };
+
   // Chalk on a board: a few short scratches (DIAGRAM VIEW, proofs being written).
   Sfx.chalk = function () {
     if (!Sfx.ctx || Sfx.muted) return;

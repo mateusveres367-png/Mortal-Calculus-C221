@@ -46,6 +46,7 @@
     for (var key in def.moves) prepareMove(def, key, def.moves[key]);
     for (key in def.moves) if (def.moves[key].ex) addEnhanced(def, key, def.moves[key]);
     if (def.ultimate) addUltimate(def);
+    addPropMoves(def);
     FG.ROSTER.push(def);
     FG.ROSTER.sort(function (a, b) { return a.order - b.order; });
     return def;
@@ -140,6 +141,25 @@
     m.anim = base.anim.map(function (k) { return [k[0] > end ? k[0] + extra : k[0], k[1]]; });
     if (u.counter) m.anim = [[1, base.anim[0][1]], [4, u.pose || 'parry'], [m.parry.to, u.pose || 'parry'], [m.total, 'idle']];
     def.moves.ultimate = m;
+  }
+
+  // Stage objects (T next to one): a springboard dive at the opponent, or (back + T)
+  // a vault over them out of the corner, invulnerable and passing through. Built from
+  // each fighter's own jump and air kick poses.
+  function addPropMoves(def) {
+    var atk = {
+      name: 'Springboard', label: 'SPRINGBOARD', cmd: 'T (BY AN OBJECT)', level: 'mid', strength: 'heavy', motion: 'kick', prop: true,
+      startup: 16, active: 5, recovery: 18, damage: 18, block: -6, hit: { knockdown: true }, ch: { knockdown: true },
+      hitbox: { x: 16, w: 34, y: 30, h: 44 }, push: 14, carry: 1, shake: 0.008, step: [3, 20, 6],
+      anim: [[1, 'squat'], [6, 'jump'], [16, 'air_k'], [21, 'air_k'], [31, 'squat'], [39, 'idle']]
+    };
+    var esc = {
+      name: 'Vault', label: 'VAULT', cmd: 'B+T (BY AN OBJECT)', level: 'mid', strength: 'light', prop: true, vault: true,
+      startup: 30, active: 1, recovery: 8, invuln: [1, 30], step: [4, 28, 6.2],
+      anim: [[1, 'squat'], [6, 'jump'], [26, 'jump'], [31, 'squat'], [39, 'idle']]
+    };
+    prepareMove(def, 'propAtk', atk); prepareMove(def, 'propEsc', esc);
+    def.moves.propAtk = atk; def.moves.propEsc = esc;
   }
 
   function prepareMove(def, key, m) {

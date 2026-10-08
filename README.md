@@ -139,6 +139,7 @@ Every fighter uses the same input layout. What each input does, and its frame da
   - **MIYASHIRO — Imaginary Unit:** he vanishes, reappears behind them and combos; "i² = −1" stamps as they flip upside down.
   - **PEDERSEN — Exponential Overdrive:** off come the sunglasses; three punches marked 2¹, 2², 2³; the last cracks the screen like glass.
   - **RAMOS — Matrix Multiplication:** a grab, then slams across the stage in a 3×3 grid, row by column, and a hair flip.
+- **Stage objects:** every stage has one or two things near the walls you can use: a rolling whiteboard and a student desk (Classroom C221), lockers and the vending machine (Math Hallway), a monitor cart and a swivel chair (Computer Lab), a bench and a trash can (Outdoor Campus), a filing cabinet and a desk (Department Office), the gate arm and PEDERSEN's own car, alarm and all (Faculty Parking). Stand next to one and press `T` for a springboard dive at your opponent, or back + `T` to vault over them out of the corner (you can't be hit during the vault). They're free, but each needs 6 seconds before it can be used again (a dial shows it); a `T` key shows when you're close enough. Away from them, `T` is still your taunt.
 - **Extra Credit (last chance):** under 25% health, once per match, press `P`+`K`+`H` (no motion): a big EXTRA CREDIT cut-in, your meter refills to three bars, and you hit 20% harder for 7 seconds (you glow gold while it lasts). The HUD tells you when it's ready.
 
 The fighters, and what they teach:

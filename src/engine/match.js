@@ -33,6 +33,13 @@
     this.winner = null;
     this.over = false;
     this.cinematic = null; // an ultimate playing: { a, d, t, len, hits, done, total }
+    (this.props || []).forEach(function (p) { p.cool = 0; p.t = 999; p.use = null; });
+  };
+
+  // The stage's interactive objects (FG.stageProps): both fighters can use them.
+  Match.prototype.setProps = function (list) {
+    this.props = list || [];
+    for (var i = 0; i < 2; i++) this.fighters[i].props = this.props;
   };
 
   // raws: [rawInputP1, rawInputP2]. Events produced by this step are in this.events.
@@ -60,6 +67,7 @@
     this.frame++;
     b[0].update(raws[0], this.frame);
     b[1].update(raws[1], this.frame);
+    (this.props || []).forEach(function (p) { if (p.cool > 0) p.cool--; p.t++; });
 
     f[0].think(b[0], f[1], this.frame);
     f[1].think(b[1], f[0], this.frame);
@@ -77,6 +85,7 @@
     }
     for (i = 0; i < 2; i++) {
       if (f[i].cancelled) { this.events.push({ type: f[i].cancelled === 'feint' ? 'feint' : 'cancel', fighter: i, into: f[i].cancelled, x: f[i].x }); f[i].cancelled = null; }
+      if (f[i].propUsed) { var pu = f[i].propUsed; this.events.push({ type: 'prop', fighter: i, prop: pu, use: pu.use, x: pu.x, y: 40 }); f[i].propUsed = null; }
       if (f[i].extraCreditNow) { this.events.push({ type: 'extracredit', fighter: i, x: f[i].x, y: 60 }); f[i].extraCreditNow = false; }
       if (f[i].ultStarted) { this.events.push({ type: 'ultstart', fighter: i, move: f[i].move, x: f[i].x, y: 60 }); f[i].ultStarted = false; }
       if (f[i].enhancedNow) { this.events.push({ type: 'enhance', fighter: i, move: f[i].move, x: f[i].x, y: 60 }); f[i].enhancedNow = false; }
@@ -215,7 +224,7 @@
     var wa = C.PUSH_WIDTH * a.def.scale, wb = C.PUSH_WIDTH * b.def.scale;
 
     // Bodies push each other unless one is lying down, mid-throw, or clearly above the other.
-    var solid = !NO_PUSH[a.state] && !NO_PUSH[b.state] && Math.abs(a.y - b.y) < 70;
+    var solid = !NO_PUSH[a.state] && !NO_PUSH[b.state] && Math.abs(a.y - b.y) < 70 && !a.vaulting() && !b.vaulting();
     if (solid) {
       var dx = b.x - a.x;
       var overlap = wa + wb - Math.abs(dx);

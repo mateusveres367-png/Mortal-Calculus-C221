@@ -119,6 +119,8 @@ FG.C = {
   EXTRA_CREDIT_HEALTH: 0.25, // Extra Credit: available below this share of health, once a match
   BOOST_FRAMES: 420,    // Extra Credit: how long the damage boost lasts (7 seconds)
   BOOST_DAMAGE: 1.2,    // Extra Credit: damage multiplier while boosted
+  PROP_REACH: 60,       // stage objects: how close to one you must be to use it
+  PROP_COOLDOWN: 360,   // stage objects: frames before one can be used again (6 seconds)
   TIP_BONUS: 1.25,      // Long Arms: damage for landing with the tip of a straight
   ARMOR_DAMAGE: 0.7,    // Exponential Armor: share of an absorbed hit's damage taken
   ARMOR_HITSTOP: 8,     // Exponential Armor: the freeze on an absorbed hit

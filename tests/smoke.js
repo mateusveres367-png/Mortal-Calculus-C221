@@ -244,6 +244,20 @@ try { playwright = require('playwright'); } catch (e) {
   await page.screenshot({ path: path.join(out, '8-extra-credit.png') });
   var ecOk = /EXTRA CREDIT/.test(ecR.prompt) && ecR.cutin && ecR.banner === 'EXTRA CREDIT' && ecR.meter === 300 && ecR.boost && ecR.after === '';
 
+  // Stage objects: T next to one uses it (a label, a cooldown), and it's drawn.
+  var propR = await page.evaluate(function () {
+    var s = window.FG_SCENE, m;
+    s.newMatch(); m = s.match;
+    var p = m.props[0], f = m.fighters;
+    f[0].x = p.x + 10; f[1].x = p.x + 70;
+    var r1 = FG.parseInput('T');
+    s.forceInput = function () { var r = r1; r1 = FG.emptyRaw(); return [r, FG.emptyRaw()]; };
+    for (var t = 0; t < 6; t++) { s.tick(); s.render(); }
+    s.forceInput = null;
+    return { n: m.props.length, kind: p.kind, cool: p.cool, label: s.hud.label[0].text, move: f[0].move && f[0].move.id };
+  });
+  var propOk = propR.n >= 1 && propR.cool > 0 && propR.move === 'propAtk' && /!$/.test(propR.label);
+
   // Arcade: a CPU opponent, ROUND 1 / READY / FIGHT, a timer, best of three.
   var arcade = await page.evaluate(function () {
     var s = window.FG_SCENE;
@@ -335,9 +349,10 @@ try { playwright = require('playwright'); } catch (e) {
   await page.screenshot({ path: path.join(out, '10-ending.png') });
 
   await browser.close();
-  console.log(JSON.stringify({ title: title, matchup: matchup, renderer: renderer, hits: hits, counter: counterText, p1: p1, menuOk: menuOk, resetX: resetX, trial: trial, ko: ko, stage: stagePick, arcade: arcade, vsPanel: vsPanel, cutFreeze: cutFreeze, cpu: cpu, ladder: ladder, enhanced: ex, ultimate: ultR, extraCredit: ecR, errors: errors }, null, 1));
+  console.log(JSON.stringify({ title: title, matchup: matchup, renderer: renderer, hits: hits, counter: counterText, p1: p1, menuOk: menuOk, resetX: resetX, trial: trial, ko: ko, stage: stagePick, arcade: arcade, vsPanel: vsPanel, cutFreeze: cutFreeze, cpu: cpu, ladder: ladder, enhanced: ex, ultimate: ultR, extraCredit: ecR, prop: propR, errors: errors }, null, 1));
   var ok = !errors.length && title === 'Mortal Calculus: C221' && matchup === expectMatchup && hits.join() === expectHits && counterText === String(hits.length) &&
-    p1.last && p1.last.kind === 'BLOCK' && p1.last.adv === p1.jabBlock && menuOk && resetOk && trialOk && koOk && stagePick === 'classroom' && arcadeOk && attractOk && vsPanel && cutFreeze && cpuOk && ladderOk && exOk && ultOk && ecOk;
+    p1.last && p1.last.kind === 'BLOCK' && p1.last.adv === p1.jabBlock && menuOk && resetOk && trialOk && koOk && stagePick === 'classroom' && arcadeOk && attractOk && vsPanel && cutFreeze && cpuOk && ladderOk && exOk && ultOk && ecOk && propOk;
+  if (!ok) console.log('checks:', JSON.stringify({ errors: errors.length, menuOk: menuOk, resetOk: resetOk, trialOk: trialOk, koOk: koOk, arcadeOk: arcadeOk, attractOk: attractOk, vsPanel: vsPanel, cutFreeze: cutFreeze, cpuOk: cpuOk, ladderOk: ladderOk, exOk: exOk, ultOk: ultOk, ecOk: ecOk, propOk: propOk }));
   console.log(ok ? 'SMOKE OK' : 'SMOKE FAILED');
   if (!ok) process.exit(1);
 })().catch(function (e) { console.error(e); process.exit(1); });

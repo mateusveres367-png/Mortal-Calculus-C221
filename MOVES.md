@@ -2,7 +2,7 @@
 
 Generated from the fighter data by `node tools/movelist.js`; don't edit by hand. Identity, looks and lines are in [`ROSTER.md`](ROSTER.md).
 
-**Grade meter:** three bars, C, B and A, under your health bar. They fill as you land hits, block and take damage, a little faster while you're behind, and carry over between rounds. **Enhanced specials** cost one bar: press P+K during the startup of a special that has one (listed under each fighter) and it powers up, the fighter flashing in their colour. **Ultimates** cost all three: down, down-forward, forward + P+K+H (also straight out of a move that hits). If it connects, a cinematic plays (a cut-in, slow motion and DIAGRAM VIEW freeze frames) and takes about a third of their health; blocked or whiffed, it leaves you wide open. **Extra Credit:** once a match, under 25% health, P+K+H (no motion) refills the meter and adds 20% damage for 7 seconds.
+**Grade meter:** three bars, C, B and A, under your health bar. They fill as you land hits, block and take damage, a little faster while you're behind, and carry over between rounds. **Enhanced specials** cost one bar: press P+K during the startup of a special that has one (listed under each fighter) and it powers up, the fighter flashing in their colour. **Ultimates** cost all three: down, down-forward, forward + P+K+H (also straight out of a move that hits). If it connects, a cinematic plays (a cut-in, slow motion and DIAGRAM VIEW freeze frames) and takes about a third of their health; blocked or whiffed, it leaves you wide open. **Extra Credit:** once a match, under 25% health, P+K+H (no motion) refills the meter and adds 20% damage for 7 seconds. **Stage objects:** next to one, T is a springboard dive (Springboard below) and back + T a vault over the opponent out of the corner (Vault); each object then needs 6 seconds.
 
 Frame data: **i** is startup (the frame the move hits, counting the press as frame 1), then active and recovery frames. Block / hit / counter hit are frame advantage for the attacker. Inputs assume you face right: F = toward the opponent, B = away, D = down.
 
@@ -37,6 +37,8 @@ Calm and friendly, but every hit is heavy. Slow, patient, devastating.
 | P/H (DOWN) | Spring Theorem | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
 | T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
 | D,D/F,F+P+K+H | Exponential Overdrive | mid | 21 | 4 | 50 | -29 | +8 | launch | 28 | wall splats, armor: absorbs 1 hit on frames 6-20 |
+| T (BY AN OBJECT) | Springboard | mid | 16 | 5 | 18 | -6 | knockdown | knockdown | 18 |  |
+| B+T (BY AN OBJECT) | Vault | — | 38 total |  |  |  |  |  |  |  |
 
 **Enhanced specials** (P+K during the startup, 1 bar):
 
@@ -86,6 +88,8 @@ Nice, easygoing, a good sport. Best for new players.
 | P/H (DOWN) | Spring Theorem | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
 | T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
 | D,D/F,F+P+K+H | Order Of Operations | mid | 19 | 3 | 52 | -34 | +6 | launch | 22 | wall splats, Long Arms: +25% damage at the tip |
+| T (BY AN OBJECT) | Springboard | mid | 16 | 5 | 18 | -6 | knockdown | knockdown | 18 |  |
+| B+T (BY AN OBJECT) | Vault | — | 38 total |  |  |  |  |  |  |  |
 
 **Enhanced specials** (P+K during the startup, 1 bar):
 
@@ -140,6 +144,8 @@ Very kind, precise and graceful. Bows before fights.
 | T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
 | PARRY | Reflection | mid | 6 | 3 | 18 | -6 | knockdown | knockdown | 20 |  |
 | D,D/F,F+P+K+H | Circle Theorem | high | 13 | 3 | 48 | -34 | +5 | +10 | 13 |  |
+| T (BY AN OBJECT) | Springboard | mid | 16 | 5 | 18 | -6 | knockdown | knockdown | 18 |  |
+| B+T (BY AN OBJECT) | Vault | — | 38 total |  |  |  |  |  |  |  |
 
 **Enhanced specials** (P+K during the startup, 1 bar):
 
@@ -195,6 +201,8 @@ Happy, sassy, everyone's favorite. Fakes you out with a grin.
 | T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
 | B+K, P | The Converse | mid | 8 | 3 | 18 | -6 | launch | launch | 16 | enhance with P+K |
 | D,D/F,F+P+K+H | Two-Column Proof | mid | 18 | 3 | 52 | -35 | +5 | launch | 20 | wall splats |
+| T (BY AN OBJECT) | Springboard | mid | 16 | 5 | 18 | -6 | knockdown | knockdown | 18 |  |
+| B+T (BY AN OBJECT) | Vault | — | 38 total |  |  |  |  |  |  |  |
 
 **Enhanced specials** (P+K during the startup, 1 bar):
 
@@ -245,6 +253,8 @@ Sarcastic and funny. Taunts mid-combo. Relentless pressure.
 | P/H (DOWN) | Spring Theorem | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
 | T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
 | D,D/F,F+P+K+H | Geometric Series | mid | 13 | 3 | 45 | -29 | +5 | +9 | 10 |  |
+| T (BY AN OBJECT) | Springboard | mid | 16 | 5 | 18 | -6 | knockdown | knockdown | 18 |  |
+| B+T (BY AN OBJECT) | Vault | — | 38 total |  |  |  |  |  |  |  |
 
 **Enhanced specials** (P+K during the startup, 1 bar):
 
@@ -297,6 +307,8 @@ Very suspicious. Always watching. Waits for you to commit, then punishes.
 | READ A MID | Critical Point | mid | 7 | 3 | 18 | -6 | knockdown | knockdown | 22 |  |
 | READ A LOW | Saddle Point | low | 7 | 3 | 20 | -12 | knockdown | knockdown | 18 | ducks highs |
 | D,D/F,F+P+K+H | Fundamental Theorem | — | 100 total |  |  |  |  |  |  | parry |
+| T (BY AN OBJECT) | Springboard | mid | 16 | 5 | 18 | -6 | knockdown | knockdown | 18 |  |
+| B+T (BY AN OBJECT) | Vault | — | 38 total |  |  |  |  |  |  |  |
 
 **Enhanced specials** (P+K during the startup, 1 bar):
 
@@ -347,6 +359,8 @@ Very smart. Reads opponents, keeps perfect distance, punishes every mistake.
 | P/H (DOWN) | Spring Theorem | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
 | T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
 | D,D/F,F+P+K+H | Imaginary Unit | mid | 12 | 3 | 48 | -34 | +6 | launch | 16 | wall splats |
+| T (BY AN OBJECT) | Springboard | mid | 16 | 5 | 18 | -6 | knockdown | knockdown | 18 |  |
+| B+T (BY AN OBJECT) | Vault | — | 38 total |  |  |  |  |  |  |  |
 
 **Enhanced specials** (P+K during the startup, 1 bar):
 
@@ -401,6 +415,8 @@ Fast, explosive grappler who closes distance quickly. Confident and focused.
 | P/H (DOWN) | Spring Theorem | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
 | T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
 | D,D/F,F+P+K+H | Matrix Multiplication | throw | 16 | 3 | 62 |  |  |  | 32 | unbreakable |
+| T (BY AN OBJECT) | Springboard | mid | 16 | 5 | 18 | -6 | knockdown | knockdown | 18 |  |
+| B+T (BY AN OBJECT) | Vault | — | 38 total |  |  |  |  |  |  |  |
 
 **Enhanced specials** (P+K during the startup, 1 bar):
 

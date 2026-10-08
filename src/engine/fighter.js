@@ -481,9 +481,30 @@
     return true;
   };
 
+  // Stage objects: T next to one that's ready uses it (back + T vaults out).
+  Fighter.prototype.tryProp = function (buf, frame) {
+    if (!this.props || !NEUTRAL[this.state] || !buf.wasPressed('t', frame)) return false;
+    var best = null, self = this;
+    this.props.forEach(function (p) { if (p.cool === 0 && Math.abs(p.x - self.x) <= C.PROP_REACH && (!best || Math.abs(p.x - self.x) < Math.abs(best.x - self.x))) best = p; });
+    if (!best) return false;
+    buf.consume('t');
+    var esc = buf.back(this.facing);
+    this.stance = 'A';
+    this.startMove(esc ? 'propEsc' : 'propAtk');
+    best.cool = C.PROP_COOLDOWN; best.use = esc ? 'escape' : 'attack'; best.by = this.index; best.t = 0;
+    this.propUsed = best; // read (and cleared) by the match for the event
+    return true;
+  };
+
+  // Vaulting over the opponent: no body collision.
+  Fighter.prototype.vaulting = function () {
+    return this.state === 'attack' && !!this.move.vault && this.moveFrame >= this.move.step[0] && this.moveFrame <= this.move.step[1];
+  };
+
   Fighter.prototype.tryAttack = function (buf, frame) {
     if (this.tryUltimate(buf, frame)) return true;
     if (this.tryExtraCredit(buf, frame)) return true;
+    if (this.tryProp(buf, frame)) return true;
     if (throwPressed(buf, frame)) { this.startThrow(buf, frame); return true; }
     if (buf.wasPressed('t', frame) && this.def.moves.taunt && this.state !== 'sidestep') {
       buf.consume('t');
@@ -712,6 +733,8 @@
       case 'roll': return this.stateFrame <= C.ROLL_INVULN;
       case 'techroll': return this.stateFrame <= C.TECH_INVULN;
       case 'throwbreak': return this.stateFrame <= 6;
+      case 'cinematic': return true;
+      case 'attack': { var iv = this.move.invuln; return !!iv && this.moveFrame >= iv[0] && this.moveFrame <= iv[1]; } // a vault
     }
     return false;
   };

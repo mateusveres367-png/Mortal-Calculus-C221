@@ -38,10 +38,12 @@
     FG.makeFonts(this);
     // PEDERSEN drives in on outdoor stages; his car is then part of the fight scene.
     var stageDef = FG.stageById(this.stageId);
-    var carInWorld = !!stageDef.outdoor && (FG.fighterById(this.ids.p1).car || FG.fighterById(this.ids.p2).car);
+    var carInWorld = (!!stageDef.outdoor && (FG.fighterById(this.ids.p1).car || FG.fighterById(this.ids.p2).car)) || stageDef.id === 'parking'; // the lot: his car is by the edge
     this.stage = new FG.Stage(this, { id: this.stageId, carInWorld: carInWorld });
     this.ghosts = this.add.graphics().setDepth(-1).setAlpha(0.45); // cancel afterimages
     this.auras = this.add.graphics().setDepth(-0.5);                // MIYASHIRO's Calculated glow
+    this.propG = this.add.graphics().setDepth(-0.7);                // stage objects (src/render/props.js)
+    this.alarm = 0;                                                 // PEDERSEN's car alarm: frames left
     this.world = this.add.graphics().setDepth(0);
     this.screenFlash = this.add.graphics().setScrollFactor(0).setDepth(40); // impact flashes over the world
     this.hud = new FG.Hud(this);
@@ -137,11 +139,16 @@
     // Only intros start with LOPEZ's blazer on; he takes it off during his.
     for (var i = 0; i < 2; i++) { f[i]._blazer = !!(opts.intro && f[i].def.look.blazer); f[i]._pending = null; }
     // PEDERSEN's car parks behind his starting spot (and drives in during his intro).
+    // Stage objects. On the parking lot PEDERSEN's car is on his side of the lot.
+    var ped = f[0].def.car ? 0 : f[1].def.car ? 1 : -1, lot = this.stageId === 'parking';
+    this.match.setProps(FG.stageProps(this.stageId, { flip: lot && ped >= 0 && f[ped].x < C.WORLD_W / 2 }));
     this.cars = [];
     for (var c = 0; c < 2; c++) {
       if (!f[c].def.car || !this.stage.outdoor) continue; // indoors he walks in
-      var park = Math.max(C.WALL_L + 80, Math.min(C.WALL_R - 80, f[c].x - f[c].facing * 95));
-      this.cars.push({ owner: c, parkX: park, x: park, facing: f[c].facing, door: 0, spin: 0 });
+      var park = Math.max(C.WALL_L + 80, Math.min(C.WALL_R - 80, f[c].x - f[c].facing * 95)), cf = f[c].facing;
+      // The lot: he parks nose-in at the edge (his car is the one you can use there).
+      if (lot) { var hood = this.match.props.filter(function (p) { return p.kind === 'hood'; })[0]; cf = hood.x > C.WORLD_W / 2 ? -1 : 1; park = cf < 0 ? C.WORLD_W : 0; }
+      this.cars.push({ owner: c, parkX: park, x: park, facing: cf, door: 0, spin: 0, bounce: 0 });
       f[c]._hidden = false;
     }
     if (opts.intro) this.startIntro();
@@ -168,15 +175,18 @@
       }
       car.door = t < 48 ? 0 : t < 56 ? (t - 48) / 8 : t < 66 ? 1 : t < 74 ? 1 - (t - 66) / 8 : 0;
       who._hidden = t < 56;
-      var doorX = car.parkX + car.facing * 12;
-      who._drawX = t < 56 ? null : t < 68 ? doorX + (who.x - doorX) * ((t - 56) / 12) : null;
+      var doorX = car.parkX + car.facing * 12, walk = Math.max(12, Math.round(Math.abs(who.x - doorX) / 5));
+      who._drawX = t < 56 ? null : t < 56 + walk ? doorX + (who.x - doorX) * ((t - 56) / walk) : null;
     }
   };
 
   FightScene.prototype.drawCars = function (g) {
     for (var i = 0; i < this.cars.length; i++) {
       var car = this.cars[i];
-      FG.drawCar(g, car.x, C.GROUND_Y - 26, { scale: 0.82, facing: car.facing, door: car.door, wheelSpin: car.spin });
+      // On the lot it's also a stage object: it bounces and its lights flash when used.
+      var hp = this.match.props.filter(function (p) { return p.kind === 'hood'; })[0], used = hp && Math.abs(hp.x - car.parkX) < 120 && !this.intro && hp.t < 120;
+      var bounce = used && hp.t < 30 ? -Math.abs(Math.sin(hp.t * 0.9) * 4 * (1 - hp.t / 30)) : 0;
+      FG.drawCar(g, car.x, C.GROUND_Y - 26 + bounce, { scale: 0.82, facing: car.facing, door: car.door, wheelSpin: car.spin, lights: used && hp.t % 16 < 8 ? 1 : 0 });
     }
   };
 
@@ -757,6 +767,7 @@
       }
       if (ev.type === 'enhance' || ev.type === 'ultstart') ev.color = FG.fighterGlow(f[ev.fighter].def);
       if (ev.type === 'extracredit') this.extraCreditCutIn(ev);
+      if (ev.type === 'prop') this.propUsed(ev);
       if (ev.type === 'ultstart') this.ultFlash = { t: 0, wi: ev.fighter, color: ev.color };
       if (ev.type === 'ultimate') this.startUltimate(ev);
       if (ev.type === 'ulthit') this.impact = { who: ev.defender, frames: 2, color: 0xffffff };
@@ -791,6 +802,8 @@
       ult.script.step(ult.fx, ult.t);
     }
     if (this.ultFlash && ++this.ultFlash.t > 30) this.ultFlash = null;
+    // The car alarm: a two-tone whoop until it gives up.
+    if (this.alarm > 0) { this.alarm--; if (this.alarm % 15 === 0) FG.Sfx.alarm(this.alarm % 30 === 0); }
 
     // A big juggle combo that just ended: the landing plays in slow motion.
     for (var lj = 0; lj < m.events.length; lj++) {
@@ -1030,6 +1043,7 @@
     this.sortCameras();
 
     g.clear();
+    this.drawProps();
     this.drawCars(g);
     this.effects.drawBack(g);
     this.ghosts.clear();
@@ -1066,6 +1080,11 @@
       }
       if (fi._hidden) continue;
       if (!fi._pose) FG.updatePose(fi, this.tickCount);
+      // Springboard dives and vaults go up and over (on screen; the sim keeps them grounded).
+      if (!this.ult && fi.state === 'attack' && fi.move && fi.move.prop) {
+        var arc = fi.move.vault ? 32 : 24, h = fi.move.vault ? 74 : 40;
+        if (fi.moveFrame < arc) opts.y = Math.sin(Math.PI * fi.moveFrame / arc) * h;
+      }
       this.drawFigure(g, fi, opts);
     }
     this.effects.draw(g);
@@ -1104,6 +1123,17 @@
     this.cutin.draw();
   };
 
+  // The stage's objects, with a T prompt over one that someone next to it could use.
+  FightScene.prototype.drawProps = function () {
+    var g = this.propG, f = this.match.fighters, self = this;
+    g.clear();
+    (this.match.props || []).forEach(function (p) {
+      var near = !self.intro && !self.win && f.some(function (fi) { return Math.abs(fi.x - p.x) <= C.PROP_REACH && (fi.state === 'idle' || fi.state === 'walkF' || fi.state === 'walkB' || fi.state === 'crouch'); });
+      var carDrawn = p.kind === 'hood' && self.cars.some(function (c) { return Math.abs(c.parkX - p.x) < 120; });
+      FG.drawStageProp(g, p, { near: near, carDrawn: carDrawn, tick: self.tickCount });
+    });
+  };
+
   // Draw a fighter where the screen wants them: an ultimate can move, lift, turn,
   // flip or shrink them on screen only (_drawX, _drawY, _drawFacing, _drawRot,
   // _drawScale). opts.screen: draw on a screen layer (DIAGRAM VIEW), zoom included.
@@ -1129,6 +1159,19 @@
   };
 
   // --- Ultimates ------------------------------------------------------------------
+
+  // A stage object was used: its name on the HUD, its sound, a few bits flying.
+  FightScene.prototype.propUsed = function (ev) {
+    var p = ev.prop;
+    this.hud.setLabel(ev.fighter, (ev.use === 'escape' ? p.esc : p.atk) + '!');
+    FG.Sfx.prop(p.kind);
+    var paper = { desk: 1, cabinet: 1, officeDesk: 1, whiteboard: 0, crt: 0 };
+    if (paper[p.kind]) for (var k = 0; k < 6; k++) this.effects.props.push({ x: p.x + (Math.random() - 0.5) * 20, y: C.GROUND_Y - 34, vx: (Math.random() - 0.5) * 3, vy: -2 - Math.random() * 2.5, rot: 0, vr: (Math.random() - 0.5) * 0.4, life: 50, w: 6, h: 8, color: 0xf4f1e6 });
+    if (p.kind === 'vending') this.effects.props.push({ x: p.x - 4, y: C.GROUND_Y - 20, vx: (p.x < C.WORLD_W / 2 ? 1 : -1) * 2, vy: -1.5, rot: 0, vr: 0.3, life: 50, w: 4, h: 7, color: 0x5fd7ff });
+    if (p.kind === 'trashcan') this.effects.props.push({ x: p.x, y: C.GROUND_Y - 42, vx: (p.x < C.WORLD_W / 2 ? 1 : -1) * 2.5, vy: -4, rot: 0, vr: 0.35, life: 60, w: 30, h: 4, color: 0x8a8f98 });
+    this.effects.dust(p.x, 6, 2);
+    if (p.kind === 'hood') this.alarm = 150;
+  };
 
   // Extra Credit: a big cut-in, then a banner; they glow gold while the boost lasts.
   FightScene.prototype.extraCreditCutIn = function (ev) {

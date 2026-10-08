@@ -1561,5 +1561,43 @@ defs.forEach(function (d) {
   check('extra credit: then an ultimate', seen.indexOf('extracredit') >= 0 && seen.indexOf('ultstart') > seen.indexOf('extracredit'), seen);
 })();
 
+// Stage objects: T next to one uses it (a springboard attack, or back + T to vault
+// out of the corner), then it cools down. Taunt is still T everywhere else.
+(function () {
+  check('every stage has one or two objects near the walls', FG.STAGES.every(function (st) {
+    var ps = FG.stageProps(st.id);
+    return ps.length >= 1 && ps.length <= 2 && ps.every(function (p) { return Math.min(p.x - FG.C.WALL_L, FG.C.WALL_R - p.x) <= 80 && p.atk && p.esc; });
+  }));
+  function near(press, opts) {
+    opts = opts || {};
+    var m = new FG.Match(S, D); m.step([raw({}), raw({})]);
+    m.setProps(FG.stageProps('classroom'));
+    var a = m.fighters[0], d = m.fighters[1];
+    a.x = opts.ax || 100; d.x = opts.dx || 160;
+    var ev = [];
+    for (var i = 0; i < (opts.frames || 80); i++) { m.step([raw(typeof press === 'function' ? press(i) : i === 0 ? press : {}), raw({})]); ev = ev.concat(m.events); }
+    return { m: m, ev: ev, a: a, d: d, type: function (t) { return ev.filter(function (e) { return e.type === t; }); } };
+  }
+  var r = near({ t: true });
+  var used = r.type('prop');
+  check('stage object: T next to it uses it', used.length === 1 && used[0].use === 'attack' && used[0].prop.kind === 'whiteboard', r.ev.map(function (e) { return e.type; }));
+  check('stage object: the springboard hits and knocks down', r.type('hit').some(function (e) { return e.move.id === 'propAtk' && e.knockdown; }), r.type('hit').map(function (e) { return e.move.id; }));
+  check('stage object: then it cools down', r.m.props[0].cool > 0 && r.m.props[0].cool <= FG.C.PROP_COOLDOWN, r.m.props[0].cool);
+  var twice = near(function (i) { return i === 0 || i === 60 ? { t: true } : {}; }, { frames: 120 });
+  check('stage object: not again until it is ready', twice.type('prop').length === 1 && twice.type('whiff').some(function (e) { return e.move.taunt; }), twice.ev.map(function (e) { return e.type; }));
+  var far = near({ t: true }, { ax: 400, dx: 460 });
+  check('stage object: away from them, T is a taunt', far.type('prop').length === 0 && far.a.lastMove.taunt);
+  // Cornered: back + T vaults over them, untouchable, to the open side.
+  var esc = near({ t: true, left: true }, { ax: 70, dx: 115, frames: 60 });
+  check('stage object: back + T vaults out of the corner', esc.type('prop').length === 1 && esc.type('prop')[0].use === 'escape' && esc.a.x > esc.d.x, [esc.a.x, esc.d.x]);
+  // The opponent swings at them mid-vault: it goes through.
+  var m = new FG.Match(S, D); m.step([raw({}), raw({})]); m.setProps(FG.stageProps('classroom'));
+  m.fighters[0].x = 70; m.fighters[1].x = 115;
+  var hitV = false;
+  for (var i = 0; i < 40; i++) { m.step([raw(i === 0 ? { t: true, left: true } : {}), raw(i === 4 ? { k: true } : {})]); m.events.forEach(function (e) { if (e.type === 'hit' && e.defender === 0) hitV = true; }); }
+  check('stage object: the vault is invulnerable', !hitV);
+  check('stage objects: reset each round', (function () { m.reset(); return m.props.every(function (p) { return p.cool === 0; }); })());
+})();
+
 console.log(passes + ' passed, ' + failures + ' failed');
 process.exit(failures ? 1 : 0);
