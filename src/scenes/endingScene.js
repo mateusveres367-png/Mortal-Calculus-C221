@@ -34,6 +34,11 @@
     var lines = def.victoryLines, line = FG.wrapText('"' + lines[Math.floor(Math.random() * lines.length)] + '"', 56);
     line.forEach(function (l, k) { FG.text(self, cx, 116 + k * 11, l, 'y').setOrigin(0.5, 0).setDepth(11); });
     this.prompt = FG.text(this, cx, C.VIEW_H - 26, 'THANKS FOR PLAYING   PRESS ENTER', 'w').setOrigin(0.5, 0).setDepth(11);
+    // Beating arcade unlocks WILSON for arcade and VS CPU (he's always in training and versus).
+    if (!FG.settings.wilsonUnlocked && FG.fighterById('wilson')) {
+      FG.settings.wilsonUnlocked = true; FG.saveSettings();
+      this.unlock = FG.text(this, cx, C.VIEW_H - 50, 'NEW CHALLENGER: WILSON IS NOW PLAYABLE', 'y', 1.5).setOrigin(0.5, 0).setDepth(11);
+    }
 
     var kb = this.input.keyboard;
     kb.on('keydown', function (e) {

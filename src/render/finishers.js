@@ -359,4 +359,35 @@
       else if (s.slam && t > s.slam + 12) bigText(fx, 0, 'CARDIO FINALE', W / 2, 70, 0xffffff, 4, -5);
     }
   };
+
+  // WILSON — Class Dismissed: he checks his watch; one clean strike; the bell rings;
+  // they drop; he walks off without looking back.
+  FG.FINISHERS.wilson = {
+    len: 230,
+    step: function (fx, t) {
+      var w = fx.w, l = fx.l;
+      if (t === 1) fx.anim(w, [[1, 'stand'], [10, 'watch'], [40, 'watch'], [46, 'idle']]);
+      if (t === 46) fx.anim(w, [[1, 'dist_c'], [6, 'dist_x'], [30, 'dist_x'], [40, 'stand']]);
+      if (t === 52) { fx.hit(l, 'power', { ch: true, shake: 0.02 }); fx.pose(l, 'hit_high'); fx.slow(20, 0.4); }
+      if (t === 66) { FG.Sfx.bell(); fx.s.bell = t; fx.scene.stage.react('ko'); }
+      if (t === 84) fx.anim(l, [[1, 'hit_mid'], [10, 'kneel'], [24, 'down']]);
+      if (t === 108) { FG.Sfx.play({ type: 'land' }); fx.shake(0.006); }
+      // He turns his back and walks off.
+      if (t === 116) { w.facing = -fx.dir; fx.anim(w, [[1, 'walk1'], [10, 'walk2'], [20, 'walk1']], true); }
+      if (t > 116) w.x -= fx.dir * 1.1;
+    },
+    draw: function (fx, t) {
+      var g = fx.gs;
+      if (fx.s.bell && t - fx.s.bell < 50) {
+        // The bell, shaking on the wall.
+        var j = Math.sin((t - fx.s.bell) * 1.6) * 3, bx = W / 2 + j, by = 70;
+        g.fillStyle(0x111111, 0.6); g.fillCircle(bx + 3, by + 3, 22);
+        g.fillStyle(0xc8a030, 1); g.fillCircle(bx, by, 22);
+        g.fillStyle(0xf0d070, 1); g.fillCircle(bx - 6, by - 6, 7);
+        g.fillStyle(0x3a2a10, 1); g.fillCircle(bx, by, 4);
+        bigText(fx, 1, 'RIIIING', bx, by + 36, 0xffffff, 2, j);
+      } else fx.texts[1].setVisible(false);
+      if (t > 130) bigText(fx, 0, 'CLASS DISMISSED.', W / 2, 130, 0xffd23f, 3 * stampScale(t, 130), -4);
+    }
+  };
 })();

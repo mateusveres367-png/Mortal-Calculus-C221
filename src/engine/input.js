@@ -53,8 +53,11 @@
   // Directions for a (possibly buffered) button press: what was held when it was
   // pressed, so an early D+H still launches after down is let go.
   InputBuffer.prototype.dirsFor = function (btn, frame) {
-    var d = this.pressDirs[btn];
-    if (!d || this.pressed[btn] === frame) return this.held;
+    var d = this.pressDirs[btn], h = this.held;
+    if (!d) return h;
+    // Pressed this frame: what's held now, plus what was held at the press (a press
+    // during hitstop is stamped for this frame, and its direction may be let go already).
+    if (this.pressed[btn] === frame) return { left: h.left || d.left, right: h.right || d.right, up: h.up || d.up, down: h.down || d.down };
     return d;
   };
 

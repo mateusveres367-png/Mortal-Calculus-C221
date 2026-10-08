@@ -104,6 +104,17 @@ Every fighter's combo routes, and what the combo feel pass changed. The routes l
 | AUGMENTED JUGGLE | medium | F, F+P, P+K, P, P, H | 4 | 1 bar | 49 |
 | RANK SPIKE | hard | D+H, UP, AIR P, AIR K, AIR H, K | 5 | - | 55 |
 | MATRIX MULTIPLICATION | hard | D, D/F, F+P+K+H | 1 | 3 bars | 51 |
+
+### WILSON (veteran master, every subject)
+
+| Route | Level | Inputs | Hits | Meter | Damage |
+| --- | --- | --- | --- | --- | --- |
+| POINT, CHAIN | easy | P, P | 2 | - | 18 |
+| SQUARE ROOT JUGGLE | medium | D+H, P, P, H | 4 | - | 43 |
+| CHAIN RULE | medium | P, P, F+P | 3 | - | 29 |
+| DISTANCE SQUARED | medium | F+P, P+K | 2 | 1 bar | 22 |
+| VERTICAL ASYMPTOTE | hard | D+H, UP, AIR P, AIR K, AIR H, K | 5 | - | 55 |
+| TENURE | hard | P, D, D/F, F+P+K+H | 2 | 3 bars | 59 |
 <!-- /routes -->
 
 ## Easier combos (the second pass)

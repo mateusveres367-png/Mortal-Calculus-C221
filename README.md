@@ -4,7 +4,7 @@ A retro, Tekken-inspired 2D/2.5D fighting game themed around the El Camino Real 
 
 ## Status
 
-**Phase 7 — modes and screens (playable).** All eight fighters from [`ROSTER.md`](ROSTER.md): **PEDERSEN** (power, math analysis; the cover fighter), **BRINKHUS** (balanced, Algebra 1), **CHAI** (technical, geometry), **DALSASS** (tricky, triangles and proofs), **LEE** (rushdown, sequences), **LOPEZ** (defensive, calculus), **MIYASHIRO** (spacing, Algebra 2) and **RAMOS** (grappler, matrices). No two fight alike: each has their own style, stance, movement, weight, hit reactions and signature mechanic.
+**Phase 7 — modes and screens (playable).** All nine fighters from [`ROSTER.md`](ROSTER.md): **PEDERSEN** (power, math analysis; the cover fighter), **BRINKHUS** (balanced, Algebra 1), **CHAI** (technical, geometry), **DALSASS** (tricky, triangles and proofs), **LEE** (rushdown, sequences), **LOPEZ** (defensive, calculus), **MIYASHIRO** (spacing, Algebra 2), **RAMOS** (grappler, matrices) and **WILSON** (veteran master, every subject; the arcade boss). No two fight alike: each has their own style, stance, movement, weight, hit reactions and signature mechanic.
 
 What's in the game so far:
 
@@ -60,7 +60,7 @@ Open `index.html` directly in a modern browser (double-click it, or drag it into
 
 On the title screen, press `Enter` (or click) for the menu, then up/down and `Enter`:
 
-- **Arcade:** pick your fighter (arrows or WASD, `Enter` or `J`), then fight all eight in a row (your own mirror match included, PEDERSEN last). The CPU gets harder with every fight; a ladder screen before each one shows the tower and the next opponent's line for you. Lose and CONTINUE? counts down; win them all for the ending and your fighter's victory line.
+- **Arcade:** pick your fighter (arrows or WASD, `Enter` or `J`), then fight all nine in a row (your own mirror match included, then PEDERSEN, then WILSON, the final boss). Beat arcade once to unlock WILSON for arcade and VS CPU (he's always playable in training and versus). The CPU gets harder with every fight; a ladder screen before each one shows the tower and the next opponent's line for you. Lose and CONTINUE? counts down; win them all for the ending and your fighter's victory line.
 - **VS CPU:** pick your fighter, then the CPU's, then a stage; up/down on stage select sets the CPU's level.
 - **Versus:** both players pick at once: player 1 with `WASD` and `J` (`K` to undo), player 2 with the arrows and `Numpad 1` or `,` (`Numpad 2` or `.` to undo). Then pick a stage.
 - **Training:** pick your fighter, then the opponent, then a stage. In the training menu, PLAYER 2 can be the dummy, a second human, or the CPU at any level.
@@ -290,7 +290,7 @@ node tests/smoke.js      # optional: opens index.html from disk in headless Chro
 ## Project docs
 
 - [`GAME_DESIGN.md`](GAME_DESIGN.md) — full game vision and design
-- [`ROSTER.md`](ROSTER.md) — the eight fighters: archetypes, looks, personalities, moves and victory lines
+- [`ROSTER.md`](ROSTER.md) — the nine fighters: archetypes, looks, personalities, moves and victory lines
 - [`MOVES.md`](MOVES.md) — generated move lists with frame data and combo routes
 - [`COMBOS.md`](COMBOS.md) — every fighter's combo routes by difficulty, and what the combo feel pass changed
 - [`CLAUDE.md`](CLAUDE.md) — working rules for AI-assisted development

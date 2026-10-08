@@ -349,11 +349,11 @@ try { playwright = require('playwright'); } catch (e) {
   cpu.before = levelBefore; cpu.picked = levelPicked;
   var cpuOk = cpu.level === cpu.want && cpu.rounds;
   await page.evaluate(function (before) { FG.settings.difficulty = before; FG.saveSettings(); return true; }, levelBefore);
-  // Arcade: all eight in a row, with the ladder screen before each fight.
+  // Arcade: all nine in a row (PEDERSEN, then WILSON last), with the ladder screen before each fight.
   var ladder = await page.evaluate(function () {
     var run = FG.arcadeRun('brinkhus');
     window.FG_SCENE.scene.start('ladder', run);
-    return { n: run.ladder.length, mirror: run.ladder.indexOf('brinkhus') >= 0, last: run.ladder[run.ladder.length - 1],
+    return { n: run.ladder.length, mirror: run.ladder.indexOf('brinkhus') >= 0, last: run.ladder[run.ladder.length - 1], before: run.ladder[run.ladder.length - 2],
       levels: run.ladder.map(function (id, i) { return FG.arcadeLevel(i, run.ladder.length); }) };
   });
   await page.waitForFunction(function () { return window.FG_LADDER && window.FG_LADDER.sys.isActive() && window.FG_LADDER.t > 10; }, null, { timeout: 15000 });
@@ -361,13 +361,55 @@ try { playwright = require('playwright'); } catch (e) {
   await page.keyboard.press('Enter');
   await page.waitForFunction(function () { var s = window.FG_SCENE; return s && s.sys.isActive() && s.mode === 'arcade'; }, null, { timeout: 15000 });
   var L4 = await page.evaluate(function () { return FG.AI_ORDER; });
-  var ladderOk = ladder.n === 8 && ladder.mirror && ladder.last === 'pedersen' &&
+  var ladderOk = ladder.n === 9 && ladder.mirror && ladder.last === 'wilson' && ladder.before === 'pedersen' &&
     ladder.levels.every(function (l, i) { return i === 0 || L4.indexOf(l) >= L4.indexOf(ladder.levels[i - 1]); }) && ladder.levels[0] === 'easy';
+
+  // WILSON is locked as your pick in arcade until arcade has been beaten.
+  await page.evaluate(function () { FG.settings.wilsonUnlocked = false; window.FG_TITLE.scene.start('select', { mode: 'arcade' }); });
+  await page.waitForFunction(function () { return window.FG_SELECT && window.FG_SELECT.sys.isActive() && window.FG_SELECT.mode === 'arcade' && window.FG_SELECT.t > 5; }, null, { timeout: 15000 });
+  var lock = await page.evaluate(function () {
+    var s = window.FG_SELECT; s.cursor[0] = FG.ROSTER.length - 1; s.refresh(); s.confirm(0);
+    return { still: s.sys.isActive() && !s.leaving, name: s.previews[0].name.text, msg: s.lockMsg > 0, cards: s.cards.length };
+  });
+  await page.screenshot({ path: path.join(out, '10-select-locked.png') });
+  var lockOk = lock.still && lock.name === '???' && lock.msg && lock.cards === 9;
 
   // The arcade ending.
   await page.evaluate(function () { window.FG_TITLE.scene.start('ending', { p1: 'pedersen', ladder: ['a', 'b'], continues: 1, started: Date.now() - 65000 }); });
   await page.waitForFunction(function () { return window.FG_ENDING && window.FG_ENDING.sys.isActive() && window.FG_ENDING.t > 30; }, null, { timeout: 15000 });
   await page.screenshot({ path: path.join(out, '10-ending.png') });
+  var unlocked = await page.evaluate(function () { return FG.settings.wilsonUnlocked === true && !!window.FG_ENDING.unlock; });
+
+  // WILSON in a fight: Tenure (the ultimate) and Class Dismissed (the finisher) play through.
+  await page.evaluate(function () { window.FG_TITLE.scene.start('fight', { mode: 'training', p1: 'wilson', p2: 'lee', stage: 'classroom' }); });
+  await page.waitForFunction(function () { var s = window.FG_SCENE; return s && s.sys.isActive() && s.match.fighters[0].def.id === 'wilson' && s.tickCount > 2; }, null, { timeout: 15000 });
+  var wil = await page.evaluate(function () {
+    var s = window.FG_SCENE; s.sys.sceneUpdate = function () {}; if (s.intro) s.endIntro();
+    s.training.refill = false; s.newMatch(); var m = s.match, f = m.fighters;
+    f[0].x = 480; f[1].x = 520; f[0].meter = FG.C.METER_MAX;
+    var seq = ['D', 'D/F', 'F', 'F+P+K+H'], hp0 = f[1].health, seenHits = {}, ended = false;
+    for (var t = 0; t < 900 && !ended; t++) {
+      var r1 = t < seq.length ? FG.parseInput(seq[t]) : FG.emptyRaw();
+      s.forceInput = function () { return [r1, FG.emptyRaw()]; };
+      s.tick(); s.render();
+      m.events.forEach(function (e) { if (e.type === 'ulthit') seenHits[e.n] = true; if (e.type === 'ultend') ended = true; }); // (events stay put through freezes)
+    }
+    var out = { hits: Object.keys(seenHits).length, ended: ended, share: Math.round((hp0 - f[1].health) / f[1].def.health * 100) };
+    s.forceInput = null;
+    s.practiceFinisher();
+    var inp = FG.fighterById('wilson').finisher.input.split(', '), fired = false;
+    for (t = 0; t < 400 && (s.finishWin || s.finisher); t++) {
+      var tok = !fired && s.finishWin && s.finishWin.t > 10 ? inp : null;
+      var raw = FG.emptyRaw();
+      if (tok) { var k = Math.floor((s.finishWin.t - 11) / 3); if (k < inp.length && (s.finishWin.t - 11) % 3 === 0) raw = FG.parseInput(inp[k].replace('B', 'B').replace('D', 'D')); if (k >= inp.length) fired = true; }
+      s.forceInput = function () { return [raw, FG.emptyRaw()]; };
+      if (s.finisher) out.finisher = true;
+      s.tick(); s.render();
+    }
+    s.forceInput = null; s.training.refill = true;
+    return out;
+  });
+  var wilOk = wil.hits === 29 && wil.ended && wil.share >= 30 && wil.share <= 35 && wil.finisher;
 
   // Phones: touch controls over the game. Tap to start, the d-pad and P pick TRAINING,
   // a fighter and a stage, then walk in and punch; Easy Combos is on.
@@ -405,10 +447,10 @@ try { playwright = require('playwright'); } catch (e) {
   await mp.screenshot({ path: path.join(out, '11-mobile.png') });
   var mobileOk = mobile.last === 'jab' && mobile.easy;
   await browser.close();
-  console.log(JSON.stringify({ mobile: mobile, title: title, matchup: matchup, renderer: renderer, hits: hits, counter: counterText, p1: p1, menuOk: menuOk, resetX: resetX, trial: trial, ko: ko, stage: stagePick, arcade: arcade, vsPanel: vsPanel, cutFreeze: cutFreeze, cpu: cpu, ladder: ladder, enhanced: ex, ultimate: ultR, extraCredit: ecR, prop: propR, ultTrial: ultTrial, errors: errors }, null, 1));
+  console.log(JSON.stringify({ mobile: mobile, title: title, matchup: matchup, renderer: renderer, hits: hits, counter: counterText, p1: p1, menuOk: menuOk, resetX: resetX, trial: trial, ko: ko, stage: stagePick, arcade: arcade, vsPanel: vsPanel, cutFreeze: cutFreeze, cpu: cpu, ladder: ladder, enhanced: ex, ultimate: ultR, extraCredit: ecR, prop: propR, ultTrial: ultTrial, lock: lock, unlocked: unlocked, wilson: wil, errors: errors }, null, 1));
   var ok = !errors.length && title === 'Mortal Calculus: C221' && matchup === expectMatchup && hits.join() === expectHits && counterText === String(hits.length) &&
-    p1.last && p1.last.kind === 'BLOCK' && p1.last.adv === p1.jabBlock && menuOk && resetOk && trialOk && koOk && stagePick === 'classroom' && arcadeOk && attractOk && vsPanel && cutFreeze && cpuOk && ladderOk && exOk && ultOk && ecOk && propOk && mobileOk;
-  if (!ok) console.log('checks:', JSON.stringify({ errors: errors.length, menuOk: menuOk, resetOk: resetOk, trialOk: trialOk, koOk: koOk, arcadeOk: arcadeOk, attractOk: attractOk, vsPanel: vsPanel, cutFreeze: cutFreeze, cpuOk: cpuOk, ladderOk: ladderOk, exOk: exOk, ultOk: ultOk, ecOk: ecOk, propOk: propOk, mobileOk: mobileOk }));
+    p1.last && p1.last.kind === 'BLOCK' && p1.last.adv === p1.jabBlock && menuOk && resetOk && trialOk && koOk && stagePick === 'classroom' && arcadeOk && attractOk && vsPanel && cutFreeze && cpuOk && ladderOk && exOk && ultOk && ecOk && propOk && mobileOk && lockOk && unlocked && wilOk;
+  if (!ok) console.log('checks:', JSON.stringify({ errors: errors.length, menuOk: menuOk, resetOk: resetOk, trialOk: trialOk, koOk: koOk, arcadeOk: arcadeOk, attractOk: attractOk, vsPanel: vsPanel, cutFreeze: cutFreeze, cpuOk: cpuOk, ladderOk: ladderOk, exOk: exOk, ultOk: ultOk, ecOk: ecOk, propOk: propOk, mobileOk: mobileOk, lockOk: lockOk, unlocked: unlocked, wilOk: wilOk }));
   console.log(ok ? 'SMOKE OK' : 'SMOKE FAILED');
   if (!ok) process.exit(1);
 })().catch(function (e) { console.error(e); process.exit(1); });

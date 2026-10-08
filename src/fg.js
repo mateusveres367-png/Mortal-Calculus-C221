@@ -119,6 +119,10 @@ FG.C = {
   EXTRA_CREDIT_HEALTH: 0.25, // Extra Credit: available below this share of health, once a match
   BOOST_FRAMES: 420,    // Extra Credit: how long the damage boost lasts (7 seconds)
   BOOST_DAMAGE: 1.2,    // Extra Credit: damage multiplier while boosted
+  YEARS_SPEED: 1.2,     // WILSON's 29 YEARS: movement from round 2
+  YEARS_DAMAGE: 1.15,   // WILSON's 29 YEARS: damage from round 3
+  SEEN_IT_ALL: 3,       // WILSON's Seen It All: uses of a move before he counters it on sight
+  STARE_METER: 25,      // WILSON's Stare: meter for standing there a second
   PROP_REACH: 60,       // stage objects: how close to one you must be to use it
   PROP_COOLDOWN: 360,   // stage objects: frames before one can be used again (6 seconds)
   TIP_BONUS: 1.25,      // Long Arms: damage for landing with the tip of a straight
@@ -134,7 +138,7 @@ FG.C = {
 
 // Player settings (title screen OPTIONS), remembered in this browser when possible.
 (function () {
-  FG.settings = { difficulty: 'normal', time: 60, sound: true, easyCombos: false };
+  FG.settings = { difficulty: 'normal', time: 60, sound: true, easyCombos: false, wilsonUnlocked: false }; // wilsonUnlocked: arcade beaten once
   try {
     var saved = JSON.parse(window.localStorage.getItem('mc221.settings') || 'null');
     if (saved) for (var k in FG.settings) if (saved[k] !== undefined) FG.settings[k] = saved[k];

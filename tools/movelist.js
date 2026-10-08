@@ -69,7 +69,10 @@ FG.ROSTER.forEach(function (d) {
     if (m.armor) notes.push('armor: absorbs ' + m.armor.hits + ' hit on frames ' + m.armor.from + '-' + m.armor.to + (m.charge ? ' (2 at full charge)' : ''));
     if (m.charge) notes.push('hold to charge');
     if (m.ex) notes.push('enhance with P+K');
-    if (m.taunt) notes.push('says a taunt line; counter-hittable the whole time');
+    if (m.taunt) notes.push(m.stare ? 'he doesn\'t taunt: he stares, for ' + FG.C.STARE_METER + ' meter; counter-hittable the whole time' : 'says a taunt line; counter-hittable the whole time');
+    if (m.cancels && m.cancels.some(function (c) { return c.btn === 'any'; })) notes.push('Chain Rule: on contact, cancels into any of his other moves (once a string)');
+    if (m.parry && m.parry.reflect) notes.push('the counter hits at least as hard as what it caught');
+    if (id === 'seenCounter') notes.push('comes out on its own, once a round (see 29 Years)');
     if (m.kick && d.kickChain) notes.push('kick chain');
     if (m.tip) notes.push('Long Arms: +' + Math.round((FG.C.TIP_BONUS - 1) * 100) + '% damage at the tip');
     if (m.evade) notes.push('evades ' + m.evade.levels.map(function (l) { return l + 's'; }).join(' and ') + ' on frames ' + m.evade.from + '-' + m.evade.to);
@@ -96,6 +99,10 @@ FG.ROSTER.forEach(function (d) {
         (x.armor ? ', armor on frames ' + x.armor.from + '-' + x.armor.to + ' (' + x.armor.hits + (x.armor.hits > 1 ? ' hits' : ' hit') + ')' : '') +
         (x.wallSplat && !b.wallSplat ? ', wall splats' : '') + '.');
     });
+    out.push('');
+  }
+  if (d.boss) {
+    out.push('**Boss:** the final fight in arcade mode. Playable in training and versus from the start, and in arcade and VS CPU once arcade has been beaten.');
     out.push('');
   }
   if (d.ultimate) {

@@ -545,6 +545,14 @@
     sweep(0.08, 3200, 2600, 0.015, 'square');
   };
 
+  // The school bell: a hard metallic ring, a few times over.
+  Sfx.bell = function () {
+    if (!Sfx.ctx || Sfx.muted) return;
+    for (var k = 0; k < 6; k++) (function (k) {
+      setTimeout(function () { sweep(0.16, 1760, 1720, 0.07, 'square'); sweep(0.16, 2640, 2600, 0.03, 'triangle'); burst(0.05, 3200, 4, 0.08, 'bandpass'); }, k * 90);
+    })(k);
+  };
+
   // Breaking glass: a crack, then tinkles.
   Sfx.glass = function () {
     if (!Sfx.ctx || Sfx.muted) return;

@@ -1,6 +1,6 @@
 # Mortal Calculus: C221 — Roster
 
-The eight fighters of the El Camino Real Math Department. Later phases build on this file; keep it as the source of truth for each fighter's identity, look, moves and lines.
+The nine fighters of the El Camino Real Math Department: eight teachers, and WILSON, the boss. Later phases build on this file; keep it as the source of truth for each fighter's identity, look, moves and lines.
 
 **PEDERSEN is the cover fighter.** He is front and center on the title screen next to his red mid-engine sports car (styled after a red C8 Corvette, no real badges or logos), and first on character select.
 
@@ -16,6 +16,7 @@ Each fighter's moves come from what they actually teach.
 | LOPEZ | Defensive | Calculus |
 | MIYASHIRO | Spacing / Footsies | Algebra 2 |
 | RAMOS | Grappler | Algebra 2 (matrices) |
+| WILSON | Veteran Master (boss) | Every subject |
 
 Every fighter needs unique normals, launcher, throw, combo routes, stance, idle animation, and victory and defeat animations.
 
@@ -207,6 +208,38 @@ Every fighter needs unique normals, launcher, throw, combo routes, stance, idle 
 - "Your determinant was zero. So was your chance."
 - "Cardio wins again."
 
+## WILSON — Veteran Master — Every Subject
+
+He teaches all the math classes and has been at El Camino for 29 years. **The boss:** the last fight in arcade mode. Playable in training and versus from the start, and in arcade and VS CPU once you've beaten arcade mode.
+
+**Moves:** Distance Formula (a long poke, F+P), Chain Rule (P, P: the second hit cancels into any of his other moves), Slope-Intercept (dash attack, F,F+P), Sine Wave (F+K: a weaving advance that dodges highs), Absolute Value (B+H: a parry that turns their attack back on them), Square Root (launcher, D+H), Prime Factorization (throw: breaks them down with a flurry). Also Point (P), Tangent Line (whip kick, K), Floor Function (low), Limit to Zero (sweep), Long Division (H), Quadratic Formula (axe kick, F+H).
+
+**Style:** Long-limbed, efficient and smooth. No wasted motion: long jabs, whip-like kicks and perfectly timed counters, with a move from every subject.
+
+**Signature — 29 Years:** he gets better as the match goes on: faster in round 2, stronger in round 3. Once per round, **Seen It All** auto-counters whatever move the opponent has used most (once they've used it three times).
+
+**Taunt:** WILSON doesn't taunt. His taunt button is **Stare**: he stands still and stares for a second, gaining a little meter. It leaves him open, same as a taunt.
+
+**Ultimate — Tenure:** time freezes, chalkboard flashbacks flicker by labelled with years, then 29 rapid hits with a counter ticking up to 29.
+
+**KO finisher — Class Dismissed:** he checks his watch, one clean strike, the school bell rings, the opponent drops, and he walks off without looking back.
+
+**Cut-in colours:** purple and gold.
+
+**Look:** Tall, lean, athletic, long limbs. Dark brown skin, short-cropped hair, clean-shaven, small stud earrings, a plain black crew-neck tee. No hat.
+
+**Personality:** Very serious. A stern, focused expression; never smiles, never wastes words. Stands perfectly still between exchanges. When someone taunts him, he just stares.
+
+**Intro / taunt lines:**
+- "Phones away."
+- "Twenty-nine years. Let's begin."
+- "Sit down."
+
+**Victory lines:**
+- "Class dismissed."
+- "Again. Tomorrow. Better."
+- "That will be on the final."
+
 ---
 
 ## Win screen
@@ -229,6 +262,9 @@ Pre-fight intro lines for these matchups. The first fighter listed speaks first.
 - **LOPEZ vs DALSASS** — LOPEZ: "I know all your tricks." / DALSASS: "Oh honey, you know some of them."
 - **RAMOS vs PEDERSEN** — RAMOS: "When's the last time you did cardio?" / PEDERSEN: "I drove here. Fast. That counts."
 - **MIYASHIRO vs BRINKHUS** — MIYASHIRO: "I calculated your reach." / BRINKHUS: "Did you calculate my height?"
+- **BRINKHUS vs WILSON** — BRINKHUS: "Go easy on me?" / WILSON: "No."
+- **PEDERSEN vs WILSON** — PEDERSEN: "You can lead a horse to water..." / WILSON: "I'm not the horse."
+- **LEE vs WILSON** — LEE: "Wow, intense. You ever smile?" / WILSON: "Once. 2003."
 - **PEDERSEN vs anyone else** — PEDERSEN: "You're not Vicky, but you'll do."
 
 ## Build order
@@ -239,3 +275,4 @@ Two fighters at a time, committed and pushed after each pair:
 2. CHAI + LEE
 3. LOPEZ + MIYASHIRO
 4. PEDERSEN + RAMOS
+5. WILSON (the boss)

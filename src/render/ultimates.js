@@ -888,4 +888,69 @@
       });
     }
   };
+
+  // WILSON — Tenure: time stops; chalkboards from twenty-nine years flicker past,
+  // each with its year; then 29 hits, a counter ticking up to 29.
+  var YEARS = [1997, 1999, 2001, 2003, 2006, 2008, 2011, 2014, 2016, 2019, 2021, 2024, 2026];
+  var BOARD_MATH = ['Y = MX + B', 'A² + B² = C²', "F'(X)", 'SIN²X + COS²X = 1', '√(B² - 4AC)', 'ΣN = N(N+1)/2', '|X| < 3', 'LOG(AB)', '∫ X DX', 'ΔY / ΔX', 'P(A∩B)', 'X = -B / 2A', 'E = MC²'];
+  var WIL_P = [['jab_c', 'jab_x'], ['chain_c', 'chain_x'], ['whip_c', 'whip_x'], ['sine_a', 'sine_x'], ['dist_c', 'dist_x'], ['low_c', 'low_x'], ['hv_c', 'hv_x']];
+  FG.ULTIMATES.wilson = {
+    start: function (fx) {
+      fx.at(fx.l, fx.x0 + fx.dir * 46, 0);
+      fx.pose(fx.l, fx.strikePose(fx.l));
+      fx.pose(fx.w, 'stare');
+      fx.zoom(0.14, fx.x0 + fx.dir * 24, 80, 70);
+      fx.s.n = 0;
+    },
+    step: function (fx, t) {
+      var w = fx.w, l = fx.l, s = fx.s, hits = w.def.ultimate.hits;
+      if (t === 2) FG.Sfx.chalk();
+      if (t < 76 && t % 6 === 0) FG.Sfx.chalk();
+      if (t === 76) { fx.zoom(0.08, fx.x0 + fx.dir * 30, 60, 160); fx.pose(fx.l, 'hit_mid'); }
+      for (var k = 0; k < hits.length; k++) {
+        var p = WIL_P[k % WIL_P.length];
+        if (t === hits[k] - 2) fx.anim(w, [[1, p[0]], [2, p[1]], [4, p[1]]]);
+        if (t === hits[k]) {
+          s.n = k + 1; s.nT = t;
+          var last = k === hits.length - 1;
+          fx.hit(l, last ? 'power' : k % 3 ? 'jab' : 'body', { strength: last ? 'heavy' : 'light', hits: k + 1, ch: last, shake: last ? 0.03 : 0.003, y: 46 + (k % 4) * 9 });
+          fx.pose(l, last ? 'juggle' : k % 2 ? 'hit_high' : 'hit_mid');
+          if (k === 9) fx.diagram({ kind: 'triangles', caption: 'EVERY SUBJECT', sub: 'GEOMETRY. ALGEBRA. CALCULUS. ALL OF IT.' });
+          if (last) { fx.slow(36, 0.35); fx.flash(0xffd23f, 0.6); }
+        }
+      }
+      if (t > hits[0] && t < hits[hits.length - 1]) fx.at(l, fx.px(l) + fx.dir * 0.12, null);
+      var end = hits[hits.length - 1];
+      if (t > end) {
+        var u = Math.min(1, (t - end) / 40), from = s.from || (s.from = fx.px(l)), to = fx.x0 + fx.dir * w.def.ultimate.end.gap;
+        fx.at(l, from + (to - from) * u, Math.sin(u * Math.PI) * 46);
+        if (u >= 1 && !s.down) { s.down = true; fx.pose(l, 'down'); fx.dust(to, 8, 2); }
+      }
+      if (t === end + 14) fx.diagram({ kind: 'integral', caption: 'TENURE', sub: 'THE AREA UNDER TWENTY-NINE YEARS.', formula: '∫ 1997 → 2026' });
+      if (t === end + 24) fx.anim(w, [[1, 'stand'], [14, 'folded'], [60, 'folded']]);
+    },
+    draw: function (fx, t) {
+      var g = fx.gs, s = fx.s;
+      // Time stops: everything goes purple and still; chalkboards flicker past.
+      if (t < 80) {
+        g.fillStyle(0x2a1240, 0.45); g.fillRect(0, 0, W, H);
+        var k = Math.floor(t / 6) % YEARS.length, flick = t % 6 < 4;
+        if (flick) {
+          var bx = 70 + hash(k, 1) * (W - 300), by = 66 + hash(k, 2) * 110, bw = 160, bh = 84;
+          g.fillStyle(0x6b4a2a, 1); g.fillRect(bx - 4, by - 4, bw + 8, bh + 8);
+          g.fillStyle(BOARD, 0.95); g.fillRect(bx, by, bw, bh);
+          for (var sm = 0; sm < 3; sm++) { g.fillStyle(0xffffff, 0.04); g.fillEllipse(bx + hash(k, sm + 3) * bw, by + hash(k, sm + 6) * bh, 60, 18); }
+          fx.text(0, String(YEARS[k]), bx + bw / 2, by + 20, 0xffd23f, 3, -3);
+          fx.text(1, BOARD_MATH[k % BOARD_MATH.length], bx + bw / 2, by + 56, CHALK, 1.5, -2);
+        }
+        fx.text(2, 'TIME OUT', W / 2, 300, 0xd6b0ff, 2, 0, t % 30 < 22 ? 1 : 0.5);
+      }
+      // The count: up to 29.
+      if (s.n) {
+        var sc = s.n === 29 ? 5 * stamp(t, s.nT) : 4 + (t - s.nT < 3 ? 1 : 0);
+        fx.text(3, String(s.n), W / 2 + 40, 92, s.n === 29 ? 0xffd23f : 0xffffff, sc, -4);
+        fx.text(4, s.n === 29 ? 'YEARS' : 'HITS', W / 2 + 40, 128, 0xd6b0ff, 2, -4);
+      }
+    }
+  };
 })();

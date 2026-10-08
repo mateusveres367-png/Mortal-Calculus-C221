@@ -46,6 +46,7 @@
       tower.fillStyle(chip(d), 1); tower.fillRect(x0 + 4, yy + 4, 14, rowH - 12);
       FG.text(this, x0 + 24, yy + 8, (i + 1) + '. ' + d.name + (d.id === run.p1 ? ' (MIRROR)' : ''), done ? 'g' : cur ? 'y' : 'w');
       if (done) FG.text(this, x0 + tw - 8, yy + 8, 'WIN', 'c').setOrigin(1, 0);
+      else if (d.boss && i === n - 1) FG.text(this, x0 + tw - 8, yy + 8, 'BOSS', 'r').setOrigin(1, 0);
     }
 
     // The next opponent, their line, and you.
@@ -54,6 +55,7 @@
     this.me = FG.puppet(you, W - 300, 1);
     this.g = this.add.graphics();
     FG.text(this, W - 150, 70, next.name, 'r', 3).setOrigin(0.5, 0);
+    if (next.boss && run.index === n - 1) FG.text(this, W - 150, 56, 'FINAL BOSS', 'y').setOrigin(0.5, 0);
     FG.text(this, W - 150, 96, next.archetype + '  ' + next.theme, 'w').setOrigin(0.5, 0);
     var line = FG.wrapText('"' + FG.rivalLine(next.id, run.p1) + '"', 36);
     var box = this.add.graphics();

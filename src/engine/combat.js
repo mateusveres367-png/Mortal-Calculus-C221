@@ -49,6 +49,8 @@
     var a = this.fighters[c.a], d = this.fighters[c.d], pr = d.move.parry, label = d.move.parryLabel;
     // A counter ultimate (LOPEZ): getting hit in the stance starts the cinematic.
     if (pr.ult) { this.startCinematic(c.d, c.a); return; }
+    // Absolute Value (WILSON): the counter hits at least as hard as what it caught.
+    d.reflected = pr.reflect ? c.move.damage : 0;
     var counter = pr.counters ? pr.counters[c.move.level] : pr.counter;
     a.actionable = false; d.actionable = false;
     a.contact = 'parried';
@@ -68,7 +70,9 @@
   // Applies combo-scaled damage and handles KO. Returns the damage dealt.
   Match.prototype.dealDamage = function (ai, di, base, mult) {
     var d = this.fighters[di], combo = this.combo[di];
-    if (this.fighters[ai].boost > 0) mult = (mult || 1) * C.BOOST_DAMAGE; // Extra Credit
+    var att = this.fighters[ai];
+    if (att.boost > 0) mult = (mult || 1) * C.BOOST_DAMAGE; // Extra Credit
+    if (att.def.passive === '29years' && att.experience >= 2) mult = (mult || 1) * C.YEARS_DAMAGE; // WILSON, round 3
     combo.hits++;
     var scale = combo.hits <= 2 ? 1 : Math.max(0.3, 1 - 0.12 * (combo.hits - 2));
     var dmg = Math.max(1, Math.round(base * scale * (mult || 1)));
@@ -160,7 +164,9 @@
       ev.charge = charge;
       if (charge >= 1) result = { knockdown: true };
     }
-    var dmg = this.dealDamage(c.a, c.d, m.damage, mult);
+    var base = m.reflect && a.reflected ? Math.max(m.damage, a.reflected) : m.damage;
+    if (m.reflect) a.reflected = 0;
+    var dmg = this.dealDamage(c.a, c.d, base, mult);
     var hitstop = (C.HITSTOP[m.strength] || 6) + (ch ? C.HITSTOP_CH : 0);
     ev.ch = ch; ev.punish = c.punish; ev.damage = dmg; ev.hits = this.combo[c.d].hits;
     ev.shake = m.shake * (ch ? 1.6 : 1);

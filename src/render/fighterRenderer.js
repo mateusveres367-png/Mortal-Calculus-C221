@@ -194,6 +194,9 @@
       case 'textured':
         R(-7, -8, 13, 3, col); R(-8, -6, 3, 5, col); R(-6, -9, 2, 1, col); R(-2, -9, 2, 1, col); R(2, -9, 2, 1, col); R(5, -9, 1, 1, col);
         break;
+      case 'cropped': // close-cropped: a tight cap with a clean line
+        R(-7, -8, 13, 2, col); R(-8, -6, 3, 4, col); R(-7, -6, 1, 1, shade(col, 1.3)); R(5, -7, 1, 1, col);
+        break;
       case 'longBouncy': // the cap; the long part is simulated in drawLongHair
         R(-7, -8, 13, 4, col); R(-8, -6, 4, 7, col); R(-9, -3, 3, 6, col); R(4, -7, 3, 2, col); R(-2, -9, 5, 1, shade(col, 1.6));
         break;
@@ -228,7 +231,8 @@
     else {
       if (look.eyeColor) { R(3, -2, 1, 2, eyeColor); R(4, -2, 1, 2, 0x111111); }
       else R(3, -2, 2, 2, 0x111111);
-      R(2, -4, 4, 1, shade(look.hair.color, 0.9)); // brow
+      if (look.brows === 'stern') { R(1, -4, 3, 1, shade(look.hair.color, 0.9)); R(4, -3, 2, 1, shade(look.hair.color, 0.9)); } // angled down: always focused
+      else R(2, -4, 4, 1, shade(look.hair.color, 0.9)); // brow
     }
     // Glasses: thin wire frames.
     if (look.glasses) {
@@ -247,6 +251,7 @@
       case 'half': R(4, 3, 2, 1, 0x3a1010); R(6, 2, 1, 1, 0x3a1010); break;
       case 'calm': R(3, 3, 3, 1, 0x3a1010); break;
       case 'flat': R(3, 3, 4, 1, 0x3a1010); R(4, 4, 1, 1, 0x3a1010); break;
+      case 'stern': R(3, 3, 4, 1, 0x2a0a0a); break; // a straight line: he never smiles
       default: R(3, 3, 3, 1, 0x3a1010); R(6, 2, 1, 1, 0x3a1010); R(2, 2, 1, 1, 0x3a1010);
     }
     if (props) drawProps(R, hx, hy, s, dir, props);

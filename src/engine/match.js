@@ -89,7 +89,13 @@
       if (f[i].extraCreditNow) { this.events.push({ type: 'extracredit', fighter: i, x: f[i].x, y: 60 }); f[i].extraCreditNow = false; }
       if (f[i].ultStarted) { this.events.push({ type: 'ultstart', fighter: i, move: f[i].move, x: f[i].x, y: 60 }); f[i].ultStarted = false; }
       if (f[i].enhancedNow) { this.events.push({ type: 'enhance', fighter: i, move: f[i].move, x: f[i].x, y: 60 }); f[i].enhancedNow = false; }
-      if (f[i].startedMove) { this.events.push({ type: 'whiff', fighter: i, move: f[i].startedMove }); f[i].startedMove = null; }
+      if (f[i].startedMove) {
+        var sm = f[i].startedMove;
+        this.events.push({ type: 'whiff', fighter: i, move: sm });
+        f[i].startedMove = null;
+        this.seenItAll(1 - i, i, sm);
+      }
+      if (f[i].stared) { f[i].stared = false; this.gainMeter(i, C.STARE_METER); this.events.push({ type: 'stare', fighter: i, x: f[i].x }); }
       // MIYASHIRO's Calculated: an opponent's whiff makes his next hit stronger.
       var opp = f[1 - i];
       if (f[i].whiffed && opp.def.passive === 'calculated' && !opp.ko) {
@@ -118,6 +124,32 @@
       // The scene turns autoReset off and shows a win screen when `over` is set.
       if (this.autoReset) this.reset(); else this.over = true;
     }
+  };
+
+  // --- Seen It All (WILSON) ----------------------------------------------------------
+  // He counts the opponent's moves each round. Once a round, when they start their
+  // most-used move (used SEEN_IT_ALL times or more) and he's free, he counters it on
+  // sight: they're stopped cold, and his counter comes out.
+  Match.prototype.seenItAll = function (wi, oi, m) {
+    var w = this.fighters[wi], o = this.fighters[oi];
+    if (!w.def.seenItAll || m.taunt || m.air || (!m.box && !m.throw)) return;
+    var n = w.seen[m.id] = (w.seen[m.id] || 0) + 1;
+    if (w.seenUsed || n < C.SEEN_IT_ALL || w.ko || o.ko || this.cinematic) return;
+    for (var id in w.seen) if (w.seen[id] > n) return; // not their favourite
+    var free = { idle: 1, walkF: 1, walkB: 1, crouch: 1 };
+    if (!free[w.state] || o.state !== 'attack' || o.move !== m) return;
+    w.seenUsed = true;
+    o.actionable = false; w.actionable = false;
+    o.contact = 'parried';
+    o.setState('hitstun');
+    o.stun = C.PARRY_STUN + 6;
+    o.reaction = 'high';
+    o.vx = 0;
+    w.faceOpponent(o);
+    w.startMove('seenCounter');
+    this.hitstop = Math.max(this.hitstop, 14);
+    this.lastResult[wi] = { move: w.def.moves.seenCounter, kind: 'SEEN IT ALL', adv: null };
+    this.events.push({ type: 'parry', attacker: wi, defender: oi, x: (w.x + o.x) / 2, y: 70, shake: 0.006, label: 'SEEN IT ALL!', level: m.level, counter: 'seenCounter', seen: m.label });
   };
 
   // --- Ultimates ------------------------------------------------------------------

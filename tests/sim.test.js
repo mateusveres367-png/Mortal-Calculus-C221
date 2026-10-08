@@ -948,7 +948,7 @@ function count(r, type, attacker) {
 
 // PEDERSEN is the cover fighter: first on the roster.
 check('pedersen is first on character select', FG.ROSTER[0].id === 'pedersen', FG.ROSTER.map(function (d) { return d.id; }));
-check('all eight fighters', FG.ROSTER.length === 8, FG.ROSTER.length);
+check('all nine fighters', FG.ROSTER.length === 9, FG.ROSTER.length);
 
 // =========================== Smack talk ======================================
 
@@ -1636,6 +1636,57 @@ defs.forEach(function (d) {
     }
   }
   check('CPU: vaults out of the corner with a stage object', esc > 0, esc);
+})();
+
+// WILSON: Chain Rule, Sine Wave, Absolute Value, 29 YEARS, Seen It All, Stare.
+(function () {
+  var W = FG.fighterById('wilson'), B = FG.fighterById('brinkhus');
+  check('WILSON is the ninth fighter and the boss', W && W.order === 9 && W.boss && FG.ROSTER[8] === W);
+  function play2(a, b, dist, p1, p2, frames, setupFn) {
+    var m = setup(a, b, dist), ev = [];
+    if (setupFn) setupFn(m);
+    for (var i = 0; i < (frames || 80); i++) {
+      m.step([raw((typeof p1 === 'function' ? p1(i) : p1[i]) || {}), raw((typeof p2 === 'function' ? p2(i) : p2[i]) || {})]);
+      ev = ev.concat(m.events);
+    }
+    return { m: m, ev: ev, hits: ev.filter(function (e) { return e.type === 'hit' && e.attacker === 0; }).map(function (e) { return e.move.id; }) };
+  }
+  // Chain Rule: P, P cancels into any of his moves (here F+H), but only once a string.
+  var cr = play2(W, D, 40, { 0: { p: true }, 14: { p: true }, 28: FG.parseInput('F+H') }, {}, 90);
+  check('Chain Rule: P, P cancels into anything', cr.hits.join() === 'jab,jab2,fH', cr.hits);
+  var once = play2(W, D, 40, { 0: { p: true }, 14: { p: true }, 28: FG.parseInput('F+P'), 40: FG.parseInput('D+H') }, {}, 90);
+  check('Chain Rule: once a string', once.hits.indexOf('launcher') < 0 || once.hits.indexOf('launcher') > 2 && once.m.combo[1].hits === 0, once.hits);
+  check('Chain Rule: P, P, H is still the string ender', play2(W, D, 40, { 0: { p: true }, 14: { p: true }, 28: { h: true } }, {}, 90).hits.join() === 'jab,jab2,jabH');
+  // Sine Wave: a high goes over him.
+  var sw = play2(W, B, 50, { 0: FG.parseInput('F+K') }, { 2: { p: true } }, 60);
+  check('Sine Wave dodges highs', sw.ev.every(function (e) { return !(e.type === 'hit' && e.attacker === 1); }) && sw.m.fighters[0].swayed !== undefined, sw.ev.map(function (e) { return e.type; }));
+  // Absolute Value: their attack comes back at them, at least as hard.
+  var av = play2(W, B, 44, { 8: FG.parseInput('B+H') }, { 0: { h: true } }, 90);
+  var back = av.ev.filter(function (e) { return e.type === 'hit' && e.attacker === 0 && e.move.id === 'absCounter'; })[0];
+  check('Absolute Value: parries and hits back as hard as what it caught', av.ev.some(function (e) { return e.type === 'parry'; }) && back && back.damage >= B.moves.heavy.damage, back && back.damage);
+  // 29 YEARS: faster in round 2, stronger in round 3.
+  function walked(exp) { return play2(W, D, 200, function () { return { right: true }; }, {}, 30, function (m) { m.fighters[0].experience = exp; }).m.fighters[0].x; }
+  check('29 YEARS: faster from round 2', walked(1) > walked(0) + 5, [walked(0), walked(1)]);
+  function jabDmg(exp) { var r = play2(W, D, 40, { 0: { p: true } }, {}, 30, function (m) { m.fighters[0].experience = exp; }); return r.ev.filter(function (e) { return e.type === 'hit'; })[0].damage; }
+  check('29 YEARS: stronger in round 3', jabDmg(2) > jabDmg(1) && jabDmg(1) === jabDmg(0), [jabDmg(0), jabDmg(1), jabDmg(2)]);
+  // Seen It All: the third time they start their favourite move, he counters it. Once a round.
+  var seen = play2(D, W, 46, function (i) { return i % 60 === 0 && i < 300 ? { p: true } : {}; }, {}, 320);
+  var sa = seen.ev.filter(function (e) { return e.type === 'parry' && e.label === 'SEEN IT ALL!'; });
+  var landed = seen.ev.filter(function (e) { return e.type === 'hit' && e.attacker === 1 && e.move.id === 'seenCounter'; });
+  check('Seen It All: counters their most-used move, once a round', sa.length === 1 && landed.length === 1 && seen.m.fighters[1].seenUsed, [sa.length, landed.length]);
+  seen.m.reset();
+  check('Seen It All: ready again next round', !seen.m.fighters[1].seenUsed && Object.keys(seen.m.fighters[1].seen).length === 0);
+  // Stare: no taunt line, a second of standing still, a little meter; still counter-hittable.
+  var st = play2(W, D, 120, { 0: { t: true } }, {}, 80);
+  check('Stare: a little meter', st.ev.some(function (e) { return e.type === 'stare'; }) && Math.round(st.m.fighters[0].meter) === FG.C.STARE_METER, st.m.fighters[0].meter);
+  var punished = play2(W, D, 40, { 0: { t: true } }, { 10: { p: true } }, 40);
+  check('Stare: leaves him open', punished.ev.some(function (e) { return e.type === 'hit' && e.attacker === 1 && e.ch; }));
+  // Arcade: WILSON is the final boss, PEDERSEN right before him.
+  ['brinkhus', 'pedersen', 'wilson'].forEach(function (p1) {
+    var run = FG.arcadeRun ? FG.arcadeRun(p1) : null;
+    if (!run) return;
+    check('arcade with ' + p1 + ': nine fights, WILSON last', run.ladder.length === 9 && run.ladder[8] === 'wilson' && run.ladder[7] === (p1 === 'pedersen' ? 'pedersen' : p1 === 'wilson' ? 'pedersen' : 'pedersen'), run.ladder);
+  });
 })();
 
 console.log(passes + ' passed, ' + failures + ' failed');

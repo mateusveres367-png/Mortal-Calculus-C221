@@ -451,3 +451,61 @@ Fast, explosive grappler who closes distance quickly. Confident and focused.
 - **Cardio:** RUN, K, P, P, H (frames: F @0, F @2, K @24, P @55, P @66, H @75; hold F @2-32)
 - **Augmented Juggle (1 bar):** F, F+P, P+K, P, P, H (frames: F @0, F @2, P @10, P+K @13, P @39, P @63, H @69)
 - **Matrix Multiplication (3 bars):** D, D/F, F+P+K+H (frames: D @0, D/F @1, F @2, F+P+K+H @3)
+
+## WILSON — Veteran Master — Every Subject
+
+Twenty-nine years at el camino. Teaches every math class. Never smiles. Never wastes a word.
+
+**Style:** Long-limbed, efficient, smooth. **Signature:** 29 Years — faster in round 2, stronger in round 3; once a round, Seen It All counters the move you have used most.
+
+**Movement:** walk 1.9 forward / 1.8 back, dash 7.6 for 15 frames, backdash 9, jump 9.6, weight 1 (higher falls faster in juggles).
+
+| Input | Move | Level | i | Active | Recovery | Block | Hit | Counter hit | Damage | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| P | Point | high | 9 | 2 | 15 | 0 | +7 | +10 | 8 |  |
+| P,P | Chain Rule | high | 10 | 2 | 17 | -3 | +6 | +9 | 10 | Chain Rule: on contact, cancels into any of his other moves (once a string) |
+| P,P,H | Common Core | mid | 12 | 3 | 20 | -9 | knockdown | knockdown | 13 |  |
+| F+P | Distance Formula | mid | 14 | 3 | 19 | -5 | +4 | +9 | 13 | enhance with P+K |
+| F,F+P | Slope-Intercept | mid | 13 | 3 | 19 | -6 | +5 | launch | 17 | wall splats, enhance with P+K |
+| K | Tangent Line | mid | 13 | 3 | 18 | -4 | +4 | +9 | 14 |  |
+| F+K | Sine Wave | mid | 20 | 3 | 16 | -5 | +5 | knockdown | 15 | enhance with P+K, evades highs on frames 3-18 |
+| D+K | Floor Function | low | 14 | 3 | 20 | -12 | 0 | +6 | 11 | hits downed opponents, ducks highs |
+| D/B+K | Limit To Zero | low | 20 | 3 | 26 | -18 | knockdown | knockdown | 16 | ducks highs |
+| H | Long Division | mid | 18 | 3 | 21 | -4 | +6 | launch | 21 | wall splats |
+| F+H | Quadratic Formula | mid | 22 | 3 | 20 | -7 | +3 | knockdown | 19 | bounds |
+| B+H | Absolute Value | — | 29 total |  |  |  |  |  |  | parry, the counter hits at least as hard as what it caught |
+| D+H | Square Root | mid | 15 | 4 | 22 | -15 | launch | launch | 16 | jump cancel on hit (UP) |
+| P+K | Prime Factorization | throw | 12 | 2 | 26 |  |  |  | 34 | break with P |
+| B+P+K | Inverse Function | throw | 12 | 2 | 26 |  |  |  | 32 | break with K |
+| AIR P | Rational Jab | mid | 7 | 4 | 10 |  |  |  | 8 | hitstun 16, blockstun 10, landing 4 |
+| AIR K | Radian Kick | mid | 9 | 5 | 12 |  |  |  | 11 | hitstun 18, blockstun 12, landing 6 |
+| AIR H | Vertical Asymptote | mid | 12 | 4 | 16 |  |  |  | 16 | bounds, hitstun 22, blockstun 14, landing 10 |
+| K (DOWN) | Rolling Zero | low | 14 | 3 | 22 | -14 | -2 | +1 | 10 | ducks highs |
+| P/H (DOWN) | Spring Theorem | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
+| T | Stare | — | 61 total |  |  |  |  |  |  | he doesn't taunt: he stares, for 25 meter; counter-hittable the whole time |
+| PARRY | |absolute Value| | mid | 6 | 3 | 18 | -6 | knockdown | knockdown | 16 |  |
+| AUTO (ONCE A ROUND) | Seen It All | mid | 5 | 3 | 16 | -4 | knockdown | knockdown | 18 | comes out on its own, once a round (see 29 Years) |
+| D,D/F,F+P+K+H | Tenure | mid | 14 | 3 | 49 | -35 | +4 | +9 | 13 |  |
+| T (BY AN OBJECT) | Springboard | mid | 16 | 5 | 18 | -6 | knockdown | knockdown | 18 |  |
+| B+T (BY AN OBJECT) | Vault | — | 38 total |  |  |  |  |  |  |  |
+
+**Enhanced specials** (P+K during the startup, 1 bar):
+
+- **Distance Formula+** (`F+P`, then `P+K`): Two hits, wall splat — 2 hits of 11, wall splats.
+- **Slope-Intercept+** (`F,F+P`, then `P+K`): Armored, launches — 22 damage (from 17), hit: launch, armor on frames 1-13 (1 hit).
+- **Sine Wave+** (`F+K`, then `P+K`): Launches — 20 damage (from 15), hit: launch.
+
+**Boss:** the final fight in arcade mode. Playable in training and versus from the start, and in arcade and VS CPU once arcade has been beaten.
+
+**Ultimate:** Tenure — `D, D/F, F + P+K+H` with all three bars: time freezes, chalkboard flashbacks flicker past labelled with the years, then 29 rapid hits with a counter ticking up to 29. 29 hits, 32% of their health; blocked -35, whiffed 65 frames.
+
+**KO finisher:** Class Dismissed — `D, B, H` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).
+
+**Combo routes** (tested in `tests/sim.test.js`):
+
+- **Point, Chain:** P, P (frames: P @0, P @14)
+- **Square Root Juggle:** D+H, P, P, H (frames: D+H @0, P @38, P @56, H @67)
+- **Chain Rule:** P, P, F+P (frames: P @0, P @14, F+P @28)
+- **Vertical Asymptote:** D+H, up, air P, air K, air H, K (frames: D+H @0, UP @17, P @31, K @38, H @47, K @79)
+- **Distance Squared (1 bar):** F+P, P+K (frames: F+P @0, P+K @3)
+- **Tenure (3 bars):** P, D, D/F, F+P+K+H (frames: P @0, D @3, D/F @4, F @5, F+P+K+H @9)

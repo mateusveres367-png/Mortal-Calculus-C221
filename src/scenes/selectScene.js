@@ -1,5 +1,5 @@
 // Character select, with pixel portraits of every fighter in roster order.
-//   arcade:   player 1 picks; the CPU ladder is all eight (PEDERSEN last)
+//   arcade:   player 1 picks; the CPU ladder is all nine (PEDERSEN, then WILSON, the boss)
 //   cpu:      VS CPU: pick your fighter, then the CPU's
 //   versus:   both players pick at the same time, each with their own cursor
 //             (P1: WASD + J, K to undo; P2: arrows + NUM1 or ',', NUM2 or '.' to undo)
@@ -7,7 +7,7 @@
 // Then stage select (versus, training) or the first arcade fight.
 (function () {
   var C = FG.C;
-  var CARD_W = 66, CARD_H = 70, GAP = 6, COLS = 4;
+  var CARD_W = 66, CARD_H = 70, GAP = 6, COLS = 4; // COLS: set for the roster size in create()
   var P1KEYS = { KeyA: 'left', KeyD: 'right', KeyW: 'up', KeyS: 'down', KeyJ: 'ok', KeyK: 'back', Space: 'ok' };
   var P2KEYS = { ArrowLeft: 'left', ArrowRight: 'right', ArrowUp: 'up', ArrowDown: 'down', Numpad1: 'ok', Comma: 'ok', Numpad2: 'back', Period: 'back', NumpadEnter: 'ok' };
 
@@ -23,6 +23,7 @@
   SelectScene.prototype.create = function () {
     FG.makeFonts(this);
     var self = this, roster = FG.ROSTER;
+    COLS = Math.ceil(roster.length / 2); // two rows
     this.t = 0;
     this.step = 0; // training: 0 choosing P1, 1 choosing the opponent
     this.cursor = [0, Math.min(1, roster.length - 1)];
@@ -125,8 +126,17 @@
     this.refresh();
   };
 
+  // WILSON, the arcade boss: player 1 can't pick him in arcade or VS CPU until arcade
+  // has been beaten once (he's always open in training and versus, and as the CPU).
+  SelectScene.prototype.locked = function (side, idx) {
+    var def = FG.ROSTER[idx == null ? this.cursor[side] : idx];
+    var mine = side === 0 && (this.mode === 'arcade' || (this.mode === 'cpu' && this.step === 0));
+    return !!(def.boss && mine && !FG.settings.wilsonUnlocked);
+  };
+
   SelectScene.prototype.confirm = function (side) {
     if (this.chosen[side] && this.mode === 'versus') return;
+    if (this.locked(side)) { FG.Sfx.ui('move'); this.lockMsg = 90; this.refresh(); return; }
     FG.Sfx.ui('confirm');
     this.chosen[side] = FG.ROSTER[this.cursor[side]].id;
     if (this.twoStep() && side === 0) { this.step = 1; this.refresh(); return; }
@@ -167,10 +177,11 @@
         p.puppet = FG.puppet(def, p.x, side === 0 ? 1 : -1);
         p.puppet.index = side;
       }
-      var showing = this.showing(side);
-      p.name.setText(showing ? def.name : '');
-      p.sub.setText(showing ? def.archetype + '  ' + def.theme : '');
-      for (var k = 0; k < p.moves.length; k++) p.moves[k].setText(showing && def.signature[k] ? def.signature[k] : '');
+      var showing = this.showing(side), lock = this.locked(side);
+      p.name.setText(showing ? (lock ? '???' : def.name) : '');
+      p.sub.setText(showing ? (lock ? 'BEAT ARCADE TO UNLOCK' : def.archetype + '  ' + def.theme) : '');
+      if (lock) { for (var k0 = 0; k0 < p.moves.length; k0++) p.moves[k0].setText(''); }
+      for (var k = 0; k < p.moves.length; k++) p.moves[k].setText(showing && !lock && def.signature[k] ? def.signature[k] : '');
       p.tag.setText(!showing ? '' : side === 0 ? 'P1' : m === 'versus' ? 'P2' : m === 'cpu' ? 'CPU' : 'OPPONENT').setVisible(showing);
       p.ready.setText(showing && this.chosen[side] && !this.twoStep() ? 'READY!' : '');
     }
@@ -197,7 +208,9 @@
       FG.updatePose(card.puppet, t);
       var def = card.puppet.def, sc = 2.3 * def.scale, base = FG.getPose(def, 'idle');
       card.puppet.x = card.x + CARD_W / 2 - base[4] * sc;
-      FG.drawFighter(card.g, card.puppet, { scale: 2.3, groundY: card.y + 34 + base[5] * sc, noShadow: true });
+      var cardLocked = this.locked(this.twoStep() ? this.step : 0, i) || (this.mode === 'arcade' && def.boss && !FG.settings.wilsonUnlocked);
+      FG.drawFighter(card.g, card.puppet, { scale: 2.3, groundY: card.y + 34 + base[5] * sc, noShadow: true, flash: cardLocked ? 0x07060c : null });
+      card.name.setText(cardLocked ? '???' : def.name);
     }
     // Cursor frames.
     var fg = this.frameG;
@@ -215,25 +228,30 @@
       fg.lineStyle(blink ? 3 : 2, col, 1);
       fg.strokeRect(c2.x - 1 - side * 2, c2.y - 1 - side * 2, CARD_W + 2 + side * 4, CARD_H + 2 + side * 4);
     }
-    // Big previews.
+    // Big previews (a locked boss is a shadow).
     for (side = 0; side < 2; side++) {
       var p = this.previews[side];
       p.g.clear();
       if (!this.showing(side)) continue;
       FG.updatePose(p.puppet, t);
       p.g.fillStyle(0x000000, 0.35); p.g.fillEllipse(p.x, 296, 70, 8);
-      FG.drawFighter(p.g, p.puppet, { scale: 1.45, groundY: 296, noShadow: true });
+      FG.drawFighter(p.g, p.puppet, { scale: 1.45, groundY: 296, noShadow: true, flash: this.locked(side) ? 0x07060c : null });
     }
+    if (this.lockMsg > 0) this.lockMsg--;
+    this.stepText.setVisible(!(this.lockMsg > 0 && t % 10 < 5));
+    if (this.lockMsg > 0) this.stepText.setText('LOCKED: BEAT ARCADE MODE ONCE TO PLAY WILSON').setFont('pf_r');
+    else if (this.lockMsg === 0) { this.lockMsg = null; this.refresh(); }
   };
 
-  // Arcade: all eight fighters in a row. Everyone else in a shuffled order, then
-  // your own mirror match, then PEDERSEN, the cover fighter, waiting at the end (if
-  // you are him, the mirror match is last).
+  // Arcade: all nine fighters in a row. Everyone else in a shuffled order, then your
+  // own mirror match, then PEDERSEN, the cover fighter, and last WILSON, the boss
+  // (if you are one of them, your mirror match takes their place).
+  var BOSSES = ['pedersen', 'wilson'];
   FG.arcadeRun = function (p1) {
-    var others = FG.ROSTER.filter(function (d) { return d.id !== p1 && d.id !== 'pedersen'; }).map(function (d) { return d.id; });
+    var others = FG.ROSTER.filter(function (d) { return d.id !== p1 && BOSSES.indexOf(d.id) < 0; }).map(function (d) { return d.id; });
     for (var i = others.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), x = others[i]; others[i] = others[j]; others[j] = x; }
-    others.push(p1);
-    if (p1 !== 'pedersen' && FG.fighterById('pedersen')) others.push('pedersen');
+    if (BOSSES.indexOf(p1) < 0) others.push(p1);
+    BOSSES.forEach(function (b) { if (FG.fighterById(b)) others.push(b); });
     return { p1: p1, ladder: others, index: 0, continues: 0, started: Date.now() };
   };
   // Straight into the first fight (skipping the ladder screen).

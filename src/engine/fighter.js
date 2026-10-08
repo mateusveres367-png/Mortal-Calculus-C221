@@ -56,6 +56,9 @@
     this.infiniteMeter = false; // training: the meter stays full
     this.extraCredit = false;  // Extra Credit used this match (the scene carries it between rounds)
     this.boost = 0;            // Extra Credit: frames left of the damage boost
+    this.experience = this.experience || 0; // WILSON's 29 YEARS: rounds behind him this match (the scene sets it)
+    this.seen = {};            // WILSON's Seen It All: how often the opponent used each move this round
+    this.seenUsed = false;     // ...and whether he has countered one yet
     this.feintPending = 0;     // DALSASS feinted a move: frames in which the next one counts as out of a feint
     this.swayed = false;       // DALSASS's sway made an attack miss (opens the sway counter)
     this.clearComboFlags();
@@ -64,6 +67,7 @@
   // Per-combo limits, cleared whenever the fighter is free again.
   Fighter.prototype.clearComboFlags = function () {
     this.dashCancelUsed = false;
+    this.chainUsed = false; // WILSON's Chain Rule: one cancel into anything per string
     this.juggleHits = 0;
     this.comboHits = 0;     // hits taken in the current combo (juggle gravity grows with it)
     this.wallUsed = false;
@@ -200,6 +204,7 @@
         if (this.tryCancel(buf, frame, opp)) return;
         if (this.moveFrame <= m.total) return;
         if (!this.contact && m.box) this.whiffed = true;
+        if (m.stare) this.stared = true; // WILSON's Stare: read by the match (a little meter)
         if (m.air) { this.setState('air'); return; }
         if (m.stanceSwitch) this.stance = this.stance === 'B' ? 'A' : 'B';
         this.setState('idle');
@@ -419,6 +424,11 @@
     return !!(ev && !m.throw && this.moveFrame >= ev.from && this.moveFrame <= ev.to && ev.levels.indexOf(m.level) >= 0);
   };
 
+  // WILSON's 29 YEARS: faster from round 2.
+  Fighter.prototype.speedK = function () {
+    return this.def.passive === '29years' && this.experience >= 1 ? C.YEARS_SPEED : 1;
+  };
+
   Fighter.prototype.sidestepFrames = function () { return this.def.sidestepFrames || C.SIDESTEP_FRAMES; };
 
   // Pick the first move this fighter has from a list of candidates.
@@ -572,9 +582,10 @@
         return this.doCancel(hits[i]);
       }
     }
+    if (this.tryAnyCancel(buf, frame, true)) return true;
     for (i = 0; i < cancels.length; i++) {
       c = cancels[i];
-      if (!this.cancelOpen(c)) continue;
+      if (c.btn === 'any' || !this.cancelOpen(c)) continue;
       if (c.btn === 'throw') {
         if (!throwPressed(buf, frame)) continue;
         buf.consume('p'); buf.consume('k');
@@ -583,6 +594,27 @@
         buf.consume(c.btn);
       }
       return this.doCancel(c);
+    }
+    return this.tryAnyCancel(buf, frame, false);
+  };
+
+  // Chain Rule (WILSON): cancel into any of his other moves, once a string. A press
+  // with a direction (F+P, D+H...) goes here first; a plain button keeps the string's
+  // own follow-up (P, P, H is still the string ender).
+  var PLAIN = { p: 'jab', k: 'mid', h: 'heavy' };
+  Fighter.prototype.tryAnyCancel = function (buf, frame, directedOnly) {
+    var cancels = this.move.cancels || [];
+    for (var i = 0; i < cancels.length; i++) {
+      var c = cancels[i];
+      if (c.btn !== 'any' || this.chainUsed || !this.cancelOpen(c)) continue;
+      var btn = buf.latest(['p', 'k', 'h'], frame);
+      if (!btn) return false;
+      var id = this.resolveMove(btn, buf, frame), mv = id && this.def.moves[id];
+      if (directedOnly && id === PLAIN[btn]) return false;
+      if (!mv || id === this.move.id || id === 'jab' || mv.throw || mv.taunt) return false;
+      buf.consume(btn);
+      this.chainUsed = true;
+      return this.doCancel({ into: id });
     }
     return false;
   };
@@ -623,13 +655,13 @@
     if (buf.doubleTap('forward', this.facing, frame)) {
       buf.clearTaps();
       this.setState('dash');
-      this.vx = d.dashSpeed * this.facing;
+      this.vx = d.dashSpeed * this.speedK() * this.facing;
       return;
     }
     if (buf.doubleTap('back', this.facing, frame)) {
       buf.clearTaps();
       this.setState('backdash');
-      this.vx = -d.backdashSpeed * this.facing;
+      this.vx = -d.backdashSpeed * this.speedK() * this.facing;
       return;
     }
     if (buf.held.up) {
@@ -645,7 +677,7 @@
     }
     if (buf.forward(this.facing)) {
       if (this.state !== 'walkF') this.setState('walkF');
-      this.vx = d.walkF * this.facing;
+      this.vx = d.walkF * this.speedK() * this.facing;
       return;
     }
     if (buf.back(this.facing)) {
@@ -656,7 +688,7 @@
         return;
       }
       if (this.state !== 'walkB') this.setState('walkB');
-      this.vx = -d.walkB * this.facing;
+      this.vx = -d.walkB * this.speedK() * this.facing;
       return;
     }
     if (this.state !== 'idle') this.setState('idle');

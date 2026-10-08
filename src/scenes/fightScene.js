@@ -119,6 +119,10 @@
     this.match.reset(this.training.startPos);
     // What carries from one round to the next (the Grade meter).
     if (opts.carry) for (var ci = 0; ci < 2; ci++) for (var key in opts.carry[ci]) this.match.fighters[ci][key] = opts.carry[ci][key];
+    // WILSON's 29 YEARS: he knows how many rounds are behind him.
+    var rnd = this.rounds ? this.rounds.round : 1;
+    this.match.fighters.forEach(function (fi) { if (fi.def.passive === '29years') fi.experience = rnd - 1; });
+    this.flurry = null;
     this.effects = new FG.Effects();
     this.impact = null;
     this.zoom = null;     // { t, amount, x, y, hold }: a quick zoom-in on a big hit
@@ -259,6 +263,10 @@
     this.phaseT = 0;
     var r = this.rounds;
     this.hud.showBanner(r.isFinal() ? 'FINAL ROUND' : 'ROUND ' + r.round, '', 48, { scale: 4, y: 120 });
+    // WILSON gets better as the match goes on: say so over his head.
+    this.match.fighters.forEach(function (fi) {
+      if (fi.def.passive === '29years' && fi.experience >= 1) fi._tag = { text: fi.experience >= 2 ? '29 YEARS: STRONGER' : '29 YEARS: FASTER', t: 130 };
+    });
     FG.Sfx.ui('confirm');
   };
 
@@ -821,6 +829,17 @@
       ult.script.step(ult.fx, ult.t);
     }
     if (this.ultFlash && ++this.ultFlash.t > 30) this.ultFlash = null;
+    // A throw's flurry (WILSON's Prime Factorization): quick hits while they're held.
+    var fl = this.flurry;
+    if (fl && m.throwState) {
+      fl.t++;
+      if (fl.t >= 6 && fl.t % 4 === 2 && fl.n > 0) {
+        fl.n--;
+        var vic = f[fl.who], hev = { type: 'hit', x: vic.x - f[fl.by].facing * 6, y: vic.y + 50 + (fl.n % 3) * 8, facing: f[fl.by].facing, move: { strength: 'light' }, impact: fl.n % 2 ? 'jab' : 'body', hits: 6 - fl.n, damage: 4 };
+        this.effects.spawn(hev); FG.Sfx.play(hev); this.effects.shake(0.003);
+        this.spawnGlyph({ x: vic.x, y: 70, attacker: fl.by, text: ['2', '3', '5', '7', '11', '13'][5 - fl.n] }); // its prime factors
+      }
+    } else if (fl && !m.throwState) this.flurry = null;
     // The car alarm: a two-tone whoop until it gives up.
     if (this.alarm > 0) { this.alarm--; if (this.alarm % 15 === 0) FG.Sfx.alarm(this.alarm % 30 === 0); }
 
@@ -891,7 +910,7 @@
     var slot = this.glyphs.filter(function (g) { return g.t <= 0; })[0];
     if (!slot) return;
     slot.t = 46; slot.vx = (Math.random() - 0.5) * 0.8; slot.x = ev.x; slot.y = C.GROUND_Y - (ev.y || 60) - 14;
-    slot.text.setText(list[Math.floor(Math.random() * list.length)]).setFont(ev.ch ? 'pf_o' : 'pf_y').setScale(ev.ch || ev.launch ? 2 : 1.5).setVisible(true);
+    slot.text.setText(ev.text || list[Math.floor(Math.random() * list.length)]).setFont(ev.ch ? 'pf_o' : 'pf_y').setScale(ev.ch || ev.launch ? 2 : 1.5).setVisible(true);
   };
 
   FightScene.prototype.updateGlyphs = function () {
@@ -1005,11 +1024,19 @@
         if (ev.ch) this.quip(ev.attacker, 0.5);
       }
     }
-    // Taunt: say one of their lines.
+    // Taunt: say one of their lines. WILSON doesn't taunt: he stares (and says nothing).
     if (ev.type === 'whiff' && ev.move.taunt) {
-      var tf = f[ev.fighter], tl = tf.def.talk.lines;
-      this.bubbles[ev.fighter].show(tf.def.name, tl[Math.floor(Math.random() * tl.length)], 120);
+      var tf = f[ev.fighter], tl = tf.def.talk.lines, other = f[1 - ev.fighter];
+      if (ev.move.stare) this.bubbles[ev.fighter].show(tf.def.name, '...', 70);
+      else this.bubbles[ev.fighter].show(tf.def.name, tl[Math.floor(Math.random() * tl.length)], 120);
+      // Taunt WILSON and he just stares back.
+      if (!ev.move.stare && other.def.passive === '29years' && other.state === 'idle' && other.def.gestures) other._gesture = { anim: other.def.gestures.stare, t: 0 };
     }
+    if (ev.type === 'stare') f[ev.fighter]._tag = { text: '+METER', t: 40 };
+    // Seen It All: he names the move he saw coming.
+    if (ev.type === 'parry' && ev.seen) { f[ev.attacker]._tag = { text: 'SEEN IT: ' + ev.seen, t: 100 }; this.startZoom(0.12, ev.x, 60, 20); this.effects.shake(0.008); }
+    // Prime Factorization: the throw breaks them down with a flurry.
+    if (ev.type === 'grab' && ev.move && ev.move.flurry) this.flurry = { n: ev.move.flurry, t: 0, who: ev.defender, by: ev.attacker };
     // Enhanced special: the fighter flashes their colour and the name gets its +.
     if (ev.type === 'enhance') {
       this.hud.setEnhanced(ev.fighter, ev.move.label.replace(/\+$/, ''));
