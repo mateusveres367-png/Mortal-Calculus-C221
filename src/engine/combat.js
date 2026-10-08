@@ -25,6 +25,8 @@
       var hb = a.hitbox(0), hurts = d.hurtboxes(), touching = false;
       for (var j = 0; j < hurts.length; j++) if (FG.overlap(hb, hurts[j])) { touching = true; break; }
       if (!touching) continue;
+      // A sway (DALSASS) leans out of the way of the levels it covers.
+      if (d.evades(m)) { d.swayed = true; continue; }
       // Snapshot the defender's guard and counter-hit state before anything changes (trades).
       var c = { a: i, d: 1 - i, guard: d.guardStance(this.buffers[1 - i]), ch: d.inCounterHitWindow(), punish: d.inRecovery(),
         // The attacker's move as it is now: in a trade, the other hit lands first and changes their state.
@@ -115,6 +117,8 @@
     var state = d.state;
     var mult = (ch ? 1.2 : 1) * (state === 'down' ? 0.6 : 1) * (state === 'wallsplat' ? 0.85 : 1);
     if (a.calculated > 0) { mult *= C.CALCULATED_BONUS; a.calculated = 0; ev.calculated = true; }
+    // Long Arms (BRINKHUS): landing with the very tip of a straight hits harder.
+    if (m.tip && Math.abs(a.x - d.x) >= m.tip * a.def.scale) { mult *= C.TIP_BONUS; ev.tip = true; }
     if (m.charge) {
       mult *= m.charge.damage[charge];
       ev.charge = charge;

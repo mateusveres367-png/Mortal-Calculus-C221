@@ -29,6 +29,14 @@ FG.ROSTER.forEach(function (d) {
   out.push('');
   out.push(sentence(d.bio));
   out.push('');
+  // Style, signature mechanic and how they move (fighters without these fields skip the lines).
+  if (d.style) out.push('**Style:** ' + sentence(d.style) + (d.signatureMechanic ? '. **Signature:** ' + title(d.signatureMechanic) + (d.signatureText ? ' — ' + d.signatureText : '') : '') + '.');
+  if (d.style) {
+    out.push('');
+    out.push('**Movement:** walk ' + d.walkF + ' forward / ' + d.walkB + ' back, dash ' + d.dashSpeed + (d.dashFrames ? ' for ' + d.dashFrames + ' frames' : '') +
+      ', backdash ' + d.backdashSpeed + ', jump ' + (d.jumpVy || 9.5) + ', weight ' + (d.weight || 1) + ' (higher falls faster in juggles).');
+  }
+  out.push('');
   out.push('| Input | Move | Level | i | Active | Recovery | Block | Hit | Counter hit | Damage | Notes |');
   out.push('| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |');
   // Strings sit right after the move they start from; stance moves after the stance switch.
@@ -56,6 +64,9 @@ FG.ROSTER.forEach(function (d) {
     if (m.parry) notes.push('parry');
     if (m.charge) notes.push('hold to charge');
     if (m.taunt) notes.push('says a taunt line; counter-hittable the whole time');
+    if (m.tip) notes.push('Long Arms: +' + Math.round((FG.C.TIP_BONUS - 1) * 100) + '% damage at the tip');
+    if (m.evade) notes.push('evades ' + m.evade.levels.map(function (l) { return l + 's'; }).join(' and ') + ' on frames ' + m.evade.from + '-' + m.evade.to);
+    if (m.cancels) m.cancels.forEach(function (c) { if (c.onSway) notes.push('P after a miss: ' + title(d.moves[c.into].label)); });
     if (m.throw) notes.push(m.breakBtn ? 'break with ' + m.breakBtn.toUpperCase() : 'unbreakable');
     if (m.cancels) m.cancels.forEach(function (c) { if (c.into === 'jump') notes.push('jump cancel on hit (UP)'); });
     if (m.air) notes.push('hitstun ' + m.stunHit + ', blockstun ' + m.stunBlock + ', landing ' + m.landLag);

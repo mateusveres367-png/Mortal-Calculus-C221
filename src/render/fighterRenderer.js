@@ -45,6 +45,13 @@
     var def = f.def, ia = def.idleAnim;
     var p = getPose(def, f.stance === 'B' ? 'pw_idle' : 'idle').slice();
     var ph = t * ia.rate + f.index * 2;
+    // A loose stance that swaps its lead now and then (DALSASS): blend to 'idle2'.
+    if (ia.switchEvery && f.stance !== 'B' && def.poses.idle2) {
+      var cyc = (t + f.index * 37) % (ia.switchEvery * 2), u = cyc < ia.switchEvery ? 0 : 1;
+      var edge = cyc % ia.switchEvery;
+      if (edge < 14) u = cyc < ia.switchEvery ? 1 - ease(edge / 14) : ease(edge / 14);
+      p = lerp(p, def.poses.idle2, u);
+    }
     var br = Math.sin(ph) * ia.breath;
     var bob = ia.bob ? Math.abs(Math.sin(ph * 1.5)) * ia.bob : 0;
     var sway = ia.sway ? Math.sin(ph * 0.5) * ia.sway : 0;
@@ -71,9 +78,12 @@
       case 'walkF':
       case 'walkB': {
         // The feet step for real (see motion.js); the body leans into the walk.
+        // def.walk: { lean, bob, rate } gives each fighter their own gait.
+        var wk = def.walk || {};
         p = idlePose(f, t);
-        var lean = s === 'walkF' ? 1.5 : -1.5;
+        var lean = (s === 'walkF' ? 1 : -1) * (wk.lean != null ? wk.lean : 1.5);
         for (var i = 2; i <= 12; i += 2) p[i] += lean * (p[i + 1] - p[1]) / 30;
+        if (wk.bob) { var wb = Math.abs(Math.sin(t * (wk.rate || 0.2))) * wk.bob; for (var j = 1; j <= 13; j += 2) p[j] -= wb; }
         return p;
       }
       case 'crouch': return P('crouch');
@@ -82,7 +92,7 @@
       case 'air': return f.vy > 2 ? lerp(P('squat'), P('jump'), 0.7) : P('jump');
       case 'dash': return f.stateFrame < 10 ? P('dash') : lerp(P('dash'), P('idle'), (f.stateFrame - 10) / 6);
       case 'backdash': return f.stateFrame < 14 ? P('backdash') : lerp(P('backdash'), P('idle'), (f.stateFrame - 14) / 8);
-      case 'sidestep': return lerp(P('idle'), P('squat'), Math.sin(Math.PI * f.stateFrame / C.SIDESTEP_FRAMES) * 0.5);
+      case 'sidestep': return lerp(P('idle'), P(def.poses.sidestep ? 'sidestep' : 'squat'), Math.sin(Math.PI * f.stateFrame / f.sidestepFrames()) * (def.poses.sidestep ? 1 : 0.5));
       case 'blockstun': return f.guardCrouch ? P('cblock') : P('block');
       case 'hitstun': {
         var hp = P('hit_' + f.reaction);

@@ -19,11 +19,17 @@ Each fighter's moves come from what they actually teach.
 
 Every fighter needs unique normals, launcher, throw, combo routes, stance, idle animation, and victory and defeat animations.
 
+**No two fighters look or play alike.** Each has their own fighting style, stance, walk, dash, idle, jump, block pose and hit reactions; their own walk speed, dash distance, jump height and weight (how fast they fall in juggles); and one signature mechanic nobody else has. No two fighters share an attack animation, not even the jab.
+
 ---
 
 ## BRINKHUS — Balanced — Algebra 1
 
 **Moves:** Slope Jab, Distributive Property (string), Linear Rush, Solve for X (launcher), FOIL (throw).
+
+**Style:** Athletic kickboxer. An even mix of punches and kicks, long reach, clean straight lines: a long jab and cross, a teep, a switch kick, a spinning back kick, a superman punch and a vertical split kick for his launcher. Upright, bouncy stance; a fast dash.
+
+**Signature — Long Arms:** his straight punches outrange everyone's, which makes him great at poking. Landing one with the very tip hits harder. F+P (Long Arms) is the longest poke in the game.
 
 **Look:** Tall and athletic. Dark brown hair styled up and back, a short full dark beard and a big warm smile. Wears a black V-neck tee.
 
@@ -60,6 +66,10 @@ Every fighter needs unique normals, launcher, throw, combo routes, stance, idle 
 ## DALSASS — Tricky — Geometry (triangles and proofs)
 
 **Moves:** Similar Triangles (stance switch), Proof by Contradiction (feint), Supplementary Slide, Pythagorean Launcher, Congruence Lock (throw).
+
+**Style:** Movement-based trickster. Bobs and sways, ducks under highs, leans back from attacks. A playful, loose stance (lead hand low by the hip) that keeps switching sides. Flicker jab, backfist, lazy lean-back kicks, a breakdancer's sweep, a baseball slide, a bolo punch.
+
+**Signature — Similar Triangles stance:** a second stance with completely different moves (twin palms, a spinning low heel, an axe kick). Any of his attacks, from either stance, can be feinted by tapping back during its startup. He can sway backward to dodge (Assume the Contrary, B+K: highs and mids miss him), then counter (The Converse, P).
 
 **Look:** Solid build. Short spiky brown hair, smile lines, a short graying goatee and a huge grin. Wears a light aqua striped polo.
 

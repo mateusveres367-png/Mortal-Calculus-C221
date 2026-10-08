@@ -43,8 +43,9 @@
   FG.motionKind = function (m) {
     if (!m) return null;
     if (m._kind !== undefined) return m._kind;
-    var k = null;
-    if (m.throw) k = 'throw';
+    var k = m.motion || null; // a move can name its motion kind outright
+    if (k) { /* declared */ }
+    else if (m.throw) k = 'throw';
     else if (m.air) k = 'air';
     else if (m.id === 'launcher' || m.strength === 'launch') k = 'launcher';
     else if (m.id === 'sweep') k = 'sweep';
@@ -225,7 +226,7 @@
       return 0;
     }
     var k = r.t <= 2 ? 1 : Math.pow(1 - (r.t - 2) / (R.dur - 2), 2);
-    k *= r.scale || 1;
+    k *= (r.scale || 1) * (f.def.react || 1); // how hard this fighter reels (PEDERSEN barely, CHAI a lot)
     rotate(p, UPPER, R.lean * k);
     shift(p, BODY, R.hip * k, -R.dip * k);
     p[4] += R.head * k;

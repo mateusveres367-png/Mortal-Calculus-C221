@@ -812,6 +812,7 @@
       f[ev.fighter]._tag = { text: 'CALCULATED', t: 60 };
     }
     if (ev.type === 'hit' && ev.calculated) this.hud.setLabel(ev.attacker, 'CALCULATED!');
+    if (ev.type === 'hit' && ev.tip) this.hud.setLabel(ev.attacker, 'LONG ARMS!');
     if ((ev.type === 'hit' || ev.type === 'guardbreak') && ev.charge === 2) { this.hud.setLabel(ev.attacker, 'ORDER OF MAGNITUDE!'); this.effects.shake(0.012); }
     if (ev.type === 'parry') {
       this.hud.setLabel(ev.attacker, ev.label || 'PARRY!');

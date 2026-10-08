@@ -124,8 +124,12 @@ The fighters, and what they teach:
   - **Right Angle Elbow** (forward + `P`) steps in, is plus on hit, and launches on a counter hit.
   - **Logarithmic Launcher** (down + `H`) is his launcher, and **Long Division** (`P`+`K`) is a slam throw.
   - His intro drives his car in (on outdoor stages); he steps out and loosens his tie.
-- **BRINKHUS** (balanced; Algebra 1) — best for new players. The **Distributive Property** string (`P, K, K`) combos naturally on hit, **Linear Rush** (`H`) steps in, his launcher is **Solve for X** (down + `H`) and his throw is **FOIL**.
-- **DALSASS** (tricky; geometry: triangles and proofs):
+- **BRINKHUS** (balanced; Algebra 1) — an athletic kickboxer, best for new players. Upright and bouncy, with a fast dash:
+  - **Long Arms** (his signature): his straights outrange everyone's, and landing one with the very tip hits harder. Forward + `P` is the longest poke in the game.
+  - The **Distributive Property** string (`P, K, K`: jab, switch kick, spinning back kick) combos naturally on hit, **Linear Rush** (`H`) is a stepping straight, his launcher is **Solve for X** (down + `H`, a vertical kick) and his throw is **FOIL**.
+- **DALSASS** (tricky; geometry: triangles and proofs) — a movement trickster who bobs, sways and keeps switching his lead:
+  - **Feint anything:** tap back during the startup of any of his attacks and it never comes out.
+  - **Assume the Contrary** (back + `K`) sways back out of highs and mids; if something misses him, `P` counters with **The Converse** (a launcher).
   - **Proof by Contradiction** (forward + `H`) is a feint that looks like his overhead. Cancel it into a jab (`P`), a low (`K`), the real overhead (`H`) or a throw (`P`+`K`), or let it fizzle.
   - **Similar Triangles** (back + `P`) switches to a second stance where `P`, `K` and `H` are different moves. Moving leaves the stance.
   - **Supplementary Slide** (down-forward + `K`) slides under highs and knocks down. **Pythagorean Launcher** (down + `H`), **Congruence Lock** (throw).

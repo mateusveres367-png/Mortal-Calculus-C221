@@ -25,7 +25,8 @@ Every fighter's combo routes, and what the combo feel pass changed. The routes l
 | Route | Level | Inputs | Hits | Damage |
 | --- | --- | --- | --- | --- |
 | DISTRIBUTIVE PROPERTY | easy | P, K, K | 3 | 32 |
-| SOLVE FOR X JUGGLE | medium | D+H, P, P, H | 4 | 41 |
+| LONG ARMS | easy | F+P, P, H | 3 | 31 |
+| SOLVE FOR X JUGGLE | medium | D+H, P, P, H | 4 | 45 |
 | ISOLATE THE VARIABLE | medium | AT THE WALL: H, P, P, D+H | 4 | 43 |
 | POINT-SLOPE SPIKE | hard | D+H, UP, AIR P, AIR K, AIR H, K | 5 | 55 |
 

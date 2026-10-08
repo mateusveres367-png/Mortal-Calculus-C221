@@ -8,6 +8,7 @@ Frame data: **i** is startup (the frame the move hits, counting the press as fra
 
 Calm and friendly, but every hit is heavy. Slow, patient, devastating.
 
+
 | Input | Move | Level | i | Active | Recovery | Block | Hit | Counter hit | Damage | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | P | Power Jab | high | 11 | 2 | 14 | 0 | +7 | +10 | 10 |  |
@@ -41,17 +42,22 @@ Calm and friendly, but every hit is heavy. Slow, patient, devastating.
 
 Nice, easygoing, a good sport. Best for new players.
 
+**Style:** Kickboxer. **Signature:** Long Arms — his straights outrange everyone's, and landing one with the very tip hits 25% harder.
+
+**Movement:** walk 2.2 forward / 1.9 back, dash 9.8 for 14 frames, backdash 8.4, jump 9.9, weight 1 (higher falls faster in juggles).
+
 | Input | Move | Level | i | Active | Recovery | Block | Hit | Counter hit | Damage | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| P | Slope Jab | high | 10 | 2 | 13 | +1 | +8 | +10 | 7 |  |
-| P,P | Rise Over Run | high | 9 | 2 | 16 | -3 | +6 | +9 | 9 |  |
+| P | Slope Jab | high | 10 | 2 | 13 | +1 | +8 | +10 | 7 | Long Arms: +25% damage at the tip |
+| P,P | Rise Over Run | high | 9 | 2 | 16 | -3 | +6 | +9 | 9 | Long Arms: +25% damage at the tip |
 | P,K | Distribute | mid | 11 | 3 | 18 | -7 | +4 | +8 | 11 |  |
 | P,K,K | Distributive Property | mid | 13 | 3 | 22 | -13 | knockdown | knockdown | 16 | wall splats |
 | P,P,H | Combine Like Terms | mid | 12 | 3 | 20 | -9 | knockdown | knockdown | 13 |  |
+| F+P | Long Arms | high | 13 | 3 | 18 | -4 | +4 | +8 | 11 | Long Arms: +25% damage at the tip |
 | K | Variable Kick | mid | 14 | 3 | 18 | -6 | +4 | +9 | 14 |  |
 | D+K | Inequality | low | 16 | 3 | 21 | -12 | -1 | +5 | 10 | tracks, hits downed opponents, ducks highs |
 | D/B+K | Zero Product Sweep | low | 20 | 3 | 26 | -18 | knockdown | knockdown | 16 | ducks highs |
-| H | Linear Rush | mid | 19 | 3 | 22 | -4 | +6 | launch | 22 | wall splats |
+| H | Linear Rush | mid | 19 | 3 | 22 | -4 | +6 | launch | 22 | wall splats, Long Arms: +25% damage at the tip |
 | F+H | Order Of Operations | mid | 21 | 3 | 21 | -6 | +3 | knockdown | 18 | bounds |
 | D+H | Solve For X | mid | 15 | 4 | 22 | -15 | launch | launch | 16 | jump cancel on hit (UP) |
 | P+K | Foil | throw | 12 | 2 | 26 |  |  |  | 30 | break with P |
@@ -66,6 +72,7 @@ Nice, easygoing, a good sport. Best for new players.
 **Combo routes** (tested in `tests/sim.test.js`):
 
 - **Distributive Property:** P, K, K (frames: P @0, K @12, K @24)
+- **Long Arms:** F+P, P, H (frames: F+P @0, P @15, H @27)
 - **Solve For X Juggle:** D+H, P, P, H (frames: D+H @0, P @38, P @56, H @67)
 - **Point-Slope Spike:** D+H, up, air P, air K, air H, K (frames: D+H @0, UP @17, P @32, K @41, H @51, K @79)
 - **Isolate The Variable:** at the wall: H, P, P, D+H (each input as soon as you can act)
@@ -73,6 +80,7 @@ Nice, easygoing, a good sport. Best for new players.
 ## CHAI — Technical — Geometry
 
 Very kind, precise and graceful. Bows before fights.
+
 
 | Input | Move | Level | i | Active | Recovery | Block | Hit | Counter hit | Damage | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -109,6 +117,10 @@ Very kind, precise and graceful. Bows before fights.
 
 Happy, sassy, everyone's favorite. Fakes you out with a grin.
 
+**Style:** Trickster. **Signature:** Similar Triangles — a second stance (B+P) with its own moves; tap back during any attack's startup to feint it; Assume the Contrary (B+K) sways out of highs and mids, then P counters with The Converse.
+
+**Movement:** walk 2 forward / 1.8 back, dash 8.6, backdash 9.6, jump 9.4, weight 1.02 (higher falls faster in juggles).
+
 | Input | Move | Level | i | Active | Recovery | Block | Hit | Counter hit | Damage | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | P | Given | high | 10 | 2 | 13 | +1 | +8 | +10 | 7 |  |
@@ -119,6 +131,7 @@ Happy, sassy, everyone's favorite. Fakes you out with a grin.
 | STANCE K | Scale Factor | low | 13 | 3 | 20 | -12 | +1 | +6 | 11 | hits downed opponents, ducks highs |
 | STANCE H | Angle-Angle | mid | 20 | 3 | 20 | -6 | +4 | launch | 20 | bounds |
 | K | Reason Kick | mid | 15 | 3 | 19 | -7 | +4 | +9 | 15 |  |
+| B+K | Assume The Contrary | — | 26 total |  |  |  |  |  |  | evades highs and mids on frames 3-16, P after a miss: The Converse |
 | D+K | Leg Kick | low | 16 | 3 | 20 | -11 | 0 | +6 | 10 | tracks, hits downed opponents, ducks highs |
 | D/F+K | Supplementary Slide | low | 18 | 5 | 24 | -16 | knockdown | knockdown | 14 | ducks highs |
 | D/B+K | Base Sweep | low | 21 | 3 | 26 | -18 | knockdown | knockdown | 16 | ducks highs |
@@ -134,6 +147,7 @@ Happy, sassy, everyone's favorite. Fakes you out with a grin.
 | K (DOWN) | Rolling Zero | low | 14 | 3 | 22 | -14 | -2 | +1 | 10 | ducks highs |
 | P/H (DOWN) | Spring Theorem | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
 | T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
+| B+K, P | The Converse | mid | 8 | 3 | 18 | -6 | launch | launch | 16 |  |
 
 **Combo routes** (tested in `tests/sim.test.js`):
 
@@ -145,6 +159,7 @@ Happy, sassy, everyone's favorite. Fakes you out with a grin.
 ## LEE — Rushdown — Sequences
 
 Sarcastic and funny. Taunts mid-combo. Relentless pressure.
+
 
 | Input | Move | Level | i | Active | Recovery | Block | Hit | Counter hit | Damage | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -181,6 +196,7 @@ Sarcastic and funny. Taunts mid-combo. Relentless pressure.
 
 Very suspicious. Always watching. Waits for you to commit, then punishes.
 
+
 | Input | Move | Level | i | Active | Recovery | Block | Hit | Counter hit | Damage | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | P | Differential Jab | high | 10 | 2 | 14 | 0 | +7 | +10 | 8 |  |
@@ -214,6 +230,7 @@ Very suspicious. Always watching. Waits for you to commit, then punishes.
 ## MIYASHIRO — Spacing — Algebra 2
 
 Very smart. Reads opponents, keeps perfect distance, punishes every mistake.
+
 
 | Input | Move | Level | i | Active | Recovery | Block | Hit | Counter hit | Damage | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -249,6 +266,7 @@ Very smart. Reads opponents, keeps perfect distance, punishes every mistake.
 ## RAMOS — Grappler — Matrices
 
 Fast, explosive grappler who closes distance quickly. Confident and focused.
+
 
 | Input | Move | Level | i | Active | Recovery | Block | Hit | Counter hit | Damage | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |

@@ -12,6 +12,7 @@
   var SIDESTEP_ACT_FROM = 14;
   var PREJUMP_FRAMES = 4, LAND_FRAMES = 4;
   var JUMP_VY = 9.5, JUMP_VX = 2.6;
+  var FEINT_RECOVERY = 6, FEINT_MEMORY = 24;
 
   function Fighter(def, index) {
     this.def = def;
@@ -49,6 +50,8 @@
     this.blockEndFrame = -999; // last frame this fighter came out of blockstun
     this.whiffed = false;      // an attack just ended without touching anything (read by the match)
     this.calculated = 0;       // MIYASHIRO's Calculated: frames left of the damage bonus
+    this.feintPending = 0;     // DALSASS feinted a move: frames in which the next one counts as out of a feint
+    this.swayed = false;       // DALSASS's sway made an attack miss (opens the sway counter)
     this.clearComboFlags();
   };
 
@@ -121,7 +124,9 @@
   Fighter.prototype.startMove = function (id) {
     var m = this.def.moves[id];
     var prev = this.state === 'attack' ? this.move : null;
-    this.fromFeint = !!(prev && prev.feint);
+    this.fromFeint = !!(prev && prev.feint) || this.feintPending > 0;
+    this.feintPending = 0;
+    this.swayed = false;
     this.fromCancel = false;
     // How many times in a row this move has cancelled into itself (Recursive Rush).
     this.repeatCount = prev && prev.id === id ? (this.repeatCount || 0) + 1 : 0;
@@ -145,6 +150,7 @@
     this.actionable = false;
     this.whiffed = false;
     if (this.calculated > 0) this.calculated--;
+    if (this.feintPending > 0) this.feintPending--;
     this.stateFrame++;
     var s = this.state;
 
@@ -160,6 +166,7 @@
         this.moveFrame++;
         if (!m.air) this.vx = (m.step && this.moveFrame >= m.step[0] && this.moveFrame <= m.step[1]) ? m.step[2] * this.facing : 0;
         if (this.tryThrowConversion(buf, frame)) return;
+        if (this.tryFeint(buf, frame)) return;
         if (this.tryCancel(buf, frame, opp)) return;
         if (this.moveFrame <= m.total) return;
         if (!this.contact && m.box) this.whiffed = true;
@@ -186,7 +193,7 @@
         this.groundHits = 0;
         return;
       case 'dash':
-        this.vx *= 0.86;
+        this.vx *= this.def.dashDecay || 0.86;
         // Cardio: some fighters (RAMOS) can chain straight into another dash.
         if (this.def.dashChainFrom && this.stateFrame >= this.def.dashChainFrom && buf.doubleTap('forward', this.facing, frame)) {
           buf.clearTaps();
@@ -194,7 +201,7 @@
           this.vx = this.def.dashSpeed * this.facing;
           return;
         }
-        if (this.stateFrame >= DASH_FRAMES) { this.setState('idle'); break; }
+        if (this.stateFrame >= (this.def.dashFrames || DASH_FRAMES)) { this.setState('idle'); break; }
         if (this.stateFrame >= (this.def.dashAttackFrom || DASH_ACT_FROM) && this.tryAttack(buf, frame)) return;
         return;
       case 'backdash':
@@ -205,15 +212,15 @@
         return;
       case 'sidestep':
         this.vx = 0;
-        if (this.stateFrame >= C.SIDESTEP_FRAMES) { this.setState('idle'); break; }
+        if (this.stateFrame >= this.sidestepFrames()) { this.setState('idle'); break; }
         // Some fighters (CHAI) can attack out of a sidestep earlier than others.
         if (this.stateFrame >= (this.def.ssAttackFrom || SIDESTEP_ACT_FROM) && this.tryAttack(buf, frame)) return;
         return;
       case 'prejump':
         if (this.stateFrame >= PREJUMP_FRAMES) {
           this.setState('air');
-          this.vy = JUMP_VY;
-          this.vx = this.jumpDir * JUMP_VX * this.facing;
+          this.vy = this.def.jumpVy || JUMP_VY;
+          this.vx = this.jumpDir * (this.def.jumpVx || JUMP_VX) * this.facing;
           this.airActions = 0;
         }
         return;
@@ -293,6 +300,29 @@
     this.startMove(buf.back(this.facing, dirs) ? 'throwB' : this.pick(buf.forward(this.facing, dirs) ? ['cmdGrab', 'throw'] : ['throw']));
   };
 
+  // Feint (DALSASS): tapping back during a move's startup cancels it before it
+  // comes out. The next attack counts as out of a feint.
+  Fighter.prototype.tryFeint = function (buf, frame) {
+    var m = this.move;
+    if (!this.def.feintCancel || !m.box || m.air || m.throw || this.contact) return false;
+    if (this.moveFrame < 3 || this.moveFrame >= m.startup - 1) return false;
+    var tap = (this.facing > 0 ? buf.leftTaps : buf.rightTaps)[1];
+    if (tap <= frame - (this.moveFrame - 1) || frame - tap > 1) return false; // a fresh tap since the move began
+    this.cancelled = 'feint';
+    this.setState('land');
+    this.landLag = FEINT_RECOVERY;
+    this.feintPending = FEINT_MEMORY;
+    return true;
+  };
+
+  // In the evasive window of a sway (DALSASS): attacks of these levels miss.
+  Fighter.prototype.evades = function (m) {
+    var ev = this.state === 'attack' && this.move.evade;
+    return !!(ev && !m.throw && this.moveFrame >= ev.from && this.moveFrame <= ev.to && ev.levels.indexOf(m.level) >= 0);
+  };
+
+  Fighter.prototype.sidestepFrames = function () { return this.def.sidestepFrames || C.SIDESTEP_FRAMES; };
+
   // Pick the first move this fighter has from a list of candidates.
   Fighter.prototype.pick = function (ids) {
     for (var i = 0; i < ids.length; i++) if (this.def.moves[ids[i]]) return ids[i];
@@ -371,6 +401,7 @@
     if (!this.contact && c.btn !== 'up' && this.isActiveFrame()) return false;
     if (c.onContact && !this.contact) return false;
     if (c.onHit && this.contact !== 'hit') return false;
+    if (c.onSway && !this.swayed) return false;
     if (c.into === this.move.id && (this.repeatCount || 0) >= (c.max || 0)) return false;
     return true;
   };
@@ -489,7 +520,8 @@
       this.slide = 0;
     } else if (this.isAirborne()) {
       var juggled = this.state === 'juggle';
-      this.vy -= juggled ? FG.juggleGravity(this.comboHits) : C.GRAVITY;
+      // Heavier fighters (def.weight) fall faster in juggles.
+      this.vy -= juggled ? FG.juggleGravity(this.comboHits) * (this.def.weight || 1) : C.GRAVITY;
       this.y += this.vy;
       this.x += this.vx;
       if (this.y <= 0) {
@@ -525,11 +557,11 @@
       this.slide *= 0.8;
       if (Math.abs(this.slide) < 0.1) this.slide = 0;
     }
-    var depthFrames = this.state === 'sidestep' ? C.SIDESTEP_FRAMES :
+    var depthFrames = this.state === 'sidestep' ? this.sidestepFrames() :
       this.state === 'techroll' ? C.TECH_FRAMES :
       (this.state === 'roll' && this.rollDir === 'side') ? C.ROLL_FRAMES : 0;
     if (depthFrames) {
-      this.z = this.sideDir * C.SIDESTEP_DEPTH * Math.sin(Math.PI * Math.min(1, this.stateFrame / depthFrames));
+      this.z = this.sideDir * (this.state === 'sidestep' && this.def.sidestepDepth || C.SIDESTEP_DEPTH) * Math.sin(Math.PI * Math.min(1, this.stateFrame / depthFrames));
     } else if (this.state === 'attack' && this.move.keepZ && this.moveFrame < this.move.startup) {
       // Sidestep attacks stay off the line until they hit.
     } else {

@@ -110,3 +110,52 @@
     return p;
   };
 })();
+
+// --- Rig: author a pose from body angles and targets ------------------------------
+// FG.rigger(lengths) returns rig(spec), which builds an 11-joint pose with
+// consistent limb lengths, so a fighter's poses never stretch or shrink limbs.
+//   hip: [x, y]           (default [0, 46])
+//   lean: deg             torso lean, + forward (default 4); neck: extra head tilt
+//   fa / ba: front / back arm: [upperDeg, foreDeg] absolute directions
+//            (0 = forward, 90 = up, -90 = down, 180 = back), or { hand: [x, y], bend }
+//   fl / bl: front / back leg: [thighDeg, shinDeg], or { foot: [x, y], bend }
+// bend picks the side the elbow / knee goes: +1 = to the left of the limb's
+// direction (a knee forward for a leg pointing down), -1 = to the right.
+(function () {
+  var DEF_L = { torso: 28, neck: 12, upper: 15.5, fore: 13, thigh: 24, shin: 24.5 };
+  function r1(v) { return Math.round(v * 2) / 2; }
+  function dir(deg) { var a = deg * Math.PI / 180; return [Math.cos(a), Math.sin(a)]; }
+
+  function limb(root, spec, L1, L2, defBend) {
+    if (Array.isArray(spec)) {
+      var d1 = dir(spec[0]), d2 = dir(spec[1]);
+      var mid = [root[0] + d1[0] * L1, root[1] + d1[1] * L1];
+      return [mid, [mid[0] + d2[0] * L2, mid[1] + d2[1] * L2]];
+    }
+    var end = spec.hand || spec.foot, bend = spec.bend || defBend;
+    var dx = end[0] - root[0], dy = end[1] - root[1], d = Math.sqrt(dx * dx + dy * dy) || 0.01;
+    var ux = dx / d, uy = dy / d;
+    if (d >= L1 + L2) {
+      // Out of reach: straighten toward the target.
+      var m = [root[0] + ux * L1, root[1] + uy * L1];
+      return [m, [m[0] + ux * L2, m[1] + uy * L2]];
+    }
+    var a = (L1 * L1 - L2 * L2 + d * d) / (2 * d), h = Math.sqrt(Math.max(0, L1 * L1 - a * a));
+    return [[root[0] + ux * a - uy * h * bend, root[1] + uy * a + ux * h * bend], end.slice()];
+  }
+
+  FG.rigger = function (lengths) {
+    var L = Object.assign({}, DEF_L, lengths);
+    return function (s) {
+      var hip = s.hip || [0, 46], lean = s.lean == null ? 4 : s.lean, neck = s.neck || 0;
+      var t = (90 - lean) * Math.PI / 180, chest = [hip[0] + Math.cos(t) * L.torso, hip[1] + Math.sin(t) * L.torso];
+      var hn = (90 - lean - neck) * Math.PI / 180, head = [chest[0] + Math.cos(hn) * L.neck, chest[1] + Math.sin(hn) * L.neck];
+      var fa = limb(chest, s.fa || [-60, 75], L.upper, L.fore, -1);
+      var ba = limb(chest, s.ba || [-70, 85], L.upper, L.fore, -1);
+      var fl = limb(hip, s.fl || { foot: [12, 0] }, L.thigh, L.shin, 1);
+      var bl = limb(hip, s.bl || { foot: [-14, 0] }, L.thigh, L.shin, 1);
+      return [hip, chest, head, fa[0], fa[1], ba[0], ba[1], fl[0], fl[1], bl[0], bl[1]]
+        .reduce(function (o, p) { o.push(r1(p[0]), r1(p[1])); return o; }, []);
+    };
+  };
+})();

@@ -129,7 +129,7 @@
       var opener = sc.first;
       if (!opener && self.state === 'attack') opener = sc.first = self.move;
       var blocked = self.contact === 'block';
-      var whiffed = opener && self.state !== 'attack' && self.state !== 'air' && ft > 2 && match.combo[opp.index].hits === 0;
+      var whiffed = !sc.keep && opener && self.state !== 'attack' && self.state !== 'air' && ft > 2 && match.combo[opp.index].hits === 0;
       if (blocked || whiffed || ft > sc.last + 40) this.script = null;
       else {
         var tok = sc.plan[ft];
@@ -151,7 +151,10 @@
           step: !m.tracks && m.startup >= 16 && rnd() < L.sidestep
         };
       }
-      var gd = this.guard;
+      var gd = this.guard, st = self.def.ai || {};
+      // Style: DALSASS sways back out of highs and mids, then counters.
+      if (gd.sway == null) gd.sway = !!(st.sway && m === opp.move && opp.move.level !== 'low' && self.def.moves.bK && self.def.moves.bK.evade && rnd() < st.sway * L.block);
+      if (gd.sway && self.actionable) { gd.sway = false; gd.block = false; this.startScript({ 0: 'B+K', 8: 'P' }, match, self); return toRaw('B+K', self.facing); }
       if (gd.step && self.actionable) { raw.ssIn = true; gd.step = false; return raw; }
       if (gd.block) { raw[backKey] = true; raw.down = gd.low; self.holdGuard = true; return raw; }
     } else if (!attacking(opp)) {
@@ -183,8 +186,17 @@
     if (match.frame < this.nextThink) return raw;
     this.nextThink = match.frame + L.think[0] + Math.floor(rnd() * (L.think[1] - L.think[0]));
     this.walk = null;
-    var moves = self.def.moves, a = L.aggression, roll = rnd();
+    var moves = self.def.moves, st = self.def.ai || {}, a = Math.min(0.95, L.aggression * (st.aggro || 1)), roll = rnd();
     var close = dist < reach(self, moves.jab) + 10, mid = dist < reach(self, moves.mid) + 18;
+    // Each fighter's style (def.ai): the moves they like up close and at poking range,
+    // the distance they like to fight from, and their tricks.
+    var pick = function (list) { return list && list.length ? list[Math.floor(rnd() * list.length)] : null; };
+    if (st.spacing && opp.state !== 'down') {
+      if (dist < st.spacing - 18 && roll < 0.3 && !close) { this.walk = { dir: 'back', until: match.frame + 10 }; return raw; }
+    }
+    var styled = L.combo; // better CPUs play to their style more
+    if (close && st.close && roll < a * 0.5 * styled) return this.styleAttack(pick(st.close), match, self);
+    if (!close && mid && st.pokes && roll < a * 0.45 * styled) return this.styleAttack(pick(st.pokes), match, self);
     if (opp.state === 'down' && dist < 90) {
       // They're down: a low ground hit, or wait for them to get up.
       if (moves.low && moves.low.otg && dist < reach(self, moves.low) + 6 && roll < 0.5) return toRaw('D+K', self.facing);
@@ -215,6 +227,20 @@
     if (roll < a * 0.5) { var dp = {}; dp[0] = 'F'; dp[2] = 'F'; this.startScript(dp, match, self); return raw; }
     this.walk = { dir: 'fwd', until: match.frame + 16 + Math.floor(rnd() * 20) };
     return raw;
+  };
+
+  // A move from the fighter's style list: combo routes that start with it, and
+  // DALSASS-style feints (start it, tap back to cancel, then mix up).
+  AI.prototype.styleAttack = function (tok, match, self) {
+    var st = self.def.ai || {}, rnd = this.rng;
+    if (st.feint && self.def.feintCancel && /[PKH]/.test(tok) && tok !== 'P+K' && rnd() < st.feint) {
+      var follow = ['P+K', 'D+K', 'P', 'F+H'][Math.floor(rnd() * 4)];
+      this.startScript({ 0: tok, 5: 'B', 13: follow }, match, self);
+      this.script.keep = true; // the feinted move never connects: don't give up on the plan
+      return toRaw(tok, self.facing);
+    }
+    this.startRoute(tok, match, self);
+    return toRaw(tok, self.facing);
   };
 
   function mulberry(a) {

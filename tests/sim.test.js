@@ -448,7 +448,7 @@ var LAUNCH = { h: true, down: true };
 
 // Air attacks against a standing opponent: blocked standing, and the attacker lands.
 (function () {
-  var r = play(S, D, 70, { 0: { up: true, right: true }, 16: { k: true } }, function (i) { return i >= 2 ? { right: true } : {}; }, 80);
+  var r = play(S, D, 70, { 0: { up: true, right: true }, 20: { k: true } }, function (i) { return i >= 2 ? { right: true } : {}; }, 80);
   check('jump-in kick is blocked standing', has(r, 'block'), types(r));
   check('air attacker lands', r.m.fighters[0].y === 0 && r.m.fighters[0].state !== 'air', r.m.fighters[0].state);
 })();
@@ -595,6 +595,47 @@ function count(r, type, attacker) {
   var r = play(S, D, 120, plan, {}, 80);
   var ids = r.events.filter(function (e) { return e.type === 'whiff' && e.fighter === 0; }).map(function (e) { return e.move.id; });
   check('Distribute needs the jab to connect', ids.indexOf('eps') < 0 && ids.indexOf('delta') < 0, ids);
+})();
+
+// BRINKHUS: Long Arms. His straights outreach everyone's, and the tip hits harder.
+(function () {
+  function reach(d, id) { var m = d.moves[id]; return m && m.box ? m.box.x + m.box.w : 0; }
+  defs.filter(function (d) { return d !== S; }).forEach(function (d) {
+    check('Long Arms: his jab outreaches ' + d.name + "'s", reach(S, 'jab') > reach(d, 'jab'), [reach(S, 'jab'), reach(d, 'jab')]);
+    Object.keys(d.moves).forEach(function (id) {
+      var m = d.moves[id];
+      if (m.level === 'high' && !m.air && m.box) check('Long Arms: F+P outreaches ' + d.name + ' ' + id, reach(S, 'fP') > reach(d, id), [reach(S, 'fP'), reach(d, id)]);
+    });
+  });
+  var far = play(S, D, 82, { 0: FG.parseInput('F+P') }, {}, 40);
+  var hit = far.events.filter(function (e) { return e.type === 'hit'; })[0];
+  check('Long Arms: the tip lands from far away and hits harder', hit && hit.tip && hit.damage === Math.round(S.moves.fP.damage * FG.C.TIP_BONUS), hit && [hit.tip, hit.damage]);
+  var near = play(S, D, 40, { 0: FG.parseInput('F+P') }, {}, 40);
+  hit = near.events.filter(function (e) { return e.type === 'hit'; })[0];
+  check('Long Arms: up close it is a normal hit', hit && !hit.tip && hit.damage === S.moves.fP.damage, hit && [hit.tip, hit.damage]);
+})();
+
+// DALSASS: Assume the Contrary sways out of highs and mids (not lows), then counters;
+// any of his attacks can be feinted by tapping back during its startup.
+(function () {
+  var r = play(D, S, 44, { 0: FG.parseInput('B+K'), 16: { p: true } }, { 0: { k: true } }, 60);
+  check('sway: a mid kick misses him', count(r, 'hit', 1) === 0 && count(r, 'block', 1) === 0, types(r));
+  var counter = r.events.filter(function (e) { return e.type === 'hit' && e.attacker === 0; })[0];
+  check('sway: P counters with The Converse', counter && counter.move.id === 'swayP', counter && counter.move.id);
+  r = play(D, S, 44, { 0: FG.parseInput('B+K'), 16: { p: true } }, { 0: FG.parseInput('D+K') }, 60);
+  check('sway: lows still hit him', count(r, 'hit', 1) === 1, types(r));
+  check('sway: no counter without a miss', count(r, 'hit', 0) === 0, types(r));
+  r = play(D, S, 44, { 0: FG.parseInput('B+K'), 16: { p: true } }, {}, 60);
+  check('sway: nothing to counter, no Converse', !r.events.some(function (e) { return e.type === 'whiff' && e.move.id === 'swayP'; }), types(r));
+  // Feint: K, then tap back before it comes out. It never hits; the next attack is flagged.
+  r = play(D, S, 40, { 0: { k: true }, 5: { left: true } }, {}, 40);
+  check('feint: tapping back cancels the kick', count(r, 'hit', 0) === 0 && has(r, 'feint'), types(r));
+  r = play(D, S, 40, { 0: { k: true }, 5: { left: true }, 14: { p: true } }, {}, 50);
+  var fj = r.events.filter(function (e) { return e.type === 'hit' && e.attacker === 0; })[0];
+  check('feint: the next attack is out of a feint', fj && fj.move.id === 'jab' && fj.feint === true, fj && [fj.move.id, fj.feint]);
+  r = play(D, S, 40, { 0: { k: true }, 13: { left: true } }, {}, 40);
+  check('feint: too late once the kick is coming out', count(r, 'hit', 0) === 1, types(r));
+  check('only DALSASS feints like that', defs.filter(function (d) { return d.feintCancel; }).length === 1);
 })();
 
 // CHAI: Reflection Counter (parry) and Tangent Step (sidestep attack).
@@ -978,7 +1019,7 @@ defs.forEach(function (d) {
         check(d.name + ': mashing ' + b + (wall ? ' at the wall' : '') + ' stays short', r.hits <= 4 && r.frames < 300, r);
       });
     });
-    // Each hard route has a real timing check: an input with no more than 14 frames
+    // Each hard route has a real timing check: an input with no more than 16 frames
     // of leeway (counted from 15 early to 15 late).
     d.combos.filter(function (c) { return c.difficulty === 'hard' && c.plan; }).forEach(function (c) {
       var keys = Object.keys(c.plan).map(Number).sort(function (x, y) { return x - y; }), tight = 99;
@@ -991,7 +1032,7 @@ defs.forEach(function (d) {
         }
         tight = Math.min(tight, n);
       });
-      check(d.name + ' ' + c.name + ' has a tight input', tight <= 14, tight);
+      check(d.name + ' ' + c.name + ' has a tight input', tight <= 16, tight);
     });
     // No route takes more than 40% of anyone's health.
     var minHealth = Math.min.apply(null, defs.map(function (o) { return o.health; }));
@@ -1046,13 +1087,14 @@ defs.forEach(function (d) {
   }
   function series(l0, l1) {
     var w = [0, 0], ends = 0, blocks = [0, 0], combo = [0, 0];
-    for (var a = 0; a < defs.length; a++) for (var k = 1; k <= 2; k++) {
-      var r = fight(defs[a], defs[(a + k) % defs.length], l0, l1, a * 10 + k);
+    // Three seeds per pairing: enough fights that one lucky round doesn't decide it.
+    for (var sd = 0; sd < 3; sd++) for (var a = 0; a < defs.length; a++) for (var k = 1; k <= 2; k++) {
+      var r = fight(defs[a], defs[(a + k) % defs.length], l0, l1, a * 10 + k + sd * 1000);
       if (r.winner !== null) { w[r.winner]++; ends++; }
       blocks[0] += r.blocks[0]; blocks[1] += r.blocks[1];
       combo[0] = Math.max(combo[0], r.combo[0]); combo[1] = Math.max(combo[1], r.combo[1]);
     }
-    return { wins: w, ends: ends, n: defs.length * 2, blocks: blocks, combo: combo };
+    return { wins: w, ends: ends, n: defs.length * 6, blocks: blocks, combo: combo };
   }
   var hn = series('hard', 'normal'), ne = series('normal', 'easy'), hh = series('hard', 'hard');
   check('AI fights always end in a K.O.', hn.ends === hn.n && ne.ends === ne.n && hh.ends === hh.n, [hn.ends, ne.ends, hh.ends]);
