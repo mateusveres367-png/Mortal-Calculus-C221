@@ -81,22 +81,27 @@ Nice, easygoing, a good sport. Best for new players.
 
 Very kind, precise and graceful. Bows before fights.
 
+**Style:** Taekwondo. **Signature:** Kick Chain — once a kick connects, K or H into a different kick cancels it, up to four kicks in a row; and the best sidestep in the game.
+
+**Movement:** walk 2.3 forward / 1.9 back, dash 8.6, backdash 9, jump 10.2, weight 0.9 (higher falls faster in juggles).
 
 | Input | Move | Level | i | Active | Recovery | Block | Hit | Counter hit | Damage | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | P | Right Angle | high | 10 | 2 | 12 | +2 | +8 | +11 | 6 |  |
 | P,P | Inscribed Angle | high | 9 | 2 | 16 | -3 | +6 | +9 | 8 |  |
-| P,K | Complementary Kick | mid | 12 | 3 | 20 | -9 | +3 | +8 | 12 |  |
+| P,K | Complementary Kick | mid | 12 | 3 | 20 | -9 | +3 | +8 | 12 | kick chain |
 | P,P,H | Central Angle | mid | 12 | 3 | 20 | -9 | knockdown | knockdown | 13 |  |
-| SS, P | Tangent Step | mid | 12 | 3 | 16 | -3 | +6 | knockdown | 15 | tracks, stays off the line until it hits |
-| SS, K | Secant Sweep | low | 15 | 3 | 22 | -13 | knockdown | knockdown | 12 | tracks, ducks highs, stays off the line until it hits |
-| K | Isosceles Kick | mid | 13 | 3 | 19 | -6 | +4 | +9 | 13 |  |
-| D+K | Acute Low | low | 15 | 3 | 19 | -11 | 0 | +6 | 9 | hits downed opponents, ducks highs |
-| D/B+K | Obtuse Sweep | low | 19 | 3 | 26 | -18 | knockdown | knockdown | 15 | ducks highs |
-| H | Hypotenuse | mid | 17 | 3 | 22 | -6 | +5 | launch | 19 | wall splats |
-| F+H | Vertex Drop | mid | 20 | 3 | 20 | -7 | +3 | knockdown | 17 | bounds |
+| SS, P | Tangent Step | mid | 12 | 3 | 16 | -3 | +6 | knockdown | 15 | tracks, stays off the line until it hits, kick chain |
+| SS, K | Secant Sweep | low | 15 | 3 | 22 | -13 | knockdown | knockdown | 12 | tracks, ducks highs, stays off the line until it hits, kick chain |
+| K | Isosceles Kick | mid | 12 | 3 | 19 | -6 | +4 | +9 | 12 | kick chain |
+| F+K | Altitude Kick | high | 13 | 3 | 18 | -4 | +5 | +10 | 13 | kick chain |
+| B+K | Reflex Angle | mid | 16 | 3 | 22 | -10 | knockdown | knockdown | 16 | kick chain |
+| D+K | Acute Low | low | 15 | 3 | 19 | -11 | 0 | +6 | 9 | hits downed opponents, ducks highs, kick chain |
+| D/B+K | Obtuse Sweep | low | 19 | 3 | 26 | -18 | knockdown | knockdown | 15 | ducks highs, kick chain |
+| H | Hypotenuse | mid | 17 | 3 | 22 | -6 | +5 | launch | 19 | wall splats, kick chain |
+| F+H | Vertex Drop | mid | 20 | 3 | 20 | -7 | +3 | knockdown | 17 | bounds, kick chain |
 | B+H | Reflection Counter | — | 31 total |  |  |  |  |  |  | parry |
-| D+H | Arc Launcher | mid | 14 | 4 | 24 | -16 | launch | launch | 15 | jump cancel on hit (UP) |
+| D+H | Arc Launcher | mid | 14 | 4 | 24 | -16 | launch | launch | 15 | kick chain, jump cancel on hit (UP) |
 | P+K | Transformation | throw | 12 | 2 | 26 |  |  |  | 28 | break with P |
 | B+P+K | Rotation | throw | 12 | 2 | 26 |  |  |  | 32 | break with K |
 | AIR P | Tangent Jab | mid | 7 | 4 | 10 |  |  |  | 8 | hitstun 16, blockstun 10, landing 4 |
@@ -110,7 +115,9 @@ Very kind, precise and graceful. Bows before fights.
 **Combo routes** (tested in `tests/sim.test.js`):
 
 - **Right Triangle:** P, K (frames: P @0, K @11)
+- **Kick Chain:** K, F+K, B+K (frames: K @0, F+K @14, B+K @29)
 - **Arc Juggle:** D+H, P, P, H (frames: D+H @0, P @40, P @52, H @59)
+- **Full Circle:** D+K, K, F+K, H (frames: D+K @0, K @17, F+K @31, H @46)
 - **Vertex Spike:** D+H, up, air P, air K, air H, K (frames: D+H @0, UP @17, P @31, K @36, H @43, K @77)
 
 ## DALSASS — Tricky — Geometry Proofs
@@ -160,6 +167,9 @@ Happy, sassy, everyone's favorite. Fakes you out with a grin.
 
 Sarcastic and funny. Taunts mid-combo. Relentless pressure.
 
+**Style:** Muay thai boxer. **Signature:** Arithmetic Sequence — his strings get faster with every hit, and once an attack connects (hit or block) forward, forward dash-cancels its recovery to keep the pressure on (once per string).
+
+**Movement:** walk 2.6 forward / 1.5 back, dash 9.4 for 15 frames, backdash 7.6, jump 9, weight 0.97 (higher falls faster in juggles).
 
 | Input | Move | Level | i | Active | Recovery | Block | Hit | Counter hit | Damage | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -189,6 +199,7 @@ Sarcastic and funny. Taunts mid-combo. Relentless pressure.
 
 - **Arithmetic Sequence:** P, P, P, P (frames: P @0, P @11, P @22, P @32)
 - **Recursive Rush:** F+P, P, P (frames: F+P @0, P @13, P @26)
+- **Partial Sums:** P, P, F, F, P, P, P (frames: P @0, P @11, F @21, F @23, P @28, P @39, P @50)
 - **Fibonacci Juggle:** D+H, P, P, H (frames: D+H @0, P @38, P @50, H @59)
 - **Fibonacci Spike:** D+H, up, air P, air K, air H, K (frames: D+H @0, UP @16, P @31, K @40, H @50, K @79)
 

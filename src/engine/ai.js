@@ -129,6 +129,13 @@
       var opener = sc.first;
       if (!opener && self.state === 'attack') opener = sc.first = self.move;
       var blocked = self.contact === 'block';
+      // Style: LEE dash-cancels a blocked attack and keeps pushing.
+      var stl = self.def.ai || {};
+      if (blocked && self.def.dashCancel && stl.dashCancel && !sc.dashed && self.inRecovery() && rnd() < stl.dashCancel * L.combo) {
+        this.startScript({ 0: 'F', 2: 'F', 8: rnd() < 0.5 ? 'P' : 'P+K' }, match, self);
+        this.script.dashed = true; this.script.keep = true;
+        return toRaw('F', self.facing);
+      }
       var whiffed = !sc.keep && opener && self.state !== 'attack' && self.state !== 'air' && ft > 2 && match.combo[opp.index].hits === 0;
       if (blocked || whiffed || ft > sc.last + 40) this.script = null;
       else {
@@ -142,20 +149,26 @@
     var threat = seen.attacking && seen.move && seen.frame <= seen.move.startup + seen.move.active - 1 && attacking(opp);
     if (threat && dist < reach(opp, opp.move) + 40) {
       if (!this.guard || this.guard.move !== opp.move) {
-        var m = opp.move, low = m.level === 'low';
+        var m = opp.move, low = m.level === 'low', st = self.def.ai || {};
         this.guard = {
           move: m,
           block: rnd() < L.block,
           // Lows need a read; highs can be ducked.
           low: low ? rnd() < L.lowRead : (m.level === 'high' && rnd() < L.lowRead * 0.3),
-          step: !m.tracks && m.startup >= 16 && rnd() < L.sidestep
+          step: !m.tracks && m.startup >= (st.sidestep ? 12 : 16) && rnd() < L.sidestep * (st.sidestep || 1)
         };
       }
       var gd = this.guard, st = self.def.ai || {};
       // Style: DALSASS sways back out of highs and mids, then counters.
       if (gd.sway == null) gd.sway = !!(st.sway && m === opp.move && opp.move.level !== 'low' && self.def.moves.bK && self.def.moves.bK.evade && rnd() < st.sway * L.block);
       if (gd.sway && self.actionable) { gd.sway = false; gd.block = false; this.startScript({ 0: 'B+K', 8: 'P' }, match, self); return toRaw('B+K', self.facing); }
-      if (gd.step && self.actionable) { raw.ssIn = true; gd.step = false; return raw; }
+      if (gd.step && self.actionable) {
+        gd.step = false;
+        // CHAI follows her sidestep with an attack out of it.
+        if (st.ssFollow) { this.startScript({ 0: 'SI', 6: st.ssFollow }, match, self); this.script.keep = true; }
+        raw.ssIn = true;
+        return raw;
+      }
       if (gd.block) { raw[backKey] = true; raw.down = gd.low; self.holdGuard = true; return raw; }
     } else if (!attacking(opp)) {
       this.guard = null;
@@ -223,8 +236,8 @@
       this.walk = { dir: 'back', until: match.frame + 10 };
       return raw;
     }
-    // Far: close the distance (dash when feeling aggressive).
-    if (roll < a * 0.5) { var dp = {}; dp[0] = 'F'; dp[2] = 'F'; this.startScript(dp, match, self); return raw; }
+    // Far: close the distance (dash when feeling aggressive; rushdown styles dash more).
+    if (roll < a * 0.5 + (st.dashIn || 0) * 0.4) { var dp = {}; dp[0] = 'F'; dp[2] = 'F'; this.startScript(dp, match, self); return raw; }
     this.walk = { dir: 'fwd', until: match.frame + 16 + Math.floor(rnd() * 20) };
     return raw;
   };

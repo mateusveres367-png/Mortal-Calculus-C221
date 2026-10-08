@@ -64,6 +64,7 @@ FG.ROSTER.forEach(function (d) {
     if (m.parry) notes.push('parry');
     if (m.charge) notes.push('hold to charge');
     if (m.taunt) notes.push('says a taunt line; counter-hittable the whole time');
+    if (m.kick && d.kickChain) notes.push('kick chain');
     if (m.tip) notes.push('Long Arms: +' + Math.round((FG.C.TIP_BONUS - 1) * 100) + '% damage at the tip');
     if (m.evade) notes.push('evades ' + m.evade.levels.map(function (l) { return l + 's'; }).join(' and ') + ' on frames ' + m.evade.from + '-' + m.evade.to);
     if (m.cancels) m.cancels.forEach(function (c) { if (c.onSway) notes.push('P after a miss: ' + title(d.moves[c.into].label)); });

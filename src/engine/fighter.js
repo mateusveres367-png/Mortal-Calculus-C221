@@ -13,6 +13,7 @@
   var PREJUMP_FRAMES = 4, LAND_FRAMES = 4;
   var JUMP_VY = 9.5, JUMP_VX = 2.6;
   var FEINT_RECOVERY = 6, FEINT_MEMORY = 24;
+  var KICK_CHAIN_MAX = 4, KICK_CHAIN_LATE = 12; // CHAI: kicks in one chain; frames after the active ones it stays open
 
   function Fighter(def, index) {
     this.def = def;
@@ -57,6 +58,7 @@
 
   // Per-combo limits, cleared whenever the fighter is free again.
   Fighter.prototype.clearComboFlags = function () {
+    this.dashCancelUsed = false;
     this.juggleHits = 0;
     this.comboHits = 0;     // hits taken in the current combo (juggle gravity grows with it)
     this.wallUsed = false;
@@ -125,6 +127,9 @@
     var m = this.def.moves[id];
     var prev = this.state === 'attack' ? this.move : null;
     this.fromFeint = !!(prev && prev.feint) || this.feintPending > 0;
+    // Kick Chain: the kicks used so far in this chain (a fresh attack starts a new one).
+    this.kickChain = this.chainNext || [];
+    this.chainNext = null;
     this.feintPending = 0;
     this.swayed = false;
     this.fromCancel = false;
@@ -167,6 +172,8 @@
         if (!m.air) this.vx = (m.step && this.moveFrame >= m.step[0] && this.moveFrame <= m.step[1]) ? m.step[2] * this.facing : 0;
         if (this.tryThrowConversion(buf, frame)) return;
         if (this.tryFeint(buf, frame)) return;
+        if (this.tryKickChain(buf, frame)) return;
+        if (this.tryDashCancel(buf, frame)) return;
         if (this.tryCancel(buf, frame, opp)) return;
         if (this.moveFrame <= m.total) return;
         if (!this.contact && m.box) this.whiffed = true;
@@ -312,6 +319,37 @@
     this.setState('land');
     this.landLag = FEINT_RECOVERY;
     this.feintPending = FEINT_MEMORY;
+    return true;
+  };
+
+  // Kick Chain (CHAI): once a kick connects, K or H into a different kick cancels
+  // it, up to KICK_CHAIN_MAX kicks in a row.
+  Fighter.prototype.tryKickChain = function (buf, frame) {
+    var m = this.move;
+    if (!this.def.kickChain || !m.kick || !this.contact) return false;
+    if (this.moveFrame < m.startup || this.moveFrame > m.startup + m.active - 1 + KICK_CHAIN_LATE) return false;
+    var used = (this.kickChain || []).concat([m.id]);
+    if (used.length >= KICK_CHAIN_MAX) return false;
+    var btn = buf.latest(['k', 'h'], frame);
+    if (!btn) return false;
+    var id = this.resolveMove(btn, buf, frame), next = id && this.def.moves[id];
+    if (!next || !next.kick || used.indexOf(id) >= 0) return false;
+    buf.consume(btn);
+    this.chainNext = used;
+    return this.doCancel({ into: id });
+  };
+
+  // Dash cancel (LEE): once an attack connects (hit or block), a forward double tap
+  // in its recovery cancels into a dash, to keep up the pressure.
+  Fighter.prototype.tryDashCancel = function (buf, frame) {
+    var m = this.move;
+    if (!this.def.dashCancel || m.air || !this.contact || !this.inRecovery() || this.dashCancelUsed) return false;
+    if (!buf.doubleTap('forward', this.facing, frame)) return false;
+    buf.clearTaps();
+    this.dashCancelUsed = true; // once per string: it resets when he's free again
+    this.cancelled = 'dash';
+    this.setState('dash');
+    this.vx = this.def.dashSpeed * this.facing;
     return true;
   };
 
@@ -520,8 +558,9 @@
       this.slide = 0;
     } else if (this.isAirborne()) {
       var juggled = this.state === 'juggle';
-      // Heavier fighters (def.weight) fall faster in juggles.
-      this.vy -= juggled ? FG.juggleGravity(this.comboHits) * (this.def.weight || 1) : C.GRAVITY;
+      // Heavier fighters (def.weight) fall faster in juggles; the difference phases in
+      // over the first few hits, so a launcher's opener feels the same on everyone.
+      this.vy -= juggled ? FG.juggleGravity(this.comboHits) * FG.weightFactor(this.def.weight, this.comboHits) : C.GRAVITY;
       this.y += this.vy;
       this.x += this.vx;
       if (this.y <= 0) {
@@ -628,6 +667,12 @@
   // Juggle gravity after `hits` hits in the combo.
   FG.juggleGravity = function (hits) {
     return C.JUGGLE_GRAVITY * Math.min(C.JUGGLE_GRAVITY_MAX, 1 + C.JUGGLE_GRAVITY_SCALE * Math.max(0, (hits || 1) - 1));
+  };
+
+  // Gravity multiplier for a fighter of `weight` after `hits` hits in the combo.
+  FG.weightFactor = function (weight, hits) {
+    var w = weight || 1;
+    return 1 + (w - 1) * Math.max(0, Math.min(1, ((hits || 1) - 2) / 3));
   };
 
   FG.Fighter = Fighter;

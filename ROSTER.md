@@ -49,6 +49,10 @@ Every fighter needs unique normals, launcher, throw, combo routes, stance, idle 
 
 **Moves:** Tangent Step (sidestep attack), Reflection Counter (parry), Arc Launcher, Transformation (throw).
 
+**Style:** Kick-based, taekwondo-like. Almost all kicks: a fast turning kick, a high kick to the head, a spinning back kick, a spinning hook kick, an axe kick, a flip kick for her launcher, and kicks out of her sidesteps. Only three punches (jab, reverse punch, air jab). Light and graceful in a side-on stance, up on her toes.
+
+**Signature — Kick Chain:** once a kick connects (hit or block), K or H into a different kick cancels it, up to four kicks in a row. Her sidestep is the best in the game: the quickest, the deepest, and she can attack out of it almost at once.
+
 **Look:** Slim and agile. Long wavy brown hair with blonde highlights, tied back to fight. Bright smile, small stud earrings and a small purple heart pendant. Wears a rust-orange blouse, practical slacks and flats.
 
 **Personality:** Very kind. Bows before fights, winces apologetically after big hits, and offers a hand up after winning. Precise and graceful.
@@ -88,6 +92,10 @@ Every fighter needs unique normals, launcher, throw, combo routes, stance, idle 
 ## LEE — Rushdown — Geometry, Algebra 1 & 2 (sequences)
 
 **Moves:** Arithmetic Sequence (string that speeds up), Recursive Rush, Fibonacci Uppercut (launcher), Series Expansion (throw).
+
+**Style:** Punch-based rushdown, Muay Thai and boxing. Fast jabs, a cross, a dipping body hook, a slicing elbow, straight knees, low kicks, a liver shot and a hopping elbow; constant forward pressure. A low, hunched peekaboo stance. Short range but fast; he walks forward fast and backs up slowly.
+
+**Signature — Arithmetic Sequence:** his strings get faster with each hit, and once an attack connects (hit or block) he can dash-cancel its recovery (forward, forward) to keep the pressure on, once per string.
 
 **Look:** Messy wavy dark hair with a few grays, thin wire-frame glasses, light stubble and a slight smirk. Wears a black athletic polo.
 

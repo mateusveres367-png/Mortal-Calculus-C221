@@ -134,12 +134,14 @@ The fighters, and what they teach:
   - **Similar Triangles** (back + `P`) switches to a second stance where `P`, `K` and `H` are different moves. Moving leaves the stance.
   - **Supplementary Slide** (down-forward + `K`) slides under highs and knocks down. **Pythagorean Launcher** (down + `H`), **Congruence Lock** (throw).
   - The crowd cheers louder for him, and he wags a finger when you fall for a feint.
-- **CHAI** (technical; geometry: circles, angles, transformations):
-  - **Tangent Step:** sidestep, then `P` (or `K` for a low). It comes out earlier than other fighters' sidestep attacks and stays off the line until it hits.
+- **CHAI** (technical; geometry: circles, angles, transformations) — taekwondo, almost all kicks, from a light, side-on stance:
+  - **Kick Chain** (her signature): once a kick connects, `K` or `H` into a different kick cancels it, up to four kicks (for example `K`, forward + `K`, back + `K`).
+  - **Tangent Step:** sidestep, then `P` for a spinning hook kick (or `K` for a low). Her sidestep is the quickest and deepest in the game, and she attacks out of it almost at once; it stays off the line until it hits.
   - **Reflection Counter** (back + `H`) parries highs and mids during frames 2–10, then counters at once. Lows and throws beat it, and a whiffed parry is punishable.
   - **Arc Launcher** (down + `H`) and **Transformation** (throw). She winces apologetically after landing a big hit and offers a hand up when she wins.
-- **LEE** (rushdown; geometry, Algebra 1 & 2: sequences):
-  - **Arithmetic Sequence** (`P, P, P`, then `P` for a mid or `K` for a low) gets faster with every hit.
+- **LEE** (rushdown; geometry, Algebra 1 & 2: sequences) — Muay Thai and boxing from a low, hunched peekaboo stance:
+  - **Arithmetic Sequence** (`P, P, P`, then `P` for an elbow or `K` for a low kick) gets faster with every hit.
+  - **Dash cancel:** once an attack connects (hit or block), forward, forward cancels its recovery into a dash (once per string).
   - **Recursive Rush** (forward + `P`) repeats on hit when you press `P` again, up to three times.
   - His normals are plus on block. He taunts mid-combo and pushes up his glasses after big hits.
 - **LOPEZ** (defensive; calculus):

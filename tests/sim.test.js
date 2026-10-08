@@ -674,6 +674,48 @@ function count(r, type, attacker) {
   check('early sidestep attack is CHAI only', firstAttack === null || firstAttack >= 14, firstAttack);
 })();
 
+// CHAI: Kick Chain. Kicks cancel into different kicks on contact, up to four in a row.
+(function () {
+  var CH = FG.fighterById('chai');
+  function hitIds(r, who) { return r.events.filter(function (e) { return e.type === 'hit' && e.attacker === (who || 0); }).map(function (e) { return e.move.id; }); }
+  var r = play(CH, S, 40, { 0: { k: true }, 14: FG.parseInput('F+K'), 29: FG.parseInput('B+K') }, {}, 90);
+  check('kick chain: K, F+K, B+K', hitIds(r).join() === 'mid,fK,bK', hitIds(r));
+  r = play(CH, S, 40, { 0: { k: true }, 14: { k: true } }, {}, 70);
+  check('kick chain: the same kick does not chain into itself', hitIds(r).join() === 'mid', hitIds(r));
+  r = play(CH, S, 120, { 0: { k: true }, 14: FG.parseInput('F+K') }, {}, 70);
+  check('kick chain: only once a kick connects', hitIds(r).length === 0 && r.events.filter(function (e) { return e.type === 'whiff' && e.fighter === 0; }).length === 1, types(r));
+  r = play(CH, S, 40, { 0: { k: true }, 14: FG.parseInput('F+K') }, function (i) { return i >= 2 ? { right: true } : {}; }, 70);
+  check('kick chain: works on block too', count(r, 'block', 0) === 2, types(r));
+  r = play(CH, S, 40, { 0: FG.parseInput('D+K'), 17: { k: true }, 31: FG.parseInput('F+K'), 46: { h: true }, 66: FG.parseInput('B+K') }, {}, 120);
+  check('kick chain: four kicks at most', hitIds(r).join() === 'low,mid,fK,heavy', hitIds(r));
+  r = play(S, D, 40, { 0: { k: true }, 15: FG.parseInput('F+K') }, {}, 70);
+  check('kick chain is CHAI only', hitIds(r).length === 1, hitIds(r));
+  // The best sidestep: the quickest and the deepest.
+  defs.filter(function (d) { return d !== CH; }).forEach(function (d) {
+    var frames = function (x) { return x.sidestepFrames || FG.C.SIDESTEP_FRAMES; }, depth = function (x) { return x.sidestepDepth || FG.C.SIDESTEP_DEPTH; };
+    check('CHAI sidesteps quicker and deeper than ' + d.name, frames(CH) < frames(d) && depth(CH) > depth(d), [frames(CH), depth(CH)]);
+  });
+})();
+
+// LEE: dash cancel. Once an attack connects (hit or block), forward, forward cancels
+// its recovery into a dash, once per string; not on a whiff.
+(function () {
+  var L = FG.fighterById('lee');
+  function stateAt(plan, guard, n) { var r = play(L, S, 40, plan, guard ? function (i) { return i >= 2 ? { right: true } : {}; } : {}, n); return r; }
+  var plan = { 0: { p: true }, 13: { right: true }, 15: { right: true } };
+  var r = stateAt(plan, true, 20);
+  check('lee dash-cancels a blocked jab', r.m.fighters[0].state === 'dash', r.m.fighters[0].state);
+  r = stateAt(plan, false, 20);
+  check('lee dash-cancels a jab on hit', r.m.fighters[0].state === 'dash', r.m.fighters[0].state);
+  r = play(L, S, 140, plan, {}, 20);
+  check('no dash cancel on a whiff', r.m.fighters[0].state !== 'dash', r.m.fighters[0].state);
+  r = play(S, D, 40, plan, function (i) { return i >= 2 ? { right: true } : {}; }, 20);
+  check('dash cancel is LEE only', r.m.fighters[0].state !== 'dash', r.m.fighters[0].state);
+  // Once per string: jab, dash cancel, jab, then a second dash cancel doesn't come out.
+  r = play(L, S, 40, { 0: { p: true }, 13: { right: true }, 15: { right: true }, 20: { p: true }, 33: { right: true }, 35: { right: true } }, function (i) { return i >= 2 ? { right: true } : {}; }, 40);
+  check('dash cancel once per string', r.m.fighters[0].state !== 'dash' && count(r, 'block', 0) === 2, [r.m.fighters[0].state, types(r)]);
+})();
+
 // LEE: the Arithmetic Sequence speeds up, and Recursive Rush repeats at most three times.
 (function () {
   var L = FG.fighterById('lee');

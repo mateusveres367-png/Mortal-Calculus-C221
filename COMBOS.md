@@ -35,7 +35,9 @@ Every fighter's combo routes, and what the combo feel pass changed. The routes l
 | Route | Level | Inputs | Hits | Damage |
 | --- | --- | --- | --- | --- |
 | RIGHT TRIANGLE | easy | P, K | 2 | 18 |
+| KICK CHAIN | easy | K, F+K, B+K | 3 | 39 |
 | ARC JUGGLE | medium | D+H, P, P, H | 4 | 38 |
+| FULL CIRCLE | medium | D+K, K, F+K, H | 4 | 46 |
 | VERTEX SPIKE | hard | D+H, UP, AIR P, AIR K, AIR H, K | 5 | 53 |
 
 ### DALSASS (tricky, geometry proofs)
@@ -53,6 +55,7 @@ Every fighter's combo routes, and what the combo feel pass changed. The routes l
 | --- | --- | --- | --- | --- |
 | ARITHMETIC SEQUENCE | easy | P, P, P, P | 4 | 31 |
 | RECURSIVE RUSH | easy | F+P, P, P | 3 | 29 |
+| PARTIAL SUMS | medium | P, P, F, F, P, P, P | 5 | 28 |
 | FIBONACCI JUGGLE | medium | D+H, P, P, H | 4 | 37 |
 | FIBONACCI SPIKE | hard | D+H, UP, AIR P, AIR K, AIR H, K | 5 | 53 |
 
