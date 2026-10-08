@@ -191,7 +191,7 @@ The fighters, and what they teach:
   - **Range Check** (dash, then `P`) comes out early in a dash.
   - **Vertex Kick** (back + `K`) is a tracking spin kick. **Quadratic Launcher** (down + `H`), **Discriminant** (throw).
   - **Calculated** (his signature): when you whiff near him, his next hit within 2.5 seconds does 30% more damage, and he glows until he lands it.
-- **RAMOS** (grappler; Algebra 2: matrices) — a wrestler and luchador, and a cardio machine: the fastest movement in the game, chained dashes, and his guard meter recovers twice as fast. A black bowl cut to the neck that never stops swinging:
+- **RAMOS** (grappler; Algebra 2: matrices) — a wrestler and luchador, and a cardio machine: the fastest movement in the game, chained dashes, and his guard meter recovers twice as fast. A black helmet of a bowl cut that bounces with every step:
   - **Run:** dash, then keep holding forward. Out of the run: `P` spear tackle, `K` running knee (launches), down + `K` slide, `H` plancha, `P`+`K` **Gauss-Jordan** (a running command grab).
   - **Matrix Lock** (`P`+`K`) has a short break window (8 frames instead of 15).
   - **Determinant Slam** (back + `P`+`K`) is his reverse throw.

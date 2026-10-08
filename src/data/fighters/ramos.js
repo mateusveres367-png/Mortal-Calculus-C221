@@ -1,6 +1,6 @@
 // RAMOS — Grappler — Algebra 2 (matrices). A movement-based grappler, wrestler and
 // luchador: suplexes, spinning throws and tackles, from a low wrestler's stance,
-// bowl cut always swinging.
+// bowl cut always bouncing.
 //
 // Signature: CARDIO. He never slows down: the fastest walk and dash in the game,
 // dashes that chain back to back, a guard that recovers twice as fast, and he can
@@ -127,7 +127,7 @@
     dashChainFrom: 7, runSpeed: 7.4, guardRegenRate: 2,
     look: {
       skin: 0xc28a5c,
-      hair: { style: 'bowl', color: 0x0e0c0c }, // a medium black bowl cut to the neck; it bounces and swings when he moves
+      hair: { style: 'bowl', color: 0x0e0c0c }, // a thick black bowl cut, a helmet to the jaw; it bounces when he moves and flicks out on throws
       wristband: [0xd01c28, 0xffffff],                 // red and white (he's Peruvian)
       beard: { style: 'stubble', color: 0x2a1e16 },
       mouth: 'smile',
@@ -280,7 +280,7 @@
     ],
 
     intro: [[1, 'stand'], [12, 'knuckles'], [28, 'knuckles'], [38, 'stretch'], [56, 'stretch'], [66, 'stand'], [84, 'idle']],
-    victory: [[1, 'stand'], [12, 'pump'], [24, 'pump2'], [36, 'pump'], [48, 'pump2'], [62, 'stand'], [100, 'stand']],
+    victory: [[1, 'stand'], [12, 'pump'], [24, 'pump2'], [36, 'pump'], [48, 'pump2'], [62, 'hairflip'], [72, 'hairflip2'], [84, 'stand'], [100, 'stand']],
     defeat: [[1, 'kneel'], [40, 'kneel2'], [80, 'kneel']],
     // Smack talk: pre-round and taunt lines, and short lines after a big combo or counter hit.
     talk: {

@@ -197,10 +197,7 @@
       case 'cropped': // close-cropped: a tight cap with a clean line
         R(-7, -8, 13, 2, col); R(-8, -6, 3, 4, col); R(-7, -6, 1, 1, shade(col, 1.3)); R(5, -7, 1, 1, col);
         break;
-      case 'bowl': // a medium bowl cut: straight bangs, sides down to the neck (the swing is drawLongHair's)
-        R(-8, -9, 15, 4, col); R(-9, -6, 5, 9, col); R(-1, -6, 8, 2, col); R(6, -6, 1, 3, col);
-        R(-2, -9, 6, 1, shade(col, 1.9)); R(-8, -5, 1, 4, shade(col, 1.6));
-        break;
+      case 'bowl': break; // a helmet of its own: drawBowl, after the face
       case 'longBouncy': // the cap; the long part is simulated in drawLongHair
         R(-7, -8, 13, 4, col); R(-8, -6, 4, 7, col); R(-9, -3, 3, 6, col); R(4, -7, 3, 2, col); R(-2, -9, 5, 1, shade(col, 1.6));
         break;
@@ -278,7 +275,7 @@
     }
   }
 
-  // Hair that swings (RAMOS's bowl cut): a chain of points hanging from the back of the
+  // Long hair that swings: a chain of points hanging from the back of the
   // head, simulated each frame so dashes, jumps and throws make it bounce.
   var HAIR_SEGS = 6;
   // opts (a shorter cut): { segs, seg, width }.
@@ -316,6 +313,62 @@
     }
     g.lineStyle(1, shade(color, 2.2), 0.8);
     for (var h2 = 2; h2 < pts.length - 1; h2++) g.lineBetween(pts[h2 - 1].x + dir * s, pts[h2 - 1].y, pts[h2].x + dir * s, pts[h2].y);
+  }
+
+  // RAMOS's bowl cut: thick hair over the whole head like a helmet (top, sides and
+  // back), straight bangs ending just above the brows, the side covering the ear and
+  // hanging straight to the jaw with a rounded, even bottom edge: a mushroom, never a
+  // cape. The whole shape bounces a little (a spring driven by the head's movement,
+  // so dashes, jumps and landings show), and the bottom edge flicks outward on throws
+  // and hair flips. Points are in head space (facing right), mirrored by dir.
+  function bowlFlick(f) {
+    if (f.state === 'throwing' || f.state === 'thrown') return 1;
+    var o = f._override;
+    if (!o) return 0;
+    var len = FG.animLength(o.anim), t = o.loop ? (o.t % len) + 1 : Math.min(o.t, len), name = null;
+    for (var i = 0; i < o.anim.length && o.anim[i][0] <= t; i++) name = o.anim[i][1];
+    return name && name.indexOf('hairflip') === 0 ? 1 : 0;
+  }
+  function drawBowl(g, f, hx, hy, s, dir, color, raw, detail) {
+    var b = f._bowl;
+    if (!b || Math.abs(b.x - hx) > 40 * s || Math.abs(b.y - hy) > 40 * s) b = f._bowl = { x: hx, y: hy, vx: 0, vy: 0, off: 0, v: 0, lag: 0, lv: 0, flick: 0, t: 0 };
+    var vx = (hx - b.x) / s, vy = (hy - b.y) / s, ax = vx - b.vx, ay = vy - b.vy;
+    b.x = hx; b.y = hy; b.vx = vx; b.vy = vy; b.t++;
+    // The hair lags the head: it drops when the head rises, lifts when it falls,
+    // and trails back when he dashes. Damped springs, clamped so it stays a bowl.
+    b.v += -0.22 * b.off - 0.2 * b.v - ay * 0.6;
+    b.off = Math.max(-2.2, Math.min(2.2, b.off + b.v));
+    b.lv += -0.22 * b.lag - 0.2 * b.lv - ax * dir * 0.5;
+    b.lag = Math.max(-1.6, Math.min(1.6, b.lag + b.lv));
+    b.flick += (bowlFlick(f) - b.flick) * 0.3;
+    var off = b.off + Math.sin(b.t * 0.09) * 0.15, lag = b.lag, fl = b.flick;
+    var P = function (dx, dy) { return { x: hx + dir * dx * s, y: hy + dy * s }; };
+    // The bottom: w = how much a point follows the bounce; [fx, fy] its flick outward.
+    var hang = function (dx, dy, w, fx, fy) { return P(dx + lag * w + fx * fl, dy + off * w + fy * fl); };
+    var top = off * 0.35;
+    var pts = [
+      P(8.3, -4.6 + top * 0.3), P(8.9, -6.6 + top), P(7.7, -9.3 + top), P(4.8, -11.3 + top), P(1, -12.1 + top),
+      P(-3, -11.7 + top), P(-6.7, -9.7 + top), P(-8.9, -6.4 + top), P(-9.7, -2 + top * 0.6),
+      hang(-9.7, 3, 0.45, -0.5, 0), hang(-9.3, 6.2, 0.85, -1.4, -0.5), hang(-7.8, 7.9, 1, -2.7, -1.7),
+      hang(-5, 8.4, 1, -1.3, -1.3), hang(-2, 8.3, 1, 0.4, -1.2), hang(0.3, 7.5, 1, 1.6, -1.7),
+      hang(1.2, 5.4, 0.8, 0.9, -0.6), P(1.4, 1), P(1.6, -3), P(2.5, -4.5 + top * 0.3)
+    ];
+    g.fillStyle(color, 1);
+    g.fillPoints(pts, true);
+    // A sheen across the top of the dome, a few strands, and a lighter rim on the cut.
+    var sheen = shade(raw, 3.2);
+    if (detail) {
+      g.lineStyle(Math.max(1, Math.round(s)), sheen, 0.7);
+      g.strokePoints([P(6.4, -8.7 + top), P(4.2, -10.3 + top), P(1, -11 + top), P(-2.6, -10.6 + top)], false);
+      g.lineStyle(Math.max(1, Math.round(0.7 * s)), shade(raw, 2.2), 0.6);
+      g.lineBetween(P(4, -7.2 + top).x, P(4, -7.2 + top).y, P(4.3, -5 + top * 0.3).x, P(4.3, -5 + top * 0.3).y);
+      g.lineBetween(P(6.6, -7.4 + top).x, P(6.6, -7.4 + top).y, P(6.9, -5 + top * 0.3).x, P(6.9, -5 + top * 0.3).y);
+      var s1 = hang(-3.2, 7.4, 1, -0.6, -1.1), s2 = hang(-6.4, 7.4, 1, -2, -1.5);
+      g.lineBetween(P(-3, -3 + top).x, P(-3, -3 + top).y, s1.x, s1.y);
+      g.lineBetween(P(-6.4, -4 + top).x, P(-6.4, -4 + top).y, s2.x, s2.y);
+      g.lineStyle(Math.max(1, Math.round(0.8 * s)), shade(raw, 1.9), 0.75);
+      g.strokePoints(pts.slice(10, 15), false);
+    }
   }
 
   // --- Body ---------------------------------------------------------------------
@@ -512,13 +565,13 @@
     // Neck and head (long hair hangs behind the head).
     var hdx = X(2), hdy = Y(2);
     if (look.hair.style === 'longBouncy') drawLongHair(g, f, hdx, hdy, s, dir, c(look.hair.color));
-    if (look.hair.style === 'bowl') drawLongHair(g, f, hdx, hdy + 1 * s, s, dir, c(look.hair.color), { segs: 3, seg: 3.4, width: 8 }); // to the neck, still swinging
     g.lineStyle(Math.round(5 * s), c(skin), 1);
     g.lineBetween(cx, cy, Math.round((cx + hdx) / 2), Math.round((cy + hdy) / 2));
     g.fillStyle(c(skin), 1);
     g.fillCircle(hdx, hdy, Math.round(7 * s));
     drawFace(g, hdx, hdy, s, dir, look, c, f._face, flash, flash == null ? f._props : null);
     drawHair(g, hdx, hdy, s, dir, look.hair, c);
+    if (look.hair.style === 'bowl') drawBowl(g, f, hdx, hdy, s, dir, c(look.hair.color), look.hair.color, flash == null);
 
     // Front limbs on top.
     limb(13, 7, 9, look.legs); limb(7, 8, 7, look.legs);
