@@ -49,6 +49,7 @@ What's in the game so far:
   - input feel: an input buffer (now 10 frames); a buffered press keeps the direction you held when you pressed it (an early D+H still launches); every route forgives presses 3 frames early or late; string cancels leave a quick afterimage and a whip sound, and the frame data panel shows each move's chain buttons and window; every fighter has an easy, a medium and a hard combo route (more damage as they get harder)
   - combo counter: a big pixel hit count with total damage that pops and shakes on every hit, ranked NICE (5+), GREAT (8+), INCREDIBLE (12+) and PROOF COMPLETE (15+)
   - camera and screen: a quick zoom-in on launchers and combo finishers (the HUD stays put on its own camera); screen shake scales with damage; slow motion on the final hit of a big combo and on round-winning hits; wall splats stick for a moment with a big crack in the wall, and you can keep hitting
+  - cut-ins: a half-second full-screen panel in the fighter's colours (slashed bands, halftone dots, a huge close-up of their face, the move name in big tilted letters) when a launcher lands as a counter hit or a combo reaches 10 hits. The fight freezes while it plays; at most one per combo, with a cooldown, and never during combo trials
   - juggle physics: launchers throw the opponent up on a fast, snappy arc; air hits pop them by the same small amount every time; juggle gravity grows with every hit so combos end on their own; bounds slam them into the floor and they bounce back up (an air bound drives you down with them so you can follow up)
 
 The full vision lives in [`GAME_DESIGN.md`](GAME_DESIGN.md); the game is built in phases, and each phase stays playable.
@@ -88,7 +89,7 @@ Standing guard blocks highs and mids. Crouching guard (down + back) blocks lows,
 
 Fighters talk:
 
-- **Before every round** (after character select, and on every rematch), both fighters trade lines in pixel-art speech boxes. Some matchups have rivalry exchanges: LEE vs CHAI, LOPEZ vs DALSASS, RAMOS vs PEDERSEN, and MIYASHIRO vs BRINKHUS. PEDERSEN has a line for everyone else, and he says his signature line as he steps out of his car.
+- **Before every round** (after character select, and on every rematch), a split-screen VS cut-in shows both fighters with their opening lines, then they trade the rest in pixel-art speech boxes. Some matchups have rivalry exchanges: LEE vs CHAI, LOPEZ vs DALSASS, RAMOS vs PEDERSEN, and MIYASHIRO vs BRINKHUS. PEDERSEN has a line for everyone else, and he says his signature line as he steps out of his car.
 - **Taunt** (`T`): about a second of showing off with a random taunt line. You can be counter-hit the whole time.
 - **After a big combo or a counter hit,** fighters sometimes get a short line in.
 

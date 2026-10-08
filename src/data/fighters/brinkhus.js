@@ -34,6 +34,7 @@
     homeStage: 'classroom',
     glyphs: ['Y=MX+B', 'X=?', '2X+3=7', 'RISE/RUN'], // math that flies off their big hits
     stringH: 'COMBINE LIKE TERMS', // P, P, H: the universal string ender (see FG.defineFighter)
+    cutIn: { a: 0x15151a, b: 0xd4a933 }, // cut-in colours: main and accent
     name: 'BRINKHUS', archetype: 'BALANCED', theme: 'ALGEBRA 1',
     bio: 'NICE, EASYGOING, A GOOD SPORT. BEST FOR NEW PLAYERS.',
     signature: ['SLOPE JAB', 'DISTRIBUTIVE PROPERTY', 'LINEAR RUSH', 'SOLVE FOR X', 'FOIL'],

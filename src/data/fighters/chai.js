@@ -36,6 +36,7 @@
     homeStage: 'classroom',
     glyphs: ['360', 'C=2*PI*R', '(X,Y)->(-X,Y)', '180'], // math that flies off their big hits
     stringH: 'CENTRAL ANGLE', // P, P, H: the universal string ender (see FG.defineFighter)
+    cutIn: { a: 0xe2702a, b: 0xf6ecd0 }, // cut-in colours: main and accent
     name: 'CHAI', archetype: 'TECHNICAL', theme: 'GEOMETRY',
     bio: 'VERY KIND, PRECISE AND GRACEFUL. BOWS BEFORE FIGHTS.',
     signature: ['TANGENT STEP', 'REFLECTION COUNTER', 'ARC LAUNCHER', 'TRANSFORMATION'],

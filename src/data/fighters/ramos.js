@@ -38,6 +38,7 @@
     homeStage: 'campus',
     glyphs: ['[A B]', 'DET=0', 'A*I=A', '[1 0]'], // math that flies off their big hits
     stringH: 'ROW REDUCTION', // P, P, H: the universal string ender (see FG.defineFighter)
+    cutIn: { a: 0xd8283a, b: 0xffffff }, // cut-in colours: main and accent
     name: 'RAMOS', archetype: 'GRAPPLER', theme: 'MATRICES',
     bio: 'FAST, EXPLOSIVE GRAPPLER WHO CLOSES DISTANCE QUICKLY. CONFIDENT AND FOCUSED.',
     signature: ['MATRIX LOCK', 'DETERMINANT SLAM', 'IDENTITY', 'TRANSPOSE TOSS'],

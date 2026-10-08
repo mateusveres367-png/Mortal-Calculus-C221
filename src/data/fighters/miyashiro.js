@@ -35,6 +35,7 @@
     homeStage: 'lab',
     glyphs: ['B*B-4AC', 'F(X)', 'I*I=-1', 'VERTEX'], // math that flies off their big hits
     stringH: 'SOLUTION SET', // P, P, H: the universal string ender (see FG.defineFighter)
+    cutIn: { a: 0x2a5ad8, b: 0xc8ccd8 }, // cut-in colours: main and accent
     name: 'MIYASHIRO', archetype: 'SPACING', theme: 'ALGEBRA 2',
     bio: 'VERY SMART. READS OPPONENTS, KEEPS PERFECT DISTANCE, PUNISHES EVERY MISTAKE.',
     signature: ['DOMAIN CONTROL', 'RANGE CHECK', 'VERTEX KICK', 'QUADRATIC LAUNCHER', 'DISCRIMINANT', 'CALCULATED'],

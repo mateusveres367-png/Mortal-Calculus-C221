@@ -66,6 +66,8 @@
     this.trials = new FG.ComboTrials(this);
     // Math that flies off big hits (each fighter's `glyphs`): a small pool of world texts.
     this.glyphs = [0, 1, 2, 3, 4, 5].map(function () { return { text: FG.text(this, 0, 0, '', 'y').setScrollFactor(1).setOrigin(0.5, 0.5).setDepth(21), t: 0 }; }, this);
+    // Full-screen cut-ins for big moments and the round-start VS panel.
+    this.cutin = new FG.CutIn(this);
     this.newMatch({ intro: true });
     this.setupKeys();
     this.setupButtons();
@@ -92,6 +94,9 @@
     this.speech.hide();
     this.bubbles[0].hide(); this.bubbles[1].hide();
     this.prevCombo = [0, 0];
+    this.cutin.stop();
+    this.cutinUsed = [false, false]; // one cut-in per combo
+    this.cutinCool = 0;              // ticks before another may play
     this.histories[0].clear(); this.histories[1].clear();
     this.hud.clear();
     var f = this.match.fighters;
@@ -147,6 +152,14 @@
     }
     // Schedule the dialogue. PEDERSEN talks once he's out of the car.
     var t = this.cars.length ? 66 : 36, lines = FG.preRoundLines(f[0].def, f[1].def);
+    // The VS panel opens with each fighter's first line; the rest are spoken after it.
+    var vsLines = ['', ''];
+    lines = lines.filter(function (l) {
+      if (vsLines[l.speaker]) return true;
+      vsLines[l.speaker] = l.text;
+      return false;
+    });
+    this.cutin.playVs(f[0].def, f[1].def, vsLines);
     var dialogue = lines.map(function (l) {
       var d = { at: t, speaker: l.speaker, text: l.text, dur: FG.SpeechBox.readTime(l.text) };
       t += d.dur;
@@ -168,6 +181,7 @@
     var f = this.match.fighters;
     for (var i = 0; i < 2; i++) { f[i]._override = null; f[i]._blazer = false; }
     this.intro = null;
+    this.cutin.stop();
     this.speech.hide();
     this.updateCars();
     if (this.rounds) { this.startRound(); return; }
@@ -502,7 +516,9 @@
       if (f[i]._override) f[i]._override.t++;
       FG.updatePose(f[i], this.tickCount);
     }
-    if (this.intro) {
+    // The intro waits while the VS panel is up.
+    if (this.intro && this.cutin.busy()) this.cutin.tick();
+    else if (this.intro) {
       this.intro.t++;
       // Intro events, e.g. LOPEZ taking off his blazer.
       for (var e = 0; e < 2; e++) {
@@ -544,6 +560,9 @@
   FightScene.prototype.tick = function () {
     if (this.intro || this.win) { this.presentationTick(); return; }
     var m = this.match, f = m.fighters;
+    // A cut-in freezes the fight while it plays (presses still buffer: TAPS are kept).
+    if (this.cutin.busy()) { this.cutin.tick(); this.tickCount++; this.stage.update(); return; }
+    if (this.cutinCool > 0) this.cutinCool--;
     var raw1 = this.inputFor(0), raw2 = this.inputFor(1);
     TAPS = {}; // taps since the last tick have been read
     // Nobody moves until FIGHT!, or after the round is over.
@@ -574,6 +593,7 @@
       }
       if (ev.type !== 'whiff') this.effects.spawn(ev);
       if (ev.type === 'hit') {
+        this.cutInFor(ev);
         this.bigMoment(ev);
         var bigHit = ev.ch || ev.launch || ev.throw || ev.finisher || (ev.move && ev.move.strength === 'heavy');
         if (bigHit && !ev.ground) this.spawnGlyph(ev);
@@ -603,6 +623,7 @@
     for (var q = 0; q < 2; q++) {
       var hits = m.combo[q].hits;
       if (this.prevCombo[q] >= 4 && hits === 0 && !m.koTimer) this.quip(1 - q, 0.7);
+      if (hits === 0) this.cutinUsed[1 - q] = false;
       this.prevCombo[q] = hits;
     }
     if (this.training.refill) this.refillHealth();
@@ -625,6 +646,24 @@
     var frozen = { frozen: m.hitstop > 0 };
     FG.updatePose(f[0], this.tickCount, frozen);
     FG.updatePose(f[1], this.tickCount, frozen);
+  };
+
+  // Cut-ins: a launcher landing as a counter hit, or a combo reaching 10 hits. At most
+  // one per combo, with a cooldown, and never during combo trials.
+  FightScene.prototype.cutInFor = function (ev) {
+    if (this.trials.active || this.cutinCool > 0 || this.cutinUsed[ev.attacker] || ev.ko || !ev.move) return;
+    var text = null;
+    if (ev.ch && ev.launch) text = ev.move.label;
+    else if (ev.hits === C.CUTIN_HITS) text = ev.hits + ' HIT COMBO';
+    if (!text) return;
+    this.playCutIn(ev.attacker, text);
+  };
+
+  FightScene.prototype.playCutIn = function (who, text) {
+    var f = this.match.fighters;
+    this.cutinUsed[who] = true;
+    this.cutinCool = C.CUTIN_COOLDOWN;
+    this.cutin.play(f[who].def, f[who].x <= f[1 - who].x ? 0 : 1, text);
   };
 
   // A piece of the attacker's math pops off a big hit and floats up.
@@ -852,6 +891,7 @@
     this.inputDisplays[1].draw(this.histories[1], t.showInputs && !clean && !this.trials.active); // the trial panel sits there
     this.drawButtons(clean || this.mode !== 'training');
     if (clean) this.trials.hide(); else this.trials.draw();
+    this.cutin.draw();
   };
 
   FightScene.prototype.modeLabel = function () {

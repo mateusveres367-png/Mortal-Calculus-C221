@@ -455,6 +455,15 @@
     src.start(t); src.stop(t + 1.2);
   };
 
+  // Cut-in: a rising whoosh into a bright sting.
+  Sfx.cutIn = function () {
+    if (!Sfx.ctx || Sfx.muted) return;
+    burst(0.22, 2400, 0.6, 0.3, 'bandpass');
+    sweep(0.16, 220, 1400, 0.08, 'sawtooth');
+    sweep(0.3, 1320, 1240, 0.06, 'square');
+    thump(0.2, 160, 50, 0.4);
+  };
+
   // Menu blips.
   Sfx.ui = function (kind) {
     if (!Sfx.ctx || Sfx.muted) return;

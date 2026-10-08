@@ -206,6 +206,10 @@
     var type = face ? face.type : null;
     var eyeColor = look.eyeColor || look.eyes;
     if (type === 'wince') { R(2, -1, 4, 1, 0x111111); }
+    else if (type === 'fierce') { // cut-ins: narrowed eyes with a glint, brows angled down
+      R(3, -2, 2, 1, 0x111111); R(4, -2, 1, 1, 0xffffff); R(3, -1, 3, 1, skinDark);
+      R(1, -5, 2, 1, shade(look.hair.color, 0.9)); R(3, -4, 2, 1, shade(look.hair.color, 0.9)); R(5, -3, 2, 1, shade(look.hair.color, 0.9));
+    }
     else if (type === 'squint' || look.eyesNarrow) { R(3, -1, 2, 1, 0x111111); R(2, -3, 4, 1, shade(look.hair.color, 0.9)); }
     else {
       if (look.eyeColor) { R(3, -2, 1, 2, eyeColor); R(4, -2, 1, 2, 0x111111); }

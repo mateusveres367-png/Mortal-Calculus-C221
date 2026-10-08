@@ -36,6 +36,7 @@
     homeStage: 'hallway',
     glyphs: ['A(N)=A+(N-1)D', '1,1,2,3,5', 'SUM', '...'], // math that flies off their big hits
     stringH: 'NEXT TERM', // P, P, H: the universal string ender (see FG.defineFighter)
+    cutIn: { a: 0x111111, b: 0x39ff5a }, // cut-in colours: main and accent
     name: 'LEE', archetype: 'RUSHDOWN', theme: 'SEQUENCES',
     bio: 'SARCASTIC AND FUNNY. TAUNTS MID-COMBO. RELENTLESS PRESSURE.',
     signature: ['ARITHMETIC SEQUENCE', 'RECURSIVE RUSH', 'FIBONACCI UPPERCUT', 'SERIES EXPANSION'],

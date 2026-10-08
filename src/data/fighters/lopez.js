@@ -37,6 +37,7 @@
     homeStage: 'office',
     glyphs: ['DY/DX', "F'(X)", 'LIM', 'DX'], // math that flies off their big hits
     stringH: 'FUNDAMENTAL THEOREM', // P, P, H: the universal string ender (see FG.defineFighter)
+    cutIn: { a: 0x1a2a5a, b: 0xffffff }, // cut-in colours: main and accent
     name: 'LOPEZ', archetype: 'DEFENSIVE', theme: 'CALCULUS',
     bio: 'VERY SUSPICIOUS. ALWAYS WATCHING. WAITS FOR YOU TO COMMIT, THEN PUNISHES.',
     signature: ['DERIVATIVE READ', 'ASYMPTOTE BACKDASH', 'MEAN VALUE PUNISH', 'LIMIT BREAK', 'SQUEEZE THEOREM'],

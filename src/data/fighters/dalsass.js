@@ -35,6 +35,7 @@
     homeStage: 'hallway',
     glyphs: ['A*A+B*B=C*C', 'SAS', 'ASA', 'GIVEN:'], // math that flies off their big hits
     stringH: 'THEREFORE', // P, P, H: the universal string ender (see FG.defineFighter)
+    cutIn: { a: 0x2fc4c0, b: 0xffffff }, // cut-in colours: main and accent
     name: 'DALSASS', archetype: 'TRICKY', theme: 'GEOMETRY PROOFS',
     stanceName: 'SIMILAR TRIANGLES', // the alternate stance, shown over his head
     bio: "HAPPY, SASSY, EVERYONE'S FAVORITE. FAKES YOU OUT WITH A GRIN.",

@@ -38,6 +38,9 @@ try { playwright = require('playwright'); } catch (e) {
   await page.screenshot({ path: path.join(out, '0-stage.png') });
   var stagePick = await page.evaluate(function () { return window.FG_STAGE.current(); });
   await page.keyboard.press('Enter');
+  // The round intro opens on the VS cut-in panel.
+  await page.waitForFunction(function () { return window.FG_SCENE && window.FG_SCENE.intro; }, null, { timeout: 15000 });
+  var vsPanel = await page.evaluate(function () { var c = window.FG_SCENE.cutin.active; return !!(c && c.kind === 'vs'); });
   // Round intro, then skip the rest of it.
   await page.waitForFunction(function () { return window.FG_SCENE && window.FG_SCENE.intro && window.FG_SCENE.intro.t > 30; }, null, { timeout: 15000 });
   await page.screenshot({ path: path.join(out, '0-intro.png') });
@@ -45,6 +48,15 @@ try { playwright = require('playwright'); } catch (e) {
   var expectMatchup = await page.evaluate(function () { return FG.ROSTER[0].id + ' vs ' + FG.ROSTER[1].id; });
   await page.keyboard.press('Enter');
   await page.waitForFunction(function () { return window.FG_SCENE && !window.FG_SCENE.intro && window.FG_SCENE.tickCount > 30; }, null, { timeout: 15000 });
+  // A cut-in freezes the fight while it plays, then the fight goes on.
+  var cutFreeze = await page.evaluate(function () {
+    var s = window.FG_SCENE, f0 = s.match.frame;
+    s.playCutIn(0, 'TEST');
+    for (var i = 0; i < 10; i++) s.tick();
+    var frozen = s.match.frame === f0 && s.cutin.busy();
+    for (i = 0; i < 40; i++) s.tick();
+    return frozen && !s.cutin.busy() && s.match.frame > f0;
+  });
   var renderer = await page.evaluate(function () { return FG.game.renderer.type === Phaser.WEBGL ? 'WEBGL' : 'CANVAS'; });
   await page.screenshot({ path: path.join(out, '1-start.png') });
 
@@ -206,9 +218,9 @@ try { playwright = require('playwright'); } catch (e) {
   await page.screenshot({ path: path.join(out, '10-ending.png') });
 
   await browser.close();
-  console.log(JSON.stringify({ title: title, matchup: matchup, renderer: renderer, hits: hits, counter: counterText, p1: p1, menuOk: menuOk, resetX: resetX, trial: trial, ko: ko, stage: stagePick, arcade: arcade, errors: errors }, null, 1));
+  console.log(JSON.stringify({ title: title, matchup: matchup, renderer: renderer, hits: hits, counter: counterText, p1: p1, menuOk: menuOk, resetX: resetX, trial: trial, ko: ko, stage: stagePick, arcade: arcade, vsPanel: vsPanel, cutFreeze: cutFreeze, errors: errors }, null, 1));
   var ok = !errors.length && title === 'Mortal Calculus: C221' && matchup === expectMatchup && hits.join() === expectHits && counterText === String(hits.length) &&
-    p1.last && p1.last.kind === 'BLOCK' && p1.last.adv === p1.jabBlock && menuOk && resetOk && trialOk && koOk && stagePick === 'classroom' && arcadeOk && attractOk;
+    p1.last && p1.last.kind === 'BLOCK' && p1.last.adv === p1.jabBlock && menuOk && resetOk && trialOk && koOk && stagePick === 'classroom' && arcadeOk && attractOk && vsPanel && cutFreeze;
   console.log(ok ? 'SMOKE OK' : 'SMOKE FAILED');
   if (!ok) process.exit(1);
 })().catch(function (e) { console.error(e); process.exit(1); });

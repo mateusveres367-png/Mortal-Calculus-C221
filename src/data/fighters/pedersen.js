@@ -44,6 +44,7 @@
     homeStage: 'parking', // his stage: the faculty parking lot, his car in the reserved spot
     glyphs: ['LOG(X)', 'X*10', '90', 'E'], // math that flies off their big hits
     stringH: 'EXPONENT RULE', // P, P, H: the universal string ender (see FG.defineFighter)
+    cutIn: { a: 0xc8202a, b: 0x111111 }, // cut-in colours: main and accent
     look: {
       skin: 0xe2ad85, eyeColor: 0x7cc4f0,
       hair: { style: 'slick', color: 0x5a3c24 },

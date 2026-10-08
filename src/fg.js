@@ -104,6 +104,8 @@ FG.C = {
   // leaves the opponent in hitstun a few frames less.
   COMBO_DECAY_FROM: 10,
   COMBO_DECAY_STUN: 3,
+  CUTIN_HITS: 10,       // a combo this long gets a cut-in
+  CUTIN_COOLDOWN: 240,  // ticks between cut-ins
   BIG_COMBO: 5,         // hits for a combo to count as big (slow-mo finish, NICE label)
 
   KO_RESET_FRAMES: 180
