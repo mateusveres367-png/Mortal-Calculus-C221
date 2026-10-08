@@ -95,6 +95,15 @@ On the title screen, press `Enter` (or click) for the menu, then up/down and `En
 
 Standing guard blocks highs and mids. Crouching guard (down + back) blocks lows, and highs whiff over anyone crouching. Mids beat crouching guard; lows beat standing guard.
 
+### Playing on a phone or tablet
+
+Open `index.html` on a touch screen (or add `?touch=1` to the address) and touch controls appear over the game: a d-pad on the left, and **P** (punch), **K** (kick), **H** (heavy) and **★** on the right, with **START** and **II** (pause) in the corner. Tap the game to get past the title and confirm on menus; the d-pad and P work every menu. The game goes fullscreen and landscape where the browser allows; in portrait it sits at the top with the controls below.
+
+Kept simple on purpose:
+
+- **Mash P** to keep a string going (Easy Combos is always on for touch players). Down + H is still the launcher, hold back to block, and tap forward twice to dash.
+- **★ does the big thing for you:** with a full meter it does your ultimate's motion for you; when you're low it cashes in Extra Credit; next to a stage object it uses it (and vaults out if you're cornered); during a special with a bar it powers it up; otherwise it throws.
+
 ### Smack talk
 
 Fighters talk:

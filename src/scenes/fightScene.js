@@ -67,6 +67,7 @@
       showBoxes: false, slow: false, startPos: 'center'
     };
     if (this.mode !== 'training') { this.training.showData = false; this.training.showInputs = false; this.training.refill = false; }
+    if (FG.Touch && FG.Touch.on) { this.training.showData = false; this.training.showInputs = false; } // keep a phone screen clear (the menu turns them on)
     this.histories = [new FG.InputHistory(), new FG.InputHistory()];
     this.inputDisplays = [new FG.InputDisplay(this, 0), new FG.InputDisplay(this, 1)];
     this.refillTimer = [0, 0];
@@ -650,7 +651,8 @@
   // Raw input for player i this tick: keyboard, the training dummy, or the CPU.
   FightScene.prototype.inputFor = function (i) {
     var f = this.match.fighters, m = this.match;
-    f[i].easy = !this.ai[i] && FG.settings.easyCombos && (i === 0 || this.mode === 'versus' || this.training.p2Human);
+    // Easy Combos: the setting, and always for player 1 on a touch screen.
+    f[i].easy = !this.ai[i] && (FG.settings.easyCombos || (i === 0 && FG.Touch && FG.Touch.on)) && (i === 0 || this.mode === 'versus' || this.training.p2Human);
     if (this.ai[i]) return this.ai[i].input(f[i], f[1 - i], m);
     if (i === 0) return this.readP1();
     if (this.mode === 'versus' || (this.mode === 'training' && this.training.p2Human)) { f[1].holdGuard = false; return this.readP2(); }

@@ -369,11 +369,46 @@ try { playwright = require('playwright'); } catch (e) {
   await page.waitForFunction(function () { return window.FG_ENDING && window.FG_ENDING.sys.isActive() && window.FG_ENDING.t > 30; }, null, { timeout: 15000 });
   await page.screenshot({ path: path.join(out, '10-ending.png') });
 
+  // Phones: touch controls over the game. Tap to start, the d-pad and P pick TRAINING,
+  // a fighter and a stage, then walk in and punch; Easy Combos is on.
+  var mctx = await browser.newContext({ viewport: { width: 844, height: 390 }, hasTouch: true, isMobile: true });
+  var mp = await mctx.newPage();
+  mp.on('pageerror', function (e) { errors.push('mobile pageerror: ' + e.message); });
+  mp.on('console', function (m) { if (m.type() === 'error') errors.push('mobile: ' + m.text()); });
+  await mp.goto(url);
+  await mp.waitForFunction(function () { return window.FG_TITLE && window.FG_TITLE.t > 20 && document.getElementById('touch'); }, null, { timeout: 15000 });
+  async function touch(sel, dx, dy, hold) {
+    var b = await mp.locator(sel).boundingBox(), x = b.x + b.width / 2 + (dx || 0) * b.width, y = b.y + b.height / 2 + (dy || 0) * b.height;
+    await mp.evaluate(function (a) { document.querySelector(a[0]).dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, cancelable: true, pointerId: 5, clientX: a[1], clientY: a[2], pointerType: 'touch' })); }, [sel, x, y]);
+    await mp.waitForTimeout(hold || 90);
+    await mp.evaluate(function (s) { document.querySelector(s).dispatchEvent(new PointerEvent('pointerup', { bubbles: true, pointerId: 5, pointerType: 'touch' })); }, sel);
+    await mp.waitForTimeout(120);
+  }
+  await mp.mouse.click(422, 130);
+  await mp.waitForTimeout(300);
+  for (var md = 0; md < 3; md++) await touch('#touch .pad', 0, 0.4);
+  await touch('#touch .p');
+  await mp.waitForFunction(function () { return window.FG_SELECT && window.FG_SELECT.sys.isActive() && window.FG_SELECT.t > 10; }, null, { timeout: 15000 });
+  await touch('#touch .p'); await touch('#touch .p');
+  await mp.waitForFunction(function () { return window.FG_STAGE && window.FG_STAGE.sys.isActive() && window.FG_STAGE.t > 10; }, null, { timeout: 15000 });
+  await touch('#touch .p');
+  await mp.waitForFunction(function () { return window.FG_SCENE && window.FG_SCENE.sys.isActive() && window.FG_SCENE.mode === 'training'; }, null, { timeout: 15000 });
+  await mp.waitForTimeout(400);
+  await touch('#touch .p');
+  await mp.waitForFunction(function () { return !window.FG_SCENE.intro; }, null, { timeout: 15000 });
+  var mx0 = await mp.evaluate(function () { return window.FG_SCENE.match.fighters[0].x; });
+  await touch('#touch .pad', 0.4, 0, 400);
+  await mp.evaluate(function () { var f = window.FG_SCENE.match.fighters; f[0].x = f[1].x - 45; });
+  await touch('#touch .p');
+  await mp.waitForTimeout(200);
+  var mobile = await mp.evaluate(function (x0) { var f = window.FG_SCENE.match.fighters[0]; return { walked: f.x !== x0, last: f.lastMove && f.lastMove.id, easy: f.easy }; }, mx0);
+  await mp.screenshot({ path: path.join(out, '11-mobile.png') });
+  var mobileOk = mobile.last === 'jab' && mobile.easy;
   await browser.close();
-  console.log(JSON.stringify({ title: title, matchup: matchup, renderer: renderer, hits: hits, counter: counterText, p1: p1, menuOk: menuOk, resetX: resetX, trial: trial, ko: ko, stage: stagePick, arcade: arcade, vsPanel: vsPanel, cutFreeze: cutFreeze, cpu: cpu, ladder: ladder, enhanced: ex, ultimate: ultR, extraCredit: ecR, prop: propR, ultTrial: ultTrial, errors: errors }, null, 1));
+  console.log(JSON.stringify({ mobile: mobile, title: title, matchup: matchup, renderer: renderer, hits: hits, counter: counterText, p1: p1, menuOk: menuOk, resetX: resetX, trial: trial, ko: ko, stage: stagePick, arcade: arcade, vsPanel: vsPanel, cutFreeze: cutFreeze, cpu: cpu, ladder: ladder, enhanced: ex, ultimate: ultR, extraCredit: ecR, prop: propR, ultTrial: ultTrial, errors: errors }, null, 1));
   var ok = !errors.length && title === 'Mortal Calculus: C221' && matchup === expectMatchup && hits.join() === expectHits && counterText === String(hits.length) &&
-    p1.last && p1.last.kind === 'BLOCK' && p1.last.adv === p1.jabBlock && menuOk && resetOk && trialOk && koOk && stagePick === 'classroom' && arcadeOk && attractOk && vsPanel && cutFreeze && cpuOk && ladderOk && exOk && ultOk && ecOk && propOk;
-  if (!ok) console.log('checks:', JSON.stringify({ errors: errors.length, menuOk: menuOk, resetOk: resetOk, trialOk: trialOk, koOk: koOk, arcadeOk: arcadeOk, attractOk: attractOk, vsPanel: vsPanel, cutFreeze: cutFreeze, cpuOk: cpuOk, ladderOk: ladderOk, exOk: exOk, ultOk: ultOk, ecOk: ecOk, propOk: propOk }));
+    p1.last && p1.last.kind === 'BLOCK' && p1.last.adv === p1.jabBlock && menuOk && resetOk && trialOk && koOk && stagePick === 'classroom' && arcadeOk && attractOk && vsPanel && cutFreeze && cpuOk && ladderOk && exOk && ultOk && ecOk && propOk && mobileOk;
+  if (!ok) console.log('checks:', JSON.stringify({ errors: errors.length, menuOk: menuOk, resetOk: resetOk, trialOk: trialOk, koOk: koOk, arcadeOk: arcadeOk, attractOk: attractOk, vsPanel: vsPanel, cutFreeze: cutFreeze, cpuOk: cpuOk, ladderOk: ladderOk, exOk: exOk, ultOk: ultOk, ecOk: ecOk, propOk: propOk, mobileOk: mobileOk }));
   console.log(ok ? 'SMOKE OK' : 'SMOKE FAILED');
   if (!ok) process.exit(1);
 })().catch(function (e) { console.error(e); process.exit(1); });
