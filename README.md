@@ -118,7 +118,8 @@ Every fighter uses the same input layout. What each input does, and its frame da
 
 The fighters, and what they teach:
 
-- **PEDERSEN** (power; geometry & math analysis) — the cover fighter. Slow, with huge damage. His arch-nemesis is Vicky:
+- **PEDERSEN** (power; geometry & math analysis) — the cover fighter, a power brawler with his tie loosened. Slow, heavy, with huge damage. His arch-nemesis is Vicky:
+  - **Exponential Armor** (his signature): his heavy attacks absorb a hit during their windup and keep going; a fully charged Order of Magnitude absorbs two. Throws go through it.
   - **Exponential Haymaker** (forward + `H`) splats the wall.
   - **Order of Magnitude** (back + `H`, hold `H` to charge) knocks down at half charge. At full charge it does over double damage and breaks the guard if blocked.
   - **Right Angle Elbow** (forward + `P`) steps in, is plus on hit, and launches on a counter hit.
@@ -155,7 +156,8 @@ The fighters, and what they teach:
   - **Range Check** (dash, then `P`) comes out early in a dash.
   - **Vertex Kick** (back + `K`) is a tracking spin kick. **Quadratic Launcher** (down + `H`), **Discriminant** (throw).
   - **Calculated** (his signature): when you whiff near him, his next hit within 2.5 seconds does 30% more damage, and he glows until he lands it.
-- **RAMOS** (grappler; Algebra 2: matrices) — the fastest dash in the game, and a cardio machine. He can chain dashes back to back, and his guard meter recovers twice as fast. Long, bouncy hair that swings when he moves:
+- **RAMOS** (grappler; Algebra 2: matrices) — a wrestler and luchador, and a cardio machine: the fastest movement in the game, chained dashes, and his guard meter recovers twice as fast. Long, bouncy hair that never stops swinging:
+  - **Run:** dash, then keep holding forward. Out of the run: `P` spear tackle, `K` running knee (launches), down + `K` slide, `H` plancha, `P`+`K` **Gauss-Jordan** (a running command grab).
   - **Matrix Lock** (`P`+`K`) has a short break window (8 frames instead of 15).
   - **Determinant Slam** (back + `P`+`K`) is his reverse throw.
   - **Identity** (forward + `P`+`K`) is a command grab: slower, but it can't be broken and takes crouching opponents too.

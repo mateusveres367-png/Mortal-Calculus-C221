@@ -76,7 +76,7 @@
     // A new match (next round): forget plans timed on the old one's frames.
     if (match !== this.match) {
       this.match = match;
-      this.seen = []; this.script = null; this.walk = null; this.guard = null; this.nextThink = 0; this.hold = null;
+      this.seen = []; this.script = null; this.walk = null; this.guard = null; this.nextThink = 0; this.hold = null; this.runIn = null;
       this.wake = null; this.techRoll = null; this.breakRoll = null; this.punishRoll = null;
     }
 
@@ -121,6 +121,23 @@
     }
     this.wake = null;
     if (self.state === 'hitstun' || self.state === 'wallsplat' || self.state === 'thrown' || self.state === 'guardbreak') { this.script = null; return raw; }
+
+    // --- Running in (RAMOS): double-tap, hold forward, then strike or grab up close.
+    if (this.runIn) {
+      var ri = this.runIn, rt = ri.t++;
+      var okState = self.state === 'dash' || self.state === 'run' || self.actionable;
+      if (!okState || match.frame > ri.until) { this.runIn = null; }
+      else {
+        raw[fwdKey] = rt !== 1;
+        if (self.state === 'run' && dist < 56) {
+          this.runIn = null;
+          var finish = rnd() < 0.5 ? 'P+K' : ['P', 'K', 'D+K', 'H'][Math.floor(rnd() * 4)];
+          var fr = toRaw(finish, self.facing); fr[fwdKey] = true;
+          return fr;
+        }
+        return raw;
+      }
+    }
 
     // --- A held input (a parry stance). --------------------------------------------
     if (this.hold) {
@@ -175,6 +192,9 @@
       // Style: DALSASS sways back out of highs and mids, then counters.
       if (gd.sway == null) gd.sway = !!(st.sway && m === opp.move && opp.move.level !== 'low' && self.def.moves.bK && self.def.moves.bK.evade && rnd() < st.sway * L.block);
       if (gd.sway && self.actionable) { gd.sway = false; gd.block = false; this.startScript({ 0: 'B+K', 8: 'P' }, match, self); return toRaw('B+K', self.facing); }
+      // Style: PEDERSEN swings through your attack on his armor.
+      if (gd.armor == null) gd.armor = !!(st.armorTrade && self.def.moves.heavy.armor && m.level !== 'low' && rnd() < st.armorTrade * L.combo);
+      if (gd.armor && self.actionable) { gd.armor = false; gd.block = false; return toRaw('H', self.facing); }
       if (gd.step && self.actionable) {
         gd.step = false;
         // CHAI follows her sidestep with an attack out of it.
@@ -251,6 +271,8 @@
       this.walk = { dir: 'back', until: match.frame + 10 };
       return raw;
     }
+    // Runners (RAMOS) sprint in from range.
+    if (st.run && self.def.runSpeed && dist > 90 && rnd() < st.run * (0.4 + L.combo * 0.6)) { this.runIn = { t: 1, until: match.frame + 70 }; raw[fwdKey] = true; return raw; }
     // Far: close the distance (dash when feeling aggressive; rushdown styles dash more).
     if (roll < a * 0.5 + (st.dashIn || 0) * 0.4) { var dp = {}; dp[0] = 'F'; dp[2] = 'F'; this.startScript(dp, match, self); return raw; }
     this.walk = { dir: 'fwd', until: match.frame + 16 + Math.floor(rnd() * 20) };

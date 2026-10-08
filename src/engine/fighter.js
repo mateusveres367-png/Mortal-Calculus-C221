@@ -5,7 +5,8 @@
   // States in which the fighter is free to act (and can guard).
   var NEUTRAL = { idle: 1, walkF: 1, walkB: 1, crouch: 1 };
   // States that a throw can grab.
-  var THROWABLE = { idle: 1, walkF: 1, walkB: 1, dash: 1, backdash: 1, sidestep: 1, land: 1, attack: 1, guardbreak: 1, prejump: 1 };
+  var THROWABLE = { idle: 1, walkF: 1, walkB: 1, dash: 1, run: 1, backdash: 1, sidestep: 1, land: 1, attack: 1, guardbreak: 1, prejump: 1 };
+  var RUN_STOP = 6; // frames to skid to a stop out of a run
 
   var DASH_FRAMES = 16, DASH_ACT_FROM = 9;
   var BACKDASH_FRAMES = 22, BACKDASH_ACT_FROM = 17;
@@ -137,6 +138,7 @@
     this.repeatCount = prev && prev.id === id ? (this.repeatCount || 0) + 1 : 0;
     this.chargeFrames = 0;
     this.holdFrames = 0;
+    this.armorHits = 0; // hits absorbed by this move's armor (PEDERSEN)
     this.setState('attack');
     this.move = m;
     this.moveFrame = 1;
@@ -215,8 +217,19 @@
           this.vx = this.def.dashSpeed * this.facing;
           return;
         }
-        if (this.stateFrame >= (this.def.dashFrames || DASH_FRAMES)) { this.setState('idle'); break; }
+        if (this.stateFrame >= (this.def.dashFrames || DASH_FRAMES)) {
+          // Cardio (RAMOS): keep holding forward and the dash turns into a run.
+          if (this.def.runSpeed && buf.forward(this.facing)) { this.setState('run'); this.vx = this.def.runSpeed * this.facing; return; }
+          this.setState('idle');
+          break;
+        }
         if (this.stateFrame >= (this.def.dashAttackFrom || DASH_ACT_FROM) && this.tryAttack(buf, frame)) return;
+        return;
+      case 'run':
+        // He can run for as long as forward is held; let go and he skids to a stop.
+        if (!buf.forward(this.facing)) { this.setState('land'); this.landLag = RUN_STOP; this.vx = 0; return; }
+        this.vx = this.def.runSpeed * this.facing;
+        if (this.tryAttack(buf, frame)) return;
         return;
       case 'backdash':
         // Fighters can have their own backdash (LOPEZ's Asymptote Backdash).
@@ -311,6 +324,8 @@
     var dirs = buf.dirsFor('p', frame);
     buf.consume('p'); buf.consume('k');
     this.stance = 'A';
+    // Out of a run (RAMOS): the running command grab.
+    if (this.state === 'run' && this.def.moves.runGrab) { this.startMove('runGrab'); return; }
     this.startMove(buf.back(this.facing, dirs) ? 'throwB' : this.pick(buf.forward(this.facing, dirs) ? ['cmdGrab', 'throw'] : ['throw']));
   };
 
@@ -360,6 +375,15 @@
     return true;
   };
 
+  // Exponential Armor (PEDERSEN): during a move's armor window, the first hit (two at
+  // a full charge) is absorbed and the move keeps going.
+  Fighter.prototype.armorUp = function (m) {
+    var ar = this.state === 'attack' && this.move.armor;
+    if (!ar || m.throw || this.moveFrame < ar.from || this.moveFrame > ar.to) return false;
+    var hits = ar.hits + (this.move.charge && this.chargeLevel() === 2 ? 1 : 0);
+    return this.armorHits < hits;
+  };
+
   // In the evasive window of a sway (DALSASS): attacks of these levels miss.
   Fighter.prototype.evades = function (m) {
     var ev = this.state === 'attack' && this.move.evade;
@@ -389,6 +413,8 @@
       if (st) return st;
     }
     if (this.state === 'dash' && btn === 'p') { var dp = this.pick(['dashP']); if (dp) return dp; }
+    // Attacks out of a run: P, K, D+K, H.
+    if (this.state === 'run') { var rn = this.pick([btn === 'k' && down ? 'runDK' : 'run' + B]); if (rn) return rn; }
     if (this.state === 'sidestep') { var sp = this.pick(['ss' + B]); if (sp) return sp; }
     if (btn === 'p') return this.pick(down ? ['dP', 'jab'] : fwd ? ['fP', 'jab'] : back ? ['bP', 'jab'] : ['jab']);
     if (btn === 'k') {

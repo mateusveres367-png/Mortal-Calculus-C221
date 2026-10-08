@@ -78,7 +78,17 @@
         this.flashes.push({ x: x, y: y, r: 18, life: 9, max: 9, color: 0xffffff, star: true });
         this.flashes.push({ x: x, y: y, r: 14, life: 10, max: 10, color: 0x5fd7ff, ring: true });
         return;
+      case 'armor': // Exponential Armor: the hit glances off in a gold ring
+        this.flashes.push({ x: x, y: y, r: 20, life: 10, max: 10, color: 0xffd23f, ring: true, thick: 3 });
+        this.flashes.push({ x: x, y: y, r: 12, life: 6, max: 6, color: 0xffffff, star: true });
+        for (var ar = 0; ar < 8; ar++) {
+          var aa = Math.random() * Math.PI * 2;
+          this.parts.push({ x: x, y: y, vx: Math.cos(aa) * 2.2, vy: Math.sin(aa) * 2.2 - 0.5, life: 12, max: 12, size: 2, color: ar % 2 ? 0xffd23f : 0xffffff });
+        }
+        return;
     }
+    // Everything below is for strikes (hits and blocks); other events have no visual.
+    if ((ev.type !== 'hit' && ev.type !== 'block') || !ev.move) return;
     if (ev.type === 'hit' && ev.throw) this.dust(x, 16, 3);
     // Each hit on a splatted fighter cracks the wall a little more.
     if (ev.type === 'hit' && ev.wall) {
@@ -438,6 +448,14 @@
       case 'break':
         burst(0.08, 4200, 3, 0.35, 'bandpass');
         thump(0.06, 600, 300, 0.2);
+        break;
+      case 'armor': // a heavy clank: the hit doesn't move him
+        thump(0.18, 160, 60, 0.6);
+        burst(0.12, 2600, 4, 0.3, 'bandpass');
+        sweep(0.16, 900, 700, 0.06, 'square');
+        break;
+      case 'feint':
+        burst(0.05, 1800, 2, 0.1, 'bandpass');
         break;
     }
   };

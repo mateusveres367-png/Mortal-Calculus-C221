@@ -179,6 +179,37 @@ var S = FG.fighterById('brinkhus'), D = FG.fighterById('dalsass');
   check('blocked launcher gets punished', punish && punish.punish, evs.map(function (e) { return e.type + e.attacker; }));
 })();
 
+// No two fighters share an attack animation: every keyframe of every attack is the
+// fighter's own pose, and no two fighters strike with the same pose.
+(function () {
+  var seen = {};
+  defs.forEach(function (d) {
+    Object.keys(d.moves).forEach(function (id) {
+      var m = d.moves[id];
+      if (m.taunt) return;
+      (m.anim || []).forEach(function (k) {
+        check(d.name + ' ' + id + ' uses their own pose ' + k[1], !!d.poses[k[1]], k[1]);
+      });
+      if (!m.box) return;
+      // The pose on the first active frame.
+      var active = m.anim.filter(function (k) { return k[0] >= m.startup; })[0] || m.anim[m.anim.length - 1];
+      var key = (d.poses[active[1]] || []).join(',');
+      if (seen[key] && seen[key].def !== d.id) check(d.name + ' ' + id + ' strikes with a pose of their own', false, [seen[key].def, seen[key].id]);
+      else seen[key] = { def: d.id, id: id };
+    });
+  });
+  // Movement and defence differ too.
+  ['idle', 'crouch', 'jump', 'dash', 'block', 'hit_high', 'hit_mid'].forEach(function (pose) {
+    var keys = defs.map(function (d) { return (d.poses[pose] || []).join(','); });
+    check('every fighter has their own ' + pose + ' pose', keys.every(function (k, i) { return k && keys.indexOf(k) === i; }), pose);
+  });
+  // And how they move: walk speed, dash, jump and weight are not all the same.
+  ['walkF', 'dashSpeed', 'jumpVy', 'weight'].forEach(function (f) {
+    var vals = defs.map(function (d) { return d[f]; });
+    check('fighters differ in ' + f, vals.every(function (v) { return v != null; }) && new Set(vals).size >= 6, vals);
+  });
+})();
+
 // Movement: dash, backdash, jump, crouch.
 (function () {
   var m = setup(S, D, 300), x0 = m.fighters[0].x;
@@ -816,6 +847,30 @@ function count(r, type, attacker) {
   check('a tap is just blocked', count(tapBlocked, 'block') === 1 && count(tapBlocked, 'guardbreak') === 0, types(tapBlocked));
 })();
 
+// PEDERSEN: Exponential Armor. His heavies absorb a hit in their windup and keep going.
+(function () {
+  var PD = FG.fighterById('pedersen');
+  function hits(r, who) { return r.events.filter(function (e) { return e.type === 'hit' && e.attacker === who; }); }
+  // He starts the Base Hook; a jab lands in its windup, is absorbed, and the hook connects.
+  var r = play(PD, S, 40, { 0: { h: true } }, { 2: { p: true } }, 60);
+  check('armor absorbs a jab', count(r, 'armor') === 1 && hits(r, 1).length === 0, types(r));
+  check('the armored hook still lands', hits(r, 0).length === 1 && hits(r, 0)[0].move.id === 'heavy', types(r));
+  check('armor still costs health', r.m.fighters[0].health === PD.health - Math.round(S.moves.jab.damage * FG.C.ARMOR_DAMAGE), r.m.fighters[0].health);
+  // Two hits: the second one gets through.
+  r = play(PD, S, 40, { 0: { h: true } }, { 0: { p: true }, 11: { p: true } }, 60);
+  check('armor takes one hit only', count(r, 'armor') === 1 && hits(r, 1).length === 1 && hits(r, 0).length === 0, types(r));
+  // Throws go through armor.
+  r = play(PD, S, 40, { 0: { h: true } }, { 2: FG.parseInput('P+K') }, 70);
+  check('throws beat armor', count(r, 'grab', 1) === 1 && count(r, 'armor') === 0, types(r));
+  // A full charge on Order of Magnitude absorbs two.
+  r = play(PD, S, 40, function (i) { return i === 0 ? FG.parseInput('B+H') : i <= 60 ? { h: true } : {}; }, { 30: { p: true }, 46: { p: true } }, 100);
+  check('full charge absorbs two hits', count(r, 'armor') === 2 && hits(r, 0).length === 1, types(r));
+  // Nobody else has armor.
+  defs.filter(function (d) { return d !== PD; }).forEach(function (d) {
+    check(d.name + ' has no armor', Object.keys(d.moves).every(function (id) { return !d.moves[id].armor; }));
+  });
+})();
+
 // RAMOS: Matrix Lock's short break window; Identity can't be broken and grabs crouchers.
 (function () {
   var RM = FG.fighterById('ramos');
@@ -838,6 +893,36 @@ function count(r, type, attacker) {
   // A normal throw whiffs on crouchers.
   r = play(RM, S, 40, { 0: FG.parseInput('P+K') }, function () { return { down: true }; }, 60);
   check('matrix lock whiffs on crouch', count(r, 'grab') === 0, types(r));
+  // Cardio: dash, keep holding forward, and he runs for as long as forward is held.
+  var held = function (i) { return i === 0 || i >= 2 ? { right: true } : {}; };
+  var x0, run = play(RM, D, 100, held, {}, 40, function (m) { m.fighters[0].x = 60; m.fighters[1].x = FG.C.WALL_R - 20; x0 = m.fighters[0].x; });
+  check('ramos runs: a dash held forward turns into a run', run.m.fighters[0].state === 'run', run.m.fighters[0].state);
+  var far = play(RM, D, 100, held, {}, 70, function (m) { m.fighters[0].x = 60; m.fighters[1].x = FG.C.WALL_R - 20; });
+  check('ramos never slows down', far.m.fighters[0].state === 'run' && Math.abs(far.m.fighters[0].vx - RM.runSpeed) < 0.01, [far.m.fighters[0].state, far.m.fighters[0].vx]);
+  var stop = play(RM, D, 100, function (i) { return i === 0 || (i >= 2 && i < 30) ? { right: true } : {}; }, {}, 40, function (m) { m.fighters[0].x = 60; m.fighters[1].x = FG.C.WALL_R - 20; });
+  check('letting go of forward stops the run', stop.m.fighters[0].state !== 'run', stop.m.fighters[0].state);
+  check('nobody else runs', play(S, D, 100, held, {}, 40, function (m) { m.fighters[0].x = 60; m.fighters[1].x = FG.C.WALL_R - 20; }).m.fighters[0].state !== 'run');
+  // Attacks out of the run: P, K, D+K, H, and P+K grabs.
+  [['P', 'runP'], ['K', 'runK'], ['D+K', 'runDK'], ['H', 'runH']].forEach(function (t) {
+    var q = play(RM, D, 100, function (i) { return i === 0 || (i >= 2 && i < 24) ? { right: true } : i === 24 ? Object.assign(FG.parseInput(t[0]), { right: true }) : {}; }, {}, 70,
+      function (m) { m.fighters[0].x = 60; m.fighters[1].x = FG.C.WALL_R - 20; });
+    var ids = q.events.filter(function (e) { return e.type === 'whiff' && e.fighter === 0; }).map(function (e) { return e.move.id; });
+    check('run, ' + t[0] + ': ' + t[1], ids.join() === t[1], ids);
+  });
+  var rg = play(RM, D, 150, function (i) { return i === 0 || (i >= 2 && i < 40) ? { right: true } : {}; }, function (i, m) {
+    return { down: true, p: m.throwState && m.frame - m.throwState.start === 4 };
+  }, 120, function () {});
+  var grabbed = false;
+  rg = play(RM, D, 150, function (i, m) {
+    var f = m.fighters[0], d = Math.abs(m.fighters[1].x - f.x);
+    if (f.state === 'run' && d < 44 && !grabbed) { grabbed = true; return FG.parseInput('F+P+K'); }
+    return i === 0 || i >= 2 ? { right: true } : {};
+  }, function (i, m) { return m.throwState && m.frame - m.throwState.start === 4 ? { p: true, down: true } : { down: true }; }, 120);
+  var grabEv = rg.events.filter(function (e) { return e.type === 'grab'; })[0];
+  check('running grab: Gauss-Jordan grabs a crouching opponent', grabEv && grabEv.move.id === 'runGrab', types(rg));
+  check('running grab cannot be broken', count(rg, 'break') === 0 && rg.m.fighters[1].health === D.health - RM.moves.runGrab.damage, rg.m.fighters[1].health);
+  // The fastest walk in the game.
+  check('ramos walks fastest', FG.ROSTER.every(function (d) { return d === RM || d.walkF < RM.walkF; }));
   // His dash covers the most ground.
   function dashDist(def) { var x0, q = play(def, D, 300, { 0: { right: true }, 2: { right: true } }, {}, 20, function (m) { x0 = m.fighters[0].x; }); return q.m.fighters[0].x - x0; }
   var others = FG.ROSTER.filter(function (d) { return d !== RM; }).map(dashDist);
@@ -1023,7 +1108,9 @@ check('all eight fighters', FG.ROSTER.length === 8, FG.ROSTER.length);
     d.combos.forEach(function (c) {
       if (!c.plan) return;
       var keys = Object.keys(c.plan).map(Number).sort(function (x, y) { return x - y; });
-      keys.slice(1).forEach(function (k) {
+      // The opener is the first hitting input (dash taps before it, like a run-in, are setup).
+      var opener = keys.filter(function (k) { return !/^[FB]$/.test(c.plan[k]); })[0];
+      keys.filter(function (k) { return k > opener; }).forEach(function (k) {
         if (/^[FB]$/.test(c.plan[k])) return; // dash taps
         [-3, 3].forEach(function (dt) {
           var plan = {};

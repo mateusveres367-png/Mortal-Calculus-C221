@@ -814,6 +814,7 @@
     }
     if (ev.type === 'hit' && ev.calculated) this.hud.setLabel(ev.attacker, 'CALCULATED!');
     if (ev.type === 'hit' && ev.tip) this.hud.setLabel(ev.attacker, 'LONG ARMS!');
+    if (ev.type === 'armor') { this.hud.setLabel(ev.defender, 'EXPONENTIAL ARMOR!'); this.impact = { who: ev.defender, frames: 3, color: 0xffd23f }; this.effects.shake(0.006); }
     if ((ev.type === 'hit' || ev.type === 'guardbreak') && ev.charge === 2) { this.hud.setLabel(ev.attacker, 'ORDER OF MAGNITUDE!'); this.effects.shake(0.012); }
     if (ev.type === 'parry') {
       this.hud.setLabel(ev.attacker, ev.label || 'PARRY!');

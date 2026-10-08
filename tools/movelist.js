@@ -14,7 +14,7 @@ function result(r) { return r.launch ? 'launch' : r.knockdown ? 'knockdown' : fm
 function sentence(s) { return s.toLowerCase().replace(/(^|[.!?]\s+)([a-z])/g, function (m, a, b) { return a + b.toUpperCase(); }); }
 function title(s) { return s.toLowerCase().replace(/(^|[\s-])([a-z])/g, function (m, a, b) { return a + b.toUpperCase(); }).replace("L'hopital", "L'Hopital"); }
 
-var ORDER = ['jab', 'jab2', 'fP', 'bP', 'dP', 'dashP', 'ssP', 'ssK', 'mid', 'fK', 'bK', 'low', 'dfK', 'sweep',
+var ORDER = ['jab', 'jab2', 'fP', 'bP', 'dP', 'dashP', 'runP', 'runK', 'runDK', 'runH', 'runGrab', 'ssP', 'ssK', 'mid', 'fK', 'bK', 'low', 'dfK', 'sweep',
   'heavy', 'fH', 'bH', 'launcher', 'throw', 'throwB', 'cmdGrab', 'airP', 'airK', 'airH', 'wakeLow', 'wakeMid', 'taunt'];
 
 var out = [];
@@ -64,6 +64,7 @@ FG.ROSTER.forEach(function (d) {
     if (m.parry) notes.push('parry' + (m.parry.counters ? ' (' + m.parry.levels.map(function (l) { return l + ' → ' + title(d.moves[m.parry.counters[l]].label); }).join(', ') + ')' : ''));
     if (m.hold) notes.push('hold ' + m.hold.btn.toUpperCase() + ' to keep it up');
     if (m.step && m.step[2] < 0) notes.push('steps back as it attacks');
+    if (m.armor) notes.push('armor: absorbs ' + m.armor.hits + ' hit on frames ' + m.armor.from + '-' + m.armor.to + (m.charge ? ' (2 at full charge)' : ''));
     if (m.charge) notes.push('hold to charge');
     if (m.taunt) notes.push('says a taunt line; counter-hittable the whole time');
     if (m.kick && d.kickChain) notes.push('kick chain');

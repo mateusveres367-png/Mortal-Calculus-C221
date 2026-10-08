@@ -1,12 +1,19 @@
-// PEDERSEN — Power — Geometry & Math Analysis. The cover fighter. Slow,
-// patient, and devastating when he connects: the Exponential Haymaker, the
-// chargeable Order of Magnitude, the Logarithmic Launcher, the Right Angle
-// Elbow and the Long Division slam.
+// PEDERSEN — Power — Geometry & Math Analysis. The cover fighter. A punch-based
+// power brawler: huge haymakers, hammer fists, a shoulder charge, ground stomps
+// and a body splash. A wide stance with his tie loosened; a slow walk, a short
+// dash, and he's heavy (he falls fast in juggles and barely flinches).
+//
+// Signature: EXPONENTIAL ARMOR. His heavy attacks (Base Hook, the Exponential
+// Haymaker, Order of Magnitude) absorb one hit during their windup and keep going.
+// Charging Order of Magnitude all the way makes it absorb two.
 (function () {
   var P = FG.pose;
-
-  var stance = P('idle', { hip: [0, 44], lean: 2, fe: [16, 64], fh: [20, 76], be: [2, 62], bh: [12, 72], fk: [12, 22], ff: [20, 0], bk: [-12, 22], bf: [-22, 0] });
-  var stand = P('idle', { lean: 0, fe: [8, 56], fh: [10, 46], be: [-4, 56], bh: [-2, 46], fk: [6, 24], ff: [10, 0], bk: [-6, 24], bf: [-10, 0] });
+  // Big: a long torso and heavy arms.
+  var R = FG.rigger({ torso: 30, neck: 12, upper: 16, fore: 14, thigh: 24, shin: 24.5 });
+  // Wide and planted, fists up and out like a brawler.
+  var GF = { hand: [24, 72] }, GB = { hand: [14, 68] };
+  var stance = R({ hip: [0, 42], lean: 6, fa: GF, ba: GB, fl: { foot: [18, 0] }, bl: { foot: [-20, 0] } });
+  var stand = R({ hip: [0, 47], lean: 0, fa: [-80, -86], ba: [-96, -92], fl: { foot: [6, 0] }, bl: { foot: [-6, 0] } });
 
   var poses = {
     idle: stance,
@@ -21,18 +28,74 @@
     lean_puff: P('idle', { hip: [-5, 40], chest: [-8, 66], head: [-7, 79], fe: [2, 63], fh: [-1, 75], be: [-15, 58], bh: [-3, 61], fk: [4, 21], ff: [10, 0], bk: [2, 20], bf: [12, 1] }),
     sit: [0, 12, -4, 38, -2, 50, 6, 30, 14, 22, -12, 28, -18, 16, 18, 26, 32, 2, 12, 22, 26, 0],
     sit2: [0, 12, -5, 37, -4, 48, 6, 30, 14, 22, -12, 28, -18, 16, 18, 26, 32, 2, 12, 22, 26, 0],
-    jab_x: P('jab_x', { lean: 4, fh: [42, 76] }),
-    hay_c: P('idle', { lean: -12, fe: [10, 64], fh: [14, 76], be: [-20, 70], bh: [-30, 78], fk: [12, 24], ff: [18, 0] }),
-    hay_x: P('hv_x', { lean: 6, be: [34, 72], bh: [54, 74] }),
-    om_c: P('idle', { lean: -16, hip: [-4, 42], fe: [8, 64], fh: [12, 76], be: [-22, 60], bh: [-32, 60], fk: [12, 22], ff: [20, 0], bk: [-14, 22], bf: [-24, 0] }),
-    om_x: P('hv_x', { lean: 10, all: [4, 0], be: [36, 64], bh: [58, 62] }),
-    power_c: P('crouch', { lean: 4, fe: [14, 38], fh: [18, 26] }),
+
+    // Movement: heavy, planted, lumbering.
+    crouch: R({ hip: [0, 28], lean: 14, fa: { hand: [24, 56] }, ba: { hand: [14, 52] }, fl: { foot: [18, 0] }, bl: { foot: [-20, 0] } }),
+    squat: R({ hip: [0, 34], lean: 10, fa: { hand: [24, 62] }, ba: { hand: [14, 58] }, fl: { foot: [16, 0] }, bl: { foot: [-18, 0] } }),
+    jump: R({ hip: [0, 44], lean: 4, fa: [60, 100], ba: [80, 110], fl: [-40, -90], bl: [-100, -80] }),
+    dash: R({ hip: [4, 40], lean: 18, fa: { hand: [26, 66] }, ba: { hand: [16, 62] }, fl: { foot: [24, 0] }, bl: { foot: [-18, 4] } }),
+    backdash: R({ hip: [-4, 43], lean: -2, fa: GF, ba: GB, fl: { foot: [14, 3] }, bl: { foot: [-24, 0] } }),
+    sidestep: R({ hip: [0, 40], lean: 6, fa: GF, ba: GB, fl: { foot: [10, 0] }, bl: { foot: [-12, 0] } }),
+    // Guard: forearms stacked in front of the face.
+    block: R({ hip: [-1, 42], lean: 2, fa: { hand: [18, 86] }, ba: { hand: [16, 80] }, fl: { foot: [18, 0] }, bl: { foot: [-21, 0] } }),
+    cblock: R({ hip: [0, 28], lean: 12, fa: { hand: [20, 64] }, ba: { hand: [16, 58] }, fl: { foot: [18, 0] }, bl: { foot: [-20, 0] } }),
+    // Hit reactions: he barely moves.
+    hit_high: R({ hip: [-2, 43], lean: -4, neck: -10, fa: { hand: [22, 70] }, ba: { hand: [12, 66] }, fl: { foot: [18, 0] }, bl: { foot: [-21, 0] } }),
+    hit_mid: R({ hip: [-2, 41], lean: 14, neck: 4, fa: { hand: [20, 60] }, ba: { hand: [12, 58] }, fl: { foot: [18, 0] }, bl: { foot: [-21, 0] } }),
+    hit_low: R({ hip: [-1, 40], lean: 8, fa: GF, ba: GB, fl: { foot: [14, 0] }, bl: { foot: [-20, 0] } }),
+    gbreak: R({ hip: [-3, 42], lean: -8, fa: [30, 70], ba: [10, 50], fl: { foot: [18, 0] }, bl: { foot: [-21, 0] } }),
+    juggle: R({ hip: [0, 22], lean: -70, neck: -8, fa: [60, 30], ba: [40, 10], fl: [20, -30], bl: [0, -40] }),
+    down: R({ hip: [0, 6], lean: -88, fa: [170, 150], ba: [-150, -160], fl: [10, 0], bl: [-10, 0] }),
+
+    // Power Jab: a heavy, shoving jab.
+    jab_c: R({ hip: [1, 42], lean: 8, fa: { hand: [22, 74] }, ba: GB, fl: { foot: [18, 0] }, bl: { foot: [-19, 0] } }),
+    jab_x: R({ hip: [6, 42], lean: 12, fa: [2, 2], ba: GB, fl: { foot: [22, 0] }, bl: { foot: [-18, 0] } }),
+    // Squared: a clubbing hammer fist, over the top.
+    cross_c: R({ hip: [-1, 42], lean: -4, fa: GF, ba: [100, 140], fl: { foot: [18, 0] }, bl: { foot: [-20, 0] } }),
+    cross_x: R({ hip: [8, 40], lean: 18, fa: { hand: [18, 62] }, ba: [20, -40], fl: { foot: [22, 0] }, bl: { foot: [-18, 0] } }),
     // Right Angle Elbow: the forearm square to the upper arm, driven in at chest height.
-    elbow_c: P('hook_c', { lean: -6, fe: [4, 66], fh: [4, 80] }),
-    elbow_x: P('hook_x', { lean: 14, hip: [6, 44], fe: [28, 70], fh: [28, 84], be: [0, 62], bh: [8, 72], ff: [24, 0], fk: [18, 22] }),
-    power_x: P('up_x', { fe: [18, 94], fh: [24, 112], be: [4, 86], bh: [10, 100] }),
-    throw_lift: P('throw_lift', { fe: [14, 92], fh: [22, 106], be: [8, 90], bh: [16, 104] }),
-    throw_slam: P('throw_slam', { all: [4, -6], lean: 10 })
+    elbow_c: R({ hip: [-2, 42], lean: -6, fa: [-20, 100], ba: GB, fl: { foot: [16, 0] }, bl: { foot: [-21, 0] } }),
+    elbow_x: R({ hip: [10, 41], lean: 16, fa: [8, 98], ba: GB, fl: { foot: [26, 0] }, bl: { foot: [-16, 0] } }),
+    // Common Log: a dropping shoulder charge out of a dash.
+    shoulder: R({ hip: [8, 36], lean: 34, neck: -10, fa: { hand: [20, 44] }, ba: { hand: [10, 40] }, fl: { foot: [24, 0] }, bl: { foot: [-16, 2] } }),
+    // Exponent Kick: a push stomp to the gut.
+    stomp_c: R({ hip: [-2, 44], lean: -6, fa: GF, ba: GB, fl: [60, -60], bl: { foot: [-20, 0] } }),
+    stomp_x: R({ hip: [-1, 44], lean: -12, fa: GF, ba: GB, fl: [6, -4], bl: { foot: [-20, 0] } }),
+    // Negative Exponent: a ground stomp.
+    st_c: R({ hip: [0, 42], lean: 6, fa: GF, ba: GB, fl: [70, -40], bl: { foot: [-20, 0] } }),
+    st_x: R({ hip: [4, 38], lean: 12, fa: { hand: [26, 62] }, ba: GB, fl: { foot: [32, 0] }, bl: { foot: [-18, 0] } }),
+    // Zero Power Sweep: both fists pound the floor and the shockwave takes their feet.
+    pound_c: R({ hip: [0, 34], lean: 6, fa: [100, 120], ba: [110, 130], fl: { foot: [18, 0] }, bl: { foot: [-20, 0] } }),
+    pound_x: R({ hip: [2, 22], lean: 46, fa: { hand: [30, 2] }, ba: { hand: [24, 2] }, fl: { foot: [18, 0] }, bl: { foot: [-20, 0] } }),
+    // Base Hook: a big looping hook.
+    hook_c: R({ hip: [-3, 42], lean: -8, fa: GF, ba: [-150, -120], fl: { foot: [16, 0] }, bl: { foot: [-21, 0] } }),
+    hook_x: R({ hip: [8, 40], lean: 16, fa: { hand: [18, 62] }, ba: [10, 50], fl: { foot: [24, 0] }, bl: { foot: [-16, 0] } }),
+    hv_r: R({ hip: [6, 41], lean: 12, fa: GF, ba: { hand: [22, 64] }, fl: { foot: [22, 0] }, bl: { foot: [-18, 0] } }),
+    // Exponential Haymaker: wound all the way back, then everything into it.
+    hay_c: R({ hip: [-6, 43], lean: -16, fa: { hand: [16, 74] }, ba: [-170, -150], fl: { foot: [14, 0] }, bl: { foot: [-24, 0] } }),
+    hay_x: R({ hip: [12, 40], lean: 22, fa: { hand: [14, 58] }, ba: [6, 10], fl: { foot: [28, 0] }, bl: { foot: [-12, 2] } }),
+    // Order of Magnitude: the charge-up, then a straight that goes through anything.
+    om_c: R({ hip: [-6, 40], lean: -18, fa: { hand: [14, 72] }, ba: [-180, -170], fl: { foot: [14, 0] }, bl: { foot: [-26, 0] } }),
+    om_x: R({ hip: [14, 38], lean: 20, fa: { hand: [16, 56] }, ba: [0, 0], fl: { foot: [30, 0] }, bl: { foot: [-10, 2] } }),
+    // Logarithmic Launcher: a double-fisted uppercut.
+    power_c: R({ hip: [0, 26], lean: 20, fa: { hand: [16, 30] }, ba: { hand: [10, 30] }, fl: { foot: [18, 0] }, bl: { foot: [-20, 0] } }),
+    power_x: R({ hip: [4, 46], lean: -6, fa: [70, 90], ba: [75, 92], fl: { foot: [18, 0] }, bl: { foot: [-18, 0] } }),
+    up_r: R({ hip: [2, 44], lean: 2, fa: [50, 90], ba: [60, 92], fl: { foot: [18, 0] }, bl: { foot: [-20, 0] } }),
+
+    // Air: Exponent Drop (a hammer fist), Power Kick (a stomp), Tower of Powers (a body splash).
+    air_p: R({ hip: [0, 46], lean: 14, fa: [20, -40], ba: GB, fl: [-40, -90], bl: [-100, -80] }),
+    air_k: R({ hip: [0, 46], lean: -6, fa: GF, ba: GB, fl: [-30, -60], bl: [-100, -80] }),
+    air_hc: R({ hip: [0, 48], lean: -10, fa: [110, 140], ba: [120, 150], fl: [-40, -90], bl: [-100, -80] }),
+    air_hx: R({ hip: [0, 40], lean: 80, neck: -40, fa: [20, 10], ba: [-10, -20], fl: [170, 180], bl: [175, 185] }),
+
+    // Long Division: hoist them overhead and slam. Synthetic Division: over the shoulder.
+    grab_c: R({ hip: [2, 42], lean: 8, fa: { hand: [28, 68] }, ba: { hand: [24, 64] }, fl: { foot: [20, 0] }, bl: { foot: [-18, 0] } }),
+    grab_x: R({ hip: [4, 42], lean: 12, fa: { hand: [30, 64] }, ba: { hand: [28, 60] }, fl: { foot: [22, 0] }, bl: { foot: [-18, 0] } }),
+    throw_lift: R({ hip: [0, 44], lean: -4, fa: [80, 95], ba: [85, 100], fl: { foot: [16, 0] }, bl: { foot: [-20, 0] } }),
+    throw_slam: R({ hip: [8, 30], lean: 34, fa: [-20, -50], ba: [-25, -55], fl: { foot: [24, 0] }, bl: { foot: [-16, 0] } }),
+    throw_back: R({ hip: [-4, 42], lean: -20, fa: [140, 170], ba: [150, 180], fl: { foot: [14, 0] }, bl: { foot: [-22, 0] } }),
+    wake_low: R({ hip: [-2, 10], lean: -60, fa: { hand: [-14, 2] }, ba: { hand: [-20, 2] }, fl: { foot: [40, 10] }, bl: { foot: [4, 0] } }),
+    wake_mid: R({ hip: [4, 42], lean: 12, fa: [70, 90], ba: [75, 92], fl: { foot: [18, 0] }, bl: { foot: [-18, 3] } })
   };
 
   poses.taunt = poses['tie'];
@@ -40,10 +103,15 @@
   FG.defineFighter({
     id: 'pedersen', order: 0, // the cover fighter: first on character select
     name: 'PEDERSEN', archetype: 'POWER', theme: 'MATH ANALYSIS',
+    style: 'POWER BRAWLER', signatureMechanic: 'EXPONENTIAL ARMOR',
+    signatureText: 'his heavy attacks (Base Hook, the Exponential Haymaker, Order of Magnitude) absorb one hit during their windup and keep going; a fully charged Order of Magnitude absorbs two',
     bio: 'CALM AND FRIENDLY, BUT EVERY HIT IS HEAVY. SLOW, PATIENT, DEVASTATING.',
     signature: ['EXPONENTIAL HAYMAKER', 'ORDER OF MAGNITUDE', 'LOGARITHMIC LAUNCHER', 'RIGHT ANGLE ELBOW', 'LONG DIVISION'],
     scale: 1.12, health: 200,
-    walkF: 1.5, walkB: 1.3, dashSpeed: 6.4, backdashSpeed: 7.4,
+    // Movement: a slow walk, a short dash, a low jump; heavy in juggles, barely flinches.
+    walkF: 1.4, walkB: 1.2, dashSpeed: 6.2, dashFrames: 13, backdashSpeed: 6.8,
+    jumpVy: 8.6, weight: 1.12, react: 0.6,
+    walk: { lean: 2, bob: 1.8, rate: 0.12 },
     car: true,            // drives in for his intro; parks in the background
     homeStage: 'parking', // his stage: the faculty parking lot, his car in the reserved spot
     glyphs: ['LOG(X)', 'X*10', '90', 'E'], // math that flies off their big hits
@@ -55,82 +123,94 @@
       beard: { style: 'short', color: 0x8a7462 },
       mouth: 'smile',
       top: { style: 'dress', color: 0xb01e24, sleeves: 'rolled', collar: 0xc8282e },
-      tie: 0x141414, pen: 0x1c2a6a,
+      tie: 0x141414, tieLoose: true, pen: 0x1c2a6a,
       legs: 0x2a2a30, shoes: 0x111111,
       build: { torso: 1.22, limb: 1.12 }
     },
-    idleAnim: { breath: 1.5, rate: 0.05 },
+    idleAnim: { breath: 1.6, rate: 0.05 },
     poses: poses,
+    // How the CPU plays him: walks you down and swings big, trading through your hits.
+    ai: { spacing: 40, pokes: ['F+P', 'K'], close: ['H', 'F+H', 'B+H', 'P', 'P+K'], aggro: 0.9, armorTrade: 0.35 },
 
     moves: FG.kit.moves({
       jab: {
-        name: 'Jab', label: 'POWER JAB', cmd: 'P', level: 'high', strength: 'light',
+        name: 'Power Jab', label: 'POWER JAB', cmd: 'P', level: 'high', strength: 'light', motion: 'jab',
         startup: 11, active: 2, recovery: 14, damage: 10,
         block: 0, hit: { adv: 7 }, ch: { adv: 10 },
-        hitbox: { x: 22, w: 26, y: 68, h: 14 }, push: 9, juggle: 3,
+        hitbox: { x: 22, w: 26, y: 64, h: 18 }, push: 9, juggle: 3,
         cancels: [{ btn: 'p', into: 'jab2', from: 11, to: 23 }],
         anim: [[1, 'idle'], [8, 'jab_c'], [11, 'jab_x'], [14, 'jab_x'], [26, 'idle']]
       },
       jab2: {
-        name: 'Jab 2', label: 'SQUARED', cmd: 'P,P', level: 'high', strength: 'medium',
+        name: 'Hammer Fist', label: 'SQUARED', cmd: 'P,P', level: 'high', strength: 'medium', motion: 'overhead',
         startup: 12, active: 3, recovery: 19, damage: 15,
         block: -5, hit: { adv: 4 }, ch: { adv: 10 },
-        hitbox: { x: 24, w: 28, y: 66, h: 16 }, push: 14, juggle: 3.4, shake: 0.003,
+        hitbox: { x: 24, w: 28, y: 60, h: 22 }, push: 14, juggle: 3.4, shake: 0.003,
         anim: [[1, 'jab_x'], [7, 'cross_c'], [12, 'cross_x'], [15, 'cross_x'], [33, 'idle']]
       },
+      // Common Log: dash, then P. A shoulder charge that knocks down.
+      dashP: {
+        name: 'Shoulder Charge', label: 'COMMON LOG', cmd: 'F,F+P', level: 'mid', strength: 'heavy', motion: 'lunge',
+        startup: 14, active: 4, recovery: 22, damage: 20,
+        block: -10, hit: { knockdown: true }, ch: { knockdown: true },
+        hitbox: { x: 10, w: 30, y: 36, h: 34 }, push: 24, juggle: 3.6, carry: 2, shake: 0.008,
+        step: [1, 14, 2.8],
+        anim: [[1, 'dash'], [9, 'shoulder'], [14, 'shoulder'], [18, 'shoulder'], [40, 'idle']]
+      },
       mid: {
-        name: 'Mid Kick', label: 'EXPONENT KICK', cmd: 'K', level: 'mid', strength: 'medium',
+        name: 'Push Stomp', label: 'EXPONENT KICK', cmd: 'K', level: 'mid', strength: 'medium', motion: 'kick',
         startup: 16, active: 3, recovery: 20, damage: 19,
         block: -7, hit: { adv: 5 }, ch: { adv: 10 },
-        hitbox: { x: 30, w: 28, y: 38, h: 22 }, push: 18, juggle: 3.6, shake: 0.004,
-        anim: [[1, 'idle'], [11, 'fk_c'], [16, 'fk_x'], [19, 'fk_x'], [27, 'fk_c'], [38, 'idle']]
+        hitbox: { x: 28, w: 28, y: 36, h: 24 }, push: 18, juggle: 3.6, shake: 0.004,
+        anim: [[1, 'idle'], [11, 'stomp_c'], [16, 'stomp_x'], [19, 'stomp_x'], [27, 'stomp_c'], [38, 'idle']]
       },
       low: {
-        name: 'Low Kick', label: 'NEGATIVE EXPONENT', cmd: 'D+K', level: 'low', strength: 'medium', crouching: true, otg: true,
+        name: 'Ground Stomp', label: 'NEGATIVE EXPONENT', cmd: 'D+K', level: 'low', strength: 'medium', motion: 'low', crouching: true, otg: true,
         startup: 18, active: 3, recovery: 22, damage: 13,
         block: -13, hit: { adv: 0 }, ch: { adv: 6 },
-        hitbox: { x: 30, w: 26, y: 0, h: 16 }, push: 10, juggle: 2.5, shake: 0.003,
+        hitbox: { x: 26, w: 28, y: 0, h: 18 }, push: 10, juggle: 2.5, shake: 0.004,
         anim: [[1, 'crouch'], [12, 'st_c'], [18, 'st_x'], [21, 'st_x'], [32, 'st_c'], [42, 'crouch']]
       },
-      sweep: FG.kit.sweep('ZERO POWER SWEEP', { startup: 22, damage: 20, strength: 'heavy', shake: 0.006 }),
+      sweep: FG.kit.sweep('ZERO POWER SWEEP', { startup: 22, damage: 20, strength: 'heavy', shake: 0.008, motion: 'low',
+        anim: [[1, 'crouch'], [12, 'pound_c'], [22, 'pound_x'], [25, 'pound_x'], [38, 'crouch'], [49, 'crouch']] }),
       heavy: {
-        name: 'Heavy', label: 'BASE HOOK', cmd: 'H', level: 'mid', strength: 'heavy',
-        startup: 21, active: 4, recovery: 20, damage: 28, wallSplat: true,
+        name: 'Big Hook', label: 'BASE HOOK', cmd: 'H', level: 'mid', strength: 'heavy', motion: 'hook', wallSplat: true,
+        startup: 21, active: 4, recovery: 20, damage: 28, armor: { from: 6, to: 20, hits: 1 },
         block: 1, hit: { adv: 8 }, ch: { launch: 6.2 },
-        hitbox: { x: 26, w: 26, y: 52, h: 20 }, push: 30, juggle: 3.6, carry: 2.2, shake: 0.008,
+        hitbox: { x: 24, w: 28, y: 52, h: 22 }, push: 30, juggle: 3.6, carry: 2.2, shake: 0.008,
         step: [12, 21, 1.5],
         anim: [[1, 'idle'], [14, 'hook_c'], [21, 'hook_x'], [25, 'hook_x'], [33, 'hv_r'], [44, 'idle']]
       },
       // Right Angle Elbow: a stepping elbow, plus on hit; a counter hit launches.
       fP: {
-        name: 'Elbow', label: 'RIGHT ANGLE ELBOW', cmd: 'F+P', level: 'mid', strength: 'heavy',
+        name: 'Elbow', label: 'RIGHT ANGLE ELBOW', cmd: 'F+P', level: 'mid', strength: 'heavy', motion: 'hook',
         startup: 15, active: 3, recovery: 18, damage: 18,
         block: -5, hit: { adv: 5 }, ch: { launch: 6.4 },
-        hitbox: { x: 14, w: 28, y: 56, h: 22 }, push: 14, carry: 0.8, shake: 0.006,
+        hitbox: { x: 14, w: 30, y: 56, h: 24 }, push: 14, carry: 0.8, shake: 0.006,
         step: [6, 14, 2.2],
         anim: [[1, 'idle'], [9, 'elbow_c'], [15, 'elbow_x'], [18, 'elbow_x'], [26, 'hv_r'], [36, 'idle']]
       },
       // Exponential Haymaker: a huge, slow, wall-splatting haymaker.
       fH: {
-        name: 'Haymaker', label: 'EXPONENTIAL HAYMAKER', cmd: 'F+H', level: 'mid', strength: 'heavy',
-        startup: 26, active: 4, recovery: 22, damage: 36, wallSplat: true, guardDmg: 34,
+        name: 'Haymaker', label: 'EXPONENTIAL HAYMAKER', cmd: 'F+H', level: 'mid', strength: 'heavy', motion: 'straight', wallSplat: true, guardDmg: 34,
+        startup: 26, active: 4, recovery: 22, damage: 36, armor: { from: 8, to: 25, hits: 1 },
         block: -6, hit: { knockdown: true }, ch: { launch: 6.6 },
-        hitbox: { x: 30, w: 30, y: 58, h: 20 }, push: 34, juggle: 3.6, carry: 2.6, shake: 0.011,
+        hitbox: { x: 28, w: 32, y: 54, h: 24 }, push: 34, juggle: 3.6, carry: 2.6, shake: 0.011,
         step: [14, 26, 1.8],
         anim: [[1, 'idle'], [18, 'hay_c'], [26, 'hay_x'], [30, 'hay_x'], [40, 'hv_r'], [52, 'idle']]
       },
       // Order of Magnitude: hold H to charge. Half charge knocks down; full charge breaks the guard.
       bH: {
-        name: 'Charge Punch', label: 'ORDER OF MAGNITUDE', cmd: 'B+H (HOLD)', level: 'mid', strength: 'heavy',
-        startup: 20, active: 4, recovery: 22, damage: 20, wallSplat: true,
+        name: 'Charge Punch', label: 'ORDER OF MAGNITUDE', cmd: 'B+H (HOLD)', level: 'mid', strength: 'heavy', motion: 'straight', wallSplat: true,
+        startup: 20, active: 4, recovery: 22, damage: 20, armor: { from: 6, to: 19, hits: 1 },
         block: -8, hit: { adv: 4 }, ch: { knockdown: true },
         charge: { at: 12, btn: 'h', mid: 16, max: 40, damage: [1, 1.5, 2.1] },
-        hitbox: { x: 30, w: 30, y: 50, h: 20 }, push: 30, juggle: 3.6, carry: 2.4, shake: 0.009,
+        hitbox: { x: 28, w: 32, y: 48, h: 24 }, push: 30, juggle: 3.6, carry: 2.4, shake: 0.009,
         step: [13, 20, 2.4],
         anim: [[1, 'idle'], [12, 'om_c'], [20, 'om_x'], [24, 'om_x'], [34, 'hv_r'], [46, 'idle']]
       },
       launcher: {
-        name: 'Launcher', label: 'LOGARITHMIC LAUNCHER', cmd: 'D+H', level: 'mid', strength: 'launch',
+        name: 'Double Uppercut', label: 'LOGARITHMIC LAUNCHER', cmd: 'D+H', level: 'mid', strength: 'launch', motion: 'launcher',
         startup: 17, active: 4, recovery: 24, damage: 22,
         block: -17, hit: { launch: 8.2 }, ch: { launch: 8.8 },
         hitbox: { x: 8, w: 28, y: 30, h: 82 }, push: 6, juggle: 5.5, carry: 0.6, shake: 0.01,

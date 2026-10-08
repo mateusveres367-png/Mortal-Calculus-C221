@@ -8,6 +8,9 @@ Frame data: **i** is startup (the frame the move hits, counting the press as fra
 
 Calm and friendly, but every hit is heavy. Slow, patient, devastating.
 
+**Style:** Power brawler. **Signature:** Exponential Armor — his heavy attacks (Base Hook, the Exponential Haymaker, Order of Magnitude) absorb one hit during their windup and keep going; a fully charged Order of Magnitude absorbs two.
+
+**Movement:** walk 1.4 forward / 1.2 back, dash 6.2 for 13 frames, backdash 6.8, jump 8.6, weight 1.12 (higher falls faster in juggles).
 
 | Input | Move | Level | i | Active | Recovery | Block | Hit | Counter hit | Damage | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -15,12 +18,13 @@ Calm and friendly, but every hit is heavy. Slow, patient, devastating.
 | P,P | Squared | high | 12 | 3 | 19 | -5 | +4 | +10 | 15 |  |
 | P,P,H | Exponent Rule | mid | 12 | 3 | 20 | -9 | knockdown | knockdown | 13 |  |
 | F+P | Right Angle Elbow | mid | 15 | 3 | 18 | -5 | +5 | launch | 18 |  |
+| F,F+P | Common Log | mid | 14 | 4 | 22 | -10 | knockdown | knockdown | 20 |  |
 | K | Exponent Kick | mid | 16 | 3 | 20 | -7 | +5 | +10 | 19 |  |
 | D+K | Negative Exponent | low | 18 | 3 | 22 | -13 | 0 | +6 | 13 | hits downed opponents, ducks highs |
 | D/B+K | Zero Power Sweep | low | 22 | 3 | 26 | -18 | knockdown | knockdown | 20 | ducks highs |
-| H | Base Hook | mid | 21 | 4 | 20 | +1 | +8 | launch | 28 | wall splats |
-| F+H | Exponential Haymaker | mid | 26 | 4 | 22 | -6 | knockdown | launch | 36 | wall splats |
-| B+H (HOLD) | Order Of Magnitude | mid | 20 | 4 | 22 | -8 | +4 | knockdown | 20 | wall splats, hold to charge |
+| H | Base Hook | mid | 21 | 4 | 20 | +1 | +8 | launch | 28 | wall splats, armor: absorbs 1 hit on frames 6-20 |
+| F+H | Exponential Haymaker | mid | 26 | 4 | 22 | -6 | knockdown | launch | 36 | wall splats, armor: absorbs 1 hit on frames 8-25 |
+| B+H (HOLD) | Order Of Magnitude | mid | 20 | 4 | 22 | -8 | +4 | knockdown | 20 | wall splats, armor: absorbs 1 hit on frames 6-19 (2 at full charge), hold to charge |
 | D+H | Logarithmic Launcher | mid | 17 | 4 | 24 | -17 | launch | launch | 22 | jump cancel on hit (UP) |
 | P+K | Long Division | throw | 12 | 2 | 28 |  |  |  | 40 | break with P |
 | B+P+K | Synthetic Division | throw | 12 | 2 | 28 |  |  |  | 38 | break with K |
@@ -287,6 +291,9 @@ Very smart. Reads opponents, keeps perfect distance, punishes every mistake.
 
 Fast, explosive grappler who closes distance quickly. Confident and focused.
 
+**Style:** Wrestler. **Signature:** Cardio — he never slows down: the fastest walk and dash, chained dashes, a guard that recovers twice as fast, and a run he can keep up for as long as he likes (dash, then hold forward), with a tackle, a running knee, a slide, a plancha and a running command grab out of it.
+
+**Movement:** walk 2.8 forward / 1.9 back, dash 10.5 for 14 frames, backdash 9, jump 9.6, weight 0.96 (higher falls faster in juggles).
 
 | Input | Move | Level | i | Active | Recovery | Block | Hit | Counter hit | Damage | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -294,6 +301,11 @@ Fast, explosive grappler who closes distance quickly. Confident and focused.
 | P,P | Column Elbow | high | 10 | 3 | 16 | -2 | +6 | +10 | 11 |  |
 | P,P,H | Row Reduction | mid | 12 | 3 | 20 | -9 | knockdown | knockdown | 13 |  |
 | F,F+P | Augmented Charge | mid | 13 | 4 | 20 | -9 | knockdown | knockdown | 17 |  |
+| RUN, P | Row Operation | mid | 10 | 4 | 22 | -8 | knockdown | knockdown | 16 |  |
+| RUN, K | Elementary Knee | mid | 9 | 3 | 22 | -12 | launch | launch | 15 | jump cancel on hit (UP) |
+| RUN, D+K | Zero Vector | low | 10 | 6 | 24 | -16 | knockdown | knockdown | 13 | ducks highs |
+| RUN, H | Matrix Plancha | mid | 16 | 4 | 26 | -10 | knockdown | knockdown | 22 |  |
+| RUN, P+K | Gauss-Jordan | throw | 8 | 4 | 30 |  |  |  | 30 | unbreakable |
 | K | Pivot Knee | mid | 13 | 3 | 17 | -4 | +5 | +9 | 13 |  |
 | D+K | Lower Triangular | low | 15 | 3 | 20 | -11 | 0 | +6 | 10 | hits downed opponents, ducks highs |
 | D/B+K | Null Space Sweep | low | 20 | 3 | 26 | -18 | knockdown | knockdown | 16 | ducks highs |
@@ -316,3 +328,4 @@ Fast, explosive grappler who closes distance quickly. Confident and focused.
 - **Transpose Juggle:** D+H, P, P, H (frames: D+H @0, P @40, P @57, H @70)
 - **Rank Spike:** D+H, up, air P, air K, air H, K (frames: D+H @0, UP @16, P @31, K @36, H @44, K @77)
 - **Identity Stomp:** F+P+K, D+K on the ground (frames: F+P+K @0, D+K @66)
+- **Cardio:** RUN, K, P, P, H (frames: F @0, F @2, K @24, P @55, P @66, H @75; hold F @2-32)

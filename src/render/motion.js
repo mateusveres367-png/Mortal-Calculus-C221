@@ -236,7 +236,7 @@
   // --- Planted feet -------------------------------------------------------------------
 
   var PLANT = { idle: 1, walkF: 1, walkB: 1, crouch: 1, attack: 1, hitstun: 1, blockstun: 1, guardbreak: 1,
-    dash: 1, backdash: 1, sidestep: 1, land: 1, prejump: 1, throwing: 1, throwbreak: 1, getup: 1 };
+    dash: 1, run: 1, backdash: 1, sidestep: 1, land: 1, prejump: 1, throwing: 1, throwbreak: 1, getup: 1 };
   var LIFTED = 4;     // a pose foot higher than this is off the floor (kicks)
   var STEP_AT = 6;    // px of drift before a planted foot steps
 

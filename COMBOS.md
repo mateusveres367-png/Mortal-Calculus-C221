@@ -85,6 +85,7 @@ Every fighter's combo routes, and what the combo feel pass changed. The routes l
 | ROW AND COLUMN | easy | P, P | 2 | 18 |
 | TRANSPOSE JUGGLE | medium | D+H, P, P, H | 4 | 44 |
 | IDENTITY STOMP | medium | F+P+K, D+K ON THE GROUND | 2 | 38 |
+| CARDIO | medium | RUN, K, P, P, H | 4 | 42 |
 | RANK SPIKE | hard | D+H, UP, AIR P, AIR K, AIR H, K | 5 | 55 |
 <!-- /routes -->
 

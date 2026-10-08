@@ -91,6 +91,9 @@
     var blocked = grounded && c.guard &&
       ((m.level === 'low' && c.guard === 'crouch') || (m.level !== 'low' && c.guard === 'stand'));
 
+    // Exponential Armor: the defender soaks the hit and keeps going (not a lethal one).
+    if (!blocked && d.armorUp(m) && d.health > Math.round(m.damage * C.ARMOR_DAMAGE)) { this.absorb(c, a, d, m); return; }
+
     // Frames until the attacker can act again, counted from this frame.
     var attackerLeft = m.total - c.moveFrame + 1;
     var hb = c.hb;
@@ -185,6 +188,19 @@
     this.hitstop = Math.max(this.hitstop, hitstop);
     ev.ko = d.ko;
     this.events.push(ev);
+  };
+
+  // An armored hit: damage (reduced), no hitstun, a short freeze, and the attacker's
+  // move is spent.
+  Match.prototype.absorb = function (c, a, d, m) {
+    a.contact = 'hit';
+    d.armorHits++;
+    var dmg = Math.max(1, Math.round(m.damage * C.ARMOR_DAMAGE));
+    d.health -= dmg;
+    this.hitstop = Math.max(this.hitstop, C.ARMOR_HITSTOP);
+    this.push(a, d, m.push * 0.5);
+    this.lastResult[c.a] = { move: m, kind: 'ARMORED', adv: null };
+    this.events.push({ type: 'armor', attacker: c.a, defender: c.d, move: m, damage: dmg, x: d.x, y: (c.hb.y1 + c.hb.y2) / 2, shake: 0.006 });
   };
 
   // Send the defender airborne.

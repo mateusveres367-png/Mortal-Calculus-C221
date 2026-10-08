@@ -159,6 +159,10 @@ Every fighter needs unique normals, launcher, throw, combo routes, stance, idle 
 
 **Moves:** Exponential Haymaker, Order of Magnitude (charge punch), Logarithmic Launcher, Right Angle Elbow, Long Division (slam throw).
 
+**Style:** Punch-based power brawler. Huge haymakers, a big hook, hammer fists, a shoulder charge (Common Log, out of a dash), a push stomp, a ground stomp, a floor-pounding sweep and a body splash. A wide stance with his tie loosened. A slow walk, a short dash, a low jump; heavy (he falls fast in juggles) and he barely flinches.
+
+**Signature — Exponential Armor:** his heavy attacks (Base Hook, the Exponential Haymaker, Order of Magnitude) absorb one hit during their windup and keep going (he still takes some damage; throws go through). Charging Order of Magnitude all the way makes it absorb two.
+
 **Look:** Broad and solid. Slicked-back brown hair, a short gray-brown beard, light blue eyes and a friendly smile. Signature red dress shirt with a black tie, sleeves rolled, and a pen in the chest pocket.
 
 **Personality:** Calm and friendly, but every hit is heavy. Slow, patient, and devastating when he connects.
@@ -184,6 +188,10 @@ Every fighter needs unique normals, launcher, throw, combo routes, stance, idle 
 ## RAMOS — Grappler — Algebra 2 (matrices)
 
 **Moves:** Matrix Lock, Determinant Slam, Identity (command grab), Transpose Toss (launcher).
+
+**Style:** Movement-based grappler, wrestling and luchador. Suplexes (Matrix Lock is a German suplex), spinning throws, a lariat, a jumping knee, a European uppercut and crab scissors. Running moves: dash and keep holding forward to run, then attack out of the run with a spear tackle (P), a running knee (K), a baseball slide (D+K), a leaping plancha (H) or a running command grab (P+K, Gauss-Jordan). A low wrestler's stance, hands out; his long hair never stops swinging.
+
+**Signature — Cardio:** he never slows down. He can run for as long as he likes, has the fastest movement in the game (walk, dash, chained dashes), his guard recovers twice as fast, and he has a running command grab.
 
 **Look:** Lean and athletic. Long, bouncy black hair that swings on every dash, jump and throw. Light stubble and an easy smile. Wears an olive-brown heathered polo and a red-and-white wristband (he's Peruvian).
 

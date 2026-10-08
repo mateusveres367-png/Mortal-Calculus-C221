@@ -101,7 +101,7 @@
 
   // --- Combo trial steps ------------------------------------------------------------
   // Splits a route's notation into one step per hit, for combo trials:
-  //   'D+H, UP, AIR P, AIR K' -> ['D+H', 'UP, AIR P', 'AIR K'] (UP, dash taps join the next hit)
+  //   'D+H, UP, AIR P, AIR K' -> ['D+H', 'UP, AIR P', 'AIR K'] (UP, dash taps and RUN join the next hit)
   // and pulls out a setup condition ('AT THE WALL', 'BLOCK THEIR JAB', ...).
   // A route can also list its own `steps` and `setup`.
   var SETUPS = [/^AT THE WALL:\s*/, /^BLOCK THEIR JAB,\s*/, /^THEY WHIFF A JAB,\s*/];
@@ -114,7 +114,7 @@
     });
     var tokens = text.split(/,\s*/), steps = [], carry = '';
     tokens.forEach(function (t) {
-      if (/^(UP|F|B)$/.test(t)) { carry += t + ', '; return; }
+      if (/^(UP|F|B|RUN)$/.test(t)) { carry += t + ', '; return; }
       steps.push(carry + t);
       carry = '';
     });

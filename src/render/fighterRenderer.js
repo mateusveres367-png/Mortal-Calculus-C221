@@ -90,6 +90,10 @@
       case 'prejump':
       case 'land': return P('squat');
       case 'air': return f.vy > 2 ? lerp(P('squat'), P('jump'), 0.7) : P('jump');
+      case 'run': { // RAMOS: a sprint cycle
+        var rc = (f.stateFrame % 12) / 12, ru = rc < 0.5 ? rc * 2 : 2 - rc * 2;
+        return lerp(P('run1'), P('run2'), ease(ru));
+      }
       case 'dash': return f.stateFrame < 10 ? P('dash') : lerp(P('dash'), P('idle'), (f.stateFrame - 10) / 6);
       case 'backdash': return f.stateFrame < 14 ? P('backdash') : lerp(P('backdash'), P('idle'), (f.stateFrame - 14) / 8);
       case 'sidestep': return lerp(P('idle'), P(def.poses.sidestep ? 'sidestep' : 'squat'), Math.sin(Math.PI * f.stateFrame / f.sidestepFrames()) * (def.poses.sidestep ? 1 : 0.5));
@@ -276,10 +280,13 @@
       for (var k = 0; k <= HAIR_SEGS; k++) pts.push({ x: rootX - dir * k * 2 * s, y: rootY + k * seg, px: rootX - dir * k * 2 * s, py: rootY + k * seg });
     }
     pts[0].x = rootX; pts[0].y = rootY;
+    f._hairT = (f._hairT || 0) + 1;
     for (var i = 1; i < pts.length; i++) {
       var p = pts[i], vx = (p.x - p.px) * 0.9, vy = (p.y - p.py) * 0.9;
       p.px = p.x; p.py = p.y;
-      p.x += vx; p.y += vy + 0.5 * s;
+      // It never stops swinging: a little sway even when he stands still.
+      var sway = Math.sin((f._hairT || 0) * 0.09 + i * 0.7) * 0.22 * s * i / HAIR_SEGS;
+      p.x += vx + sway; p.y += vy + 0.5 * s;
     }
     for (var it = 0; it < 3; it++) {
       for (var j = 1; j < pts.length; j++) {
@@ -455,7 +462,8 @@
         g.lineBetween(cx + nx * wc * 0.16 * fs, cy + ny * wc * 0.16 * fs, pl.x, pl.y);
       }
       if (look.tie) {
-        var t0 = nk(0.4, 1), t1 = nk(0.4, 24);
+        // A loosened tie (PEDERSEN) hangs lower and off to one side.
+        var t0 = look.tieLoose ? nk(1.4, 5) : nk(0.4, 1), t1 = look.tieLoose ? nk(1.8, 26) : nk(0.4, 24);
         g.fillStyle(look.tie, 1); g.fillRect(Math.round(t0.x - 1.5 * s), Math.round(t0.y), Math.round(3 * s), Math.round(3 * s));
         g.lineStyle(Math.max(2, Math.round(3 * s)), look.tie, 1); g.lineBetween(t0.x, t0.y + 2 * s, t1.x, t1.y);
       }
