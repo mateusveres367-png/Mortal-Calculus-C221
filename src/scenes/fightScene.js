@@ -221,6 +221,7 @@
     });
     this.intro = { t: 0, len: Math.max(len + 10, t + 6), dialogue: dialogue };
     this.hud.showBanner(f[0].def.name + ' VS ' + f[1].def.name, '', 34);
+    if (this.mode !== 'attract') FG.Announcer.say(FG.Announcer.name(f[0].def.name) + ' versus ' + FG.Announcer.name(f[1].def.name), { sting: 'round' });
   };
 
   // The line being spoken at intro frame t, if any.
@@ -240,6 +241,7 @@
     this.updateCars();
     if (this.rounds) { this.startRound(); return; }
     this.hud.showBanner('FIGHT!', '', 50);
+    if (this.mode !== 'attract') FG.Announcer.say('Fight!', { sting: 'fight', interrupt: true });
     // Show the controls once per session, after the first intro.
     if (!FG.seenControls) { FG.seenControls = true; this.hud.setOverlay(true); }
   };
@@ -262,6 +264,7 @@
     this.phaseT = 0;
     var r = this.rounds;
     this.hud.showBanner(r.isFinal() ? 'FINAL ROUND' : 'ROUND ' + r.round, '', 48, { scale: 4, y: 120 });
+    if (this.mode !== 'attract') FG.Announcer.say(r.isFinal() ? 'Final round!' : 'Round ' + r.round, { sting: 'round', interrupt: true });
     // WILSON gets better as the match goes on: say so over his head.
     this.match.fighters.forEach(function (fi) {
       if (fi.def.passive === '29years' && fi.experience >= 1) fi._tag = { text: fi.experience >= 2 ? '29 YEARS: STRONGER' : '29 YEARS: FASTER', t: 130 };
@@ -276,7 +279,10 @@
     this.phaseT++;
     if (this.phase === 'announce') {
       if (this.phaseT === 50) this.hud.showBanner('READY', '', 34, { scale: 4, y: 120 });
-      if (this.phaseT >= 86) { this.phase = 'fight'; this.phaseT = 0; this.hud.showBanner('FIGHT!', '', 40, { scale: 5, y: 116 }); FG.Sfx.ui('confirm'); }
+      if (this.phaseT >= 86) {
+        this.phase = 'fight'; this.phaseT = 0; this.hud.showBanner('FIGHT!', '', 40, { scale: 5, y: 116 }); FG.Sfx.ui('confirm');
+        if (this.mode !== 'attract') FG.Announcer.say('Fight!', { sting: 'fight' });
+      }
       return;
     }
     if (this.phase === 'fight') {
@@ -286,6 +292,7 @@
         if (r.result) {
           this.hud.showBanner(r.result.winner < 0 ? 'DRAW' : 'TIME', r.result.winner < 0 ? '' : m.fighters[r.result.winner].def.name + ' WINS THE ROUND', 120, { scale: 4, y: 120 });
           FG.Sfx.ui('confirm');
+          if (this.mode !== 'attract') FG.Announcer.say(r.result.winner < 0 ? 'Draw!' : 'Time!', { sting: 'ko', interrupt: true });
         }
       }
       if (r.result) { this.phase = 'roundEnd'; this.phaseT = 0; }
@@ -297,7 +304,17 @@
         this.openFinishWindow(r.matchWinner());
         return;
       }
-      if (this.phaseT === 80 && r.result.perfect) { this.hud.showBanner('PERFECT', '', 60, { scale: 4, y: 160 }); this.stage.cheer(3, true); }
+      if (this.phaseT === 80 && r.result.perfect) {
+        this.hud.showBanner('PERFECT', '', 60, { scale: 4, y: 160 }); this.stage.cheer(3, true);
+        if (this.mode !== 'attract') FG.Announcer.say('Perfect!', { sting: 'perfect', interrupt: true });
+      } else if (this.phaseT === 80 && r.result.winner >= 0) {
+        // Won with a sliver of health left: CLOSE CALL.
+        var cw = m.fighters[r.result.winner];
+        if (cw.health > 0 && cw.health < cw.def.health * C.CLOSE_CALL) {
+          this.hud.showBanner('CLOSE CALL', '', 60, { scale: 4, y: 160 }); this.stage.cheer(3, true);
+          if (this.mode !== 'attract') FG.Announcer.say('Close call!', { sting: 'close', interrupt: true });
+        }
+      }
       if (this.phaseT >= 170) {
         var mw = r.matchWinner();
         if (mw !== null) { this.startWin(mw); return; }
@@ -346,6 +363,8 @@
     if (script.start) script.start(fx);
     this.hud.showBanner('', '', 1);
     this.cutin.play(w.def, w.x <= l.x ? 0 : 1, w.def.finisher.name);
+    this.stage.react('wild'); // the students go wild
+    if (this.mode !== 'attract') FG.Announcer.say(w.def.finisher.name.toLowerCase() + '!', { interrupt: true });
   };
 
   // While the window is open or the finisher plays, the fight itself stands still.
@@ -459,6 +478,7 @@
     if (this.mode === 'attract') sub = 'PRESS ENTER';
     this.hud.showBanner(w.def.name + ' WINS' + score, sub, 100000, { scale: 3, y: 150 });
     if (this.rounds) this.stage.react('ko');
+    if (this.mode !== 'attract') FG.Announcer.say(FG.Announcer.name(w.def.name) + ' wins!', { sting: 'win' });
   };
 
   // --- Combo trials ---------------------------------------------------------------
@@ -616,7 +636,7 @@
     kb.on('keyup', function (e) { delete CODES[e.code]; });
     var forget = function () { CODES = {}; }; // keys let go while the window was in the background
     this.game.events.on('blur', forget);
-    this.events.once('shutdown', function () { this.game.events.off('blur', forget); }, this);
+    this.events.once('shutdown', function () { this.game.events.off('blur', forget); FG.Music.stop(); FG.Announcer.stop(); }, this);
     kb.on('keydown', function (e) {
       FG.Sfx.unlock();
       TAPS[e.keyCode] = true;
@@ -697,6 +717,16 @@
       u: codeOn(FG.settings.ultKey2) || codeOn('BracketLeft') };
   };
 
+  // The fight's music (not in training or the demo): it picks up in the final round and
+  // again when either fighter is low.
+  FightScene.prototype.music = function () {
+    if (this.mode === 'training' || this.mode === 'attract') return;
+    if (FG.Sfx.ctx && FG.settings.sound && !FG.Sfx.muted && !(FG.Music.playing && FG.Music.song === 'fight')) FG.Music.play('fight');
+    var f = this.match.fighters, low = f.some(function (fi) { return fi.health > 0 && fi.health < fi.def.health * C.LOW_HEALTH; });
+    FG.Music.setIntensity(low ? 2 : this.rounds && this.rounds.isFinal() ? 1 : 0);
+    FG.Music.update();
+  };
+
   // Test hook: override inputs for the next ticks (used by the headless smoke test).
   FightScene.prototype.forceInput = null;
 
@@ -712,6 +742,7 @@
       this.tick();
       this.acc -= STEP_MS;
     }
+    this.music();
     this.render();
   };
 
@@ -1041,8 +1072,13 @@
           if (a.def.bigHit.gesture) a._pending = { name: a.def.bigHit.gesture, ttl: 120 };
           if (a.def.bigHit.face) a._face = { type: a.def.bigHit.face, t: 50 };
         }
-        // Counter hits sometimes get a word in.
-        if (ev.ch) this.quip(ev.attacker, 0.5);
+        // Counter hits sometimes get a word in, the announcer calls them and the students gasp.
+        if (ev.ch) {
+          this.quip(ev.attacker, 0.5);
+          if (!ev.ko) this.stage.react('gasp');
+          if (this.mode !== 'attract' && !ev.ko) FG.Announcer.say('Counter!', { sting: 'counter', cooldown: 2500 });
+        }
+        if (ev.ko && this.mode !== 'attract') FG.Announcer.say('K. O.!', { sting: 'ko', interrupt: true, cooldown: 1500 });
       }
     }
     // Taunt: say one of their lines. WILSON doesn't taunt: he stares (and says nothing).
@@ -1273,6 +1309,7 @@
     this.cutinUsed[ev.attacker] = true; this.cutinCool = C.CUTIN_COOLDOWN;
     this.cutin.play(w.def, w.x <= f[ev.defender].x ? 0 : 1, w.def.ultimate.name);
     FG.Sfx.cutIn();
+    if (this.mode !== 'attract') FG.Announcer.say(w.def.ultimate.name.toLowerCase() + '!', { interrupt: true });
   };
 
   FightScene.prototype.endUltimate = function (ev) {

@@ -115,6 +115,8 @@ FG.C = {
   MULTI_GAP: 5,         // frames between the hits of a multi-hit (enhanced) move
   QCF_FRAMES: 24,       // frames for a down, down-forward, forward motion (ultimates)
   ULT_DAMAGE: 0.32,     // an ultimate takes this share of the opponent's full health
+  LOW_HEALTH: 0.25,     // under this share of their health a fighter is low (the music picks up)
+  CLOSE_CALL: 0.1,      // a round won under this share of health is a CLOSE CALL
   ULT_EXTRA_RECOVERY: 30, // a blocked or whiffed ultimate leaves them open this much longer
   EXTRA_CREDIT_HEALTH: 0.25, // Extra Credit: available below this share of health, once a match
   BOOST_FRAMES: 420,    // Extra Credit: how long the damage boost lasts (7 seconds)

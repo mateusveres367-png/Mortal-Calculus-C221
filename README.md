@@ -25,7 +25,7 @@ What's in the game so far:
   - feet stay planted and take real steps when the body moves; knees and elbows are solved so limbs keep their length; nobody slides or floats
   - hit reactions by blow: heads snap back from jabs, bodies fold over body shots, roundhouses spin them, overheads crumple them
   - impact effects and sounds by attack type: quick jabs, heavy body shots, powerful roundhouses, explosive launchers, and dramatic counter hits with a screen flash and a shockwave
-- **Stages (phase 6):** six stages with parallax depth and small animations, and students in the background who cheer, flinch at big hits and jump up for a K.O.:
+- **Stages (phase 6):** six stages with parallax depth and small animations, and students in the background who cheer on big combos, flinch at big hits, gasp at counter hits, jump up for a K.O. and go wild for a finisher:
   - **Classroom C221:** whiteboards full of math, desks with calculators, a ticking clock, a flickering tube light
   - **Math Hallway:** lockers, classroom doors, bulletin boards, a humming vending machine, students walking past
   - **Computer Lab:** a bench of CRT monitors plotting sine waves, bar charts and spirals; students spin round to watch
@@ -38,7 +38,9 @@ What's in the game so far:
   - character select with pixel portraits (both players pick at the same time in versus), then stage select with a live, panning preview of each stage (or RANDOM)
   - **Arcade:** fight the whole department, one CPU opponent at a time on their home stage, PEDERSEN last; win to see who's next, lose and you get a 10-second CONTINUE?; beat everyone for the ending
   - **Versus:** player 1 against player 2 on one keyboard
-  - best of three rounds with ROUND 1 / READY / FIGHT, a round timer (time out goes to whoever has more health left), round markers, K.O., TIME, PERFECT and FINAL ROUND, and a victory screen with the score
+  - best of three rounds with ROUND 1 / READY / FIGHT, a round timer (time out goes to whoever has more health left), round markers, K.O., TIME, PERFECT (a round won without taking damage), CLOSE CALL (won with under 10% health left) and FINAL ROUND, and a victory screen with the score
+  - an announcer (the browser's speech synthesis, with a brass sting under each call) calls the fighters' names, ROUND 1, FIGHT!, COUNTER!, K.O.!, PERFECT!, the ultimates and finishers by name, and the winner
+  - fight music (synthesized) that picks up in the final round and again when either fighter is low
   - CPU opponents at three levels (Options: Easy, Normal, Hard): they react with a delay, guard and read lows, punish whiffs and blocked moves, run real combo routes, tech, break throws and pick wake-up options; harder levels do each of these more often and faster
   - Options also set the round time (30, 60, 99 or none) and sound, and are remembered in your browser
 - **Easier combos:** a 10-frame input buffer, wider windows between string hits, gentler early juggle gravity, and a universal P, P, H string ender so launcher > P > P > H works for every fighter; **Easy Combos** (Options, off by default) lets you mash P to keep a string going; combo trials show a timing bar. Details in [`COMBOS.md`](COMBOS.md).

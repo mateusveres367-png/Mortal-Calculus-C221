@@ -22,7 +22,7 @@
     this.horizon = C.GROUND_Y - 46;
     this.t = 0;
     this.cheerT = 0; this.cheerAmp = 0; this.cheerFav = false;
-    this.flinchT = 0; this.koT = 0;
+    this.flinchT = 0; this.koT = 0; this.gaspT = 0;
     this.objects = [];  // every game object the stage made
     this.visible = true;
     this.crowds = [];   // { g, people }
@@ -562,9 +562,19 @@
     if (amount >= 2) FG.Sfx.cheer(favorite ? 1 : 0.5);
   };
 
-  // Big hits make them flinch (lean back, hands up); a K.O. brings them to their feet.
+  // Big hits make them flinch (lean back, hands up); a counter hit makes them gasp
+  // (hands to their faces); a K.O. brings them to their feet; a finisher sends them wild.
   Stage.prototype.react = function (kind) {
     if (kind === 'ko') { this.koT = 120; this.cheer(3, this.cheerFav); FG.Sfx.cheer(1); }
+    else if (kind === 'wild') { this.koT = 280; this.cheer(3, true); FG.Sfx.cheer(1); setTimeout(function () { FG.Sfx.cheer(1); }, 600); }
+    else if (kind === 'gasp') {
+      this.gaspT = 40;
+      FG.Sfx.synth(function (S) { // a crowd's sharp intake of breath, then an "ooh"
+        S.noise({ dur: 0.25, freq: 1300, f1: 2600, q: 0.8, gain: 0.12, attack: 0.08 });
+        S.osc({ dur: 0.7, f0: 290, f1: 250, gain: 0.03, type: 'triangle', vib: [5, 8], attack: 0.15, at: 0.2 });
+        S.osc({ dur: 0.7, f0: 360, f1: 320, gain: 0.02, type: 'triangle', vib: [6, 10], attack: 0.15, at: 0.2 });
+      });
+    }
     else this.flinchT = Math.max(this.flinchT, 18);
   };
 
@@ -586,6 +596,7 @@
     g.fillStyle(st.hair, 1);
     if (turned) g.fillRect(hx - s(5), hy - s(6), s(10), s(3)); else g.fillCircle(hx, hy - s(1), s(5)); // back of the head
     if (turned && mood.mouth) { g.fillStyle(0x3a1010, 1); g.fillRect(hx - s(1), hy + s(2), s(2), s(2)); } // "ooh"
+    if (mood.gasp) { g.fillStyle(st.skin, 1); g.fillRect(hx - s(7), hy - s(1), s(3), s(4)); g.fillRect(hx + s(4), hy - s(1), s(3), s(4)); } // hands to their faces
     // Arms: up when cheering or flinching.
     if (mood.armsUp) {
       var up = Math.sin(t * 0.5 + st.phase) > 0 ? 2 : 0;
@@ -597,7 +608,7 @@
   }
 
   Stage.prototype.drawCrowds = function () {
-    var t = this.t, cheering = this.cheerT > 0, ko = this.koT > 0, flinch = this.flinchT > 0;
+    var t = this.t, cheering = this.cheerT > 0, ko = this.koT > 0, flinch = this.flinchT > 0, gasp = this.gaspT > 0 && !ko;
     for (var c = 0; c < this.crowds.length; c++) {
       var g = this.crowds[c].g, people = this.crowds[c].people;
       g.clear();
@@ -609,10 +620,11 @@
         if (flinch) bounce += 2;
         drawPerson(g, st, t, i, {
           bounce: bounce,
-          armsUp: ko || flinch || (cheering && (this.cheerFav || i % 3 === 0) && this.cheerAmp > 2),
-          flinch: flinch,
-          watching: cheering || flinch || ko,
-          mouth: flinch || ko
+          armsUp: !gasp && (ko || flinch || (cheering && (this.cheerFav || i % 3 === 0) && this.cheerAmp > 2)),
+          flinch: flinch || gasp,
+          gasp: gasp,
+          watching: cheering || flinch || ko || gasp,
+          mouth: flinch || ko || gasp
         });
       }
     }
@@ -624,6 +636,7 @@
     if (this.cheerT > 0 && --this.cheerT === 0) { this.cheerAmp = 0; this.cheerFav = false; }
     if (this.flinchT > 0) this.flinchT--;
     if (this.koT > 0) this.koT--;
+    if (this.gaspT > 0) this.gaspT--;
     this.drawCrowds();
     for (var i = 0; i < this.anims.length; i++) { var a = this.anims[i]; a.g.clear(); a.fn(a.g, this.t); }
   };
