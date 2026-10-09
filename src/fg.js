@@ -117,6 +117,7 @@ FG.C = {
   ULT_DAMAGE: 0.32,     // an ultimate takes this share of the opponent's full health
   LOW_HEALTH: 0.25,     // under this share of their health a fighter is low (the music picks up)
   CLOSE_CALL: 0.1,      // a round won under this share of health is a CLOSE CALL
+  DETENTION_REFILL: 0.3, // Detention: this share of your health comes back after each win
   ULT_EXTRA_RECOVERY: 30, // a blocked or whiffed ultimate leaves them open this much longer
   EXTRA_CREDIT_HEALTH: 0.25, // Extra Credit: available below this share of health, once a match
   BOOST_FRAMES: 420,    // Extra Credit: how long the damage boost lasts (7 seconds)

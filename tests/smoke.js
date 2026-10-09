@@ -24,7 +24,9 @@ try { playwright = require('playwright'); } catch (e) {
   var title = await page.title();
   await page.screenshot({ path: path.join(out, '0-title.png') });
   await page.keyboard.press('Enter');      // PRESS ENTER: the main menu
-  await page.keyboard.press('ArrowDown');  // ARCADE > VS CPU
+  await page.keyboard.press('ArrowDown');  // ARCADE > DETENTION
+  await page.keyboard.press('ArrowDown');  // > TIMED TEST
+  await page.keyboard.press('ArrowDown');  // > VS CPU
   await page.keyboard.press('ArrowDown');  // > VERSUS
   await page.keyboard.press('ArrowDown');  // > TRAINING
   await page.screenshot({ path: path.join(out, '0-menu.png') });
@@ -346,7 +348,7 @@ try { playwright = require('playwright'); } catch (e) {
   // OPTIONS: remap player 1's ultimate key (a key that's already used is refused).
   var remap = await page.evaluate(function () {
     var ts = window.FG_TITLE, out = {};
-    ts.openMenu(); ts.index = 5; ts.choose(0); // OPTIONS
+    ts.openMenu(); ts.index = 7; ts.choose(0); // OPTIONS
     ts.index = 4; ts.choose(0);                // P1 ULTIMATE: press a key
     out.capturing = ts.capture === 'ultKey1';
     ts.key('KeyJ'); out.refused = FG.settings.ultKey1 === 'KeyU' && ts.capture === 'ultKey1';
@@ -458,6 +460,38 @@ try { playwright = require('playwright'); } catch (e) {
   });
   var wilOk = wil.hits === 29 && wil.ended && wil.share >= 30 && wil.share <= 35 && wil.finisher;
 
+  // More modes. Detention: one round per opponent, health carries over with a partial
+  // refill. The Timed Test: arcade with a clock. R on any win screen: a quick rematch.
+  await page.evaluate(function () { window.FG_SCENE.scene.start('fight', FG.detentionFight(FG.detentionRun('lee'))); });
+  await page.waitForFunction(function () { var s = window.FG_SCENE; return s && s.sys.isActive() && s.mode === 'detention' && s.tickCount > 2; }, null, { timeout: 15000 });
+  var modes = await page.evaluate(function () {
+    var s = window.FG_SCENE, out = {}; s.sys.sceneUpdate = function () {}; if (s.intro) s.endIntro();
+    out.single = s.rounds.toWin === 1;
+    for (var i = 0; i < 100; i++) s.tick();
+    var f = s.match.fighters; f[0].x = 480; f[1].x = 520; f[1].health = 1; f[0].health = 60;
+    for (i = 0; i < 400 && !s.win; i++) { var r1 = i === 0 ? FG.parseInput('P') : FG.emptyRaw(); s.forceInput = function () { return [r1, FG.emptyRaw()]; }; s.tick(); }
+    out.won = !!s.win && s.win.winner === 0 && s.arcade.beaten === 1;
+    out.refill = s.arcade.health === Math.min(f[0].def.health, Math.round(60 + f[0].def.health * FG.C.DETENTION_REFILL));
+    out.label = /DETENTION/.test(s.modeLabel());
+    s.forceInput = null;
+    return out;
+  });
+  await page.evaluate(function () { window.FG_SCENE.win.t = 30; });
+  await page.keyboard.press('Enter');
+  await page.waitForFunction(function () { var s = window.FG_SCENE; return s && s.sys.isActive() && s.mode === 'detention' && s.tickCount > 2 && s.arcade.beaten === 1; }, null, { timeout: 15000 });
+  modes.carried = await page.evaluate(function () { var s = window.FG_SCENE; return s.match.fighters[0].health === s.arcade.health; });
+  await page.evaluate(function () { var run = FG.arcadeRun('chai', true); window.FG_SCENE.scene.start('fight', FG.arcadeFight(run)); });
+  await page.waitForFunction(function () { var s = window.FG_SCENE; return s && s.sys.isActive() && s.mode === 'arcade' && s.arcade.timed && s.tickCount > 2; }, null, { timeout: 15000 });
+  modes.timed = await page.evaluate(function () { var s = window.FG_SCENE, f0 = s.arcade.frames; s.sys.sceneUpdate = function () {}; for (var i = 0; i < 30; i++) s.tick(); return s.arcade.frames - f0 === 30 && /TIMED TEST +0:0/.test(s.modeLabel()); });
+  // Quick rematch: R on the win screen restarts the same fight.
+  modes.rematch = await page.evaluate(function () { var s = window.FG_SCENE; if (s.intro) s.endIntro(); s.startWin(1); s.win.t = 30; return !!s.win; });
+  await page.keyboard.press('KeyR');
+  await page.waitForFunction(function () { var s = window.FG_SCENE; return s && s.sys.isActive() && s.mode === 'arcade' && !s.win && s.arcade.continues === 1; }, null, { timeout: 15000 });
+  await page.evaluate(function () { window.FG_SCENE.toTitle(); });
+  await page.waitForFunction(function () { return window.FG_TITLE && window.FG_TITLE.sys.isActive(); }, null, { timeout: 15000 });
+  var modesOk = modes.single && modes.won && modes.refill && modes.label && modes.carried && modes.timed && modes.rematch;
+  ukeyOk = ukeyOk && modesOk;
+
   // Phones: touch controls over the game. Tap to start, the d-pad and P pick TRAINING,
   // a fighter and a stage, then walk in and punch; Easy Combos is on.
   var mctx = await browser.newContext({ viewport: { width: 844, height: 390 }, hasTouch: true, isMobile: true });
@@ -475,7 +509,7 @@ try { playwright = require('playwright'); } catch (e) {
   }
   await mp.mouse.click(422, 130);
   await mp.waitForTimeout(300);
-  for (var md = 0; md < 3; md++) await touch('#touch .pad', 0, 0.4);
+  for (var md = 0; md < 5; md++) await touch('#touch .pad', 0, 0.4); // down to TRAINING
   await touch('#touch .p');
   await mp.waitForFunction(function () { return window.FG_SELECT && window.FG_SELECT.sys.isActive() && window.FG_SELECT.t > 10; }, null, { timeout: 15000 });
   await touch('#touch .p'); await touch('#touch .p');
@@ -497,7 +531,7 @@ try { playwright = require('playwright'); } catch (e) {
   console.log(JSON.stringify({ mobile: mobile, title: title, matchup: matchup, renderer: renderer, hits: hits, counter: counterText, p1: p1, menuOk: menuOk, resetX: resetX, trial: trial, ko: ko, stage: stagePick, arcade: arcade, vsPanel: vsPanel, cutFreeze: cutFreeze, cpu: cpu, ladder: ladder, enhanced: ex, ultimate: ultR, extraCredit: ecR, prop: propR, ultTrial: ultTrial, lock: lock, unlocked: unlocked, wilson: wil, errors: errors }, null, 1));
   var ok = !errors.length && title === 'Mortal Calculus: C221' && matchup === expectMatchup && hits.join() === expectHits && counterText === String(hits.length) &&
     p1.last && p1.last.kind === 'BLOCK' && p1.last.adv === p1.jabBlock && menuOk && resetOk && trialOk && koOk && stagePick === 'classroom' && arcadeOk && attractOk && vsPanel && cutFreeze && cpuOk && ladderOk && exOk && ultOk && ukeyOk && ecOk && propOk && mobileOk && lockOk && unlocked && wilOk;
-  if (!ok) console.log('checks:', JSON.stringify({ errors: errors.length, menuOk: menuOk, resetOk: resetOk, trialOk: trialOk, koOk: koOk, arcadeOk: arcadeOk, attractOk: attractOk, vsPanel: vsPanel, cutFreeze: cutFreeze, cpuOk: cpuOk, ladderOk: ladderOk, exOk: exOk, ultOk: ultOk, ukeyOk: ukeyOk, ukey: ukey, remap: remap, rewards: rewards, ecOk: ecOk, propOk: propOk, mobileOk: mobileOk, lockOk: lockOk, unlocked: unlocked, wilOk: wilOk }));
+  if (!ok) console.log('checks:', JSON.stringify({ errors: errors.length, menuOk: menuOk, resetOk: resetOk, trialOk: trialOk, koOk: koOk, arcadeOk: arcadeOk, attractOk: attractOk, vsPanel: vsPanel, cutFreeze: cutFreeze, cpuOk: cpuOk, ladderOk: ladderOk, exOk: exOk, ultOk: ultOk, ukeyOk: ukeyOk, ukey: ukey, remap: remap, rewards: rewards, modes: modes, ecOk: ecOk, propOk: propOk, mobileOk: mobileOk, lockOk: lockOk, unlocked: unlocked, wilOk: wilOk }));
   console.log(ok ? 'SMOKE OK' : 'SMOKE FAILED');
   if (!ok) process.exit(1);
 })().catch(function (e) { console.error(e); process.exit(1); });

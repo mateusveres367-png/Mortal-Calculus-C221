@@ -54,10 +54,12 @@
     this.ai = [null, null];
     var seed = Math.floor(Math.random() * 100000);
     if (this.mode === 'arcade') this.ai[1] = new FG.AI(this.cpuLevel(), seed);
+    if (this.mode === 'detention') this.ai[1] = new FG.AI(FG.detentionLevel(this.arcade.beaten), seed);
     if (this.mode === 'cpu') this.ai[1] = new FG.AI(this.level || FG.settings.difficulty, seed);
     if (this.mode === 'attract') { this.ai[0] = new FG.AI('hard', seed); this.ai[1] = new FG.AI('hard', seed + 1); }
     // Rounds: best of three with a timer, outside training.
-    this.rounds = this.mode === 'training' ? null : new FG.Rounds({ seconds: this.mode === 'attract' ? 60 : FG.settings.time, toWin: 2 });
+    // (Detention: a single round per opponent, on one health bar.)
+    this.rounds = this.mode === 'training' ? null : new FG.Rounds({ seconds: this.mode === 'attract' ? 60 : FG.settings.time, toWin: this.mode === 'detention' ? 1 : 2 });
     this.phase = 'fight'; // round modes: 'announce' | 'fight' | 'roundEnd'
     this.phaseT = 0;
     this.intro = null;   // round intro animation in progress
@@ -120,6 +122,8 @@
     this.match.reset(this.training.startPos);
     // What carries from one round to the next (the Grade meter).
     if (opts.carry) for (var ci = 0; ci < 2; ci++) for (var key in opts.carry[ci]) this.match.fighters[ci][key] = opts.carry[ci][key];
+    // Detention: your health (and meter) carry from one opponent to the next.
+    if (this.mode === 'detention' && this.arcade.health != null) { this.match.fighters[0].health = this.arcade.health; this.match.fighters[0].meter = this.arcade.meter || 0; }
     // WILSON's 29 YEARS: he knows how many rounds are behind him.
     var rnd = this.rounds ? this.rounds.round : 1;
     this.match.fighters.forEach(function (fi) { if (fi.def.passive === '29years') fi.experience = rnd - 1; });
@@ -457,6 +461,23 @@
     this.scene.start('ladder', run);
   };
 
+  // R on the win screen: the same fight again, at once.
+  FightScene.prototype.quickRematch = function () {
+    FG.Sfx.ui('confirm');
+    if (this.mode === 'arcade') { if (this.win.winner !== 0) this.arcade.continues++; this.scene.start('fight', FG.arcadeFight(this.arcade)); return; }
+    if (this.mode === 'detention') {
+      if (this.win.winner === 0) { this.nextDetention(); return; }
+      this.scene.start('fight', FG.detentionFight(FG.detentionRun(this.ids.p1))); // a fresh run
+      return;
+    }
+    this.rematch();
+  };
+
+  // Detention: the next opponent, at random (never the one you just beat).
+  FightScene.prototype.nextDetention = function () {
+    this.scene.start('fight', FG.detentionFight(this.arcade));
+  };
+
   // Arcade: lost the match. Continue (same opponent) or game over.
   FightScene.prototype.continueArcade = function () {
     this.arcade.continues++;
@@ -481,6 +502,21 @@
       if (winner === 0) sub = last ? 'ENTER: CONTINUE' : 'NEXT: ' + FG.fighterById(this.arcade.ladder[this.arcade.index + 1]).name + '   ENTER: FIGHT';
       else { sub = ''; this.win.cont = 10 * 60; } // the continue countdown
     }
+    if (this.mode === 'detention') {
+      var run = this.arcade;
+      if (winner === 0) {
+        run.beaten++;
+        // Only part of your health comes back for the next one.
+        var p1f = m.fighters[0];
+        run.health = Math.min(p1f.def.health, Math.round(p1f.health + p1f.def.health * C.DETENTION_REFILL));
+        run.meter = p1f.meter;
+        sub = 'BEATEN: ' + run.beaten + '   +' + Math.round(C.DETENTION_REFILL * 100) + '% HEALTH   ENTER: NEXT';
+      } else {
+        sub = 'DETENTION OVER: ' + run.beaten + ' BEATEN   R: TRY AGAIN   ENTER: TITLE';
+        this.earned(FG.Progress.recordDetention(run.beaten));
+      }
+    }
+    if (this.mode !== 'attract' && this.mode !== 'detention' && this.mode !== 'training') sub += '   R: REMATCH';
     if (this.mode === 'attract') sub = 'PRESS ENTER';
     this.hud.showBanner(w.def.name + ' WINS' + score, sub, 100000, { scale: 3, y: 150 });
     if (this.rounds) this.stage.react('ko');
@@ -669,9 +705,16 @@
       if (self.win) {
         if (self.win.t < 20) return;
         var ok = e.code === 'Enter' || e.code === 'Space' || e.code === 'KeyJ', esc = e.code === 'Escape' || e.code === 'KeyK';
+        // Quick rematch: R, after every match (in arcade it's this same fight again).
+        if (e.code === 'KeyR' && self.mode !== 'attract') { self.quickRematch(); return; }
         if (self.mode === 'arcade') {
           if (self.win.winner === 0) { if (ok) self.nextArcade(); }
           else if (self.win.cont > 0) { if (ok) self.continueArcade(); else if (esc) self.win.cont = 1; }
+          return;
+        }
+        if (self.mode === 'detention') {
+          if (self.win.winner === 0) { if (ok) self.nextDetention(); else if (esc) self.toTitle(); }
+          else if (ok || esc) self.toTitle();
           return;
         }
         if (ok) self.rematch();
@@ -815,6 +858,7 @@
   };
 
   FightScene.prototype.tick = function () {
+    if (this.mode === 'arcade' && this.arcade.timed && !this.menu.open) this.arcade.frames++; // the Timed Test's clock
     if (this.intro || this.win) { this.presentationTick(); return; }
     var m = this.match, f = m.fighters;
     // A cut-in freezes the fight while it plays (presses still buffer: TAPS are kept).
@@ -1390,7 +1434,8 @@
   FightScene.prototype.modeLabel = function () {
     var t = this.training;
     switch (this.mode) {
-      case 'arcade': return 'ARCADE   ' + (this.arcade.index + 1) + '/' + this.arcade.ladder.length + '   CPU ' + FG.AI_LEVELS[this.ai[1].level].name;
+      case 'arcade': return (this.arcade.timed ? 'TIMED TEST   ' + FG.clock(this.arcade.frames / 60) + '   ' : 'ARCADE   ') + (this.arcade.index + 1) + '/' + this.arcade.ladder.length + '   CPU ' + FG.AI_LEVELS[this.ai[1].level].name;
+      case 'detention': return 'DETENTION   ' + this.arcade.beaten + ' BEATEN   CPU ' + FG.AI_LEVELS[this.ai[1].level].name;
       case 'versus': return 'VERSUS';
       case 'cpu': return 'VS CPU   ' + FG.AI_LEVELS[this.ai[1].level].name;
       case 'attract': return this.tickCount % 60 < 40 ? 'DEMO PLAY   PRESS ENTER' : 'DEMO PLAY';

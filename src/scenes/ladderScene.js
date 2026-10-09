@@ -33,8 +33,9 @@
     bg.fillGradientStyle(0x1b1830, 0x1b1830, 0x07060c, 0x07060c, 1); bg.fillRect(0, 0, W, H);
     bg.lineStyle(1, 0x2a2440, 1);
     for (var y = 0; y < H; y += 8) bg.lineBetween(0, y, W, y);
-    FG.text(this, W / 2, 8, 'ARCADE', 'y', 3).setOrigin(0.5, 0);
-    FG.text(this, W / 2, 34, 'FIGHT ' + (run.index + 1) + ' OF ' + n + '   CPU: ' + FG.AI_LEVELS[FG.arcadeLevel(run.index, n)].name, 'c').setOrigin(0.5, 0);
+    FG.text(this, W / 2, 8, run.timed ? 'TIMED TEST' : 'ARCADE', 'y', 3).setOrigin(0.5, 0);
+    FG.text(this, W / 2, 34, 'FIGHT ' + (run.index + 1) + ' OF ' + n + '   CPU: ' + FG.AI_LEVELS[FG.arcadeLevel(run.index, n)].name +
+      (run.timed ? '   TIME ' + FG.clock(run.frames / 60) + (FG.progress.timedBest ? '   BEST ' + FG.clock(FG.progress.timedBest / 1000) : '') : ''), 'c').setOrigin(0.5, 0);
 
     // The tower: fight 1 at the bottom, the last fight at the top.
     var tower = this.add.graphics(), x0 = 40, tw = 170, rowH = 28, top = H - 30 - n * rowH;

@@ -27,7 +27,14 @@
     plate.lineStyle(2, 0xffd23f, 1); plate.strokeRect(40, 14, C.VIEW_W - 80, 92);
     FG.text(this, cx, 24, 'PROOF COMPLETE', 'y', 4).setOrigin(0.5, 0).setDepth(11);
     FG.text(this, cx, 64, def.name + ' CONQUERED THE MATH DEPARTMENT', 'w').setOrigin(0.5, 0).setDepth(11);
-    var secs = run.started ? Math.round((Date.now() - run.started) / 1000) : 0;
+    var secs = run.timed ? Math.round(run.frames / 60) : run.started ? Math.round((Date.now() - run.started) / 1000) : 0;
+    // The Timed Test: your time against your best.
+    if (run.timed) {
+      var best = FG.progress.timedBest, ms = Math.round(run.frames / 60 * 1000);
+      var gainedT = FG.Progress.recordTimed(ms);
+      FG.text(this, cx, 96, 'TIME ' + FG.clock(run.frames / 60) + (!best || ms < best ? '   NEW RECORD!' : '   BEST ' + FG.clock(best / 1000)), !best || ms < best ? 'y' : 'w', 1.5).setOrigin(0.5, 0).setDepth(11);
+      if (gainedT.some(function (g) { return g.kind === 'title'; })) FG.text(this, cx, C.VIEW_H - 76, 'NEW TITLE: SPEED READER', 'c').setOrigin(0.5, 0).setDepth(11);
+    }
     var stats = (run.ladder ? run.ladder.length : 0) + ' WINS   ' + (run.continues || 0) + (run.continues === 1 ? ' CONTINUE   ' : ' CONTINUES   ') +
       Math.floor(secs / 60) + ':' + ('0' + secs % 60).slice(-2) + '   CPU ' + FG.AI_LEVELS[FG.settings.difficulty].name;
     FG.text(this, cx, 80, stats, 'c').setOrigin(0.5, 0).setDepth(11);

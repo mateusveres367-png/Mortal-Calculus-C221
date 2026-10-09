@@ -9,7 +9,7 @@
   var C = FG.C, W = C.VIEW_W, H = C.VIEW_H;
   var IDLE_DEMO = 15 * 60; // frames on the title before the demo starts
   var BOX = { x: 452, y: 150, w: 170, h: 126 };
-  var OPTION_ROWS = 7;
+  var OPTION_ROWS = 7, MENU_ROW = 16;
   var HY = 214;            // horizon
   var SUN = { x: 330, y: HY + 6, r: 74 };
   var CAR = { x: 196, y: 300, scale: 1.9 };
@@ -45,6 +45,8 @@
 
   var MENU = [
     { id: 'arcade', label: 'ARCADE', help: 'FIGHT THEM ALL IN A ROW. IT GETS HARDER EVERY FIGHT' },
+    { id: 'detention', label: 'DETENTION', help: 'SURVIVAL: ONE HEALTH BAR, HOW MANY CAN YOU BEAT?' },
+    { id: 'timed', label: 'TIMED TEST', help: 'ARCADE AGAINST THE CLOCK: BEAT YOUR BEST TIME' },
     { id: 'cpu', label: 'VS CPU', help: 'YOU AGAINST THE COMPUTER: BOTH FIGHTERS, A STAGE, A LEVEL' },
     { id: 'versus', label: 'VERSUS', help: 'PLAYER 1 VS PLAYER 2, BEST OF THREE' },
     { id: 'training', label: 'TRAINING', help: 'PRACTICE, FRAME DATA AND COMBO TRIALS' },
@@ -241,7 +243,7 @@
 
     // Main menu and options, in a box over the right of the lot.
     this.menuG = this.add.graphics().setDepth(12);
-    this.rows = [0, 1, 2, 3, 4, 5, 6].map(function (k) {
+    this.rows = [0, 1, 2, 3, 4, 5, 6, 7].map(function (k) {
       var t = FG.text(self, BOX.x + 16, BOX.y + 12 + k * 18, '', 'w', 2).setDepth(13);
       t.setInteractive({ useHandCursor: true }).on('pointerdown', function () { FG.Sfx.unlock(); if (self.menuOn) { self.index = k; self.choose(0); } });
       return t;
@@ -347,7 +349,7 @@
     var g = this.menuG;
     g.clear();
     if (!on) { this.rows.forEach(function (r) { r.setText(''); }); this.help.setText(''); return; }
-    var rowH = this.options ? 15 : 18, h = this.options ? 12 + OPTION_ROWS * 15 + 6 : BOX.h;
+    var rowH = this.options ? 15 : MENU_ROW, h = this.options ? 12 + OPTION_ROWS * 15 + 6 : 12 + MENU.length * MENU_ROW + 6;
     g.fillStyle(0x07060c, 0.88); g.fillRect(BOX.x, BOX.y, BOX.w, h);
     g.lineStyle(2, 0xffd23f, 1); g.strokeRect(BOX.x, BOX.y, BOX.w, h);
     g.fillStyle(0x3c6fb0, 0.7); g.fillRect(BOX.x + 6, BOX.y + 9 + this.index * rowH, BOX.w - 12, rowH);
@@ -364,7 +366,7 @@
       this.help.setText(MENU[this.index].help);
     }
     this.rows.forEach(function (r, k) {
-      r.setText(labels[k] || '').setScale(self.options ? 1.5 : 2).setY(BOX.y + 12 + k * (self.options ? 15 : 18)).setFont(k === self.index ? 'pf_y' : 'pf_w');
+      r.setText(labels[k] || '').setScale(self.options ? 1.5 : 2).setY(BOX.y + 12 + k * (self.options ? 15 : MENU_ROW)).setFont(k === self.index ? 'pf_y' : 'pf_w');
     });
   };
 

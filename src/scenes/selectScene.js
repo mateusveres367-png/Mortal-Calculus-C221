@@ -41,7 +41,7 @@
     for (var y = 0; y < C.VIEW_H; y += 8) bg.lineBetween(0, y, C.VIEW_W, y);
     bg.fillStyle(0x000000, 0.5); bg.fillRect(0, 0, C.VIEW_W, 30);
 
-    var title = { arcade: 'ARCADE', versus: 'VERSUS', training: 'TRAINING', cpu: 'VS CPU' }[this.mode];
+    var title = { arcade: 'ARCADE', versus: 'VERSUS', training: 'TRAINING', cpu: 'VS CPU', detention: 'DETENTION', timed: 'TIMED TEST' }[this.mode];
     FG.text(this, C.VIEW_W / 2, 7, 'CHOOSE YOUR FIGHTER', 'y', 2).setOrigin(0.5, 0);
     FG.text(this, 8, 10, title, 'c');
     this.stepText = FG.text(this, C.VIEW_W / 2, 36, '', 'c').setOrigin(0.5, 0);
@@ -145,7 +145,7 @@
   // has been beaten once (he's always open in training and versus, and as the CPU).
   SelectScene.prototype.locked = function (side, idx) {
     var def = FG.ROSTER[idx == null ? this.cursor[side] : idx];
-    var mine = side === 0 && (this.mode === 'arcade' || (this.mode === 'cpu' && this.step === 0));
+    var mine = side === 0 && (this.solo() || (this.mode === 'cpu' && this.step === 0));
     return !!(def.boss && mine && !FG.settings.wilsonUnlocked);
   };
 
@@ -164,8 +164,12 @@
   };
 
   SelectScene.prototype.next = function () {
-    if (this.mode === 'arcade') {
-      this.scene.start('ladder', FG.arcadeRun(this.chosen[0]));
+    if (this.mode === 'arcade' || this.mode === 'timed') {
+      this.scene.start('ladder', FG.arcadeRun(this.chosen[0], this.mode === 'timed'));
+      return;
+    }
+    if (this.mode === 'detention') {
+      this.scene.start('fight', FG.detentionFight(FG.detentionRun(this.chosen[0])));
       return;
     }
     this.scene.start('stage', { mode: this.mode, p1: this.chosen[0], p2: this.chosen[1], stage: this.prev.stage, level: this.prev.level });
@@ -182,7 +186,7 @@
 
   SelectScene.prototype.refresh = function () {
     var m = this.mode, txt, col = 'pf_c';
-    if (m === 'arcade') txt = 'PLAYER 1: CHOOSE YOUR FIGHTER';
+    if (this.solo()) txt = 'PLAYER 1: CHOOSE YOUR FIGHTER';
     else if (m === 'versus') txt = (this.chosen[0] ? 'P1 READY' : 'P1 CHOOSING') + '      ' + (this.chosen[1] ? 'P2 READY' : 'P2 CHOOSING');
     else { txt = this.step === 0 ? 'PLAYER 1: CHOOSE YOUR FIGHTER' : m === 'cpu' ? "CHOOSE THE CPU'S FIGHTER" : 'CHOOSE YOUR OPPONENT'; col = this.step === 0 ? 'pf_c' : 'pf_r'; }
     this.stepText.setText(txt).setFont(col);
@@ -215,6 +219,9 @@
     return this.mode === 'versus' || (this.twoStep() && this.step === 1);
   };
 
+  // Arcade, Detention and the Timed Test: player 1 picks, the CPU's opponents follow.
+  SelectScene.prototype.solo = function () { return this.mode === 'arcade' || this.mode === 'timed' || this.mode === 'detention'; };
+
   // Training and VS CPU: one player picks both fighters, one after the other.
   SelectScene.prototype.twoStep = function () { return this.mode === 'training' || this.mode === 'cpu'; };
 
@@ -231,7 +238,7 @@
       FG.updatePose(card.puppet, t);
       var def = card.puppet.def, sc = 2.3 * def.scale, base = FG.getPose(def, 'idle');
       card.puppet.x = card.x + CARD_W / 2 - base[4] * sc;
-      var cardLocked = this.locked(this.twoStep() ? this.step : 0, i) || (this.mode === 'arcade' && def.boss && !FG.settings.wilsonUnlocked);
+      var cardLocked = this.locked(this.twoStep() ? this.step : 0, i) || (this.solo() && def.boss && !FG.settings.wilsonUnlocked);
       FG.drawFighter(card.g, card.puppet, { scale: 2.3, groundY: card.y + 34 + base[5] * sc, noShadow: true, flash: cardLocked ? 0x07060c : null });
       card.name.setText(cardLocked ? '???' : def.name);
     }
@@ -270,13 +277,27 @@
   // own mirror match, then PEDERSEN, the cover fighter, and last WILSON, the boss
   // (if you are one of them, your mirror match takes their place).
   var BOSSES = ['pedersen', 'wilson'];
-  FG.arcadeRun = function (p1) {
+  FG.arcadeRun = function (p1, timed) {
     var others = FG.ROSTER.filter(function (d) { return d.id !== p1 && BOSSES.indexOf(d.id) < 0; }).map(function (d) { return d.id; });
     for (var i = others.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), x = others[i]; others[i] = others[j]; others[j] = x; }
     if (BOSSES.indexOf(p1) < 0) others.push(p1);
     BOSSES.forEach(function (b) { if (FG.fighterById(b)) others.push(b); });
-    return { p1: p1, ladder: others, index: 0, continues: 0, started: Date.now() };
+    return { p1: p1, ladder: others, index: 0, continues: 0, started: Date.now(), timed: !!timed, frames: 0 };
   };
+
+  // Detention: survival. One opponent after another at random (never the same twice
+  // in a row), on one health bar that only partly refills between fights.
+  FG.detentionRun = function (p1) { return { kind: 'detention', p1: p1, beaten: 0, health: null, meter: 0, last: null }; };
+  FG.detentionFight = function (run) {
+    var pool = FG.ROSTER.filter(function (d) { return d.id !== run.last; });
+    var p2 = pool[Math.floor(Math.random() * pool.length)].id;
+    run.last = p2;
+    return { mode: 'detention', p1: run.p1, p2: p2, stage: FG.fighterById(p2).homeStage, arcade: run };
+  };
+  // The CPU gets tougher the more you've beaten.
+  FG.detentionLevel = function (beaten) { return FG.AI_ORDER[Math.min(FG.AI_ORDER.length - 1, Math.floor(beaten / 2.5))]; };
+  // Seconds as m:ss.
+  FG.clock = function (secs) { secs = Math.floor(secs); return Math.floor(secs / 60) + ':' + ('0' + secs % 60).slice(-2); };
   // Straight into the first fight (skipping the ladder screen).
   FG.arcadeStart = function (p1) { return FG.arcadeFight(FG.arcadeRun(p1)); };
   // Scene data for the arcade fight at run.index.
