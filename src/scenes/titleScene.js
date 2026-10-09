@@ -487,16 +487,16 @@
   TitleScene.prototype.drawAir = function (t) {
     var g = this.air, p = this.ped, pr = p._props, pt = p._override.t;
     g.clear();
-    if (pr.tip && t % 5 === 0) this.smoke.push({ x: pr.tip.x, y: pr.tip.y, vx: 0.08, vy: -0.45, t: 0, life: 100, size: 1.5 });
+    if (pr.tip && t % 9 === 0) this.smoke.push({ x: pr.tip.x, y: pr.tip.y, vx: 0.08, vy: -0.45, t: 0, life: 100, size: 1.5 });
     if (pt === EXHALE && pr.lens) {
-      for (var e = 0; e < 10; e++) this.smoke.push({ x: pr.lens.x + 10, y: pr.lens.y + 10, vx: 0.5 + Math.random() * 0.6, vy: -0.2 - Math.random() * 0.4, t: 0, life: 80 + e * 6, size: 2.5 });
+      for (var e = 0; e < 5; e++) this.smoke.push({ x: pr.lens.x + 10, y: pr.lens.y + 10, vx: 0.5 + Math.random() * 0.6, vy: -0.2 - Math.random() * 0.4, t: 0, life: 80 + e * 6, size: 2.5 });
     }
     for (var i = this.smoke.length - 1; i >= 0; i--) {
       var s = this.smoke[i];
       s.t++; s.x += s.vx + Math.sin((s.t + i * 9) * 0.07) * 0.35; s.y += s.vy; s.vx *= 0.99; s.vy *= 0.995;
       if (s.t > s.life) { this.smoke.splice(i, 1); continue; }
       var u = s.t / s.life, sz = Math.round(s.size + u * 4);
-      g.fillStyle(0xc8bcd0, 0.5 * (1 - u));
+      g.fillStyle(0xc8bcd0, 0.35 * (1 - u));
       g.fillRect(Math.round(s.x - sz / 2), Math.round(s.y - sz / 2), sz, sz);
     }
     // Heat shimmer: wavy, faint lines rising off the engine cover.

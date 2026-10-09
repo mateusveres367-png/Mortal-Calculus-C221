@@ -22,26 +22,25 @@
 
   // Knocked back across the floor: a puff of dust at the feet and a scuff mark.
   Effects.prototype.skid = function (x, dir, k) {
-    for (var i = 0; i < 2; i++) {
-      this.parts.push({ x: x + (Math.random() - 0.5) * 6, y: C.GROUND_Y - 2, vx: -dir * (0.4 + Math.random() * 1.2) * k, vy: -0.3 - Math.random() * 0.8,
-        life: 16 + Math.random() * 8, max: 24, size: 3, color: i ? 0xb8aa92 : 0x9a8d78, puff: true });
-    }
+    this.parts.push({ x: x + (Math.random() - 0.5) * 6, y: C.GROUND_Y - 2, vx: -dir * (0.4 + Math.random() * 1.2) * k, vy: -0.2 - Math.random() * 0.5,
+      life: 10 + Math.random() * 6, max: 16, size: 2, color: 0xb8aa92, puff: true });
     var last = this.scuffs[this.scuffs.length - 1];
-    if (last && last.life > last.max - 4 && Math.abs(last.x2 - x) < 14) last.x2 = x;
+    if (last && last.life > last.max - 8 && Math.abs(last.x2 - x) < 18) last.x2 = x;
     else this.scuffs.push({ x1: x, x2: x, life: 150, max: 150 });
   };
 
-  // A big hit: chalk dust bursting off them (pale puffs that hang in the air).
+  // A big hit: a little chalk dust bursting off them.
   Effects.prototype.chalkBurst = function (x, y, dir) {
-    for (var i = 0; i < 16; i++) {
-      var a = (Math.random() - 0.5) * Math.PI * 1.2 + (dir > 0 ? 0 : Math.PI), sp = 1 + Math.random() * 2.6;
-      this.parts.push({ x: x + (Math.random() - 0.5) * 16, y: y + (Math.random() - 0.5) * 34, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 0.6,
-        life: 26 + Math.random() * 16, max: 42, size: 3 + Math.random() * 3, color: i % 3 ? 0xf2f6ee : 0xdfe6dc, puff: true });
+    for (var i = 0; i < 5; i++) {
+      var a = (Math.random() - 0.5) * Math.PI * 1.2 + (dir > 0 ? 0 : Math.PI), sp = 1.2 + Math.random() * 2.4;
+      this.parts.push({ x: x + (Math.random() - 0.5) * 12, y: y + (Math.random() - 0.5) * 24, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 0.6,
+        life: 14 + Math.random() * 8, max: 22, size: 2 + Math.random() * 2, color: i % 3 ? 0xf2f6ee : 0xdfe6dc, puff: true });
     }
   };
 
   // Floor dust kicked up by landings, bounces and tech rolls.
   Effects.prototype.dust = function (x, n, spread) {
+    n = Math.ceil(n * 0.5); // kept light: a few specks, not a cloud
     for (var i = 0; i < n; i++) {
       var dir = i % 2 ? 1 : -1;
       this.parts.push({ x: x + dir * Math.random() * 10, y: C.GROUND_Y - 2, vx: dir * (0.6 + Math.random() * (spread || 2)),
@@ -165,9 +164,9 @@
     if (grow > 1.25) this.flashes.push({ x: x, y: y, r: 12 * grow, life: 9, max: 9, color: 0xffffff, ring: true });
     this.impact(kind, x, y, ev);
     if (ev.ch) this.counterHit(x, y, ev);
-    // Big hits: chalk dust bursting off them and a brief white flash.
+    // Big hits: a brief white flash (and on counter hits and launchers, a little chalk dust).
     if (ev.ch || ev.move.strength === 'heavy' || ev.move.strength === 'launch' || kind === 'launch') {
-      this.chalkBurst(x, y, ev.facing);
+      if (ev.ch || kind === 'launch') this.chalkBurst(x, y, ev.facing);
       this.flashScreen(0xffffff, ev.ch ? 0.3 : 0.18, 4);
     }
   };
@@ -381,8 +380,8 @@
         continue;
       }
       if (p.puff) { // dust and chalk: soft puffs that swell as they fade
-        g.fillStyle(p.color, 0.55 * Math.min(1, p.life / (p.max * 0.6)));
-        g.fillCircle(p.x, p.y, p.size * (1 + (1 - p.life / p.max) * 1.4));
+        g.fillStyle(p.color, 0.35 * Math.min(1, p.life / (p.max * 0.6)));
+        g.fillCircle(p.x, p.y, p.size * (1 + (1 - p.life / p.max) * 0.7));
         continue;
       }
       g.fillStyle(p.color, Math.min(1, p.life / 6));
