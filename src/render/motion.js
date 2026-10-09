@@ -202,16 +202,17 @@
   }
 
   var REACT = {
-    // head snaps back
-    jab:      { dur: 10, lean: -7,  hip: -1.5, dip: 0, twist: -0.3, head: -4 },
-    // folds over the blow and sinks
-    body:     { dur: 16, lean: 14,  hip: -3,   dip: 6, twist: 0.2,  head: 2 },
-    // spun round by it
-    power:    { dur: 18, lean: -15, hip: -4,   dip: 2, twist: -1.4, head: -3 },
+    // a high: the head snaps back
+    jab:      { dur: 12, lean: -9,  hip: -1.5, dip: 0,  twist: -0.4, head: -7, headUp: 3 },
+    // to the body: doubles over the blow and sinks
+    body:     { dur: 18, lean: 22,  hip: -3,   dip: 8,  twist: 0.2,  head: 5,  headUp: -3 },
+    // spun round by it, head first
+    power:    { dur: 18, lean: -16, hip: -4,   dip: 2,  twist: -1.6, head: -6, headUp: 2 },
     // crumples down
-    overhead: { dur: 16, lean: 12,  hip: -2,   dip: 9, twist: 0,    head: 2 },
-    low:      { dur: 12, lean: 5,   hip: -2,   dip: 4, twist: -0.3, head: 0 },
-    launch:   { dur: 10, lean: -8,  hip: -2,   dip: 0, twist: -0.6, head: -3 },
+    overhead: { dur: 16, lean: 14,  hip: -2,   dip: 10, twist: 0,    head: 3,  headUp: -3 },
+    // a low: the legs buckle (the hips drop and wobble, the knees bend under them)
+    low:      { dur: 16, lean: 8,   hip: -1,   dip: 11, twist: -0.3, head: 1,  wobble: 3 },
+    launch:   { dur: 10, lean: -8,  hip: -2,   dip: 0,  twist: -0.6, head: -3 },
     block:    { dur: 8,  lean: -4,  hip: -2,   dip: 1.5, twist: -0.3, head: -1 }
   };
 
@@ -228,8 +229,9 @@
     var k = r.t <= 2 ? 1 : Math.pow(1 - (r.t - 2) / (R.dur - 2), 2);
     k *= (r.scale || 1) * (f.def.react || 1); // how hard this fighter reels (PEDERSEN barely, CHAI a lot)
     rotate(p, UPPER, R.lean * k);
-    shift(p, BODY, R.hip * k, -R.dip * k);
+    shift(p, BODY, R.hip * k, -(R.dip + (R.wobble ? Math.sin(r.t * 1.3) * R.wobble : 0)) * k);
     p[4] += R.head * k;
+    p[5] += (R.headUp || 0) * k;
     return R.twist * k;
   }
 

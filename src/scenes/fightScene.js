@@ -789,6 +789,12 @@
 
     var wasKo = m.koTimer > 0, frameBefore = m.frame;
     m.step([raw1, raw2]);
+    // Knocked back across the floor: dust at their feet and a scuff mark behind.
+    if (!m.hitstop) for (var sk = 0; sk < 2; sk++) {
+      var sf = f[sk], skid = Math.abs(sf.slide || 0);
+      if (skid > 0.8 && sf.y <= 0 && (sf.state === 'hitstun' || sf.state === 'blockstun' || sf.state === 'guardbreak') && this.tickCount % 2 === 0)
+        this.effects.skid(sf.x - Math.sign(sf.slide) * 8, Math.sign(sf.slide), Math.min(2, skid / 1.5));
+    }
     if (wasKo && m.koTimer === 0 && !this.rounds) { this.hud.clear(); this.hud.showBanner('FIGHT!', '', 50); }
     if (this.rounds) this.roundTick(m.frame > frameBefore);
     if (this.win || m !== this.match) return; // the match just ended, or the next round just started
@@ -799,7 +805,11 @@
         ev.impact = FG.impactKind(ev.move);
         // The body reacts to the kind of blow (motion.js).
         var dfn = f[ev.defender];
-        dfn._react = ev.type === 'block' ? { kind: 'block', t: 0 } : { kind: ev.impact, t: 0, scale: ev.ch ? 1.3 : 1 };
+        // Highs snap the head back, body shots fold them over, lows buckle the legs.
+        var lvl = ev.move.level, kind = ev.impact;
+        if (lvl === 'low') kind = 'low';
+        else if (lvl === 'high' && (kind === 'body' || kind === 'low')) kind = 'jab';
+        dfn._react = ev.type === 'block' ? { kind: 'block', t: 0 } : { kind: kind, t: 0, scale: ev.ch ? 1.3 : 1 };
       }
       if (ev.type === 'enhance' || ev.type === 'ultstart') ev.color = FG.fighterGlow(f[ev.fighter].def);
       if (ev.type === 'extracredit') this.extraCreditCutIn(ev);

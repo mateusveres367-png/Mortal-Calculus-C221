@@ -16,8 +16,29 @@
     this.flashes = [];
     this.cracks = [];
     this.props = []; // tumbling objects (LOPEZ's blazer)
+    this.scuffs = []; // skid marks on the floor, fading
     this.shakeMag = 0;
   }
+
+  // Knocked back across the floor: a puff of dust at the feet and a scuff mark.
+  Effects.prototype.skid = function (x, dir, k) {
+    for (var i = 0; i < 2; i++) {
+      this.parts.push({ x: x + (Math.random() - 0.5) * 6, y: C.GROUND_Y - 2, vx: -dir * (0.4 + Math.random() * 1.2) * k, vy: -0.3 - Math.random() * 0.8,
+        life: 16 + Math.random() * 8, max: 24, size: 3, color: i ? 0xb8aa92 : 0x9a8d78, puff: true });
+    }
+    var last = this.scuffs[this.scuffs.length - 1];
+    if (last && last.life > last.max - 4 && Math.abs(last.x2 - x) < 14) last.x2 = x;
+    else this.scuffs.push({ x1: x, x2: x, life: 150, max: 150 });
+  };
+
+  // A big hit: chalk dust bursting off them (pale puffs that hang in the air).
+  Effects.prototype.chalkBurst = function (x, y, dir) {
+    for (var i = 0; i < 16; i++) {
+      var a = (Math.random() - 0.5) * Math.PI * 1.2 + (dir > 0 ? 0 : Math.PI), sp = 1 + Math.random() * 2.6;
+      this.parts.push({ x: x + (Math.random() - 0.5) * 16, y: y + (Math.random() - 0.5) * 34, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 0.6,
+        life: 26 + Math.random() * 16, max: 42, size: 3 + Math.random() * 3, color: i % 3 ? 0xf2f6ee : 0xdfe6dc, puff: true });
+    }
+  };
 
   // Floor dust kicked up by landings, bounces and tech rolls.
   Effects.prototype.dust = function (x, n, spread) {
@@ -122,6 +143,9 @@
         this.parts.push({ x: x, y: y, vx: Math.cos(a) * 2.2, vy: Math.sin(a) * 2.2, life: 10, max: 10, size: 2, color: i % 2 ? 0x9fdcff : 0xffffff });
       }
       this.flashes.push({ x: x, y: y, r: 10, life: 5, max: 5, color: 0x9fdcff, ring: true });
+      // The guard spark: a bright shield arc facing the blow.
+      this.flashes.push({ x: x + ev.facing * 4, y: y, r: 16, life: 8, max: 8, color: 0xdff6ff, arc: ev.facing > 0 ? Math.PI : 0 });
+      this.flashes.push({ x: x, y: y, r: 7, life: 4, max: 4, color: 0xffffff, star: true });
       return;
     }
     var st = STYLE[ev.move.strength] || STYLE.light;
@@ -141,6 +165,11 @@
     if (grow > 1.25) this.flashes.push({ x: x, y: y, r: 12 * grow, life: 9, max: 9, color: 0xffffff, ring: true });
     this.impact(kind, x, y, ev);
     if (ev.ch) this.counterHit(x, y, ev);
+    // Big hits: chalk dust bursting off them and a brief white flash.
+    if (ev.ch || ev.move.strength === 'heavy' || ev.move.strength === 'launch' || kind === 'launch') {
+      this.chalkBurst(x, y, ev.facing);
+      this.flashScreen(0xffffff, ev.ch ? 0.3 : 0.18, 4);
+    }
   };
 
   // Each kind of blow has its own look:
@@ -228,7 +257,8 @@
   Effects.prototype.update = function () {
     for (var i = this.parts.length - 1; i >= 0; i--) {
       var p = this.parts[i];
-      p.x += p.vx; p.y += p.vy; p.vy += 0.15; p.vx *= 0.92;
+      p.x += p.vx; p.y += p.vy;
+      if (p.puff) { p.vy = p.vy * 0.9 - 0.01; p.vx *= 0.88; } else { p.vy += 0.15; p.vx *= 0.92; }
       if (--p.life <= 0) this.parts.splice(i, 1);
     }
     for (var j = this.flashes.length - 1; j >= 0; j--) {
@@ -240,6 +270,7 @@
       if (pr.y > C.GROUND_Y - 3) { pr.y = C.GROUND_Y - 3; pr.vy = 0; pr.vx *= 0.8; pr.vr = 0; pr.rot = Math.PI / 2; }
       if (--pr.life <= 0) this.props.splice(q, 1);
     }
+    for (var sc = this.scuffs.length - 1; sc >= 0; sc--) if (--this.scuffs[sc].life <= 0) this.scuffs.splice(sc, 1);
     for (var k = this.cracks.length - 1; k >= 0; k--) {
       if (--this.cracks[k].life <= 0) this.cracks.splice(k, 1);
     }
@@ -269,6 +300,12 @@
 
   // Drawn before the fighters: wall cracks sit on the wall, behind whoever is splatted.
   Effects.prototype.drawBack = function (g) {
+    // Scuff marks where someone skidded, fading out.
+    for (var s = 0; s < this.scuffs.length; s++) {
+      var sc = this.scuffs[s], sa = Math.min(1, sc.life / 60) * 0.4, x1 = Math.min(sc.x1, sc.x2), w = Math.max(3, Math.abs(sc.x2 - sc.x1));
+      g.fillStyle(0x1a140c, sa); g.fillRect(Math.round(x1), C.GROUND_Y + 1, Math.round(w), 2);
+      g.fillStyle(0x1a140c, sa * 0.6); g.fillRect(Math.round(x1) + 2, C.GROUND_Y + 4, Math.round(w * 0.7), 1);
+    }
     // Wall cracks: jagged lines radiating from the impact point.
     for (var c = 0; c < this.cracks.length; c++) {
       var cr = this.cracks[c], alpha = Math.min(1, cr.life / 30), sz = cr.size || 1;
@@ -300,6 +337,11 @@
         g.fillTriangle(f.x, f.y - r, f.x, f.y + r, f.x + 3, f.y);
         g.fillStyle(0xffffff, 1);
         g.fillRect(f.x - 3, f.y - 3, 6, 6);
+      }
+      if (f.arc != null) { // a guard spark: a bright arc of shield facing the blow
+        var ar = Math.round(f.r * (1.3 - 0.4 * k));
+        g.lineStyle(3, f.color, k); g.beginPath(); g.arc(f.x, f.y, ar, f.arc - 1.1, f.arc + 1.1); g.strokePath();
+        g.lineStyle(1, 0xffffff, k); g.beginPath(); g.arc(f.x, f.y, ar - 3, f.arc - 0.9, f.arc + 0.9); g.strokePath();
       }
       if (f.ring) {
         g.lineStyle(f.thick || 2, f.color, k);
@@ -336,6 +378,11 @@
         var sv = Math.sqrt(p.vx * p.vx + p.vy * p.vy) || 1;
         g.lineStyle(p.size, p.color, Math.min(1, p.life / 4));
         g.lineBetween(p.x, p.y, p.x - p.vx / sv * p.streak, p.y - p.vy / sv * p.streak);
+        continue;
+      }
+      if (p.puff) { // dust and chalk: soft puffs that swell as they fade
+        g.fillStyle(p.color, 0.55 * Math.min(1, p.life / (p.max * 0.6)));
+        g.fillCircle(p.x, p.y, p.size * (1 + (1 - p.life / p.max) * 1.4));
         continue;
       }
       g.fillStyle(p.color, Math.min(1, p.life / 6));
@@ -418,9 +465,11 @@
       case 'whiff':
         burst(strength === 'light' ? 0.06 : 0.12, strength === 'light' ? 2400 : 1500, 1.5, 0.08, 'bandpass');
         break;
-      case 'block':
-        burst(0.05, 3800, 3, 0.25, 'bandpass');
-        thump(0.05, 900, 400, 0.12);
+      case 'block': // a hard, dry clack
+        burst(0.025, 3200, 9, 0.4, 'bandpass');
+        burst(0.04, 1700, 7, 0.28, 'bandpass');
+        thump(0.06, 340, 170, 0.28);
+        if (strength === 'heavy' || strength === 'launch') thump(0.12, 160, 70, 0.3);
         break;
       case 'hit': {
         if (ev.throw) { thump(0.25, 110, 30, 0.8); burst(0.18, 700, 1, 0.45); break; }
@@ -434,6 +483,7 @@
           burst(0.22, 5200, 5, 0.32, 'bandpass');
           sweep(0.3, 1500, 380, 0.1, 'square');
         }
+        else if (strength === 'heavy' || strength === 'launch') thump(0.34, 72, 26, 0.65); // a big hit: a low boom
         if (ev.ko) thump(0.6, 90, 30, 0.7);
         break;
       }
