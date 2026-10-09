@@ -370,7 +370,7 @@ Very smart. Reads opponents, keeps perfect distance, punishes every mistake.
 | K (DOWN) | Rolling Zero | low | 14 | 3 | 22 | -14 | -2 | +1 | 10 | ducks highs |
 | P/H (DOWN) | Spring Theorem | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
 | T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
-| D,D/F,F+P+K+H | Imaginary Unit | mid | 12 | 3 | 48 | -34 | +6 | launch | 16 | wall splats |
+| D,D/F,F+P+K+H | System Of Equations | mid | 12 | 3 | 48 | -34 | +6 | launch | 16 | wall splats |
 | T (BY AN OBJECT) | Springboard | mid | 16 | 5 | 18 | -6 | knockdown | knockdown | 18 |  |
 | B+T (BY AN OBJECT) | Vault | — | 38 total |  |  |  |  |  |  |  |
 
@@ -380,7 +380,7 @@ Very smart. Reads opponents, keeps perfect distance, punishes every mistake.
 - **Domain Control+** (`F+K`, then `P+K`): Launches — 16 damage (from 12), hit: launch.
 - **Domain Restriction+** (`B+H`, then `P+K`): Armored, wall splat — 16 damage (from 12), armor on frames 1-13 (1 hit), wall splats.
 
-**Ultimate:** Imaginary Unit — the ultimate key (`U` / `Numpad 0`) or `D, D/F, F + P+K+H`, with all three bars: he vanishes, appears behind them and combos; two quarter turns and they're upside down: i squared = -1. 4 hits, 32% of their health; blocked -34, whiffed 62 frames.
+**Ultimate:** System Of Equations — the ultimate key (`U` / `Numpad 0`) or `D, D/F, F + P+K+H`, with all three bars: two glowing lines draw across the stage from opposite corners and a copy of him charges down each one; they hit exactly where the lines intersect: SOLUTION FOUND. 2 hits, 32% of their health; blocked -34, whiffed 62 frames.
 
 **KO finisher:** Calculated — `D, F, K` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).
 

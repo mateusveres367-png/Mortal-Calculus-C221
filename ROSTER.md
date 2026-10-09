@@ -104,6 +104,8 @@ Every fighter needs unique normals, launcher, throw, combo routes, stance, idle 
 
 **Signature — Arithmetic Sequence:** his strings get faster with each hit, and once an attack connects (hit or block) he can dash-cancel its recovery (forward, forward) to keep the pressure on, once per string.
 
+**Ultimate — Grading at 11 PM:** cut to him at his desk at night: a lamp, cold coffee, a mountain of papers. He grades faster and faster, and every red check mark is a hit on the opponent (who takes them in a comic panel across the room). He finishes, sighs, adjusts his glasses, and flicks the red pen for the final hit.
+
 **Look:** Messy wavy dark hair with a few grays, thin wire-frame glasses, light stubble and a slight smirk. Wears a black athletic polo.
 
 **Personality:** Sarcastic and funny. Taunts mid-combo and adjusts his glasses after big hits. Relentless pressure.
@@ -126,6 +128,8 @@ Every fighter needs unique normals, launcher, throw, combo routes, stance, idle 
 
 **Signature — Derivative Read:** a parry stance (B+H, hold H to keep it up). If the opponent attacks into it, he auto-counters by level: a wrist lock (L'Hopital Lock) for a high, a palm strike (Critical Point) for a mid, a trapping sweep (Saddle Point) for a low. Throws beat it.
 
+**Ultimate — I Knew It:** a counter stance. Hit him in it and he closes the blinds, then reveals a corkboard covered in red string, photos and graphs of the opponent's habits. They attack three times and he dodges each one without looking. "I knew it." Then one perfect punish.
+
 **Look:** Solid build. Salt-and-pepper hair swept back and a knowing half-smile. Wears a navy blazer over a white windowpane-check shirt, and takes the blazer off before the round.
 
 **Personality:** Very suspicious: narrowed eyes, always watching. Waits for you to commit, then punishes.
@@ -147,6 +151,8 @@ Every fighter needs unique normals, launcher, throw, combo routes, stance, idle 
 **Style:** Kick-based spacing, traditional karate. A long front kick, a side kick (Domain Control, the longest poke in the game), a spinning back hook kick, a back kick and foot sweeps that keep people at the edge of his range. A deep, wide, steady front stance with the rear fist at the hip. A strong backdash.
 
 **Signature — Calculated:** after the opponent whiffs, his next hit does bonus damage, and he glows until he lands it. He also has a step-back kick (Domain Restriction, B+H) that retreats while it attacks.
+
+**Ultimate — System of Equations:** two glowing lines draw across the stage from opposite corners, and a copy of him charges down each one. They hit the opponent exactly where the lines intersect, and SOLUTION FOUND stamps the screen.
 
 **Look:** Sturdy. Short, neat black hair, clean-shaven, with a calm smile. Wears a blue checkered button-up with the sleeves rolled.
 

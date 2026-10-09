@@ -431,58 +431,6 @@
 
   FG.ULTIMATES = {};
 
-  // MIYASHIRO — Imaginary Unit: he vanishes, appears behind them, combos, and
-  // multiplying by i twice turns them upside down: i² = −1.
-  FG.ULTIMATES.miyashiro = {
-    start: function (fx) {
-      fx.at(fx.l, fx.lx0, 0);
-      fx.pose(fx.l, 'hit_mid');
-      fx.anim(fx.w, [[1, 'rush_x'], [8, 'sleeve'], [18, 'sleeve2']]);
-      fx.zoom(0.1, fx.lx0, 60, 230);
-      fx.s.bx = fx.lx0 + fx.dir * 70; // behind them
-    },
-    step: function (fx, t) {
-      var w = fx.w, l = fx.l, s = fx.s, hits = w.def.ultimate.hits, dir = fx.dir;
-      if (t === 20) { fx.dust(fx.px(w), 14, 3); w._hidden = true; FG.Sfx.play({ type: 'feint' }); s.gone = t; }
-      if (t === 36) { w._hidden = false; fx.at(w, s.bx, 0); fx.face(w, -dir); fx.dust(s.bx, 10, 2); fx.pose(w, 'behind'); s.back = t; FG.Sfx.play({ type: 'parry' }); }
-      if (t === 44) fx.face(l, dir); // they turn round, too late
-      var P = [['jab_c', 'jab_x', 'jab', 'hit_high'], ['mk_c', 'mk_x', 'body', 'hit_mid'], ['xprod_c', 'xprod_x', 'power', 'hit_high']];
-      for (var k = 0; k < 3; k++) {
-        if (t === hits[k] - 6) fx.strike(w, P[k][0], P[k][1], 6, 8);
-        if (t === hits[k]) {
-          fx.hit(l, P[k][2], { strength: 'medium', hits: k + 1 });
-          fx.pose(l, P[k][3]);
-          if (k === 1) fx.diagram({ kind: 'complex', caption: '× ¡', sub: 'MULTIPLY BY ¡: A QUARTER TURN.', at: l });
-        }
-      }
-      // Up they go, turning over: two quarter turns.
-      if (t === hits[2] + 12) { fx.anim(w, [[1, 'spin_c'], [8, 'spin_x'], [20, 'spin_x']]); fx.hit(l, 'launch', { hits: 3, shake: 0.012 }); fx.pose(l, 'hit_high'); }
-      if (t > hits[2] + 12 && t <= hits[3]) {
-        var u = (t - hits[2] - 12) / (hits[3] - hits[2] - 12);
-        fx.at(l, s.bx - dir * 70 + -dir * 10 * u, Math.sin(u * Math.PI) * 90 + (u > 0.5 ? (1 - u) * 20 : 0));
-        l._drawRot = Math.PI * ease(u);
-      }
-      if (t === hits[3] - 10) fx.anim(w, [[1, 'ret_c'], [10, 'ret_x'], [24, 'ret_x']]);
-      if (t === hits[3]) {
-        fx.hit(l, 'overhead', { ch: true, hits: 4, shake: 0.025 });
-        fx.slow(36, 0.35); fx.flash(0x9fe0ff, 0.6);
-        s.stamp = t;
-      }
-      if (t > hits[3]) { fx.at(l, null, 0); l._drawRot = Math.PI; }
-      if (t === hits[3] + 12) fx.diagram({ kind: 'complex', half: true, caption: '¡² = -1', sub: 'TWO QUARTER TURNS: UPSIDE DOWN.', formula: '¡ × ¡ = -1', at: l, y: 40 });
-      if (t === hits[3] + 30) fx.anim(w, [[1, 'stand'], [14, 'bow'], [40, 'bow']]);
-    },
-    draw: function (fx, t) {
-      var s = fx.s;
-      if (s.gone && !s.back) fx.text(0, '¡', fx.sx(fx.x0), fx.sy(GY - 90) - (t - s.gone) * 2, 0x5fd7ff, 4, 0, 1 - (t - s.gone) / 16);
-      if (s.stamp) {
-        var sc = stamp(t, s.stamp), p = fx.at2(fx.l, 40);
-        fx.text(1, '¡² = -1', W / 2 + 50, 92, 0x5fd7ff, 3.5 * (1 + (sc - 1) * 0.5), -6);
-        fx.gs.lineStyle(3, 0x5fd7ff, 0.8); fx.gs.strokeCircle(p[0], p[1], 30 * sc);
-      }
-    }
-  };
-
   // PEDERSEN — Exponential Overdrive: off come the sunglasses; three punches, each
   // worth twice the last (2¹, 2², 2³); the last one cracks the screen.
   FG.ULTIMATES.pedersen = {

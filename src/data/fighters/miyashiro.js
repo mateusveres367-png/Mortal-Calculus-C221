@@ -19,6 +19,8 @@
     stand: stand,
     sleeve: R({ hip: [0, 50], lean: 0, fa: { hand: [-2, 64] }, ba: { hand: [8, 62] }, fl: { foot: [5, 0] }, bl: { foot: [-5, 0] } }),   // rolling up a sleeve
     sleeve2: R({ hip: [0, 50], lean: 0, fa: { hand: [12, 62] }, ba: { hand: [-2, 62] }, fl: { foot: [5, 0] }, bl: { foot: [-5, 0] } }),
+    // System of Equations (the ultimate): each copy dives down its line, fist first.
+    dive: R({ hip: [0, 46], lean: 34, neck: -10, fa: [24, 22], ba: [-150, -160], fl: [-60, -120], bl: [-150, -120] }),
     bow: R({ hip: [-2, 49], lean: 22, fa: [-90, -90], ba: [-95, -92], fl: { foot: [5, 0] }, bl: { foot: [-5, 0] } }),
     behind: R({ hip: [0, 50], lean: 0, fa: behind, ba: behind, fl: { foot: [5, 0] }, bl: { foot: [-5, 0] } }), // hands behind his back
     nod: R({ hip: [0, 50], lean: 4, neck: 14, fa: behind, ba: behind, fl: { foot: [5, 0] }, bl: { foot: [-5, 0] } }),
@@ -109,7 +111,7 @@
     // KO finisher: after winning the final round, this input within 2 seconds of the K.O.
     finisher: { name: 'CALCULATED', input: 'D, F, K' },
     // Ultimate (D, D/F, F + P+K+H, three bars): a cinematic in src/render/ultimates.js.
-    ultimate: { name: 'IMAGINARY UNIT', text: 'he vanishes, appears behind them and combos; two quarter turns and they\'re upside down: i squared = -1', from: 'dashP', len: 236, hits: [52, 66, 80, 150], end: { gap: 70, down: true, swap: true } },
+    ultimate: { name: 'SYSTEM OF EQUATIONS', text: 'two glowing lines draw across the stage from opposite corners and a copy of him charges down each one; they hit exactly where the lines intersect: SOLUTION FOUND', from: 'dashP', len: 236, hits: [100, 101], end: { gap: 70, down: true } },
     name: 'MIYASHIRO', archetype: 'SPACING', theme: 'ALGEBRA 2',
     style: 'KARATE', signatureMechanic: 'CALCULATED',
     signatureText: 'when the opponent whiffs, his next hit does bonus damage and he glows until he lands it; Domain Restriction (B+H) is a step-back kick that retreats while it attacks',
