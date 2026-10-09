@@ -346,7 +346,7 @@ try { playwright = require('playwright'); } catch (e) {
   // OPTIONS: remap player 1's ultimate key (a key that's already used is refused).
   var remap = await page.evaluate(function () {
     var ts = window.FG_TITLE, out = {};
-    ts.openMenu(); ts.index = 4; ts.choose(0); // OPTIONS
+    ts.openMenu(); ts.index = 5; ts.choose(0); // OPTIONS
     ts.index = 4; ts.choose(0);                // P1 ULTIMATE: press a key
     out.capturing = ts.capture === 'ultKey1';
     ts.key('KeyJ'); out.refused = FG.settings.ultKey1 === 'KeyU' && ts.capture === 'ultKey1';
@@ -356,6 +356,25 @@ try { playwright = require('playwright'); } catch (e) {
     return out;
   });
   ukeyOk = ukeyOk && remap.capturing && remap.refused && remap.set;
+
+  // Rewards: wins unlock outfits (Q/E on character select), records count them, and
+  // RECORDS shows everything and picks the title shown under your name.
+  var rewards = await page.evaluate(function () {
+    var out = {}, P = FG.progress;
+    var before = FG.outfitsUnlocked('chai');
+    var g = FG.Progress.recordMatch([{ id: 'chai', human: true }, { id: 'lee', human: false }], 0);
+    out.outfit = FG.outfitsUnlocked('chai') === before + (before < 2 ? 1 : 0) && (before >= 2 || g.some(function (x) { return x.kind === 'outfit'; }));
+    out.saved = /chai/.test(window.localStorage.getItem('mc221.progress') || '');
+    out.combo = FG.Progress.recordCombo(16, 'chai').some(function (x) { return x.kind === 'title' && x.name === 'LONG DIVISION'; }) && FG.progress.title === 'division';
+    return out;
+  });
+  await page.evaluate(function () { window.FG_TITLE.scene.start('records'); });
+  await page.waitForFunction(function () { return window.FG_RECORDS && window.FG_RECORDS.sys.isActive(); }, null, { timeout: 15000 });
+  await page.screenshot({ path: path.join(out, '11-records.png') });
+  rewards.records = await page.evaluate(function () { var r = window.FG_RECORDS, t0 = FG.progress.title; r.pick(1); var moved = FG.progress.title !== t0; r.pick(-1); return moved && FG.progress.title === t0; });
+  await page.keyboard.press('Escape');
+  await page.waitForFunction(function () { return window.FG_TITLE && window.FG_TITLE.sys.isActive(); }, null, { timeout: 15000 });
+  ukeyOk = ukeyOk && rewards.outfit && rewards.saved && rewards.combo && rewards.records;
 
   // VS CPU: pick both fighters, a stage and the CPU's level (up: one level harder).
   await page.evaluate(function () { window.FG_TITLE.go('cpu'); });
@@ -478,7 +497,7 @@ try { playwright = require('playwright'); } catch (e) {
   console.log(JSON.stringify({ mobile: mobile, title: title, matchup: matchup, renderer: renderer, hits: hits, counter: counterText, p1: p1, menuOk: menuOk, resetX: resetX, trial: trial, ko: ko, stage: stagePick, arcade: arcade, vsPanel: vsPanel, cutFreeze: cutFreeze, cpu: cpu, ladder: ladder, enhanced: ex, ultimate: ultR, extraCredit: ecR, prop: propR, ultTrial: ultTrial, lock: lock, unlocked: unlocked, wilson: wil, errors: errors }, null, 1));
   var ok = !errors.length && title === 'Mortal Calculus: C221' && matchup === expectMatchup && hits.join() === expectHits && counterText === String(hits.length) &&
     p1.last && p1.last.kind === 'BLOCK' && p1.last.adv === p1.jabBlock && menuOk && resetOk && trialOk && koOk && stagePick === 'classroom' && arcadeOk && attractOk && vsPanel && cutFreeze && cpuOk && ladderOk && exOk && ultOk && ukeyOk && ecOk && propOk && mobileOk && lockOk && unlocked && wilOk;
-  if (!ok) console.log('checks:', JSON.stringify({ errors: errors.length, menuOk: menuOk, resetOk: resetOk, trialOk: trialOk, koOk: koOk, arcadeOk: arcadeOk, attractOk: attractOk, vsPanel: vsPanel, cutFreeze: cutFreeze, cpuOk: cpuOk, ladderOk: ladderOk, exOk: exOk, ultOk: ultOk, ukeyOk: ukeyOk, ukey: ukey, ecOk: ecOk, propOk: propOk, mobileOk: mobileOk, lockOk: lockOk, unlocked: unlocked, wilOk: wilOk }));
+  if (!ok) console.log('checks:', JSON.stringify({ errors: errors.length, menuOk: menuOk, resetOk: resetOk, trialOk: trialOk, koOk: koOk, arcadeOk: arcadeOk, attractOk: attractOk, vsPanel: vsPanel, cutFreeze: cutFreeze, cpuOk: cpuOk, ladderOk: ladderOk, exOk: exOk, ultOk: ultOk, ukeyOk: ukeyOk, ukey: ukey, remap: remap, rewards: rewards, ecOk: ecOk, propOk: propOk, mobileOk: mobileOk, lockOk: lockOk, unlocked: unlocked, wilOk: wilOk }));
   console.log(ok ? 'SMOKE OK' : 'SMOKE FAILED');
   if (!ok) process.exit(1);
 })().catch(function (e) { console.error(e); process.exit(1); });

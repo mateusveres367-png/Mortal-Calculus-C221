@@ -396,7 +396,7 @@
     var p = f._pose;
     if (!p) return;
     opts = opts || {};
-    var def = f.def, look = f.alt ? altLook(def) : def.look, build = look.build;
+    var def = f.def, look = f.alt ? altLook(def) : f.outfit && FG.outfitLook ? FG.outfitLook(def, f.outfit) : def.look, build = look.build;
     var depth = 1 - f.z * 0.004;
     var s = def.scale * depth * (opts.scale || 1);
     var dir = opts.facing || f.facing;
@@ -585,7 +585,7 @@
 
   // A fighter-like object for drawing outside a match (select screen, title, win screen).
   FG.puppet = function (def, x, facing) {
-    return { def: def, x: x, y: 0, z: 0, vx: 0, vy: 0, facing: facing || 1, state: 'idle', stateFrame: 0,
+    return { def: def, x: x, y: 0, z: 0, vx: 0, vy: 0, facing: facing || 1, state: 'idle', stateFrame: 0, outfit: FG.outfitFor ? FG.outfitFor(def) : 0,
       index: 0, stance: 'A', puppet: true, _pose: null, _override: null, _gesture: null, _face: null, _blazer: false };
   };
 

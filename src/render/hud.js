@@ -13,6 +13,10 @@
     var T = function (x, y, s, col, sc) { return FG.text(scene, x, y, s, col, sc).setDepth(51); };
 
     this.names = [T(16, 4, '', 'w'), T(C.VIEW_W - 16, 4, '', 'w').setOrigin(1, 0)];
+    // Your title (earned by milestones, chosen in RECORDS) under your fighter's name.
+    this.titleText = [T(16, 30, '', 'c'), T(C.VIEW_W - 16, 30, '', 'c').setOrigin(1, 0)];
+    // Toasts: something newly earned (a title, an outfit), one at a time.
+    this.toasts = []; this.toastText = T(C.VIEW_W / 2, C.VIEW_H - 46, '', 'y').setOrigin(0.5, 0).setDepth(53);
     this.vs = T(C.VIEW_W / 2, 13, 'VS', 'y', 2).setOrigin(0.5, 0);
     this.mode = T(C.VIEW_W / 2, 34, '', 'c').setOrigin(0.5, 0);
 
@@ -290,6 +294,19 @@
     }
   };
 
+  // Something newly earned: a gold box near the bottom for a couple of seconds each.
+  Hud.prototype.toast = function (text) { this.toasts.push({ text: text, t: 0 }); };
+  Hud.prototype.drawToast = function (g) {
+    var q = this.toasts[0];
+    if (!q) { this.toastText.setText(''); return; }
+    q.t++;
+    var a = Math.min(1, q.t / 8, (150 - q.t) / 12), w = q.text.length * 7 + 24, x = C.VIEW_W / 2 - w / 2, y = C.VIEW_H - 52;
+    g.fillStyle(0x07060c, 0.85 * a); g.fillRect(x, y, w, 20);
+    g.lineStyle(2, 0xffd23f, a); g.strokeRect(x, y, w, 20);
+    this.toastText.setText(q.text).setAlpha(a);
+    if (q.t >= 150) this.toasts.shift();
+  };
+
   // Rank labels by combo length.
   Hud.RANKS = [[15, 'PROOF COMPLETE', 'r'], [12, 'INCREDIBLE', 'o'], [8, 'GREAT', 'y'], [5, 'NICE', 'c']];
   Hud.rankTier = function (hits) {
@@ -358,6 +375,8 @@
       g.fillRect(i === 0 ? gx + Math.round(BAR_W * 0.6) - gw : gx, BAR_Y + BAR_H + 4, gw, 3);
 
       this.names[i].setText((i === 0 ? 'P1 ' : 'P2 ') + f.def.name + '  ' + f.def.archetype);
+      var ttl = opts.titles && opts.titles[i] || '';
+      this.titleText[i].setText(ttl).setScale(ttl.length > 14 ? 0.75 : 1);
       this.drawMeter(i, f);
       this.drawPlus(i);
 
@@ -379,6 +398,7 @@
       this.vs.setText('VS').setScale(2).setY(13).setFont('pf_y');
     }
     this.mode.setText(opts.modeLabel);
+    this.drawToast(g);
     this.slowText.setText(opts.slow ? 'SLOW-MO' : '');
 
     // Frame data panel.

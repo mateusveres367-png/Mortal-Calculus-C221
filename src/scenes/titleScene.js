@@ -48,6 +48,7 @@
     { id: 'cpu', label: 'VS CPU', help: 'YOU AGAINST THE COMPUTER: BOTH FIGHTERS, A STAGE, A LEVEL' },
     { id: 'versus', label: 'VERSUS', help: 'PLAYER 1 VS PLAYER 2, BEST OF THREE' },
     { id: 'training', label: 'TRAINING', help: 'PRACTICE, FRAME DATA AND COMBO TRIALS' },
+    { id: 'records', label: 'RECORDS', help: 'YOUR WINS, BEST COMBO, TITLES AND OUTFITS' },
     { id: 'options', label: 'OPTIONS', help: 'DIFFICULTY, ROUND TIME, SOUND, EASY COMBOS, ULTIMATE KEYS' }
   ];
   var TIMES = [30, 60, 99, 0];
@@ -329,6 +330,7 @@
     if (this.started) return;
     this.started = true;
     FG.Sfx.ui('confirm');
+    if (mode === 'records') { this.scene.start('records'); return; }
     this.scene.start('select', { mode: mode });
   };
 

@@ -8,8 +8,9 @@
 (function () {
   var C = FG.C;
   var CARD_W = 66, CARD_H = 70, GAP = 6, COLS = 4; // COLS: set for the roster size in create()
-  var P1KEYS = { KeyA: 'left', KeyD: 'right', KeyW: 'up', KeyS: 'down', KeyJ: 'ok', KeyK: 'back', Space: 'ok' };
-  var P2KEYS = { ArrowLeft: 'left', ArrowRight: 'right', ArrowUp: 'up', ArrowDown: 'down', Numpad1: 'ok', Comma: 'ok', Numpad2: 'back', Period: 'back', NumpadEnter: 'ok' };
+  var P1KEYS = { KeyA: 'left', KeyD: 'right', KeyW: 'up', KeyS: 'down', KeyJ: 'ok', KeyK: 'back', Space: 'ok', KeyQ: 'prevOutfit', KeyE: 'nextOutfit' };
+  var P2KEYS = { ArrowLeft: 'left', ArrowRight: 'right', ArrowUp: 'up', ArrowDown: 'down', Numpad1: 'ok', Comma: 'ok', Numpad2: 'back', Period: 'back', NumpadEnter: 'ok',
+    Numpad4: 'prevOutfit', Numpad5: 'nextOutfit', Semicolon: 'prevOutfit', Quote: 'nextOutfit' };
 
   var SelectScene = function () { Phaser.Scene.call(this, { key: 'select' }); };
   SelectScene.prototype = Object.create(Phaser.Scene.prototype);
@@ -30,6 +31,7 @@
     if (this.prev.p1) this.cursor[0] = Math.max(0, roster.indexOf(FG.fighterById(this.prev.p1)));
     if (this.prev.p2) this.cursor[1] = Math.max(0, roster.indexOf(FG.fighterById(this.prev.p2)));
     this.chosen = [null, null];
+    this.outfit = [0, 0]; // the outfit each side wears (unlocked by winning with that fighter)
     this.leaving = false;
 
     var bg = this.add.graphics();
@@ -59,7 +61,7 @@
       maskShape.fillStyle(0xffffff, 1); maskShape.fillRect(cx + 2, cy + 2, CARD_W - 4, CARD_H - 14);
       g.setMask(maskShape.createGeometryMask());
       var puppet = FG.puppet(roster[i], cx + CARD_W / 2 - 2, 1);
-      puppet.index = i;
+      puppet.index = i; puppet.outfit = 0;
       var name = FG.text(this, cx + CARD_W / 2, cy + CARD_H - 11, roster[i].name, 'w').setOrigin(0.5, 0).setDepth(5);
       if (roster[i].name.length > 9) name.setScale(0.8);
       var zone = this.add.zone(cx + CARD_W / 2, cy + CARD_H / 2, CARD_W, CARD_H).setInteractive({ useHandCursor: true });
@@ -85,9 +87,10 @@
         sub: FG.text(self, side === 0 ? 10 : C.VIEW_W - 10, 74, '', 'y'),
         moves: [0, 1, 2, 3, 4].map(function (k) { return FG.text(self, side === 0 ? 10 : C.VIEW_W - 10, 88 + k * 10, '', 'w'); }),
         tag: FG.text(self, x, 300, '', side === 0 ? 'c' : 'r').setOrigin(0.5, 0),
+        outfit: FG.text(self, side === 0 ? 10 : C.VIEW_W - 10, 142, '', 'g'),
         ready: FG.text(self, x, 312, '', 'y').setOrigin(0.5, 0)
       };
-      if (side === 1) { p.name.setOrigin(1, 0); p.sub.setOrigin(1, 0); p.moves.forEach(function (m) { m.setOrigin(1, 0); }); }
+      if (side === 1) { p.name.setOrigin(1, 0); p.sub.setOrigin(1, 0); p.outfit.setOrigin(1, 0); p.moves.forEach(function (m) { m.setOrigin(1, 0); }); }
       return p;
     });
 
@@ -115,6 +118,7 @@
     }
     if (act === 'ok') { this.confirm(side); return; }
     if (act === 'back') { this.back(side); return; }
+    if (act === 'prevOutfit' || act === 'nextOutfit') { this.cycleOutfit(side, act === 'nextOutfit' ? 1 : -1); return; }
     if (this.chosen[side] && this.mode === 'versus') return; // locked in
     var n = FG.ROSTER.length, c = this.cursor[side];
     if (act === 'left') c = (c + n - 1) % n;
@@ -123,6 +127,17 @@
     if (act === 'down') c = c + COLS < n ? c + COLS : c;
     if (c !== this.cursor[side]) FG.Sfx.ui('move');
     this.cursor[side] = c;
+    this.refresh();
+  };
+
+  // Q / E (player 2: NUM4 / NUM5 or ; / '): the next unlocked outfit.
+  SelectScene.prototype.cycleOutfit = function (side, d) {
+    if (this.chosen[side] && this.mode === 'versus') return;
+    var def = FG.ROSTER[this.cursor[side]], n = FG.outfitsUnlocked(def.id);
+    if (n <= 1 || this.locked(side)) { FG.Sfx.ui('move'); return; }
+    this.outfit[side] = (this.outfit[side] + d + n) % n;
+    FG.Progress.setOutfit(def.id, this.outfit[side]);
+    FG.Sfx.ui('confirm');
     this.refresh();
   };
 
@@ -139,6 +154,7 @@
     if (this.locked(side)) { FG.Sfx.ui('move'); this.lockMsg = 90; this.refresh(); return; }
     FG.Sfx.ui('confirm');
     this.chosen[side] = FG.ROSTER[this.cursor[side]].id;
+    FG.outfitPick[side] = { id: this.chosen[side], k: this.outfit[side] };
     if (this.twoStep() && side === 0) { this.step = 1; this.refresh(); return; }
     if (this.mode === 'versus' && !(this.chosen[0] && this.chosen[1])) { this.refresh(); return; }
     this.refresh();
@@ -170,13 +186,17 @@
     else if (m === 'versus') txt = (this.chosen[0] ? 'P1 READY' : 'P1 CHOOSING') + '      ' + (this.chosen[1] ? 'P2 READY' : 'P2 CHOOSING');
     else { txt = this.step === 0 ? 'PLAYER 1: CHOOSE YOUR FIGHTER' : m === 'cpu' ? "CHOOSE THE CPU'S FIGHTER" : 'CHOOSE YOUR OPPONENT'; col = this.step === 0 ? 'pf_c' : 'pf_r'; }
     this.stepText.setText(txt).setFont(col);
-    this.footer.setText(m === 'versus' ? 'P1: WASD + J (K UNDO)    P2: ARROWS + NUM1 OR , (NUM2 OR . UNDO)    ESC BACK' : 'ARROWS MOVE   ENTER CONFIRM   ESC BACK');
+    this.footer.setText(m === 'versus' ? 'P1: WASD + J (K UNDO)    P2: ARROWS + NUM1 OR , (NUM2 OR . UNDO)    ESC BACK' : 'ARROWS MOVE   Q/E OUTFIT   ENTER CONFIRM   ESC BACK');
     for (var side = 0; side < 2; side++) {
       var def = FG.ROSTER[this.cursor[side]], p = this.previews[side];
       if (!p.puppet || p.puppet.def !== def) {
         p.puppet = FG.puppet(def, p.x, side === 0 ? 1 : -1);
         p.puppet.index = side;
+        // The outfit you last wore with them (if it's still unlocked).
+        this.outfit[side] = Math.min(FG.progress.outfit[def.id] || 0, FG.outfitsUnlocked(def.id) - 1);
       }
+      p.puppet.outfit = this.outfit[side];
+      var nOut = FG.outfitsUnlocked(def.id), next = FG.OUTFITS[nOut];
       var showing = this.showing(side), lock = this.locked(side);
       p.name.setText(showing ? (lock ? '???' : def.name) : '');
       p.sub.setText(showing ? (lock ? 'BEAT ARCADE TO UNLOCK' : def.archetype + '  ' + def.theme) : '');
@@ -184,6 +204,9 @@
       for (var k = 0; k < p.moves.length; k++) p.moves[k].setText(showing && !lock && def.signature[k] ? def.signature[k] : '');
       p.tag.setText(!showing ? '' : side === 0 ? 'P1' : m === 'versus' ? 'P2' : m === 'cpu' ? 'CPU' : 'OPPONENT').setVisible(showing);
       p.ready.setText(showing && this.chosen[side] && !this.twoStep() ? 'READY!' : '');
+      var keys = side === 0 || this.twoStep() ? 'Q/E' : 'NUM4/5';
+      p.outfit.setText(!showing || this.locked(side) ? '' : 'OUTFIT ' + (this.outfit[side] + 1) + '/' + nOut + ': ' + FG.OUTFITS[this.outfit[side]].name +
+        (nOut > 1 ? '  ' + keys : '') + (next ? '   NEXT: WIN ' + next.wins : ''));
     }
   };
 

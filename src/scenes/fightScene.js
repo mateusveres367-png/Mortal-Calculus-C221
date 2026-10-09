@@ -113,7 +113,10 @@
     opts = opts || {};
     this.match = new FG.Match(FG.fighterById(this.ids.p1), FG.fighterById(this.ids.p2));
     this.match.autoReset = false; // K.O. shows the win screen instead
-    this.match.fighters[1].alt = this.ids.p1 === this.ids.p2; // a mirror match: player 2 in other colours
+    // Outfits picked on character select; a mirror match in the same one: player 2 in other colours.
+    var mf = this.match.fighters;
+    for (var oi = 0; oi < 2; oi++) mf[oi].outfit = this.mode === 'attract' ? 0 : FG.outfitFor(mf[oi].def, oi);
+    mf[1].alt = this.ids.p1 === this.ids.p2 && mf[0].outfit === mf[1].outfit;
     this.match.reset(this.training.startPos);
     // What carries from one round to the next (the Grade meter).
     if (opts.carry) for (var ci = 0; ci < 2; ci++) for (var key in opts.carry[ci]) this.match.fighters[ci][key] = opts.carry[ci][key];
@@ -307,12 +310,14 @@
       if (this.phaseT === 80 && r.result.perfect) {
         this.hud.showBanner('PERFECT', '', 60, { scale: 4, y: 160 }); this.stage.cheer(3, true);
         if (this.mode !== 'attract') FG.Announcer.say('Perfect!', { sting: 'perfect', interrupt: true });
+        if (this.counts() && !this.ai[r.result.winner]) this.earned(FG.Progress.recordPerfect());
       } else if (this.phaseT === 80 && r.result.winner >= 0) {
         // Won with a sliver of health left: CLOSE CALL.
         var cw = m.fighters[r.result.winner];
         if (cw.health > 0 && cw.health < cw.def.health * C.CLOSE_CALL) {
           this.hud.showBanner('CLOSE CALL', '', 60, { scale: 4, y: 160 }); this.stage.cheer(3, true);
           if (this.mode !== 'attract') FG.Announcer.say('Close call!', { sting: 'close', interrupt: true });
+          if (this.counts() && !this.ai[r.result.winner]) this.earned(FG.Progress.recordCloseCall());
         }
       }
       if (this.phaseT >= 170) {
@@ -364,6 +369,7 @@
     this.hud.showBanner('', '', 1);
     this.cutin.play(w.def, w.x <= l.x ? 0 : 1, w.def.finisher.name);
     this.stage.react('wild'); // the students go wild
+    if (this.counts() && !this.ai[wi]) this.earned(FG.Progress.recordFinisher());
     if (this.mode !== 'attract') FG.Announcer.say(w.def.finisher.name.toLowerCase() + '!', { interrupt: true });
   };
 
@@ -479,6 +485,18 @@
     this.hud.showBanner(w.def.name + ' WINS' + score, sub, 100000, { scale: 3, y: 150 });
     if (this.rounds) this.stage.react('ko');
     if (this.mode !== 'attract') FG.Announcer.say(FG.Announcer.name(w.def.name) + ' wins!', { sting: 'win' });
+    if (this.counts()) this.earned(FG.Progress.recordMatch([{ id: this.ids.p1, human: !this.ai[0] }, { id: this.ids.p2, human: !this.ai[1] }], winner));
+  };
+
+  // Progress counts in real matches (not training or the title's demo).
+  FightScene.prototype.counts = function () { return this.mode !== 'training' && this.mode !== 'attract'; };
+  // Newly earned titles and outfits pop up as toasts.
+  FightScene.prototype.earned = function (gained) {
+    var hud = this.hud;
+    (gained || []).forEach(function (g) {
+      hud.toast(g.kind === 'title' ? 'NEW TITLE: ' + g.name : 'NEW OUTFIT FOR ' + g.fighter + ': ' + g.name);
+      FG.Sfx.play({ type: 'extracredit' });
+    });
   };
 
   // --- Combo trials ---------------------------------------------------------------
@@ -911,6 +929,7 @@
     for (var q = 0; q < 2; q++) {
       var hits = m.combo[q].hits;
       if (this.prevCombo[q] >= 4 && hits === 0 && !m.koTimer) this.quip(1 - q, 0.7);
+      if (this.prevCombo[q] > 0 && hits === 0 && this.counts() && !this.ai[1 - q] && this.prevCombo[q] > FG.progress.combo.hits) this.earned(FG.Progress.recordCombo(this.prevCombo[q], f[1 - q].def.id));
       if (hits === 0) this.cutinUsed[1 - q] = false;
       this.prevCombo[q] = hits;
     }
@@ -1223,7 +1242,8 @@
     var modeLabel = this.modeLabel();
     var clean = !!(this.intro || this.win || this.finisher || this.finishWin);
     var r = this.rounds;
-    this.hud.draw(m, { modeLabel: clean && this.mode === 'training' ? '' : modeLabel, showData: t.showData && !clean, slow: t.slow,
+    var myTitle = this.mode === 'attract' || this.ai[0] ? '' : FG.titleById(FG.progress.title).name;
+    this.hud.draw(m, { modeLabel: clean && this.mode === 'training' ? '' : modeLabel, showData: t.showData && !clean, slow: t.slow, titles: [myTitle, ''],
       rounds: r ? { wins: r.wins, toWin: r.toWin, time: r.timeLeft(), low: r.seconds && r.frames < 10 * 60 && this.phase === 'fight' } : null });
     // The intro and win screen hide the training clutter.
     this.inputDisplays[0].draw(this.histories[0], t.showInputs && !clean);
