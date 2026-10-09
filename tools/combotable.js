@@ -5,7 +5,7 @@ var fs = require('fs'), path = require('path'), vm = require('vm');
 var ROOT = path.join(__dirname, '..');
 var ctx = { console: console, Math: Math }; ctx.window = ctx; vm.createContext(ctx);
 var html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
-var re = /<script src="(src\/(?:fg\.js|engine\/[^"]+|data\/[^"]+))"><\/script>/g, mt;
+var re = /<script src="(src\/(?:fg\.js|engine\/[^"?]+|data\/[^"?]+))(?:\?[^"]*)?"><\/script>/g, mt;
 while ((mt = re.exec(html))) vm.runInContext(fs.readFileSync(path.join(ROOT, mt[1]), 'utf8'), ctx, { filename: mt[1] });
 var FG = ctx.FG;
 

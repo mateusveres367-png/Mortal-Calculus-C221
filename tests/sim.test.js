@@ -17,7 +17,7 @@ ctx.window = ctx; vm.createContext(ctx);
 // Load the same simulation and data scripts the game loads, in index.html order
 // (everything except Phaser, rendering and scenes; inputDisplay has the pure input history).
 var html = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
-var re = /<script src="(src\/(?:fg\.js|engine\/[^"]+|data\/[^"]+|render\/inputDisplay\.js))"><\/script>/g, mt;
+var re = /<script src="(src\/(?:fg\.js|engine\/[^"?]+|data\/[^"?]+|render\/inputDisplay\.js))(?:\?[^"]*)?"><\/script>/g, mt;
 while ((mt = re.exec(html))) {
   vm.runInContext(fs.readFileSync(path.join(__dirname, '..', mt[1]), 'utf8'), ctx, { filename: mt[1] });
 }
@@ -26,6 +26,17 @@ var FG = ctx.FG, failures = 0, passes = 0;
 function check(name, cond, info) {
   if (cond) passes++; else { failures++; console.log('FAIL', name, info === undefined ? '' : JSON.stringify(info)); }
 }
+// index.html: every script it loads exists, and all carry the same ?v= version stamp
+// (so a browser never runs cached old files next to new ones).
+(function () {
+  var tags = html.match(/<script src="[^"]+"><\/script>/g) || [], vs = {};
+  tags.forEach(function (t) {
+    var m = /src="([^"?]+)(?:\?v=([^"]+))?"/.exec(t);
+    check('index.html script exists: ' + m[1], fs.existsSync(path.join(__dirname, '..', m[1])));
+    vs[m[2] || '(none)'] = true;
+  });
+  check('index.html scripts share one ?v= stamp', Object.keys(vs).length === 1 && !vs['(none)'], Object.keys(vs));
+})();
 function raw(o) { var r = FG.emptyRaw(); for (var k in o) r[k] = o[k]; return r; }
 function run(m, frames, fn) {
   for (var i = 0; i < frames; i++) { var r = fn ? fn(i) : [raw({}), raw({})]; m.step(r); }

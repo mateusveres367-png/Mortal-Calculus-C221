@@ -17,63 +17,85 @@
 <body>
   <div id="game"></div>
 
-  <!-- Classic scripts in dependency order (no ES modules: the game must run from file://). -->
-  <script src="lib/phaser.min.js"></script>
-  <script src="src/fg.js"></script>
-  <script src="src/engine/input.js"></script>
-  <script src="src/data/poses.js"></script>
-  <script src="src/data/kit.js"></script>
-  <script src="src/data/stages.js"></script>
-  <script src="src/data/fighters/pedersen.js"></script>
-  <script src="src/data/fighters/brinkhus.js"></script>
-  <script src="src/data/fighters/chai.js"></script>
-  <script src="src/data/fighters/dalsass.js"></script>
-  <script src="src/data/fighters/lee.js"></script>
-  <script src="src/data/fighters/lopez.js"></script>
-  <script src="src/data/fighters/miyashiro.js"></script>
-  <script src="src/data/fighters/ramos.js"></script>
-  <script src="src/data/fighters/wilson.js"></script>
-  <script src="src/data/talk.js"></script>
-  <script src="src/engine/fighter.js"></script>
-  <script src="src/engine/match.js"></script>
-  <script src="src/engine/combat.js"></script>
-  <script src="src/engine/dummy.js"></script>
-  <script src="src/engine/ai.js"></script>
-  <script src="src/engine/rounds.js"></script>
-  <script src="src/render/pixelfont.js"></script>
-  <script src="src/render/fighterRenderer.js"></script>
-  <script src="src/render/motion.js"></script>
-  <script src="src/render/car.js"></script>
-  <script src="src/render/stage.js"></script>
-  <script src="src/render/effects.js"></script>
-  <script src="src/render/music.js"></script>
-  <script src="src/render/hud.js"></script>
-  <script src="src/render/inputDisplay.js"></script>
-  <script src="src/render/trainingMenu.js"></script>
-  <script src="src/render/comboTrials.js"></script>
-  <script src="src/render/speechBox.js"></script>
-  <script src="src/render/cutIn.js"></script>
-  <script src="src/render/finishers.js"></script>
-  <script src="src/render/ultimates.js"></script>
-  <script src="src/render/ultimates/brinkhus.js"></script>
-  <script src="src/render/ultimates/chai.js"></script>
-  <script src="src/render/ultimates/dalsass.js"></script>
-  <script src="src/render/ultimates/lee.js"></script>
-  <script src="src/render/ultimates/lopez.js"></script>
-  <script src="src/render/ultimates/miyashiro.js"></script>
-  <script src="src/render/ultimates/pedersen.js"></script>
-  <script src="src/render/ultimates/ramos.js"></script>
-  <script src="src/render/ultimates/wilson.js"></script>
-  <script src="src/render/props.js"></script>
-  <script src="src/progress.js"></script>
-  <script src="src/scenes/titleScene.js"></script>
-  <script src="src/scenes/selectScene.js"></script>
-  <script src="src/scenes/stageSelectScene.js"></script>
-  <script src="src/scenes/endingScene.js"></script>
-  <script src="src/scenes/ladderScene.js"></script>
-  <script src="src/scenes/fightScene.js"></script>
-  <script src="src/scenes/recordsScene.js"></script>
-  <script src="src/touch.js"></script>
-  <script src="src/main.js"></script>
+  <!-- If anything goes wrong, say so on screen (instead of a frozen game) so it can be reported. -->
+  <script>
+    (function () {
+      var shown = 0;
+      function report(msg, where) {
+        if (shown++ > 2) return;
+        var box = document.getElementById('fg-error');
+        if (!box) {
+          box = document.createElement('div'); box.id = 'fg-error';
+          box.style.cssText = 'position:fixed;left:8px;right:8px;bottom:8px;z-index:99;padding:10px 12px;background:#2a0d10;border:2px solid #ff3d3d;color:#ffd0c8;font:13px/1.4 monospace;white-space:pre-wrap;';
+          (document.body || document.documentElement).appendChild(box);
+        }
+        box.textContent += (box.textContent ? '\n' : 'Something went wrong. If this keeps happening, reload with Ctrl+Shift+R (Cmd+Shift+R on Mac) to clear old cached files.\n') + msg + (where ? '  (' + where + ')' : '');
+      }
+      window.addEventListener('error', function (e) {
+        var f = (e.filename || '').split('/').slice(-2).join('/').replace(/\?.*$/, '');
+        report(e.message || String(e.error), f ? f + ':' + e.lineno : '');
+      });
+      window.addEventListener('unhandledrejection', function (e) { report('Unhandled: ' + (e.reason && e.reason.message || e.reason)); });
+    })();
+  </script>
+  <!-- Classic scripts in dependency order (no ES modules: the game must run from file://).
+       ?v= is a version stamp: bump it whenever scripts change, so browsers never mix cached old files with new ones. -->
+  <script src="lib/phaser.min.js?v=20261009b"></script>
+  <script src="src/fg.js?v=20261009b"></script>
+  <script src="src/engine/input.js?v=20261009b"></script>
+  <script src="src/data/poses.js?v=20261009b"></script>
+  <script src="src/data/kit.js?v=20261009b"></script>
+  <script src="src/data/stages.js?v=20261009b"></script>
+  <script src="src/data/fighters/pedersen.js?v=20261009b"></script>
+  <script src="src/data/fighters/brinkhus.js?v=20261009b"></script>
+  <script src="src/data/fighters/chai.js?v=20261009b"></script>
+  <script src="src/data/fighters/dalsass.js?v=20261009b"></script>
+  <script src="src/data/fighters/lee.js?v=20261009b"></script>
+  <script src="src/data/fighters/lopez.js?v=20261009b"></script>
+  <script src="src/data/fighters/miyashiro.js?v=20261009b"></script>
+  <script src="src/data/fighters/ramos.js?v=20261009b"></script>
+  <script src="src/data/fighters/wilson.js?v=20261009b"></script>
+  <script src="src/data/talk.js?v=20261009b"></script>
+  <script src="src/engine/fighter.js?v=20261009b"></script>
+  <script src="src/engine/match.js?v=20261009b"></script>
+  <script src="src/engine/combat.js?v=20261009b"></script>
+  <script src="src/engine/dummy.js?v=20261009b"></script>
+  <script src="src/engine/ai.js?v=20261009b"></script>
+  <script src="src/engine/rounds.js?v=20261009b"></script>
+  <script src="src/render/pixelfont.js?v=20261009b"></script>
+  <script src="src/render/fighterRenderer.js?v=20261009b"></script>
+  <script src="src/render/motion.js?v=20261009b"></script>
+  <script src="src/render/car.js?v=20261009b"></script>
+  <script src="src/render/stage.js?v=20261009b"></script>
+  <script src="src/render/effects.js?v=20261009b"></script>
+  <script src="src/render/music.js?v=20261009b"></script>
+  <script src="src/render/hud.js?v=20261009b"></script>
+  <script src="src/render/inputDisplay.js?v=20261009b"></script>
+  <script src="src/render/trainingMenu.js?v=20261009b"></script>
+  <script src="src/render/comboTrials.js?v=20261009b"></script>
+  <script src="src/render/speechBox.js?v=20261009b"></script>
+  <script src="src/render/cutIn.js?v=20261009b"></script>
+  <script src="src/render/finishers.js?v=20261009b"></script>
+  <script src="src/render/ultimates.js?v=20261009b"></script>
+  <script src="src/render/ultimates/brinkhus.js?v=20261009b"></script>
+  <script src="src/render/ultimates/chai.js?v=20261009b"></script>
+  <script src="src/render/ultimates/dalsass.js?v=20261009b"></script>
+  <script src="src/render/ultimates/lee.js?v=20261009b"></script>
+  <script src="src/render/ultimates/lopez.js?v=20261009b"></script>
+  <script src="src/render/ultimates/miyashiro.js?v=20261009b"></script>
+  <script src="src/render/ultimates/pedersen.js?v=20261009b"></script>
+  <script src="src/render/ultimates/ramos.js?v=20261009b"></script>
+  <script src="src/render/ultimates/wilson.js?v=20261009b"></script>
+  <script src="src/render/props.js?v=20261009b"></script>
+  <script src="src/progress.js?v=20261009b"></script>
+  <script src="src/scenes/titleScene.js?v=20261009b"></script>
+  <script src="src/scenes/selectScene.js?v=20261009b"></script>
+  <script src="src/scenes/stageSelectScene.js?v=20261009b"></script>
+  <script src="src/scenes/endingScene.js?v=20261009b"></script>
+  <script src="src/scenes/ladderScene.js?v=20261009b"></script>
+  <script src="src/scenes/fightScene.js?v=20261009b"></script>
+  <script src="src/scenes/recordsScene.js?v=20261009b"></script>
+  <script src="src/touch.js?v=20261009b"></script>
+  <script src="src/main.js?v=20261009b"></script>
 </body>
 </html>

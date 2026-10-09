@@ -21,7 +21,7 @@ seededMath.random = (function (a) {
 var ctx = { console: console, Math: seededMath };
 ctx.window = ctx; vm.createContext(ctx);
 var html = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
-var re = /<script src="(src\/(?:fg\.js|engine\/[^"]+|data\/[^"]+))"><\/script>/g, mt;
+var re = /<script src="(src\/(?:fg\.js|engine\/[^"?]+|data\/[^"?]+))(?:\?[^"]*)?"><\/script>/g, mt;
 while ((mt = re.exec(html))) vm.runInContext(fs.readFileSync(path.join(__dirname, '..', mt[1]), 'utf8'), ctx, { filename: mt[1] });
 var FG = ctx.FG, C = FG.C, roster = FG.ROSTER;
 
