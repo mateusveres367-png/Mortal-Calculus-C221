@@ -1,14 +1,14 @@
 // Per-player input state. Raw input is a plain object of held booleans:
-//   { left, right, up, down, p, k, h, ssIn, ssOut, t }  (t = taunt)
+//   { left, right, up, down, p, k, h, ssIn, ssOut, t, u }  (t = taunt, u = the ultimate key)
 // The buffer stamps button presses with the simulation frame so a press made
 // slightly early (or during hitstop) still comes out on the first legal frame.
 (function () {
   var C = FG.C;
-  var BUTTONS = ['p', 'k', 'h', 'ssIn', 'ssOut', 'up', 't'];
+  var BUTTONS = ['p', 'k', 'h', 'ssIn', 'ssOut', 'up', 't', 'u'];
   var DIR_SLOP = 2; // frames after a button press in which a direction still joins it
 
   function emptyRaw() {
-    return { left: false, right: false, up: false, down: false, p: false, k: false, h: false, ssIn: false, ssOut: false, t: false };
+    return { left: false, right: false, up: false, down: false, p: false, k: false, h: false, ssIn: false, ssOut: false, t: false, u: false };
   }
 
   function InputBuffer() {
@@ -132,6 +132,7 @@
         case 'SI': r.ssIn = true; break;
         case 'SO': r.ssOut = true; break;
         case 'T': r.t = true; break;
+        case 'ULT': r.u = true; break; // the ultimate key
       }
     });
     return r;

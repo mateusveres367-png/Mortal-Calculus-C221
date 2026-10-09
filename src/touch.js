@@ -2,14 +2,14 @@
 // They send the same keys player 1 uses on a keyboard (WASD, J K L, T, Enter, Esc),
 // so every screen works as it does with keys. Shown on touch devices (or with
 // ?touch=1 in the address). The ★ button does the right big thing for you:
-//   ultimate (full meter: it does the motion), Extra Credit (when it's there),
+//   ultimate (full meter: it presses the ultimate key), Extra Credit (when it's there),
 //   a stage object (when you're next to one), a power-up (in a special's startup
 //   with a bar), otherwise a throw. Outside a fight it confirms.
 (function () {
   var KEYS = {
     KeyW: ['w', 87], KeyA: ['a', 65], KeyS: ['s', 83], KeyD: ['d', 68],
     KeyJ: ['j', 74], KeyK: ['k', 75], KeyL: ['l', 76], KeyT: ['t', 84],
-    Enter: ['Enter', 13], Escape: ['Escape', 27]
+    KeyU: ['u', 85], Numpad0: ['0', 96], Enter: ['Enter', 13], Escape: ['Escape', 27]
   };
   var Touch = FG.Touch = {
     on: /[?&]touch=1/.test(location.search) || (('ontouchstart' in window || navigator.maxTouchPoints > 0) && !/[?&]touch=0/.test(location.search)),
@@ -18,7 +18,7 @@
 
   // A synthetic key event, as the keyboard would send it (Phaser reads keyCode).
   function send(type, code) {
-    var k = KEYS[code], ev = new KeyboardEvent(type, { key: k[0], code: code, bubbles: true, cancelable: true });
+    var k = KEYS[code] || [code, 0], ev = new KeyboardEvent(type, { key: k[0], code: code, bubbles: true, cancelable: true });
     Object.defineProperty(ev, 'keyCode', { get: function () { return k[1]; } });
     Object.defineProperty(ev, 'which', { get: function () { return k[1]; } });
     window.dispatchEvent(ev);
@@ -38,19 +38,8 @@
   function star() {
     var s = fight();
     if (!s) { tap(['Enter']); return; }
-    var f = s.match.fighters[0], fwd = f.facing > 0 ? 'KeyD' : 'KeyA', back = f.facing > 0 ? 'KeyA' : 'KeyD';
-    if (f.def.moves.ultimate && f.meter >= FG.C.METER_MAX) {
-      // Down, down-forward, forward + P+K+H, a couple of frames each.
-      var steps = [['KeyS'], ['KeyS', fwd], [fwd, 'KeyJ', 'KeyK', 'KeyL']];
-      steps.forEach(function (codes, i) {
-        setTimeout(function () {
-          ['KeyS', 'KeyA', 'KeyD', 'KeyJ', 'KeyK', 'KeyL'].forEach(function (c) { if (codes.indexOf(c) < 0) up(c); });
-          codes.forEach(down);
-        }, i * 40);
-      });
-      setTimeout(function () { ['KeyS', 'KeyA', 'KeyD', 'KeyJ', 'KeyK', 'KeyL'].forEach(up); }, steps.length * 40 + 60);
-      return;
-    }
+    var f = s.match.fighters[0], back = f.facing > 0 ? 'KeyA' : 'KeyD';
+    if (f.def.moves.ultimate && f.meter >= FG.C.METER_MAX) { tap([FG.settings.ultKey1]); return; } // the ultimate key
     if (f.canExtraCredit()) { tap(['KeyJ', 'KeyK', 'KeyL']); return; }
     var prop = (s.match.props || []).filter(function (p) { return p.cool === 0 && Math.abs(p.x - f.x) <= FG.C.PROP_REACH; })[0];
     if (prop) {

@@ -534,6 +534,8 @@
       { label: 'HEALTH', value: function () { return t.refill ? 'REFILL' : 'NORMAL'; }, change: function () { t.refill = !t.refill; } },
       { label: 'INFINITE METER', value: function () { return t.infiniteMeter ? 'ON' : 'OFF'; },
         change: function () { t.infiniteMeter = !t.infiniteMeter; self.applyMeterOption(self.trials.active && !!(self.trials.current() || {}).meter); } },
+      { label: 'ULTIMATE KEY', value: function () { return FG.keyName(FG.settings.ultKey1) + ' WITH 3 BARS: TRY IT'; },
+        change: function () { var f0 = self.match.fighters[0]; f0.meter = C.METER_MAX; self.menu.setOpen(false); self.hud.showBanner('PRESS ' + FG.keyName(FG.settings.ultKey1), 'METER FILLED: FIRE YOUR ULTIMATE', 120, { scale: 3, y: 130 }); } },
       { label: 'EASY COMBOS', value: function () { return FG.settings.easyCombos ? 'ON' : 'OFF'; }, change: function () { FG.settings.easyCombos = !FG.settings.easyCombos; FG.saveSettings(); } },
       toggle('showData', 'FRAME DATA'),
       toggle('showInputs', 'INPUT DISPLAY'),
@@ -615,10 +617,15 @@
     });
     kb.addCapture([K.ESC, K.ENTER, K.SPACE]);
     var self = this, t = this.training;
-    TAPS = {};
+    TAPS = {}; CODES = {}; CODE_TAPS = {};
+    kb.on('keyup', function (e) { delete CODES[e.code]; });
+    var forget = function () { CODES = {}; }; // keys let go while the window was in the background
+    this.game.events.on('blur', forget);
+    this.events.once('shutdown', function () { this.game.events.off('blur', forget); }, this);
     kb.on('keydown', function (e) {
       FG.Sfx.unlock();
       TAPS[e.keyCode] = true;
+      CODES[e.code] = true; CODE_TAPS[e.code] = true; // the ultimate keys are read by code (remappable)
       if (self.mode === 'attract') { self.toTitle(); return; } // any key ends the demo
       if (self.menu.open) { self.menu.key(e.code); return; }
       if (self.intro) {
@@ -674,20 +681,24 @@
 
   // A key counts as down this tick if it is held, or was tapped since the last tick
   // (a quick tap can start and end between two ticks; taps are recorded from keydown).
-  var TAPS = {};
+  var TAPS = {}, CODES = {}, CODE_TAPS = {};
   function on(key) { return key.isDown || !!TAPS[key.keyCode]; }
+  function codeOn(code) { return !!(code && (CODES[code] || CODE_TAPS[code])); }
 
+  // The ultimate key: P1 U, P2 Numpad 0 (or [ on a keyboard without a number pad),
+  // either remappable in the title screen's OPTIONS.
   FightScene.prototype.readP1 = function () {
     var k = this.keys1;
     return { left: on(k.left), right: on(k.right), up: on(k.up), down: on(k.down),
-      p: on(k.p), k: on(k.k), h: on(k.h), ssIn: on(k.ssIn), ssOut: on(k.ssOut), t: on(k.t) };
+      p: on(k.p), k: on(k.k), h: on(k.h), ssIn: on(k.ssIn), ssOut: on(k.ssOut), t: on(k.t), u: codeOn(FG.settings.ultKey1) };
   };
 
   FightScene.prototype.readP2 = function () {
     var k = this.keys2;
     return { left: on(k.left), right: on(k.right), up: on(k.up), down: on(k.down),
       p: on(k.p) || on(k.p2), k: on(k.k) || on(k.k2), h: on(k.h) || on(k.h2),
-      ssIn: on(k.ssIn) || on(k.ssIn2) || on(k.ssIn3), ssOut: on(k.ssOut) || on(k.ssOut2), t: on(k.t) || on(k.t2) };
+      ssIn: on(k.ssIn) || on(k.ssIn2) || on(k.ssIn3), ssOut: on(k.ssOut) || on(k.ssOut2), t: on(k.t) || on(k.t2),
+      u: codeOn(FG.settings.ultKey2) || codeOn('BracketLeft') };
   };
 
   // Test hook: override inputs for the next ticks (used by the headless smoke test).
@@ -767,7 +778,7 @@
     }
     if (this.cutinCool > 0) this.cutinCool--;
     var raw1 = this.inputFor(0), raw2 = this.inputFor(1);
-    TAPS = {}; // taps since the last tick have been read
+    TAPS = {}; CODE_TAPS = {}; // taps since the last tick have been read
     // The PROFESSOR just learned one of your moves: say so over its head.
     for (var ai = 0; ai < 2; ai++) if (this.ai[ai] && this.ai[ai].noticed) { f[ai]._tag = { text: 'READ: ' + this.ai[ai].noticed, t: 100 }; this.ai[ai].noticed = null; }
     if (this.finishWin || this.finisher) {

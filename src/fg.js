@@ -138,12 +138,31 @@ FG.C = {
 
 // Player settings (title screen OPTIONS), remembered in this browser when possible.
 (function () {
-  FG.settings = { difficulty: 'normal', time: 60, sound: true, easyCombos: false, wilsonUnlocked: false }; // wilsonUnlocked: arcade beaten once
+  FG.settings = { difficulty: 'normal', time: 60, sound: true, easyCombos: false, wilsonUnlocked: false, // wilsonUnlocked: arcade beaten once
+    ultKey1: 'KeyU', ultKey2: 'Numpad0' }; // the ultimate keys (KeyboardEvent codes; remap in OPTIONS)
   try {
     var saved = JSON.parse(window.localStorage.getItem('mc221.settings') || 'null');
     if (saved) for (var k in FG.settings) if (saved[k] !== undefined) FG.settings[k] = saved[k];
   } catch (e) { /* storage unavailable: defaults */ }
   FG.saveSettings = function () {
     try { window.localStorage.setItem('mc221.settings', JSON.stringify(FG.settings)); } catch (e) { /* not saved */ }
+  };
+  // Keys the fight already uses (players 1 and 2, training, menus): an ultimate key
+  // can't be remapped onto one of these.
+  FG.TAKEN_KEYS = ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'KeyJ', 'KeyK', 'KeyL', 'KeyQ', 'KeyE', 'KeyT', 'KeyR', 'KeyM', 'KeyC',
+    'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Numpad1', 'Numpad2', 'Numpad3', 'Numpad4', 'Numpad5', 'Numpad6',
+    'Comma', 'Period', 'Slash', 'Semicolon', 'Quote', 'BracketRight', 'BracketLeft', 'Escape', 'Enter', 'NumpadEnter', 'Space', 'Backspace',
+    'Digit1', 'Digit2', 'Digit3', 'Digit4', 'Digit5', 'Digit6', 'Digit7', 'Digit8', 'Digit9'];
+  // A key code as players read it: 'KeyU' -> 'U', 'Numpad0' -> 'NUM 0'.
+  FG.keyName = function (code) {
+    if (!code) return '-';
+    var m = /^Key([A-Z])$/.exec(code) || /^Digit(\d)$/.exec(code);
+    if (m) return m[1];
+    m = /^Numpad(.*)$/.exec(code);
+    if (m) return 'NUM ' + ({ Add: '+', Subtract: '-', Multiply: '×', Divide: '÷', Decimal: '.' }[m[1]] || m[1]).toUpperCase();
+    var names = { BracketLeft: '[', BracketRight: ']', Backquote: '`', Minus: '-', Equal: '=', Backslash: '\\', ShiftLeft: 'L SHIFT', ShiftRight: 'R SHIFT',
+      ControlLeft: 'L CTRL', ControlRight: 'R CTRL', AltLeft: 'L ALT', AltRight: 'R ALT', Tab: 'TAB', CapsLock: 'CAPS', Insert: 'INS', Delete: 'DEL',
+      Home: 'HOME', End: 'END', PageUp: 'PG UP', PageDown: 'PG DN' };
+    return names[code] || code.toUpperCase();
   };
 })();

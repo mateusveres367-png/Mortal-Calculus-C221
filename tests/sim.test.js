@@ -1453,7 +1453,7 @@ defs.forEach(function (d) {
   check('enhanced: only during startup', lateEv.every(function (e) { return e.type !== 'enhance'; }) && late.fighters[0].lastMove.id === 'heavy', late.fighters[0].lastMove.id);
 })();
 
-// Ultimates: down, down-forward, forward + P+K+H with three bars; a cinematic on hit.
+// Ultimates: the ultimate key, or down, down-forward, forward + P+K+H, with three bars; a cinematic on hit.
 (function () {
   var QCF = ['D', 'D/F', 'F', 'F+P+K+H'];
   function ult(d, opp, opts) {
@@ -1475,7 +1475,7 @@ defs.forEach(function (d) {
   }
   defs.forEach(function (d) {
     var u = d.ultimate, tag = d.name + ' ultimate: ';
-    check(tag + 'has a cinematic script entry', !!u && u.hits.length >= 2 && u.len > u.hits[u.hits.length - 1], u);
+    check(tag + 'has a cinematic script entry', !!u && u.hits.length >= 1 && u.len > u.hits[u.hits.length - 1], u);
     // The opponent attacks into LOPEZ's counter stance.
     var poke = u.counter ? function (i) { return raw(i === 10 ? { p: true } : {}); } : null;
     var r = ult(d, D, { opp2: poke });
@@ -1492,6 +1492,11 @@ defs.forEach(function (d) {
     // Not enough meter: nothing.
     var poor = ult(d, D, { meter: FG.C.METER_MAX - 1, opp2: poke });
     check(tag + 'needs all three bars', poor.type('ultstart').length === 0 && poor.type('ultimate').length === 0);
+    // The ultimate key on its own does it too (and does nothing without the meter).
+    var key = ult(d, D, { seq: ['ULT'], opp2: poke });
+    check(tag + 'the ultimate key fires it', key.type('ultstart').length === 1 && key.type('ultimate').length === 1 && key.type('ulthit').length === u.hits.length, key.ev.filter(function (e) { return /ult/.test(e.type); }).length);
+    var keyPoor = ult(d, D, { seq: ['ULT'], meter: FG.C.METER_MAX - 1, opp2: poke });
+    check(tag + 'the key needs all three bars', keyPoor.type('ultstart').length === 0);
     // The motion matters: F, D/F, D (backwards) doesn't do it.
     var wrong = ult(d, D, { seq: ['F', 'D/F', 'D', 'P+K+H'], opp2: poke });
     check(tag + 'needs the motion', wrong.type('ultstart').length === 0);
@@ -1521,6 +1526,12 @@ defs.forEach(function (d) {
   var uh = ev.filter(function (e) { return e.type === 'ulthit'; });
   check('ultimate: cancels from a hit into a combo', uh.length === S.ultimate.hits.length && uh[0].hits === 2, uh.map(function (e) { return e.hits; }));
   check('ultimate: less damage at the end of a combo', ult(S, D).type('ulthit').reduce(function (t, e) { return t + e.damage; }, 0) >= uh.reduce(function (t, e) { return t + e.damage; }, 0));
+  // ...and with the ultimate key.
+  m = setup(S, D, 40); ev = [];
+  m.fighters[0].meter = FG.C.METER_MAX;
+  for (i = 0; i < 400; i++) { m.step([i === 0 ? FG.parseInput('P') : i === 8 ? FG.parseInput('ULT') : raw({}), raw({})]); ev = ev.concat(m.events); }
+  uh = ev.filter(function (e) { return e.type === 'ulthit'; });
+  check('ultimate key: cancels from a hit into a combo', uh.length === S.ultimate.hits.length && uh[0].hits === 2, uh.map(function (e) { return e.hits; }));
   // The motion itself, in the input buffer.
   var b = new FG.InputBuffer(), f = 100;
   ['D', 'D/F', 'F'].forEach(function (x) { b.update(FG.parseInput(x), f++); });

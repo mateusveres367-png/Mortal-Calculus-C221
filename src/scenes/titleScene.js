@@ -9,7 +9,7 @@
   var C = FG.C, W = C.VIEW_W, H = C.VIEW_H;
   var IDLE_DEMO = 15 * 60; // frames on the title before the demo starts
   var BOX = { x: 452, y: 150, w: 170, h: 126 };
-  var OPTION_ROWS = 5;
+  var OPTION_ROWS = 7;
   var HY = 214;            // horizon
   var SUN = { x: 330, y: HY + 6, r: 74 };
   var CAR = { x: 196, y: 300, scale: 1.9 };
@@ -44,11 +44,11 @@
   ];
 
   var MENU = [
-    { id: 'arcade', label: 'ARCADE', help: 'FIGHT ALL EIGHT IN A ROW. IT GETS HARDER EVERY FIGHT' },
+    { id: 'arcade', label: 'ARCADE', help: 'FIGHT THEM ALL IN A ROW. IT GETS HARDER EVERY FIGHT' },
     { id: 'cpu', label: 'VS CPU', help: 'YOU AGAINST THE COMPUTER: BOTH FIGHTERS, A STAGE, A LEVEL' },
     { id: 'versus', label: 'VERSUS', help: 'PLAYER 1 VS PLAYER 2, BEST OF THREE' },
     { id: 'training', label: 'TRAINING', help: 'PRACTICE, FRAME DATA AND COMBO TRIALS' },
-    { id: 'options', label: 'OPTIONS', help: 'DIFFICULTY, ROUND TIME, SOUND, EASY COMBOS' }
+    { id: 'options', label: 'OPTIONS', help: 'DIFFICULTY, ROUND TIME, SOUND, EASY COMBOS, ULTIMATE KEYS' }
   ];
   var TIMES = [30, 60, 99, 0];
 
@@ -240,7 +240,7 @@
 
     // Main menu and options, in a box over the right of the lot.
     this.menuG = this.add.graphics().setDepth(12);
-    this.rows = [0, 1, 2, 3, 4].map(function (k) {
+    this.rows = [0, 1, 2, 3, 4, 5, 6].map(function (k) {
       var t = FG.text(self, BOX.x + 16, BOX.y + 12 + k * 18, '', 'w', 2).setDepth(13);
       t.setInteractive({ useHandCursor: true }).on('pointerdown', function () { FG.Sfx.unlock(); if (self.menuOn) { self.index = k; self.choose(0); } });
       return t;
@@ -251,6 +251,7 @@
     this.idle = 0;
     this.menuOn = !!this.data0.menu;
     this.options = false;
+    this.capture = null; // an ultimate key being remapped ('ultKey1' / 'ultKey2')
     this.index = 0;
     this.started = false;
     var kb = this.input.keyboard;
@@ -271,6 +272,15 @@
 
   TitleScene.prototype.key = function (code) {
     if (this.started) return;
+    // Remapping an ultimate key: the next key pressed (Esc cancels).
+    if (this.capture) {
+      var s = FG.settings, other = s[this.capture === 'ultKey1' ? 'ultKey2' : 'ultKey1'];
+      if (code === 'Escape') this.capture = null;
+      else if (FG.TAKEN_KEYS.indexOf(code) >= 0 || code === other) { this.taken = code; FG.Sfx.ui('move'); }
+      else { s[this.capture] = code; this.capture = null; this.taken = null; FG.saveSettings(); FG.Sfx.ui('confirm'); }
+      this.refresh();
+      return;
+    }
     if (!this.menuOn) {
       if (code === 'Enter' || code === 'Space' || code === 'NumpadEnter' || code === 'KeyJ') this.openMenu();
       return;
@@ -305,7 +315,10 @@
       case 1: s.time = TIMES[(TIMES.indexOf(s.time) + d + TIMES.length) % TIMES.length]; break;
       case 2: s.sound = !s.sound; FG.Sfx.muted = !s.sound; break;
       case 3: s.easyCombos = !s.easyCombos; break;
-      case 4: if (!delta) { this.options = false; this.index = MENU.length - 1; } break;
+      case 4: case 5: // press a key to remap it
+        if (!delta) { this.capture = this.index === 4 ? 'ultKey1' : 'ultKey2'; this.taken = null; FG.Sfx.ui('confirm'); this.refresh(); return; }
+        break;
+      case 6: if (!delta) { this.options = false; this.index = MENU.length - 1; } break;
     }
     FG.saveSettings();
     FG.Sfx.ui('move');
@@ -332,14 +345,18 @@
     var g = this.menuG;
     g.clear();
     if (!on) { this.rows.forEach(function (r) { r.setText(''); }); this.help.setText(''); return; }
-    var rowH = this.options ? 15 : 18, h = this.options ? 96 : BOX.h;
+    var rowH = this.options ? 15 : 18, h = this.options ? 12 + OPTION_ROWS * 15 + 6 : BOX.h;
     g.fillStyle(0x07060c, 0.88); g.fillRect(BOX.x, BOX.y, BOX.w, h);
     g.lineStyle(2, 0xffd23f, 1); g.strokeRect(BOX.x, BOX.y, BOX.w, h);
     g.fillStyle(0x3c6fb0, 0.7); g.fillRect(BOX.x + 6, BOX.y + 9 + this.index * rowH, BOX.w - 12, rowH);
     var labels;
     if (this.options) {
-      labels = ['CPU ' + FG.AI_LEVELS[s.difficulty].name, 'TIME ' + (s.time ? s.time : 'NONE'), 'SOUND ' + (s.sound ? 'ON' : 'OFF'), 'EASY COMBOS ' + (s.easyCombos ? 'ON' : 'OFF'), 'BACK'];
-      this.help.setText(['HOW HARD THE CPU FIGHTS', 'SECONDS PER ROUND', 'SOUND EFFECTS', 'MASH P TO KEEP A STRING GOING (P, P, H...)', 'BACK TO THE MENU'][this.index] + (this.index < 4 ? '   LEFT/RIGHT CHANGE' : ''));
+      var cap = this.capture;
+      labels = ['CPU ' + FG.AI_LEVELS[s.difficulty].name, 'TIME ' + (s.time ? s.time : 'NONE'), 'SOUND ' + (s.sound ? 'ON' : 'OFF'), 'EASY COMBOS ' + (s.easyCombos ? 'ON' : 'OFF'),
+        'P1 ULT  ' + (cap === 'ultKey1' ? '...' : FG.keyName(s.ultKey1)), 'P2 ULT  ' + (cap === 'ultKey2' ? '...' : FG.keyName(s.ultKey2)), 'BACK'];
+      if (cap) this.help.setText(this.taken ? FG.keyName(this.taken) + ' IS ALREADY USED: PRESS ANOTHER KEY   (ESC CANCELS)' : 'PRESS THE KEY FOR THE ULTIMATE   (ESC CANCELS)');
+      else this.help.setText(['HOW HARD THE CPU FIGHTS', 'SECONDS PER ROUND', 'SOUND EFFECTS', 'MASH P TO KEEP A STRING GOING (P, P, H...)',
+        'FIRES THE ULTIMATE WITH 3 BARS   ENTER: REMAP', 'FIRES THE ULTIMATE WITH 3 BARS   ENTER: REMAP', 'BACK TO THE MENU'][this.index] + (this.index < 4 ? '   LEFT/RIGHT CHANGE' : ''));
     } else {
       labels = MENU.map(function (m) { return m.label; });
       this.help.setText(MENU[this.index].help);

@@ -241,6 +241,23 @@ try { playwright = require('playwright'); } catch (e) {
     return out;
   });
   await page.screenshot({ path: path.join(out, '8-ultimate.png') });
+  // The ultimate key: with a full meter its key flashes next to the meter, and pressing U fires it.
+  var ukey = await page.evaluate(function () {
+    var s = window.FG_SCENE, m;
+    s.training.refill = false; s.newMatch(); m = s.match; s.forceInput = null;
+    m.fighters[0].x = 480; m.fighters[1].x = 520; m.fighters[0].meter = FG.C.METER_MAX;
+    s.tick(); s.render();
+    return { icon: s.hud.ultText[0].visible && s.hud.ultText[0].text === 'U', overlay: s.hud.overlayText.some(function (t) { return /ULTIMATE +U /.test(t.text); }) };
+  });
+  await page.keyboard.down('u');
+  ukey.fired = await page.evaluate(function () {
+    var s = window.FG_SCENE, seen = false;
+    for (var t = 0; t < 30; t++) { s.tick(); s.render(); if (s.match.events.some(function (e) { return e.type === 'ultstart'; }) || s.match.cinematic) seen = true; }
+    return seen;
+  });
+  await page.keyboard.up('u');
+  await page.evaluate(function () { var s = window.FG_SCENE; for (var t = 0; t < 600 && (s.match.cinematic || s.ult); t++) { s.tick(); s.render(); } s.training.refill = true; });
+  var ukeyOk = ukey.icon && ukey.overlay && ukey.fired;
   var ultOk = ultR.cutin && ultR.camera && ultR.texts && ultR.ended && ultR.share >= 30 && ultR.share <= 35;
 
   // Extra Credit: low on health, P+K+H: the prompt, a cut-in, a full meter and a boost.
@@ -327,6 +344,19 @@ try { playwright = require('playwright'); } catch (e) {
   await page.keyboard.press('KeyX');
   await page.waitForFunction(function () { return window.FG_TITLE && window.FG_TITLE.sys.isActive(); }, null, { timeout: 15000 });
   var attractOk = true;
+  // OPTIONS: remap player 1's ultimate key (a key that's already used is refused).
+  var remap = await page.evaluate(function () {
+    var ts = window.FG_TITLE, out = {};
+    ts.openMenu(); ts.index = 4; ts.choose(0); // OPTIONS
+    ts.index = 4; ts.choose(0);                // P1 ULTIMATE: press a key
+    out.capturing = ts.capture === 'ultKey1';
+    ts.key('KeyJ'); out.refused = FG.settings.ultKey1 === 'KeyU' && ts.capture === 'ultKey1';
+    ts.key('KeyY'); out.set = FG.settings.ultKey1 === 'KeyY' && !ts.capture;
+    FG.settings.ultKey1 = 'KeyU'; FG.saveSettings();
+    ts.options = false; ts.menuOn = false; ts.refresh();
+    return out;
+  });
+  ukeyOk = ukeyOk && remap.capturing && remap.refused && remap.set;
 
   // VS CPU: pick both fighters, a stage and the CPU's level (up: one level harder).
   await page.evaluate(function () { window.FG_TITLE.go('cpu'); });
@@ -448,8 +478,8 @@ try { playwright = require('playwright'); } catch (e) {
   await browser.close();
   console.log(JSON.stringify({ mobile: mobile, title: title, matchup: matchup, renderer: renderer, hits: hits, counter: counterText, p1: p1, menuOk: menuOk, resetX: resetX, trial: trial, ko: ko, stage: stagePick, arcade: arcade, vsPanel: vsPanel, cutFreeze: cutFreeze, cpu: cpu, ladder: ladder, enhanced: ex, ultimate: ultR, extraCredit: ecR, prop: propR, ultTrial: ultTrial, lock: lock, unlocked: unlocked, wilson: wil, errors: errors }, null, 1));
   var ok = !errors.length && title === 'Mortal Calculus: C221' && matchup === expectMatchup && hits.join() === expectHits && counterText === String(hits.length) &&
-    p1.last && p1.last.kind === 'BLOCK' && p1.last.adv === p1.jabBlock && menuOk && resetOk && trialOk && koOk && stagePick === 'classroom' && arcadeOk && attractOk && vsPanel && cutFreeze && cpuOk && ladderOk && exOk && ultOk && ecOk && propOk && mobileOk && lockOk && unlocked && wilOk;
-  if (!ok) console.log('checks:', JSON.stringify({ errors: errors.length, menuOk: menuOk, resetOk: resetOk, trialOk: trialOk, koOk: koOk, arcadeOk: arcadeOk, attractOk: attractOk, vsPanel: vsPanel, cutFreeze: cutFreeze, cpuOk: cpuOk, ladderOk: ladderOk, exOk: exOk, ultOk: ultOk, ecOk: ecOk, propOk: propOk, mobileOk: mobileOk, lockOk: lockOk, unlocked: unlocked, wilOk: wilOk }));
+    p1.last && p1.last.kind === 'BLOCK' && p1.last.adv === p1.jabBlock && menuOk && resetOk && trialOk && koOk && stagePick === 'classroom' && arcadeOk && attractOk && vsPanel && cutFreeze && cpuOk && ladderOk && exOk && ultOk && ukeyOk && ecOk && propOk && mobileOk && lockOk && unlocked && wilOk;
+  if (!ok) console.log('checks:', JSON.stringify({ errors: errors.length, menuOk: menuOk, resetOk: resetOk, trialOk: trialOk, koOk: koOk, arcadeOk: arcadeOk, attractOk: attractOk, vsPanel: vsPanel, cutFreeze: cutFreeze, cpuOk: cpuOk, ladderOk: ladderOk, exOk: exOk, ultOk: ultOk, ukeyOk: ukeyOk, ukey: ukey, ecOk: ecOk, propOk: propOk, mobileOk: mobileOk, lockOk: lockOk, unlocked: unlocked, wilOk: wilOk }));
   console.log(ok ? 'SMOKE OK' : 'SMOKE FAILED');
   if (!ok) process.exit(1);
 })().catch(function (e) { console.error(e); process.exit(1); });

@@ -160,7 +160,7 @@
   };
 
   // LEE — Infinite Series: the hits speed up into a blur while a counter climbs, then
-  // he adjusts his glasses as they drop.
+  // he shrugs as they drop.
   FG.FINISHERS.lee = {
     len: 240,
     start: function (fx) { fx.s.next = 2; fx.s.gap = 14; fx.s.n = 0; fx.s.sum = 0; },
@@ -178,7 +178,7 @@
       if (t === 156) { fx.anim(w, [[1, 'fib_c'], [6, 'fib_x'], [30, 'fib_x'], [40, 'idle']]); }
       if (t === 162) { fx.hit(l, 'launch', { ch: true, shake: 0.02 }); fx.pose(l, 'juggle'); fx.slow(30, 0.4); }
       if (t > 162 && t < 200) l.y = Math.max(0, Math.sin((t - 162) / 38 * Math.PI) * 90);
-      if (t === 178) fx.anim(w, [[1, 'stand'], [10, 'glasses2'], [40, 'glasses2'], [60, 'folded']]);
+      if (t === 178) fx.anim(w, [[1, 'stand'], [10, 'shrug'], [40, 'shrug'], [60, 'folded']]);
       if (t === 200) { l.y = 0; fx.pose(l, 'down'); FG.Sfx.play({ type: 'land' }); fx.shake(0.008); }
     },
     draw: function (fx, t) {
@@ -201,16 +201,15 @@
     }
   };
 
-  // LOPEZ — Area Under the Curve: he stands still; they swing; he catches it and
-  // punishes once; a giant graph shades the area under the curve as they fall.
+  // LOPEZ — Area Under the Curve: arms folded, he waits; one rising palm launches them
+  // and a giant graph shades the area under the curve as they fall.
   FG.FINISHERS.lopez = {
     len: 240,
     start: function (fx) { fx.s.path = []; },
     step: function (fx, t) {
       var w = fx.w, l = fx.l, s = fx.s;
-      if (t === 1) { fx.pose(w, 'parry'); fx.anim(l, [[1, 'hit_mid'], [20, 'idle']]); }
-      if (t === 30) { var hv = l.def.moves.heavy; fx.anim(l, hv.anim); s.swing = t; }
-      if (t === 30 + 12) { fx.anim(w, [[1, 'parry'], [4, 'lock_x'], [16, 'lock_x'], [22, 'counter_x'], [50, 'counter_x'], [70, 'idle']]); FG.Sfx.play({ type: 'parry' }); fx.label('DERIVATIVE READ!'); fx.flash(0xdff6ff, 0.5); }
+      if (t === 1) { fx.pose(w, 'crossed'); fx.anim(l, FG.dazedAnim, true); }
+      if (t === 30) { fx.anim(w, [[1, 'crossed'], [8, 'outlier_c'], [34, 'outlier_x'], [60, 'outlier_x'], [80, 'idle']]); fx.label('INTEGRATE!'); }
       if (t === 64) {
         fx.hit(l, 'power', { ch: true, shake: 0.02 }); fx.pose(l, 'juggle'); fx.slow(30, 0.45);
         s.x0 = l.x; s.vx = fx.dir * 2.4; s.vy = 8.5;

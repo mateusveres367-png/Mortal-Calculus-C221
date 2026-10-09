@@ -18,6 +18,13 @@
     stand: stand,
     glasses: R({ hip: [2, 41], lean: 12, fa: [40, 130], ba: GB, fl: { foot: [13, 0] }, bl: { foot: [-13, 0] } }),
     glasses2: R({ hip: [0, 46], lean: 0, fa: [40, 135], ba: [-95, -80], fl: { foot: [6, 0] }, bl: { foot: [-6, 0] } }),
+    // Grading at 11 PM (the ultimate): at his desk, red pen in hand.
+    grade1: R({ hip: [0, 26], lean: 20, neck: 12, fa: { hand: [32, 47] }, ba: { hand: [24, 46] }, fl: [0, -90], bl: [6, -86] }),
+    grade2: R({ hip: [0, 26], lean: 22, neck: 14, fa: { hand: [40, 48] }, ba: { hand: [24, 46] }, fl: [0, -90], bl: [6, -86] }),
+    sit_sigh: R({ hip: [-2, 26], lean: -10, neck: -14, fa: [-75, -85], ba: [-85, -95], fl: [4, -88], bl: [8, -84] }),
+    sit_glasses: R({ hip: [0, 26], lean: 2, fa: [40, 130], ba: { hand: [24, 46] }, fl: [0, -90], bl: [6, -86] }),
+    sit_flick_c: R({ hip: [0, 26], lean: 4, neck: -4, fa: { hand: [12, 64] }, ba: { hand: [24, 46] }, fl: [0, -90], bl: [6, -86] }),
+    sit_flick: R({ hip: [0, 26], lean: 8, fa: [14, 26], ba: { hand: [24, 46] }, fl: [0, -90], bl: [6, -86] }),
     folded: R({ hip: [0, 46], lean: -2, fa: { hand: [-2, 66] }, ba: { hand: [12, 68] }, fl: { foot: [6, 0] }, bl: { foot: [-6, 0] } }),
     shrug: R({ hip: [0, 46], lean: -2, neck: -6, fa: [-30, 50], ba: [-150, 130], fl: { foot: [6, 0] }, bl: { foot: [-6, 0] } }),
     hands: [0, 26, 12, 30, 22, 34, 16, 20, 18, 4, 10, 20, 12, 4, 4, 8, -10, 2, -2, 8, -14, 2],
@@ -107,7 +114,8 @@
     // KO finisher: after winning the final round, this input within 2 seconds of the K.O.
     finisher: { name: 'INFINITE SERIES', input: 'F, B, F, P' },
     // Ultimate (D, D/F, F + P+K+H, three bars): a cinematic in src/render/ultimates.js.
-    ultimate: { name: 'GEOMETRIC SERIES', text: 'every hit twice as fast as the last until he blurs, r > 1: DIVERGES, then a chalk-dust explosion', from: 'fP', len: 220, hits: [24, 56, 72, 80, 84, 86, 87, 150], weights: [1, 1, 1, 1, 1, 1, 1, 5], end: { gap: 110, launch: 8, height: 50 } },
+    ultimate: { name: 'GRADING AT 11 PM', text: 'cut to his desk at night (a lamp, cold coffee, a mountain of papers): he grades faster and faster and every red check mark is a hit; done, he sighs, adjusts his glasses and flicks the red pen at them', from: 'fP', len: 290,
+      hits: [56, 80, 100, 116, 128, 138, 146, 153, 159, 164, 168, 172, 175, 178, 236], weights: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 8], end: { gap: 100, launch: 6, height: 40 } },
     name: 'LEE', archetype: 'RUSHDOWN', theme: 'SEQUENCES',
     style: 'MUAY THAI BOXER', signatureMechanic: 'ARITHMETIC SEQUENCE',
     signatureText: 'his strings get faster with every hit, and once an attack connects (hit or block) forward, forward dash-cancels its recovery to keep the pressure on (once per string)',

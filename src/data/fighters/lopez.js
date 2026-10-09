@@ -21,6 +21,13 @@
     shrugoff: R({ hip: [0, 47], lean: 4, fa: [-120, -130], ba: [-130, -140], fl: { foot: [5, 0] }, bl: { foot: [-5, 0] } }),
     toss: R({ hip: [0, 47], lean: -2, fa: [120, 100], ba: [-96, -92], fl: { foot: [5, 0] }, bl: { foot: [-5, 0] } }),
     crossed: R({ hip: [0, 47], lean: 0, fa: { hand: [-2, 68] }, ba: { hand: [12, 68] }, fl: { foot: [5, 0] }, bl: { foot: [-5, 0] } }),
+    // I Knew It (the ultimate): the blinds, the board, three dodges without looking.
+    blinds: R({ hip: [0, 47], lean: -2, neck: -8, fa: [72, 96], ba: [-92, -86], fl: { foot: [5, 0] }, bl: { foot: [-6, 0] } }),
+    blinds2: R({ hip: [0, 46], lean: 0, neck: -4, fa: { hand: [12, 70] }, ba: [-92, -86], fl: { foot: [5, 0] }, bl: { foot: [-6, 0] } }),
+    study: R({ hip: [0, 47], lean: 4, neck: 6, fa: { hand: [6, 82], bend: -1 }, ba: { hand: [12, 68] }, fl: { foot: [6, 0] }, bl: { foot: [-6, 0] } }),
+    dodge_duck: R({ hip: [-2, 30], lean: 28, neck: 6, fa: { hand: [8, 52] }, ba: { hand: [20, 50] }, fl: { foot: [16, 0] }, bl: { foot: [-16, 0] } }),
+    dodge_lean: R({ hip: [6, 45], lean: 26, fa: { hand: [12, 62] }, ba: { hand: [26, 62] }, fl: { foot: [14, 0] }, bl: { foot: [-8, 0] } }),
+    dodge_side: R({ hip: [-6, 46], lean: -18, neck: -6, fa: { hand: [-6, 70] }, ba: { hand: [6, 70] }, fl: { foot: [8, 0] }, bl: { foot: [-14, 0] } }),
     nod: R({ hip: [0, 47], lean: 4, neck: 14, fa: { hand: [-2, 68] }, ba: { hand: [12, 68] }, fl: { foot: [5, 0] }, bl: { foot: [-5, 0] } }),
     point: R({ hip: [0, 47], lean: 0, fa: [-30, 110], ba: [-96, -92], fl: { foot: [5, 0] }, bl: { foot: [-5, 0] } }), // taps his temple
     kneel: [0, 26, 6, 50, 10, 60, 14, 50, 12, 62, 0, 40, 4, 30, 14, 26, 18, 0, -6, 4, -22, 0],
@@ -106,7 +113,7 @@
     // KO finisher: after winning the final round, this input within 2 seconds of the K.O.
     finisher: { name: 'AREA UNDER THE CURVE', input: 'B, B, H' },
     // Ultimate (D, D/F, F + P+K+H, three bars): a cinematic in src/render/ultimates.js.
-    ultimate: { name: 'FUNDAMENTAL THEOREM', text: 'hit him in it and time stops, the derivative and the integral flash up, then the punish', from: 'bH', counter: true, window: 50, pose: 'parry', len: 230, hits: [96, 168], weights: [1, 3], end: { gap: 80, down: true } },
+    ultimate: { name: 'I KNEW IT', text: 'hit him in it and he closes the blinds and reveals a corkboard of red string, photos and graphs of your habits; you attack three times and he dodges each one without looking, says \"I knew it.\", and lands one perfect punish', from: 'bH', counter: true, window: 50, pose: 'parry', len: 300, hits: [232], weights: [1], end: { gap: 80, down: true } },
     name: 'LOPEZ', archetype: 'DEFENSIVE', theme: 'CALCULUS',
     style: 'COUNTER-FIGHTER', signatureMechanic: 'DERIVATIVE READ',
     signatureText: 'a parry stance (B+H, hold H to keep it up); attack into it and he counters by level: a wrist lock for a high, a palm strike for a mid, a trapping sweep for a low; throws beat it',

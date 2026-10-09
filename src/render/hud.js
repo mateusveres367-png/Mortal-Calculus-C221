@@ -54,6 +54,8 @@
       return Hud.GRADES.map(function (gr, k) { return T(Hud.meterSegX(i, k) + Hud.SEG_W / 2, Hud.METER_Y + 1, gr[0], 'g').setOrigin(0.5, 0); });
     });
     this.meterPop = [0, 0]; this.meterPopSeg = [0, 0];
+    // The ultimate key, flashing next to a full meter.
+    this.ultText = [0, 1].map(function (i) { return T(0, Hud.METER_Y + 1, '', 'k').setOrigin(0.5, 0); });
     // Extra Credit: a prompt when it's available.
     this.ecText = [T(16, Hud.METER_Y + Hud.METER_H + 6, '', 'y'), T(C.VIEW_W - 16, Hud.METER_Y + Hud.METER_H + 6, '', 'y').setOrigin(1, 0)];
 
@@ -64,7 +66,7 @@
     // Controls overlay.
     this.overlayG = scene.add.graphics().setScrollFactor(0).setDepth(60);
     this.overlayText = [];
-    var lines = Hud.CONTROLS;
+    var lines = Hud.controls();
     for (var k = 0; k < lines.length; k++) {
       this.overlayText.push(T(54, 46 + k * 11, lines[k][0], lines[k][1]).setDepth(61));
     }
@@ -91,6 +93,7 @@
     ['KICK   K     K                NUM2 / .', 'w'],
     ['HEAVY  H     L                NUM3 / /', 'w'],
     ['TAUNT        T                NUM6 / ]   (TAKES 1 SEC, LEAVES YOU OPEN)', 'w'],
+    ['ULTIMATE     {U1}{U2}(3 BARS; OR D, D/F, F + P+K+H)', 'w'],
     ['MOVES   P JAB  K MID  H HEAVY  D+K LOW  D/B+K SWEEP  D+H LAUNCHER', 'y'],
     ['        F/B + BUTTON: SPECIALS (SEE MOVES.MD)  UP ON LAUNCH: AIR CHASE', 'y'],
     ['AIR     P / K / H IN THE AIR, CHAIN ON HIT. AIR H BOUNDS', 'y'],
@@ -102,14 +105,26 @@
     ['7 COMBO TRIALS   8/9 PREVIOUS/NEXT TRIAL', 'g']
   ];
 
+  // The controls card, with the ultimate keys as they're set now.
+  Hud.controls = function () {
+    function pad(s, n) { while (s.length < n) s += ' '; return s; }
+    var u1 = FG.keyName(FG.settings.ultKey1), u2 = FG.keyName(FG.settings.ultKey2) + ' / [';
+    return Hud.CONTROLS.map(function (l) { return [l[0].replace('{U1}', pad(u1, 17)).replace('{U2}', pad(u2, 11)), l[1]]; });
+  };
+  // What the meter's ready icon shows for player i: their ultimate key (★ on a touch screen).
+  Hud.ultLabel = function (i) {
+    if (i === 0 && FG.Touch && FG.Touch.on) return 'SUPER';
+    return FG.keyName(FG.settings['ultKey' + (i + 1)]);
+  };
+
   Hud.prototype.setOverlay = function (on) {
     this.overlayOn = on;
     this.overlayG.clear();
     if (on) {
       this.overlayG.fillStyle(0x07060c, 0.88);
-      this.overlayG.fillRect(40, 36, C.VIEW_W - 80, Hud.CONTROLS.length * 11 + 18);
+      this.overlayG.fillRect(40, 36, C.VIEW_W - 80, this.overlayText.length * 11 + 18);
       this.overlayG.lineStyle(2, 0xffd23f, 1);
-      this.overlayG.strokeRect(40, 36, C.VIEW_W - 80, Hud.CONTROLS.length * 11 + 18);
+      this.overlayG.strokeRect(40, 36, C.VIEW_W - 80, this.overlayText.length * 11 + 18);
     }
     for (var i = 0; i < this.overlayText.length; i++) this.overlayText[i].setVisible(on);
   };
@@ -254,6 +269,15 @@
       g.lineStyle(1, part >= 1 ? 0xffffff : 0x5a4b2c, 1); g.strokeRect(x - 1, y - 1, w + 2, h + 2);
       this.meterText[i][k].setFont(part >= 1 ? 'pf_k' : 'pf_g');
     }
+    // A full meter: the ultimate key flashes next to it.
+    var ut = this.ultText[i], ready = f.meter >= C.METER_MAX && f.def.moves.ultimate && !f.ko;
+    if (ready) {
+      var label = Hud.ultLabel(i), iw = label.length * 7 + 6, ix = i === 0 ? Hud.meterSegX(0, 2) + Hud.SEG_W + 6 : Hud.meterSegX(1, 2) - 6 - iw, on = this.blink % 20 < 13;
+      g.fillStyle(0x000000, 1); g.fillRect(ix - 1, y - 2, iw + 2, h + 4);
+      g.fillStyle(on ? 0xffd23f : 0xff8a1f, 1); g.fillRect(ix, y - 1, iw, h + 2);
+      g.lineStyle(1, 0xffffff, on ? 1 : 0.5); g.strokeRect(ix, y - 1, iw, h + 2);
+      ut.setText(label).setX(ix + iw / 2).setVisible(true);
+    } else ut.setVisible(false);
     // Extra Credit: the boost draining under the meter, or a prompt while it's available.
     var full = Hud.SEG_W * 3 + Hud.SEG_GAP * 2, bx = i === 0 ? 16 : C.VIEW_W - 16 - full, by = y + h + 3;
     if (f.boost > 0) {

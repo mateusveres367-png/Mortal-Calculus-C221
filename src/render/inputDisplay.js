@@ -22,6 +22,7 @@
     if (raw.h) b.push('H');
     if (raw.ssIn) b.push('SI');
     if (raw.ssOut) b.push('SO');
+    if (raw.u) b.push('ULT');
     return b.join('+');
   };
 

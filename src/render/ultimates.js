@@ -180,7 +180,7 @@
       figure: function (g, who, pose, s, h, opts) {
         opts = Object.assign({ noShadow: true }, opts);
         var x = fx.X(s);
-        opts.x = x; opts.y = h || 0;
+        opts.x = x; opts.y = 0; opts.groundY = GY - (h || 0); // (a lift would be scaled with the figure)
         FG.drawFighter(g, { def: who.def, alt: who.alt, x: x, y: h || 0, z: 0, facing: opts.facing || who.facing, _pose: FG.getPose(who.def, pose), _twist: 0 }, opts);
       },
       // Text on the set (it moves and zooms with the camera): s, h in set space.
@@ -430,140 +430,6 @@
   // Each fighter's script is in src/render/ultimates/<id>.js.
 
   FG.ULTIMATES = {};
-
-  // LEE — Geometric Series: every hit twice as fast as the last until he's a blur,
-  // "r > 1: DIVERGES", then it all goes off in a cloud of chalk dust.
-  var LEE_P = [['jab_c', 'jab_x'], ['cross_c', 'cross_x'], ['body_c', 'body_x'], ['elbow_c', 'elbow_x'], ['knee_c', 'knee_x'], ['rush_c', 'rush_x'], ['lowk_c', 'lowk_x']];
-  FG.ULTIMATES.lee = {
-    start: function (fx) {
-      fx.at(fx.l, fx.x0 + fx.dir * 40, 0);
-      fx.pose(fx.l, 'hit_mid');
-      fx.anim(fx.w, [[1, 'idle'], [8, 'glasses'], [18, 'idle']]);
-      fx.zoom(0.12, fx.x0 + fx.dir * 20, 60, 220);
-      fx.s.n = 0; fx.s.ghosts = [];
-    },
-    step: function (fx, t) {
-      var w = fx.w, l = fx.l, s = fx.s, hits = w.def.ultimate.hits, last = hits.length - 1;
-      for (var k = 0; k < last; k++) {
-        var gap = k === 0 ? 8 : Math.max(1, hits[k] - hits[k - 1]), lead = Math.max(1, Math.min(6, Math.round(gap / 3)));
-        if (t === hits[k] - lead) fx.strike(w, LEE_P[k % LEE_P.length][0], LEE_P[k % LEE_P.length][1], lead, Math.max(1, gap - lead));
-        if (t === hits[k]) {
-          s.n = k + 1; s.nT = t;
-          fx.hit(l, k % 3 === 2 ? 'body' : 'jab', { strength: 'light', hits: k + 1, shake: 0.004 + k * 0.001, y: 50 + (k % 3) * 10 });
-          fx.pose(l, k % 2 ? 'hit_high' : 'hit_mid');
-          if (k === 1) fx.diagram({ kind: 'series', caption: 'GEOMETRIC SERIES', sub: 'EACH HIT TWICE AS FAST AS THE LAST.', formula: 'A·R^N, R = 2' });
-        }
-      }
-      // A blur once the hits come every frame or two.
-      if (t >= hits[3] && t < hits[last - 1] + 30) s.ghosts.push({ pose: w._pose ? w._pose.slice() : null, x: fx.px(w) + (Math.random() - 0.5) * 16, t: t });
-      s.ghosts = s.ghosts.filter(function (gh) { return t - gh.t < 6; });
-      if (t > hits[last - 1] && t < hits[last] - 24 && (t % 3 === 0)) {
-        fx.anim(w, [[1, LEE_P[t % LEE_P.length][1]], [3, LEE_P[(t + 1) % LEE_P.length][1]]]);
-        if (t % 6 === 0) fx.hit(l, 'jab', { strength: 'light', hits: s.n, shake: 0.004 });
-        fx.pose(l, t % 2 ? 'hit_high' : 'hit_mid');
-      }
-      if (t === hits[last - 1] + 6) { s.diverge = t; FG.Sfx.chalk(); }
-      if (t === hits[last] - 24) fx.anim(w, [[1, 'fib_c'], [24, 'fib_x'], [50, 'fib_x'], [64, 'fib_r'], [80, 'glasses2']]);
-      if (t === hits[last]) {
-        fx.hit(l, 'launch', { ch: true, hits: hits.length, shake: 0.03 });
-        fx.pose(l, 'juggle'); fx.slow(40, 0.35); fx.flash(0xffffff, 0.9);
-        FG.Sfx.boom();
-        s.boom = t;
-        for (var i = 0; i < 6; i++) fx.dust(fx.px(l) + (i - 3) * 14, 10, 4);
-      }
-      if (t > hits[last]) { var u = clamp01((t - hits[last]) / (w.def.ultimate.len - hits[last])); fx.at(l, fx.x0 + fx.dir * (40 + 70 * u), 50 * u + 80 * Math.sin(u * Math.PI)); }
-      if (t === hits[last] + 20) fx.diagram({ kind: 'series', caption: 'R > 1: DIVERGES', sub: 'THE SUM IS INFINITE. SO IS THE DAMAGE.', formula: 'Σ 2^N = ∞' });
-    },
-    draw: function (fx, t) {
-      var s = fx.s, w = fx.w, g = fx.gb, hits = w.def.ultimate.hits;
-      // Afterimages in his green.
-      s.ghosts.forEach(function (gh) {
-        if (!gh.pose) return;
-        g.setAlpha(0.35 * (1 - (t - gh.t) / 6));
-        FG.drawFighter(g, { def: w.def, x: gh.x, y: 0, z: 0, facing: fx.dir, _pose: gh.pose, _twist: 0 }, { flash: 0x39ff5a, noShadow: true, x: gh.x });
-      });
-      g.setAlpha(1);
-      // The terms, doubling.
-      if (s.n && !s.boom) {
-        var terms = []; for (var k = Math.max(0, s.n - 4); k < s.n; k++) terms.push(String(Math.pow(2, k)));
-        fx.text(0, (s.n > 4 ? '... + ' : '') + terms.join(' + ') + ' + ...', W / 2 + 60, 84, 0x39ff5a, 2.5, -3);
-      }
-      if (s.diverge && !s.boom) fx.text(1, 'R > 1: DIVERGES', W / 2, 120, 0xff4a3d, 3 * stamp(t, s.diverge), -6);
-      // The explosion: a ring of chalk dust and a white-out.
-      if (s.boom) {
-        var u = clamp01((t - s.boom) / 30), p = fx.at2(fx.l, 50);
-        fx.gs.fillStyle(0xffffff, 0.5 * (1 - u)); fx.gs.fillCircle(p[0], p[1], 40 + 260 * u);
-        fx.gs.lineStyle(6, 0xf2f6ee, 0.8 * (1 - u)); fx.gs.strokeCircle(p[0], p[1], 30 + 300 * u);
-        for (var i = 0; i < 18; i++) {
-          var a = i / 18 * TAU + hash(i, 3), rr = 20 + 220 * u * (0.6 + hash(i, 5) * 0.6);
-          fx.gs.fillStyle(0xe8ece4, 0.6 * (1 - u)); fx.gs.fillCircle(p[0] + Math.cos(a) * rr, p[1] + Math.sin(a) * rr * 0.7, 6 + 10 * u);
-        }
-        fx.text(2, 'Σ = ∞', W / 2, 96, 0x39ff5a, 4 * stamp(t, s.boom), -4, 1 - clamp01((t - s.boom - 40) / 20));
-      }
-    }
-  };
-
-  // LOPEZ — Fundamental Theorem: a counter. Hit him in the stance and time stops;
-  // the derivative and the integral flash up; then the punish.
-  FG.ULTIMATES.lopez = {
-    start: function (fx) {
-      // The opponent is frozen mid-attack.
-      fx.pose(fx.l, fx.strikePose(fx.l));
-      fx.pose(fx.w, 'parry');
-      fx.zoom(0.14, (fx.x0 + fx.lx0) / 2, 60, 240);
-      fx.s.freeze = 1;
-      FG.Sfx.chalk();
-    },
-    step: function (fx, t) {
-      var w = fx.w, l = fx.l, s = fx.s, hits = w.def.ultimate.hits;
-      if (t === 24) s.dT = t;
-      if (t === 46) s.iT = t;
-      if (t === hits[0] - 8) { s.freeze = 0; fx.strike(w, 'parry', 'counter_x', 8, 14); }
-      if (t === hits[0]) {
-        fx.hit(l, 'power', { hits: 1, shake: 0.012 });
-        fx.pose(l, 'hit_high');
-        fx.diagram({ kind: 'derivative', caption: 'THE DERIVATIVE', sub: 'I READ YOUR RATE OF CHANGE.' });
-      }
-      if (t > hits[0] && t < hits[0] + 20) fx.at(l, fx.lx0 + fx.dir * (t - hits[0]) * 0.8, 0);
-      if (t === hits[1] - 30) fx.anim(w, [[1, 'outlier_c'], [30, 'outlier_x'], [48, 'outlier_x'], [64, 'hv_r'], [80, 'crossed']]);
-      if (t === hits[1]) {
-        fx.hit(l, 'power', { ch: true, hits: 2, shake: 0.03 });
-        fx.pose(l, 'juggle'); fx.slow(36, 0.35); fx.flash(0xffffff, 0.7);
-        s.punch = t;
-      }
-      if (t > hits[1]) {
-        var u = clamp01((t - hits[1]) / 40), from = fx.lx0 + fx.dir * 16, to = fx.x0 + fx.dir * w.def.ultimate.end.gap;
-        fx.at(l, from + (to - from) * u, Math.sin(u * Math.PI) * 50);
-        if (u >= 1 && !s.down) { s.down = true; fx.pose(l, 'down'); fx.dust(to, 8, 2); }
-      }
-      if (t === hits[1] + 16) fx.diagram({ kind: 'integral', caption: 'THE FUNDAMENTAL THEOREM', sub: 'ADD UP EVERY MISTAKE YOU MADE.' });
-    },
-    draw: function (fx, t) {
-      var s = fx.s, g = fx.gs;
-      // Time stops: everything goes cold, a clock hand stands still.
-      if (s.freeze) {
-        g.fillStyle(0x2a3c6a, 0.35); g.fillRect(0, 0, W, H);
-        fx.text(0, 'DT → 0', W / 2, 84, 0x9fe0ff, 3, -3, t % 30 < 22 ? 1 : 0.5);
-      }
-      // Two panels slide in: the derivative on one side, the integral on the other.
-      function panel(at, side, title, kind) {
-        if (!at || t < at || t > fx.w.def.ultimate.hits[0] + 2) return;
-        var u = ease((t - at) / 10), pw = 170, ph = 120, x = side < 0 ? -pw + (pw + 16) * u : W - (pw + 16) * u, y = 120;
-        g.fillStyle(BOARD, 0.92); g.fillRect(x, y, pw, ph);
-        g.lineStyle(3, 0x6b4a2a, 1); g.strokeRect(x, y, pw, ph);
-        var ox = x + 18, oy = y + ph - 18, pts = [];
-        chalkLine(g, ox, oy, ox + pw - 36, oy, CHALK, 2); chalkLine(g, ox, oy, ox, y + 18, CHALK, 2);
-        for (var i = 0; i <= 20; i++) { var v = i / 20; pts.push([ox + v * (pw - 40), oy - 10 - 60 * v * v]); }
-        stroke(g, pts, CHALK, 2, 1);
-        if (kind === 'd') { var px = ox + 0.6 * (pw - 40), py = oy - 10 - 60 * 0.36; chalkLine(g, px - 40, py + 30, px + 40, py - 30, CHALK_Y, 2); dot(g, px, py, 3, CHALK_Y); }
-        else for (var sx2 = 0.15; sx2 < 0.85; sx2 += 0.06) { g.lineStyle(2, CHALK_Y, 0.5); g.lineBetween(ox + sx2 * (pw - 40), oy, ox + sx2 * (pw - 40), oy - 10 - 60 * sx2 * sx2); }
-        fx.text(side < 0 ? 1 : 2, title, x + pw / 2, y - 10, kind === 'd' ? CHALK_Y : CHALK_B, 2, 0, t % 8 < 6 ? 1 : 0.6);
-      }
-      panel(s.dT, -1, "F'(X)", 'd');
-      panel(s.iT, 1, '∫ F(X) DX', 'i');
-      if (s.punch && t - s.punch < 50) fx.text(3, 'F(B) - F(A)', W / 2 + 40, 112, 0xffd23f, 3 * stamp(t, s.punch), -4);
-    }
-  };
 
   // MIYASHIRO — Imaginary Unit: he vanishes, appears behind them, combos, and
   // multiplying by i twice turns them upside down: i² = −1.

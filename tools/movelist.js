@@ -22,7 +22,7 @@ out.push('# Mortal Calculus: C221 — Move lists');
 out.push('');
 out.push('Generated from the fighter data by `node tools/movelist.js`; don\'t edit by hand. Identity, looks and lines are in [`ROSTER.md`](ROSTER.md).');
 out.push('');
-out.push('**Grade meter:** three bars, C, B and A, under your health bar. They fill as you land hits, block and take damage, a little faster while you\'re behind, and carry over between rounds. **Enhanced specials** cost one bar: press P+K during the startup of a special that has one (listed under each fighter) and it powers up, the fighter flashing in their colour. **Ultimates** cost all three: down, down-forward, forward + P+K+H (also straight out of a move that hits). If it connects, the fighter\'s own cinematic plays (each one listed under the fighter) and takes about a third of their health; blocked or whiffed, it leaves you wide open. **Extra Credit:** once a match, under 25% health, P+K+H (no motion) refills the meter and adds 20% damage for 7 seconds. **Stage objects:** next to one, T is a springboard dive (Springboard below) and back + T a vault over the opponent out of the corner (Vault); each object then needs 6 seconds.');
+out.push('**Grade meter:** three bars, C, B and A, under your health bar. They fill as you land hits, block and take damage, a little faster while you\'re behind, and carry over between rounds. **Enhanced specials** cost one bar: press P+K during the startup of a special that has one (listed under each fighter) and it powers up, the fighter flashing in their colour. **Ultimates** cost all three: press the ultimate key (player 1 U, player 2 Numpad 0 or [, remappable in OPTIONS; ★ on a touch screen), or down, down-forward, forward + P+K+H (either also straight out of a move that hits). If it connects, the fighter\'s own cinematic plays (each one listed under the fighter) and takes about a third of their health; blocked or whiffed, it leaves you wide open. **Extra Credit:** once a match, under 25% health, P+K+H (no motion) refills the meter and adds 20% damage for 7 seconds. **Stage objects:** next to one, T is a springboard dive (Springboard below) and back + T a vault over the opponent out of the corner (Vault); each object then needs 6 seconds.');
 out.push('');
 out.push('Frame data: **i** is startup (the frame the move hits, counting the press as frame 1), then active and recovery frames. Block / hit / counter hit are frame advantage for the attacker. Inputs assume you face right: F = toward the opponent, B = away, D = down.');
 out.push('');
@@ -107,7 +107,7 @@ FG.ROSTER.forEach(function (d) {
   }
   if (d.ultimate) {
     var um = d.moves.ultimate;
-    out.push('**Ultimate:** ' + title(d.ultimate.name) + ' — `D, D/F, F + P+K+H` with all three bars' + (d.ultimate.counter ? ' (a counter stance, frames ' + um.parry.from + '-' + um.parry.to + ')' : '') +
+    out.push('**Ultimate:** ' + title(d.ultimate.name) + ' — the ultimate key (`U` / `Numpad 0`) or `D, D/F, F + P+K+H`, with all three bars' + (d.ultimate.counter ? ' (a counter stance, frames ' + um.parry.from + '-' + um.parry.to + ')' : '') +
       ': ' + d.ultimate.text + '. ' + d.ultimate.hits.length + ' hits, ' + Math.round(FG.C.ULT_DAMAGE * 100) + '% of their health' +
       (d.ultimate.counter ? '; whiffed, ' + um.total + ' frames' : um.throw ? '; a grab, so it can\'t be blocked' : '; blocked ' + fmt(um.block) + ', whiffed ' + um.total + ' frames') + '.');
     out.push('');

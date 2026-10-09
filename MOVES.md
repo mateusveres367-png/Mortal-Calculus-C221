@@ -2,7 +2,7 @@
 
 Generated from the fighter data by `node tools/movelist.js`; don't edit by hand. Identity, looks and lines are in [`ROSTER.md`](ROSTER.md).
 
-**Grade meter:** three bars, C, B and A, under your health bar. They fill as you land hits, block and take damage, a little faster while you're behind, and carry over between rounds. **Enhanced specials** cost one bar: press P+K during the startup of a special that has one (listed under each fighter) and it powers up, the fighter flashing in their colour. **Ultimates** cost all three: down, down-forward, forward + P+K+H (also straight out of a move that hits). If it connects, the fighter's own cinematic plays (each one listed under the fighter) and takes about a third of their health; blocked or whiffed, it leaves you wide open. **Extra Credit:** once a match, under 25% health, P+K+H (no motion) refills the meter and adds 20% damage for 7 seconds. **Stage objects:** next to one, T is a springboard dive (Springboard below) and back + T a vault over the opponent out of the corner (Vault); each object then needs 6 seconds.
+**Grade meter:** three bars, C, B and A, under your health bar. They fill as you land hits, block and take damage, a little faster while you're behind, and carry over between rounds. **Enhanced specials** cost one bar: press P+K during the startup of a special that has one (listed under each fighter) and it powers up, the fighter flashing in their colour. **Ultimates** cost all three: press the ultimate key (player 1 U, player 2 Numpad 0 or [, remappable in OPTIONS; ★ on a touch screen), or down, down-forward, forward + P+K+H (either also straight out of a move that hits). If it connects, the fighter's own cinematic plays (each one listed under the fighter) and takes about a third of their health; blocked or whiffed, it leaves you wide open. **Extra Credit:** once a match, under 25% health, P+K+H (no motion) refills the meter and adds 20% damage for 7 seconds. **Stage objects:** next to one, T is a springboard dive (Springboard below) and back + T a vault over the opponent out of the corner (Vault); each object then needs 6 seconds.
 
 Frame data: **i** is startup (the frame the move hits, counting the press as frame 1), then active and recovery frames. Block / hit / counter hit are frame advantage for the attacker. Inputs assume you face right: F = toward the opponent, B = away, D = down.
 
@@ -46,7 +46,7 @@ Calm and friendly, but every hit is heavy. Slow, patient, devastating.
 - **Common Log+** (`F,F+P`, then `P+K`): Armored, wall splat — 26 damage (from 20), armor on frames 1-14 (1 hit), wall splats.
 - **Exponential Haymaker+** (`F+H`, then `P+K`): Absorbs two hits, launches — 47 damage (from 36), hit: launch, armor on frames 1-26 (2 hits).
 
-**Ultimate:** Exponential Overdrive — `D, D/F, F + P+K+H` with all three bars: off come the sunglasses; three punches worth 2, 4 and 8, and the last cracks the screen. 3 hits, 32% of their health; blocked -29, whiffed 74 frames.
+**Ultimate:** Exponential Overdrive — the ultimate key (`U` / `Numpad 0`) or `D, D/F, F + P+K+H`, with all three bars: off come the sunglasses; three punches worth 2, 4 and 8, and the last cracks the screen. 3 hits, 32% of their health; blocked -29, whiffed 74 frames.
 
 **KO finisher:** Horse To Water — `B, F, H` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).
 
@@ -99,7 +99,7 @@ Nice, easygoing, a good sport. Best for new players.
 - **Long Arms+** (`F+P`, then `P+K`): Two hits, knockdown — 2 hits of 10, hit: knockdown.
 - **Linear Rush+** (`H`, then `P+K`): Armored, launches — 29 damage (from 22), hit: launch, armor on frames 1-19 (1 hit).
 
-**Ultimate:** Fast Break — `D, D/F, F + P+K+H` with all three bars: a blast on the coach's whistle, a sprint down the running track and over a bench, then back into the stage with a flying knee: a giant X stamps SOLVED. 2 hits, 32% of their health; blocked -34, whiffed 73 frames.
+**Ultimate:** Fast Break — the ultimate key (`U` / `Numpad 0`) or `D, D/F, F + P+K+H`, with all three bars: a blast on the coach's whistle, a sprint down the running track and over a bench, then back into the stage with a flying knee: a giant X stamps SOLVED. 2 hits, 32% of their health; blocked -34, whiffed 73 frames.
 
 **KO finisher:** Solve For X — `F, F, H` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).
 
@@ -157,7 +157,7 @@ Very kind, precise and graceful. Bows before fights.
 - **Reflex Angle+** (`B+K`, then `P+K`): Launches — 21 damage (from 16), hit: launch.
 - **Vertex Drop+** (`F+H`, then `P+K`): Two hits, knockdown — 2 hits of 15, hit: knockdown.
 
-**Ultimate:** Compass Construction — `D, D/F, F + P+K+H` with all three bars: she plants a giant drawing compass next to them and spins around them, a kick on every pass, while a glowing circle draws itself; a protractor snaps into place at 90 degrees, then an axe kick (and an apology). 7 hits, 32% of their health; blocked -34, whiffed 63 frames.
+**Ultimate:** Compass Construction — the ultimate key (`U` / `Numpad 0`) or `D, D/F, F + P+K+H`, with all three bars: she plants a giant drawing compass next to them and spins around them, a kick on every pass, while a glowing circle draws itself; a protractor snaps into place at 90 degrees, then an axe kick (and an apology). 7 hits, 32% of their health; blocked -34, whiffed 63 frames.
 
 **KO finisher:** Q.E.D. — `B, F, K` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).
 
@@ -216,7 +216,7 @@ Happy, sassy, everyone's favorite. Fakes you out with a grin.
 - **Indirect Proof+** (`F+H, H`, then `P+K`): Armored, knockdown — 23 damage (from 18), hit: knockdown, armor on frames 1-14 (1 hit).
 - **The Converse+** (`B+K, P`, then `P+K`): Higher launch — 21 damage (from 16).
 
-**Ultimate:** Pop Quiz — `D, D/F, F + P+K+H` with all three bars: he slams down a stack of papers: they are at a student desk with a quiz and a ticking timer, sweating; he snatches the paper, red-pens a giant F, and smacks them with the whole stack while the class goes wild. 4 hits, 32% of their health; blocked -35, whiffed 72 frames.
+**Ultimate:** Pop Quiz — the ultimate key (`U` / `Numpad 0`) or `D, D/F, F + P+K+H`, with all three bars: he slams down a stack of papers: they are at a student desk with a quiz and a ticking timer, sweating; he snatches the paper, red-pens a giant F, and smacks them with the whole stack while the class goes wild. 4 hits, 32% of their health; blocked -35, whiffed 72 frames.
 
 **KO finisher:** See Me After Class — `D, D, P` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).
 
@@ -260,7 +260,7 @@ Sarcastic and funny. Taunts mid-combo. Relentless pressure.
 | K (DOWN) | Rolling Zero | low | 14 | 3 | 22 | -14 | -2 | +1 | 10 | ducks highs |
 | P/H (DOWN) | Spring Theorem | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
 | T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
-| D,D/F,F+P+K+H | Geometric Series | mid | 13 | 3 | 45 | -29 | +5 | +9 | 10 |  |
+| D,D/F,F+P+K+H | Grading At 11 Pm | mid | 13 | 3 | 45 | -29 | +5 | +9 | 10 |  |
 | T (BY AN OBJECT) | Springboard | mid | 16 | 5 | 18 | -6 | knockdown | knockdown | 18 |  |
 | B+T (BY AN OBJECT) | Vault | — | 38 total |  |  |  |  |  |  |  |
 
@@ -270,7 +270,7 @@ Sarcastic and funny. Taunts mid-combo. Relentless pressure.
 - **Recursive Rush+** (`F+P`, then `P+K`): Two hits — 2 hits of 9.
 - **Partial Sum+** (`H`, then `P+K`): Launches — 23 damage (from 18), hit: launch.
 
-**Ultimate:** Geometric Series — `D, D/F, F + P+K+H` with all three bars: every hit twice as fast as the last until he blurs, r > 1: DIVERGES, then a chalk-dust explosion. 8 hits, 32% of their health; blocked -29, whiffed 60 frames.
+**Ultimate:** Grading At 11 Pm — the ultimate key (`U` / `Numpad 0`) or `D, D/F, F + P+K+H`, with all three bars: cut to his desk at night (a lamp, cold coffee, a mountain of papers): he grades faster and faster and every red check mark is a hit; done, he sighs, adjusts his glasses and flicks the red pen at them. 15 hits, 32% of their health; blocked -29, whiffed 60 frames.
 
 **KO finisher:** Infinite Series — `F, B, F, P` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).
 
@@ -316,7 +316,7 @@ Very suspicious. Always watching. Waits for you to commit, then punishes.
 | READ A HIGH | L'Hopital Lock | mid | 6 | 3 | 20 | -6 | knockdown | knockdown | 22 |  |
 | READ A MID | Critical Point | mid | 7 | 3 | 18 | -6 | knockdown | knockdown | 22 |  |
 | READ A LOW | Saddle Point | low | 7 | 3 | 20 | -12 | knockdown | knockdown | 18 | ducks highs |
-| D,D/F,F+P+K+H | Fundamental Theorem | — | 100 total |  |  |  |  |  |  | parry |
+| D,D/F,F+P+K+H | I Knew It | — | 100 total |  |  |  |  |  |  | parry |
 | T (BY AN OBJECT) | Springboard | mid | 16 | 5 | 18 | -6 | knockdown | knockdown | 18 |  |
 | B+T (BY AN OBJECT) | Vault | — | 38 total |  |  |  |  |  |  |  |
 
@@ -326,7 +326,7 @@ Very suspicious. Always watching. Waits for you to commit, then punishes.
 - **Concave Down+** (`F+H`, then `P+K`): Two hits, wall splat — 2 hits of 16, wall splats.
 - **Mean Value Punish+** (`P AFTER BLOCK`, then `P+K`): Launches — 23 damage (from 18), hit: launch.
 
-**Ultimate:** Fundamental Theorem — `D, D/F, F + P+K+H` with all three bars (a counter stance, frames 4-50): hit him in it and time stops, the derivative and the integral flash up, then the punish. 2 hits, 32% of their health; whiffed, 100 frames.
+**Ultimate:** I Knew It — the ultimate key (`U` / `Numpad 0`) or `D, D/F, F + P+K+H`, with all three bars (a counter stance, frames 4-50): hit him in it and he closes the blinds and reveals a corkboard of red string, photos and graphs of your habits; you attack three times and he dodges each one without looking, says "I knew it.", and lands one perfect punish. 1 hits, 32% of their health; whiffed, 100 frames.
 
 **KO finisher:** Area Under The Curve — `B, B, H` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).
 
@@ -380,7 +380,7 @@ Very smart. Reads opponents, keeps perfect distance, punishes every mistake.
 - **Domain Control+** (`F+K`, then `P+K`): Launches — 16 damage (from 12), hit: launch.
 - **Domain Restriction+** (`B+H`, then `P+K`): Armored, wall splat — 16 damage (from 12), armor on frames 1-13 (1 hit), wall splats.
 
-**Ultimate:** Imaginary Unit — `D, D/F, F + P+K+H` with all three bars: he vanishes, appears behind them and combos; two quarter turns and they're upside down: i squared = -1. 4 hits, 32% of their health; blocked -34, whiffed 62 frames.
+**Ultimate:** Imaginary Unit — the ultimate key (`U` / `Numpad 0`) or `D, D/F, F + P+K+H`, with all three bars: he vanishes, appears behind them and combos; two quarter turns and they're upside down: i squared = -1. 4 hits, 32% of their health; blocked -34, whiffed 62 frames.
 
 **KO finisher:** Calculated — `D, F, K` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).
 
@@ -438,7 +438,7 @@ Fast, explosive grappler who closes distance quickly. Confident and focused.
 - **Row Operation+** (`RUN, P`, then `P+K`): Two hits, wall splat — 2 hits of 14, wall splats.
 - **Elementary Knee+** (`RUN, K`, then `P+K`): Higher launch — 20 damage (from 15).
 
-**Ultimate:** Matrix Multiplication — `D, D/F, F + P+K+H` with all three bars: he grabs them and slams them across the stage in a 3x3 grid, row by column, then flips his hair. 9 hits, 32% of their health; a grab, so it can't be blocked.
+**Ultimate:** Matrix Multiplication — the ultimate key (`U` / `Numpad 0`) or `D, D/F, F + P+K+H`, with all three bars: he grabs them and slams them across the stage in a 3x3 grid, row by column, then flips his hair. 9 hits, 32% of their health; a grab, so it can't be blocked.
 
 **KO finisher:** Cardio Finale — `F, D, F, P` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).
 
@@ -497,7 +497,7 @@ Twenty-nine years at el camino. Teaches every math class. Never smiles. Never wa
 
 **Boss:** the final fight in arcade mode. Playable in training and versus from the start, and in arcade and VS CPU once arcade has been beaten.
 
-**Ultimate:** Tenure — `D, D/F, F + P+K+H` with all three bars: time freezes, chalkboard flashbacks flicker past labelled with the years, then 29 rapid hits with a counter ticking up to 29. 29 hits, 32% of their health; blocked -35, whiffed 65 frames.
+**Ultimate:** Tenure — the ultimate key (`U` / `Numpad 0`) or `D, D/F, F + P+K+H`, with all three bars: time freezes, chalkboard flashbacks flicker past labelled with the years, then 29 rapid hits with a counter ticking up to 29. 29 hits, 32% of their health; blocked -35, whiffed 65 frames.
 
 **KO finisher:** Class Dismissed — `D, B, H` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).
 

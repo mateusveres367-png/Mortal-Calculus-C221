@@ -92,6 +92,7 @@ On the title screen, press `Enter` (or click) for the menu, then up/down and `En
 | Heavy (H) | `L` | `Numpad 3` (or `/`) |
 | Throw | `J`+`K` (with back: reverse throw) | `Num1`+`Num2` |
 | Taunt | `T` | `Numpad 6` (or `]`) |
+| Ultimate (3 bars) | `U` | `Numpad 0` (or `[`) |
 
 Standing guard blocks highs and mids. Crouching guard (down + back) blocks lows, and highs whiff over anyone crouching. Mids beat crouching guard; lows beat standing guard.
 
@@ -102,7 +103,7 @@ Open `index.html` on a touch screen (or add `?touch=1` to the address) and touch
 Kept simple on purpose:
 
 - **Mash P** to keep a string going (Easy Combos is always on for touch players). Down + H is still the launcher, hold back to block, and tap forward twice to dash.
-- **★ does the big thing for you:** with a full meter it does your ultimate's motion for you; when you're low it cashes in Extra Credit; next to a stage object it uses it (and vaults out if you're cornered); during a special with a bar it powers it up; otherwise it throws.
+- **★ does the big thing for you:** with a full meter it fires your ultimate (it presses the ultimate key); when you're low it cashes in Extra Credit; next to a stage object it uses it (and vaults out if you're cornered); during a special with a bar it powers it up; otherwise it throws.
 
 ### Smack talk
 
@@ -139,7 +140,7 @@ Every fighter uses the same input layout. What each input does, and its frame da
 
 - **Grade meter:** three bars under your health bar, graded **C**, **B** and **A**. It fills when you land hits, when you block and when you take damage, and a little faster (×1.25) while you're behind on health. A bar chimes and flashes when it fills, and all three full pulses. The meter carries over between rounds.
 - **Enhanced specials (1 bar):** press `P`+`K` during the startup of a special to power it up: more damage plus extra hits, armor, a launch or a wall splat, depending on the move. The fighter flashes in their colour and a `+` pops onto the move's name. Every fighter has three; they're listed in [`MOVES.md`](MOVES.md).
-- **Ultimates (3 bars):** down, down-forward, forward + `P`+`K`+`H` (also straight out of a move that hits). If it connects, a cinematic plays: a cut-in, a camera zoom, slow motion, and **DIAGRAM VIEW** freeze frames where the impact is drawn as a glowing chalkboard diagram. It takes about a third of their health; blocked or whiffed, it leaves you wide open.
+- **Ultimates (3 bars):** press the ultimate key (`U` for player 1, `Numpad 0` or `[` for player 2; both can be remapped in OPTIONS), or the motion down, down-forward, forward + `P`+`K`+`H` (either also works straight out of a move that hits). When your meter is full, the key flashes next to it. If it connects, a cinematic plays: a cut-in, a camera zoom, slow motion, and **DIAGRAM VIEW** freeze frames where the impact is drawn as a glowing chalkboard diagram. It takes about a third of their health; blocked or whiffed, it leaves you wide open.
   - **BRINKHUS — Fast Break:** a whistle, a cut to the running track (a sprint, a hurdle over a bench), back in with a flying knee; a giant X stamps SOLVED.
   - **CHAI — Compass Construction:** a giant compass planted beside them; she circles them kicking on every pass as the circle draws itself, a protractor snaps to 90°, an axe kick, and "Sorry!"
   - **DALSASS — Pop Quiz:** they're suddenly at a student desk with a quiz and a ticking timer; he snatches it, red-pens a giant F, and smacks them with the whole stack as the class goes wild.
@@ -206,8 +207,8 @@ The fighters, and what they teach:
 | BRINKHUS | Solve for X: a flurry, an uppercut off the top of the screen, a giant X stamp | `F, F, H` |
 | CHAI | Q.E.D.: a spinning combo of kicks, a Q.E.D. box, a bow and a hand up | `B, F, K` |
 | DALSASS | See Me After Class: three fake punches (they flinch every time), a finger flick, a sticky note | `D, D, P` |
-| LEE | Infinite Series: hits that speed up into a blur while the sum climbs, then he fixes his glasses | `F, B, F, P` |
-| LOPEZ | Area Under the Curve: he waits, catches their swing, punishes once; a graph shades the area as they fall | `B, B, H` |
+| LEE | Infinite Series: hits that speed up into a blur while the sum climbs, then a shrug | `F, B, F, P` |
+| LOPEZ | Area Under the Curve: arms folded, one rising palm launches them; a graph shades the area as they fall | `B, B, H` |
 | MIYASHIRO | Calculated: a glowing parabola, one strike at the exact point, into the whiteboard | `D, F, K` |
 | RAMOS | Cardio Finale: grabs them, runs a full lap of the stage carrying them, slams, hair flip | `F, D, F, P` |
 

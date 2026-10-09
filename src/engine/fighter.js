@@ -464,12 +464,16 @@
     return this.pick(fwd ? ['fH', 'heavy'] : back ? ['bH', 'heavy'] : ['heavy']);
   };
 
-  // Ultimate: down, down-forward, forward + P+K+H with all three bars of Grade meter.
+  // Ultimate: with all three bars of Grade meter, the ultimate key, or down,
+  // down-forward, forward + P+K+H.
   Fighter.prototype.tryUltimate = function (buf, frame) {
-    if (!this.def.moves.ultimate || !buf.allThree(frame) || !buf.qcf(this.facing, frame)) return false;
-    if (this.meter < C.METER_MAX) return false;
+    if (!this.def.moves.ultimate) return false;
+    var key = buf.wasPressed('u', frame);
+    if (!key && (!buf.allThree(frame) || !buf.qcf(this.facing, frame))) return false;
+    if (this.meter < C.METER_MAX) { if (key) buf.consume('u'); return false; }
     if (!this.infiniteMeter) this.meter = 0;
-    buf.consume('p'); buf.consume('k'); buf.consume('h');
+    if (key) buf.consume('u');
+    else { buf.consume('p'); buf.consume('k'); buf.consume('h'); }
     this.stance = 'A';
     this.startMove('ultimate');
     this.ultStarted = true; // read (and cleared) by the match for the event
