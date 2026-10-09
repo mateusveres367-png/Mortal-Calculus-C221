@@ -159,3 +159,12 @@
     };
   };
 })();
+
+// Shared poses for whoever is on the receiving end of an ultimate (any fighter):
+// sat at a student desk (DALSASS's Pop Quiz), sweating over it, and in a panic.
+(function () {
+  var R = FG.rigger({});
+  FG.POSES.desk_sit = R({ hip: [0, 27], lean: 10, fa: { hand: [22, 46] }, ba: { hand: [18, 45] }, fl: [0, -90], bl: [6, -86] });
+  FG.POSES.desk_sweat = R({ hip: [0, 27], lean: 24, neck: 16, fa: { hand: [12, 70] }, ba: { hand: [6, 72] }, fl: [0, -90], bl: [6, -86] });
+  FG.POSES.desk_panic = R({ hip: [0, 28], lean: -12, neck: -10, fa: [70, 110], ba: [60, 100], fl: [10, -80], bl: [4, -86] });
+})();

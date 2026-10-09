@@ -32,6 +32,8 @@ Every fighter needs unique normals, launcher, throw, combo routes, stance, idle 
 
 **Signature — Long Arms:** his straight punches outrange everyone's, which makes him great at poking. Landing one with the very tip hits harder. F+P (Long Arms) is the longest poke in the game.
 
+**Ultimate — Fast Break:** he blows his coach's whistle and the scene cuts to a running track: he sprints in a blur past the yard lines, hurdles a bench, then comes back into the stage with a flying knee. A giant X stamps the screen: SOLVED.
+
 **Look:** Tall and athletic. Dark brown hair styled up and back, a short full dark beard and a big warm smile. Wears a black V-neck tee.
 
 **Personality:** Nice, easygoing and a good sport. Nods respectfully before rounds. Best for new players.
@@ -54,6 +56,8 @@ Every fighter needs unique normals, launcher, throw, combo routes, stance, idle 
 
 **Signature — Kick Chain:** once a kick connects (hit or block), K or H into a different kick cancels it, up to four kicks in a row. Her sidestep is the best in the game: the quickest, the deepest, and she can attack out of it almost at once.
 
+**Ultimate — Compass Construction:** she pulls out a giant drawing compass, plants it next to the opponent and spins around them, kicking on every pass while a glowing perfect circle draws itself. A giant protractor snaps into place at 90°, then a final axe kick. Afterward she covers her mouth: "Sorry!"
+
 **Look:** Slim and agile. Long wavy brown hair with blonde highlights, tied back to fight. Bright smile, small stud earrings and a small purple heart pendant. Wears a rust-orange blouse, practical slacks and flats.
 
 **Personality:** Very kind. Bows before fights, winces apologetically after big hits, and offers a hand up after winning. Precise and graceful.
@@ -75,6 +79,8 @@ Every fighter needs unique normals, launcher, throw, combo routes, stance, idle 
 **Style:** Movement-based trickster. Bobs and sways, ducks under highs, leans back from attacks. A playful, loose stance (lead hand low by the hip) that keeps switching sides. Flicker jab, backfist, lazy lean-back kicks, a breakdancer's sweep, a baseball slide, a bolo punch.
 
 **Signature — Similar Triangles stance:** a second stance with completely different moves (twin palms, a spinning low heel, an axe kick). Any of his attacks, from either stance, can be feinted by tapping back during its startup. He can sway backward to dodge (Assume the Contrary, B+K: highs and mids miss him), then counter (The Converse, P).
+
+**Ultimate — Pop Quiz:** he slams down a stack of papers, and the opponent is suddenly sitting at a student desk with a quiz and a ticking timer, sweating. He snatches the paper, red-pens a giant F, and smacks them with the whole stack while the class goes wild.
 
 **Look:** Solid build. Short spiky brown hair, smile lines, a short graying goatee and a huge grin. Wears a light aqua striped polo.
 

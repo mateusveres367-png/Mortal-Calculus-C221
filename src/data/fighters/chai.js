@@ -21,6 +21,11 @@
     offer2: R({ hip: [0, 49], lean: 20, fa: [-25, -35], ba: [-90, -80], fl: { foot: [6, 0] }, bl: { foot: [-6, 0] } }),
     smile: R({ hip: [0, 50], lean: 0, fa: [-50, 80], ba: [-95, -80], fl: { foot: [4, 0] }, bl: { foot: [-4, 0] } }),
     sorry: R({ hip: [0, 49], lean: 14, neck: 8, fa: [-40, 60], ba: [-60, 70], fl: { foot: [6, 0] }, bl: { foot: [-6, 0] } }),
+    // Compass Construction (the ultimate): the giant compass held high, planted, and
+    // her hands over her mouth afterward.
+    compass_up: R({ hip: [0, 50], lean: -4, neck: -6, fa: [82, 96], ba: [76, 92], fl: { foot: [6, 0] }, bl: { foot: [-6, 0] } }),
+    compass_plant: R({ hip: [4, 40], lean: 26, fa: { hand: [28, 44] }, ba: { hand: [24, 46] }, fl: { foot: [18, 0] }, bl: { foot: [-16, 0] } }),
+    oops: R({ hip: [0, 48], lean: 8, neck: 12, fa: { hand: [6, 82], bend: -1 }, ba: { hand: [4, 80], bend: -1 }, fl: { foot: [3, 0] }, bl: { foot: [-5, 1] } }),
     kneel: [0, 20, 4, 44, 6, 56, 10, 34, 14, 24, 0, 34, 6, 24, 14, 14, 4, 0, -4, 8, -12, 0],
     kneel2: [0, 20, 3, 43, 4, 54, 10, 34, 14, 24, 0, 34, 6, 24, 14, 14, 4, 0, -4, 8, -12, 0],
 
@@ -112,7 +117,7 @@
     // KO finisher: after winning the final round, this input within 2 seconds of the K.O.
     finisher: { name: 'Q.E.D.', input: 'B, F, K' },
     // Ultimate (D, D/F, F + P+K+H, three bars): a cinematic in src/render/ultimates.js.
-    ultimate: { name: 'CIRCLE THEOREM', text: 'a full 360-degree sidestep around them with a kick from every sixth of the circle, the circle and its radius drawn behind, then an arc kick', from: 'fK', len: 250, hits: [44, 64, 84, 104, 124, 182], end: { gap: 84, down: true } },
+    ultimate: { name: 'COMPASS CONSTRUCTION', text: 'she plants a giant drawing compass next to them and spins around them, a kick on every pass, while a glowing circle draws itself; a protractor snaps into place at 90 degrees, then an axe kick (and an apology)', from: 'fK', len: 270, hits: [56, 74, 90, 104, 116, 128, 190], weights: [1, 1, 1, 1, 1, 1, 4], end: { gap: 70, down: true } },
     name: 'CHAI', archetype: 'TECHNICAL', theme: 'GEOMETRY',
     style: 'TAEKWONDO', signatureMechanic: 'KICK CHAIN',
     signatureText: 'once a kick connects, K or H into a different kick cancels it, up to four kicks in a row; and the best sidestep in the game',

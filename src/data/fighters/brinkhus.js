@@ -19,6 +19,15 @@
     nod: R({ hip: [0, 50], lean: 4, neck: 16, fa: [-82, -88], ba: [-96, -92], fl: { foot: [6, 0] }, bl: { foot: [-6, 0] } }),
     thumb: R({ hip: [0, 50], lean: 0, fa: [-40, 70], ba: [-96, -92], fl: { foot: [6, 0] }, bl: { foot: [-6, 0] } }),
     wave: R({ hip: [0, 50], lean: -2, fa: [55, 95], ba: [-96, -92], fl: { foot: [6, 0] }, bl: { foot: [-6, 0] } }),
+    // Fast Break (the ultimate): the coach's whistle, a sprint, a hurdle, a flying knee.
+    whistle: R({ hip: [0, 50], lean: -4, neck: -8, fa: { hand: [7, 89], bend: -1 }, ba: [-96, -92], fl: { foot: [6, 0] }, bl: { foot: [-6, 0] } }),
+    whistle2: R({ hip: [0, 50], lean: -9, neck: -14, fa: { hand: [6, 91], bend: -1 }, ba: [-100, -96], fl: { foot: [6, 0] }, bl: { foot: [-6, 0] } }),
+    sprint1: R({ hip: [6, 48], lean: 18, neck: -4, fa: [-135, -70], ba: [35, 105], fl: [-20, -95], bl: [-135, -165] }),
+    sprint2: R({ hip: [6, 49], lean: 18, neck: -4, fa: [35, 105], ba: [-135, -70], fl: [-130, -160], bl: [-25, -95] }),
+    hurdle: R({ hip: [0, 52], lean: 32, fa: [8, 4], ba: [-150, -120], fl: [4, 0], bl: [-175, -95] }),
+    fknee_c: R({ hip: [0, 38], lean: 12, fa: { hand: [18, 66] }, ba: { hand: [-12, 62] }, fl: { foot: [16, 0] }, bl: { foot: [-18, 0] } }),
+    fknee: R({ hip: [0, 48], lean: -10, neck: 6, fa: [-150, -112], ba: [-138, -100], fl: [42, -62], bl: [-112, -150] }),
+    fland: R({ hip: [0, 36], lean: 14, fa: { hand: [22, 62] }, ba: { hand: [-14, 52] }, fl: { foot: [16, 0] }, bl: { foot: [-20, 0] } }),
     kneel: [0, 26, 6, 50, 10, 60, 12, 40, 14, 30, 0, 40, 4, 30, 14, 26, 18, 0, -6, 4, -22, 0],
     kneel2: [0, 26, 5, 49, 7, 58, 12, 40, 14, 30, 0, 40, 4, 30, 14, 26, 18, 0, -6, 4, -22, 0],
 
@@ -102,7 +111,7 @@
     // KO finisher: after winning the final round, this input within 2 seconds of the K.O.
     finisher: { name: 'SOLVE FOR X', input: 'F, F, H' },
     // Ultimate (D, D/F, F + P+K+H, three bars): a cinematic in src/render/ultimates.js.
-    ultimate: { name: 'ORDER OF OPERATIONS', text: 'six hits in PEMDAS order, a letter for each: Parentheses, Exponents, Multiplication, Division, Addition, and a Subtraction launch', from: 'heavy', len: 236, hits: [34, 54, 74, 94, 114, 160], end: { gap: 96, launch: 9, height: 70 } },
+    ultimate: { name: 'FAST BREAK', text: 'a blast on the coach\'s whistle, a sprint down the running track and over a bench, then back into the stage with a flying knee: a giant X stamps SOLVED', from: 'heavy', len: 236, hits: [136, 170], weights: [3, 1], end: { gap: 90, down: true } },
     name: 'BRINKHUS', archetype: 'BALANCED', theme: 'ALGEBRA 1',
     style: 'KICKBOXER', signatureMechanic: 'LONG ARMS',
     signatureText: 'his straights outrange everyone\'s, and landing one with the very tip hits 25% harder',

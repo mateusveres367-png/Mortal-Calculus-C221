@@ -23,6 +23,14 @@
     pw_idle: pw,
     point: R({ hip: [0, 45], lean: -4, fa: [10, 12], ba: { hand: [4, 60] }, fl: { foot: [12, 0] }, bl: { foot: [-12, 0] } }),
     shrug: R({ hip: [0, 45], lean: -4, neck: -8, fa: [-30, 60], ba: [-150, 120], fl: { foot: [10, 0] }, bl: { foot: [-10, 0] } }),
+    // Pop Quiz (the ultimate): the stack of papers, the red pen, the smack.
+    papers_up: R({ hip: [0, 46], lean: -6, neck: -6, fa: [72, 96], ba: [66, 92], fl: { foot: [12, 0] }, bl: { foot: [-12, 0] } }),
+    papers_slam: R({ hip: [3, 38], lean: 32, neck: 10, fa: { hand: [28, 40] }, ba: { hand: [24, 42] }, fl: { foot: [17, 0] }, bl: { foot: [-14, 0] } }),
+    snatch: R({ hip: [3, 45], lean: 8, fa: [12, 26], ba: { hand: [4, 60] }, fl: { foot: [16, 0] }, bl: { foot: [-12, 0] } }),
+    pen: R({ hip: [0, 46], lean: 2, neck: 8, fa: { hand: [17, 84] }, ba: { hand: [20, 80] }, fl: { foot: [12, 0] }, bl: { foot: [-12, 0] } }),
+    pen2: R({ hip: [0, 46], lean: 4, neck: 10, fa: { hand: [17, 84] }, ba: { hand: [19, 70] }, fl: { foot: [12, 0] }, bl: { foot: [-12, 0] } }),
+    stack_up: R({ hip: [-2, 47], lean: -16, neck: -8, fa: [104, 124], ba: [98, 118], fl: { foot: [14, 0] }, bl: { foot: [-14, 0] } }),
+    stack_x: R({ hip: [7, 40], lean: 36, neck: 8, fa: [-8, -26], ba: [-4, -22], fl: { foot: [22, 0] }, bl: { foot: [-12, 0] } }),
     wag: R({ hip: [0, 45], lean: -4, fa: [-40, 85], ba: { hand: [4, 60] }, fl: { foot: [12, 0] }, bl: { foot: [-12, 0] } }),
     wag2: R({ hip: [0, 45], lean: -4, fa: [-40, 78], ba: { hand: [4, 60] }, fl: { foot: [12, 0] }, bl: { foot: [-12, 0] } }),
     guns: R({ hip: [0, 45], lean: -6, fa: [5, 10], ba: [-5, 5], fl: { foot: [12, 0] }, bl: { foot: [-12, 0] } }),
@@ -115,9 +123,9 @@
     stringH: 'THEREFORE', // P, P, H: the universal string ender (see FG.defineFighter)
     cutIn: { a: 0x2fc4c0, b: 0xffffff }, // cut-in colours: main and accent
     // KO finisher: after winning the final round, this input within 2 seconds of the K.O.
-    finisher: { name: 'POP QUIZ', input: 'D, D, P' },
+    finisher: { name: 'SEE ME AFTER CLASS', input: 'D, D, P' },
     // Ultimate (D, D/F, F + P+K+H, three bars): a cinematic in src/render/ultimates.js.
-    ultimate: { name: 'TWO-COLUMN PROOF', text: 'the screen splits into STATEMENTS | REASONS; every hit proves a line, and the last one stamps the conclusion', from: 'heavy', len: 262, hits: [40, 72, 104, 136, 196], end: { gap: 76, down: true } },
+    ultimate: { name: 'POP QUIZ', text: 'he slams down a stack of papers: they are at a student desk with a quiz and a ticking timer, sweating; he snatches the paper, red-pens a giant F, and smacks them with the whole stack while the class goes wild', from: 'heavy', len: 280, hits: [142, 152, 160, 196], weights: [1, 1, 1, 5], end: { gap: 76, down: true } },
     name: 'DALSASS', archetype: 'TRICKY', theme: 'GEOMETRY PROOFS',
     style: 'TRICKSTER', signatureMechanic: 'SIMILAR TRIANGLES',
     signatureText: 'a second stance (B+P) with its own moves; tap back during any attack\'s startup to feint it; Assume the Contrary (B+K) sways out of highs and mids, then P counters with The Converse',

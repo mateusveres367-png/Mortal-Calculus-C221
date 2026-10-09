@@ -9,6 +9,7 @@
   var C = FG.C;
   var STEP_MS = 1000 / C.FPS;
   var ATTRACT_CLIPS = 3, CLIP_TICKS = 60 * 15; // demo: three clips of about 15 seconds
+  var ULT_CAM_OUT = 14; // frames for the camera to ease back to the fight after an ultimate
 
   // Scene data for attract clip n: a random matchup on a random stage.
   FG.attractClip = function (n) {
@@ -92,6 +93,7 @@
     // Ultimates: a layer over everything on screen (PEDERSEN's cracked glass), DIAGRAM
     // VIEW (the chalkboard, chalk outlines of the fighters, the diagram) and text.
     this.ultTop = this.add.graphics().setScrollFactor(0).setDepth(45.5);
+    this.ultGhost = this.add.graphics().setDepth(-0.2).setAlpha(0.4); // afterimages on an ultimate's set
     this.diagG = this.add.graphics().setScrollFactor(0).setDepth(44.5);
     this.diagFig = this.add.graphics().setScrollFactor(0).setDepth(44.6);
     this.diagTop = this.add.graphics().setScrollFactor(0).setDepth(44.7);
@@ -134,6 +136,8 @@
     this.cutin.stop();
     this.finishWin = null; this.finisher = null; this.finishPractice = false;
     this.ult = null;      // { fx, script, wi, t } an ultimate's cinematic (src/render/ultimates.js)
+    this.ultCam = null;   // { x, y, zoom, rot, k, cut } where the ultimate points the camera (fx.cam)
+    this._ucam = null;    // the camera easing toward it
     this.diagram = null;  // { spec, t, len } a DIAGRAM VIEW freeze frame
     this.ultFlash = null; // { t, wi, color } the flash as an ultimate starts
     this.cutinUsed = [false, false]; // one cut-in per combo
@@ -321,7 +325,7 @@
     l._override = { anim: [[1, 'down'], [16, 'crouch'], [30, 'hit_mid']], t: 0 };
     l.y = 0; l.facing = -w.facing;
     l.x = Math.max(C.WALL_L + 30, Math.min(C.WALL_R - 30, w.x + w.facing * 46));
-    this.slowmo = null; this.zoom = null;
+    this.slowmo = null; this.zoom = null; this.ultCam = null; this._ucam = null;
     this.hud.showBanner('FINISH IT!', opts.practice ? 'INPUT: ' + fin.input : '', this.finishWin.len, { scale: 5, y: 112 });
     FG.Sfx.ui('confirm');
     // A CPU winner goes for it (harder CPUs more often).
@@ -827,7 +831,9 @@
       ult.t = m.cinematic.t;
       for (var uo = 0; uo < 2; uo++) if (f[uo]._override) f[uo]._override.t++;
       ult.script.step(ult.fx, ult.t);
-    }
+      this.speech.tick();
+      this.stepUltCam();
+    } else if (!ult && this._ucam && --this._ucam.out <= 0) this._ucam = null;
     if (this.ultFlash && ++this.ultFlash.t > 30) this.ultFlash = null;
     // A throw's flurry (WILSON's Prime Factorization): quick hits while they're held.
     var fl = this.flurry;
@@ -1080,17 +1086,26 @@
     var zl = this.zoomLevel(), zoom = 1 + zl, zk = this.zoom ? zl / this.zoom.amount : 0;
     var cx = mid, cy = C.VIEW_H / 2;
     if (this.zoom) { cx += (this.zoom.x - mid) * 0.45 * zk; cy += (C.GROUND_Y - this.zoom.y - cy) * 0.35 * zk; }
+    // An ultimate's own camera work (fx.cam), easing back to the fight when it ends.
+    var uc = this._ucam, rot = 0;
+    if (uc) {
+      var b = this.ult ? 1 : uc.out / ULT_CAM_OUT;
+      cx += (uc.x - cx) * b; cy += (uc.y - cy) * b; zoom += (uc.zoom - zoom) * b; rot = uc.rot * b;
+    }
     var halfW = C.VIEW_W / 2 / zoom, halfH = C.VIEW_H / 2 / zoom;
-    cx = Phaser.Math.Clamp(cx, halfW, C.WORLD_W - halfW);
-    cy = Math.min(cy, C.VIEW_H - halfH); // never show below the bottom of the stage
+    if (!(this.ult && this.ult.fx.cutaway)) { // a cutaway's set covers the whole view
+      cx = Phaser.Math.Clamp(cx, halfW, C.WORLD_W - halfW);
+      cy = Math.min(cy, C.VIEW_H - halfH); // never show below the bottom of the stage
+    }
     cam.setZoom(zoom);
+    cam.setRotation(rot);
     cam.scrollX = Math.round(cx - C.VIEW_W / 2) + shake.x;
     cam.scrollY = Math.round(cy - C.VIEW_H / 2) + shake.y;
     this.sortCameras();
 
     g.clear();
     this.drawProps();
-    this.drawCars(g);
+    if (!(this.ult && this.ult.fx.cutaway)) this.drawCars(g); // a cutaway is somewhere else
     this.effects.drawBack(g);
     this.ghosts.clear();
     for (var gi = 0; gi < 2; gi++) {
@@ -1165,7 +1180,7 @@
     this.drawButtons(clean || this.mode !== 'training');
     if (clean) this.trials.hide(); else this.trials.draw();
     this.drawFinisher(camX, onScreen);
-    this.drawUltimate();
+    this.drawUltimate(camX, onScreen);
     this.cutin.draw();
   };
 
@@ -1189,6 +1204,7 @@
     if (fi._drawY != null) opts.y = fi._drawY;
     if (fi._drawFacing) opts.facing = fi._drawFacing;
     if (fi._drawScale) opts.scale = (opts.scale || 1) * fi._drawScale;
+    if (fi._drawGround) opts.groundY = C.GROUND_Y - fi._drawGround; // standing further back on a set
     var cam = this.cameras.main;
     if (opts.screen) {
       var wx = opts.x != null ? opts.x : fi.x;
@@ -1236,6 +1252,7 @@
     if (!script) return;
     var fx = FG.ultimateFx(this, ev.attacker);
     this.ult = { fx: fx, script: script, wi: ev.attacker, t: 0 };
+    this.ultCam = null; this.ultCamFresh = true;
     f.forEach(function (fi) { fi._gesture = null; fi._react = null; });
     if (script.start) script.start(fx);
     this.cutinUsed[ev.attacker] = true; this.cutinCool = C.CUTIN_COOLDOWN;
@@ -1246,7 +1263,9 @@
   FightScene.prototype.endUltimate = function (ev) {
     var f = this.match.fighters;
     FG.clearUltimateDraw(f);
-    this.ult = null; this.diagram = null;
+    if (this.ult && this.ult.fx.speaker) this.speech.hide();
+    this.ult = null; this.diagram = null; this.ultCam = null;
+    if (this._ucam) this._ucam.out = ULT_CAM_OUT;
     this.ultTexts.forEach(function (t) { t.setVisible(false); });
     if (f[ev.defender].ko) this.hud.koBanner(ev.attacker);
   };
@@ -1257,8 +1276,24 @@
     FG.Sfx.chalk();
   };
 
-  FightScene.prototype.drawUltimate = function () {
-    this.ultTop.clear(); this.diagG.clear(); this.diagFig.clear(); this.diagTop.clear();
+  // The ultimate's camera eases toward where its script points it (fx.cam), once
+  // per cinematic frame, so slow motion slows the camera too.
+  FightScene.prototype.stepUltCam = function () {
+    var uc = this.ultCam, cam = this.cameras.main;
+    if (!uc) return;
+    var cur = this._ucam;
+    if (!cur || this.ultCamFresh) {
+      cur = this._ucam = { x: cam.scrollX + C.VIEW_W / 2, y: cam.scrollY + C.VIEW_H / 2, zoom: cam.zoom, rot: 0, out: ULT_CAM_OUT };
+      this.ultCamFresh = false;
+    }
+    var k = uc.cut ? 1 : uc.k;
+    uc.cut = false;
+    cur.x += (uc.x - cur.x) * k; cur.y += (uc.y - cur.y) * k;
+    cur.zoom += (uc.zoom - cur.zoom) * k; cur.rot += (uc.rot - cur.rot) * k;
+  };
+
+  FightScene.prototype.drawUltimate = function (camX, onScreen) {
+    this.ultTop.clear(); this.ultGhost.clear(); this.diagG.clear(); this.diagFig.clear(); this.diagTop.clear();
     this.ultTexts.forEach(function (t) { t.setVisible(false); });
     var cam = this.cameras.main;
     // An ultimate starting: the stage goes dark behind the fighters for a moment.
@@ -1273,6 +1308,8 @@
     if (!this.diagram) u.script.draw(u.fx, u.t);
     if (u.script.drawTop) u.script.drawTop(u.fx, u.t);
     if (this.diagram) FG.drawDiagram(this, this.diagram);
+    var sp = u.fx.speaker;
+    if (sp) this.speech.draw(sp, camX, onScreen(sp._drawX != null ? sp._drawX : sp.x));
   };
 
   // The finisher's overlays, and its speech box.

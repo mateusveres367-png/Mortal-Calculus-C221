@@ -218,21 +218,20 @@ try { playwright = require('playwright'); } catch (e) {
   await page.screenshot({ path: path.join(out, '8-enhanced.png') });
   var exOk = ex.enhance && ex.plus && ex.hits >= 1 && ex.meter < 150 && ex.letters === 'CBA';
 
-  // An ultimate: down, down-forward, forward + P+K+H with three bars: a cut-in, DIAGRAM
-  // VIEW freeze frames and about a third of their health.
+  // An ultimate: down, down-forward, forward + P+K+H with three bars: a cut-in, its own
+  // cinematic with its own camera work, and about a third of their health.
   var ultR = await page.evaluate(function () {
     var s = window.FG_SCENE, m;
     s.training.refill = false; s.newMatch(); m = s.match;
     m.fighters[0].x = 480; m.fighters[1].x = 520; m.fighters[0].meter = FG.C.METER_MAX;
-    var hp0 = m.fighters[1].health, seq = ['D', 'D/F', 'F', 'F+P+K+H'], out = { cutin: false, diagram: 0, texts: false, ended: false };
-    var wasDiag = false;
+    var hp0 = m.fighters[1].health, seq = ['D', 'D/F', 'F', 'F+P+K+H'], out = { cutin: false, camera: false, texts: false, ended: false };
     for (var t = 0; t < 900 && !out.ended; t++) {
       var r1 = t < seq.length ? FG.parseInput(seq[t]) : FG.emptyRaw();
       s.forceInput = function () { return [r1, FG.emptyRaw()]; };
       s.tick(); s.render();
       if (s.ult && s.cutin.busy()) out.cutin = true;
-      if (s.diagram && !wasDiag) out.diagram++;
-      wasDiag = !!s.diagram;
+      if (s.ult && s._ucam && s.ultCam) out.camera = true;
+      if (s.diagram) out.camera = true; // (an ultimate not yet reworked: DIAGRAM VIEW)
       if (s.ultTexts.some(function (x) { return x.visible; })) out.texts = true;
       if (out.cutin && !s.ult && !m.cinematic) out.ended = true;
     }
@@ -242,7 +241,7 @@ try { playwright = require('playwright'); } catch (e) {
     return out;
   });
   await page.screenshot({ path: path.join(out, '8-ultimate.png') });
-  var ultOk = ultR.cutin && ultR.diagram >= 1 && ultR.texts && ultR.ended && ultR.share >= 30 && ultR.share <= 35;
+  var ultOk = ultR.cutin && ultR.camera && ultR.texts && ultR.ended && ultR.share >= 30 && ultR.share <= 35;
 
   // Extra Credit: low on health, P+K+H: the prompt, a cut-in, a full meter and a boost.
   var ecR = await page.evaluate(function () {

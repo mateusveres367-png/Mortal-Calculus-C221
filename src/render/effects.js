@@ -575,6 +575,51 @@
     sweep(0.24, high ? 900 : 600, high ? 1300 : 800, 0.08, 'square');
   };
 
+  // Ultimates' own sounds (src/render/ultimates/): Sfx.synth(function (S) { ... }) with
+  //   S.noise({ dur, freq, f1, q, gain, type, at, pan, attack }): filtered noise, its
+  //     filter sweeping from freq to f1;
+  //   S.osc({ dur, f0, f1, gain, type, at, pan, attack, vib: [rate, depth] }): a tone
+  //     gliding from f0 to f1, with vibrato.
+  // `at` is a delay in seconds, `pan` -1 (left) to 1 (right), `attack` a fade-in.
+  function synthOut(ctx, node, pan) {
+    if (pan && ctx.createStereoPanner) { var p = ctx.createStereoPanner(); p.pan.value = pan; node.connect(p); p.connect(ctx.destination); }
+    else node.connect(ctx.destination);
+  }
+  function synthEnv(ctx, t, o) {
+    var g = ctx.createGain(), a = o.attack || 0;
+    if (a) { g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(o.gain, t + a); }
+    else g.gain.setValueAtTime(o.gain, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + Math.max(a + 0.01, o.dur));
+    return g;
+  }
+  var SYN = {
+    noise: function (o) {
+      var ctx = Sfx.ctx, t = ctx.currentTime + (o.at || 0);
+      var src = ctx.createBufferSource(); src.buffer = Sfx.noise; src.loop = true;
+      var f = ctx.createBiquadFilter(); f.type = o.type || 'bandpass'; f.Q.value = o.q || 1;
+      f.frequency.setValueAtTime(o.freq || 1000, t);
+      if (o.f1) f.frequency.exponentialRampToValueAtTime(o.f1, t + o.dur);
+      var g = synthEnv(ctx, t, o);
+      src.connect(f); f.connect(g); synthOut(ctx, g, o.pan);
+      src.start(t, Math.random() * 0.5); src.stop(t + o.dur + 0.05);
+    },
+    osc: function (o) {
+      var ctx = Sfx.ctx, t = ctx.currentTime + (o.at || 0);
+      var osc = ctx.createOscillator(); osc.type = o.type || 'sine';
+      osc.frequency.setValueAtTime(o.f0, t);
+      if (o.f1) osc.frequency.exponentialRampToValueAtTime(o.f1, t + o.dur);
+      if (o.vib) {
+        var lfo = ctx.createOscillator(), lg = ctx.createGain();
+        lfo.frequency.value = o.vib[0]; lg.gain.value = o.vib[1];
+        lfo.connect(lg); lg.connect(osc.frequency); lfo.start(t); lfo.stop(t + o.dur + 0.05);
+      }
+      var g = synthEnv(ctx, t, o);
+      osc.connect(g); synthOut(ctx, g, o.pan);
+      osc.start(t); osc.stop(t + o.dur + 0.05);
+    }
+  };
+  Sfx.synth = function (fn) { if (Sfx.ctx && !Sfx.muted) fn(SYN); };
+
     // Menu blips.
   Sfx.ui = function (kind) {
     if (!Sfx.ctx || Sfx.muted) return;

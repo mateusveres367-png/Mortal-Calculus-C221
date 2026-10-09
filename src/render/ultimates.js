@@ -82,7 +82,7 @@
     var fx = {
       scene: scene, w: w, l: l, wi: wi, li: 1 - wi, dir: cin.dir, x0: w.x, lx0: l.x, ly0: l.y, s: {},
       name: w.def.ultimate.name, glow: FG.fighterGlow(w.def),
-      gb: scene.finBack, gf: scene.finFront, gs: scene.finScreen, top: scene.ultTop,
+      gb: scene.finBack, gf: scene.finFront, gs: scene.finScreen, top: scene.ultTop, gg: scene.ultGhost,
       pose: function (who, name) { who._override = { anim: [[1, name]], t: 1 }; },
       anim: function (who, anim, loop) { who._override = { anim: anim, t: 0, loop: !!loop }; },
       // A strike: from windup pose `c` to strike pose `x` landing `at` frames later, then held.
@@ -127,21 +127,87 @@
           .setAlpha(alpha == null ? 1 : alpha).setVisible(true);
       },
       // A pose from a fighter's own move: the frame it strikes (for freezing them mid-attack).
-      strikePose: function (who) {
-        var mv = who.lastMove;
+      strikePose: function (who, id) {
+        var mv = id ? who.def.moves[id] : who.lastMove;
         if (!mv || !mv.anim) return 'hit_mid';
         var k = mv.anim.filter(function (a) { return a[0] >= mv.startup; })[0] || mv.anim[mv.anim.length - 1];
         return k[1];
-      }
+      },
+      // ...and the pose it winds up from.
+      windupPose: function (who, id) {
+        var mv = who.def.moves[id];
+        if (!mv || !mv.anim) return 'idle';
+        var ks = mv.anim.filter(function (a) { return a[0] < mv.startup; });
+        return (ks[ks.length - 1] || mv.anim[0])[1];
+      },
+
+      // --- Sets and camera work ---
+      // A set is drawn in the world around an anchor (fx.ax), in set space: s is how far
+      // forward of the anchor (toward where the attacker faces), h how high off the floor.
+      // A cutaway (fx.cutaway = true) is somewhere else: its set covers the stage and the
+      // camera may leave the stage's bounds.
+      ax: Math.max(W / 2, Math.min(C.WORLD_W - W / 2, (w.x + l.x) / 2)),
+      cutaway: false,
+      X: function (s) { return fx.ax + fx.dir * s; },
+      Y: function (h) { return GY - h; },
+      S: function (wx) { return (wx - fx.ax) * fx.dir; }, // a world x in set space
+      P: function (s, h) { return { x: fx.X(s), y: GY - h }; },
+      // Put a fighter somewhere on the set (on screen only; never clamped to the walls).
+      place: function (who, s, h) { who._drawX = fx.X(s); who._drawY = h || 0; },
+      // Point the camera at (s, h) in set space (h = 120 frames the fight as usual).
+      // opts: { rot (a tilt, radians), k (how fast it eases there, 1 = at once), cut }.
+      cam: function (s, h, zoom, opts) {
+        opts = opts || {};
+        scene.ultCam = { x: fx.X(s), y: GY - h, zoom: zoom || 1, rot: (opts.rot || 0) * fx.dir, k: opts.k == null ? 0.12 : opts.k, cut: !!opts.cut };
+      },
+      // Fill the whole view (however the camera moves) with a colour.
+      fill: function (g, col, a) { g.fillStyle(col, a == null ? 1 : a); g.fillRect(fx.ax - W * 1.6, GY - H * 2.2, W * 3.2, H * 3.4); },
+      rect: function (g, s1, h1, s2, h2, col, a) {
+        var x1 = fx.X(s1), x2 = fx.X(s2);
+        g.fillStyle(col, a == null ? 1 : a);
+        g.fillRect(Math.min(x1, x2), GY - Math.max(h1, h2), Math.abs(x2 - x1), Math.abs(h2 - h1));
+      },
+      poly: function (g, pts, col, a) {
+        g.fillStyle(col, a == null ? 1 : a);
+        g.fillPoints(pts.map(function (p) { return fx.P(p[0], p[1]); }), true);
+      },
+      line: function (g, s1, h1, s2, h2, col, wid, a) {
+        g.lineStyle(wid || 1, col, a == null ? 1 : a);
+        g.lineBetween(fx.X(s1), GY - h1, fx.X(s2), GY - h2);
+      },
+      circle: function (g, s, h, r, col, a) { g.fillStyle(col, a == null ? 1 : a); g.fillCircle(fx.X(s), GY - h, r); },
+      // Another figure of a fighter (a copy, a photo, a silhouette) in one of their poses.
+      figure: function (g, who, pose, s, h, opts) {
+        opts = Object.assign({ noShadow: true }, opts);
+        var x = fx.X(s);
+        opts.x = x; opts.y = h || 0;
+        FG.drawFighter(g, { def: who.def, alt: who.alt, x: x, y: h || 0, z: 0, facing: opts.facing || who.facing, _pose: FG.getPose(who.def, pose), _twist: 0 }, opts);
+      },
+      // Text on the set (it moves and zooms with the camera): s, h in set space.
+      wtext: function (i, str, s, h, color, scale, angle, alpha) {
+        var y = fx.sy(GY - h);
+        if (y < 60 || y > H + 20) return; // out of the shot (or under the health bars)
+        fx.text(i, str, fx.sx(fx.X(s)), y, color, (scale || 2) * scene.cameras.main.zoom, angle, alpha);
+      },
+      // A speech box over a fighter.
+      say: function (who, text, dur) { scene.speech.show(who.def.name, text, dur || FG.SpeechBox.readTime(text)); fx.speaker = who; },
+      // The ultimate's own sounds: fx.sfx(function (S) { S.osc({...}); S.noise({...}); }).
+      sfx: function (fn) { FG.Sfx.synth(fn); },
+      // Cheering students (the stage's crowd, or a set's own).
+      crowd: function (level) { scene.stage.cheer(level, true); FG.Sfx.cheer(Math.min(1, level / 3)); }
     };
     return fx;
   };
+
+  // Shared drawing helpers for the ultimate scripts in src/render/ultimates/.
+  FG.ultKit = { hash: hash, clamp01: clamp01, ease: ease, stroke: stroke, poly: poly, chalkLine: chalkLine, chalkArc: chalkArc, dot: dot, TAU: TAU,
+    stamp: function (t, at) { return stamp(t, at); } };
 
   // How big a stamp is `t - at` frames after it slams down.
   function stamp(t, at) { var u = clamp01((t - at) / 6); return 1 + (1 - u) * (1 - u) * 2.5; }
   // Clear the screen-only placement of both fighters (the cinematic is over).
   FG.clearUltimateDraw = function (f) {
-    f.forEach(function (fi) { fi._override = null; fi._drawX = null; fi._drawY = null; fi._drawRot = null; fi._drawFacing = null; fi._hidden = false; fi._drawBehind = false; fi._props = null; });
+    f.forEach(function (fi) { fi._override = null; fi._drawX = null; fi._drawY = null; fi._drawRot = null; fi._drawFacing = null; fi._drawScale = null; fi._drawGround = 0; fi._hidden = false; fi._drawBehind = false; fi._props = null; fi._face = null; });
   };
 
   // --- DIAGRAM VIEW -----------------------------------------------------------------
@@ -360,209 +426,10 @@
     if (d.sub) sub.setText(d.sub).setPosition(capX, 100).setScale(1.5).setAngle(-2).setTint(CHALK_B).setAlpha(a * clamp01((t - 12) / 6)).setVisible(true);
   };
 
-  // --- The eight ultimates ---------------------------------------------------------
+  // --- The ultimates ----------------------------------------------------------------
+  // Each fighter's script is in src/render/ultimates/<id>.js.
 
   FG.ULTIMATES = {};
-
-  // BRINKHUS — Order of Operations: six hits in PEMDAS order, a letter for each,
-  // the last (Subtraction) a launch that takes away the ground under them.
-  var PEMDAS = [
-    { l: 'P', word: 'PARENTHESES', c: 'jab_c', x: 'jab_x', kind: 'jab', react: 'hit_high' },
-    { l: 'E', word: 'EXPONENTS', c: 'up_c', x: 'up_x', kind: 'launch', react: 'hit_high', lift: 26 },
-    { l: 'M', word: 'MULTIPLICATION', c: 'cross_c', x: 'cross_x', kind: 'power', react: 'hit_mid' },
-    { l: 'D', word: 'DIVISION', c: 'ham_c', x: 'ham_x', kind: 'overhead', react: 'hit_low' },
-    { l: 'A', word: 'ADDITION', c: 'long_c', x: 'long_x', kind: 'body', react: 'hit_mid' },
-    { l: 'S', word: 'SUBTRACTION', c: 'up_c', x: 'up_x', kind: 'launch', react: 'juggle' }
-  ];
-  FG.ULTIMATES.brinkhus = {
-    start: function (fx) {
-      fx.at(fx.l, fx.x0 + fx.dir * 44, 0);
-      fx.pose(fx.l, 'hit_mid');
-      fx.anim(fx.w, [[1, 'idle'], [10, 'nod'], [24, 'idle']]);
-      fx.zoom(0.12, fx.x0 + fx.dir * 22, 60, 200);
-      fx.s.lit = -1;
-    },
-    step: function (fx, t) {
-      var w = fx.w, l = fx.l, hits = w.def.ultimate.hits, s = fx.s;
-      for (var k = 0; k < 6; k++) {
-        var h = PEMDAS[k], at = hits[k];
-        if (t === at - (k === 5 ? 18 : 6)) fx.strike(w, h.c, h.x, k === 5 ? 18 : 6, k === 5 ? 30 : 8);
-        if (t === at) {
-          s.lit = k; s.litT = t;
-          fx.hit(l, h.kind, { strength: k === 5 ? 'heavy' : 'medium', hits: k + 1, ch: k === 5, shake: k === 5 ? 0.02 : 0.008 });
-          fx.pose(l, h.react);
-          if (k === 1) fx.diagram({ kind: 'force', angle: -Math.PI / 2, caption: 'E: EXPONENTS', sub: 'THE FORCE GOES UP. SO DO YOU.', formula: 'F = MA^2' });
-          if (k === 5) { fx.slow(34, 0.35); fx.flash(0xffd23f, 0.5); }
-        }
-      }
-      // Exponents lifts them a little; Subtraction takes the floor away.
-      if (t > hits[1] && t < hits[1] + 16) fx.at(l, null, Math.sin((t - hits[1]) / 16 * Math.PI) * 26);
-      if (t === hits[1] + 16) fx.at(l, null, 0);
-      if (t > hits[5]) {
-        var u = (t - hits[5]) / (w.def.ultimate.len - hits[5]);
-        fx.at(l, fx.x0 + fx.dir * (44 + 52 * u), 70 * u + 130 * Math.sin(u * Math.PI));
-      }
-      if (t === hits[5] + 30) fx.diagram({ kind: 'parabola', caption: 'S: SUBTRACTION', sub: 'SUBTRACT ONE FLOOR.', formula: 'Y = -X² + BX' });
-      if (t === hits[5] + 40) fx.anim(w, [[1, 'up_r'], [12, 'stand'], [24, 'thumb']]);
-    },
-    draw: function (fx, t) {
-      // P E M D A S across the top: each letter lights up and stays lit.
-      var s = fx.s, x0 = W / 2 - 5 * 26;
-      for (var k = 0; k < 6; k++) {
-        var on = s.lit >= k, sc = on && s.lit === k ? stamp(t, s.litT) * 3 : 3;
-        fx.text(k, PEMDAS[k].l, x0 + k * 52, 82, on ? (k === 5 ? 0xff6a3d : 0xffd23f) : 0x5a5a6a, sc, -4, on ? 1 : 0.6);
-      }
-      if (s.lit >= 0 && t - s.litT < 40) fx.text(6, PEMDAS[s.lit].word, W / 2, 112, 0xffffff, 2, -4, Math.min(1, (40 - (t - s.litT)) / 10));
-    }
-  };
-
-  // CHAI — Circle Theorem: a full 360-degree sidestep around them, a kick from every
-  // sixth of the circle, the circle and its radius drawn behind, an arc kick to end.
-  var ORBIT = { from: 24, to: 144 };
-  var CHAI_KICKS = [['rk_c', 'rk_x'], ['tk_c', 'tk_x'], ['hk_c', 'hk_x'], ['bk_c', 'bk_x'], ['tangent_c', 'tangent_x']];
-  var RADIANS = ['Π/3', '2Π/3', 'Π', '4Π/3', '5Π/3'];
-  FG.ULTIMATES.chai = {
-    start: function (fx) {
-      fx.s.R = Math.max(54, Math.abs(fx.lx0 - fx.x0));
-      fx.s.cx = fx.x0 + fx.dir * fx.s.R;
-      fx.at(fx.l, fx.s.cx, 0);
-      fx.pose(fx.l, 'hit_mid');
-      fx.pose(fx.w, 'sidestep');
-      fx.zoom(0.1, fx.s.cx, 60, 220);
-    },
-    // Her angle around the circle (0 = where she started, a full turn by ORBIT.to).
-    theta: function (t) { return TAU * clamp01((t - ORBIT.from) / (ORBIT.to - ORBIT.from)); },
-    step: function (fx, t) {
-      var w = fx.w, l = fx.l, s = fx.s, hits = w.def.ultimate.hits, dir = fx.dir;
-      if (t >= ORBIT.from && t <= ORBIT.to + 4) {
-        var th = this.theta(t), x = s.cx - dir * s.R * Math.cos(th);
-        fx.at(w, x, 0);
-        fx.face(w, x < s.cx ? 1 : -1);
-        w._drawBehind = Math.sin(th) > 0.15; // the far side of the circle
-        w._drawScale = 1 - 0.1 * Math.max(0, Math.sin(th));
-        l._drawFacing = x < s.cx ? -1 : 1; // they turn to follow her
-      }
-      for (var k = 0; k < 5; k++) {
-        if (t === hits[k] - 5) fx.strike(w, CHAI_KICKS[k][0], CHAI_KICKS[k][1], 5, 8);
-        if (t === hits[k]) {
-          fx.hit(l, k % 2 ? 'power' : 'body', { strength: 'medium', hits: k + 1, y: 40 + (k % 3) * 14 });
-          fx.pose(l, k % 2 ? 'hit_high' : 'hit_mid');
-          s.mark = k; s.markT = t;
-          if (k === 2) fx.diagram({ kind: 'inscribed', caption: 'INSCRIBED ANGLE', sub: 'EVERY ANGLE ON THE CIRCLE SEES YOU.' });
-        }
-        if (t === hits[k] + 12) fx.pose(w, 'sidestep');
-      }
-      if (t === ORBIT.to + 6) { w._drawBehind = false; w._drawScale = null; fx.face(w, dir); fx.anim(w, [[1, 'squat'], [12, 'flip_c'], [32, 'flip_x'], [46, 'flip_x'], [60, 'flip_r'], [74, 'stand']]); }
-      // The arc kick: up, over and down on them.
-      if (t > ORBIT.to + 10 && t < hits[5] + 14) fx.at(w, null, Math.sin((t - ORBIT.to - 10) / (hits[5] + 14 - ORBIT.to - 10) * Math.PI) * 54);
-      if (t === hits[5]) {
-        fx.hit(l, 'overhead', { ch: true, hits: 6, shake: 0.02 });
-        fx.pose(l, 'juggle'); fx.slow(30, 0.4); fx.flash(0xff9a3d, 0.5);
-        s.arcT = t;
-      }
-      if (t > hits[5]) {
-        var u = clamp01((t - hits[5]) / 40), endX = fx.x0 + dir * w.def.ultimate.end.gap;
-        fx.at(l, s.cx + (endX - s.cx) * u, Math.sin(u * Math.PI) * 50);
-        if (u >= 1 && !s.down) { s.down = true; fx.pose(l, 'down'); fx.dust(endX, 8, 2); }
-      }
-      if (t === hits[5] + 14) { fx.at(w, null, 0); fx.diagram({ kind: 'circle', caption: 'CIRCLE THEOREM', sub: 'ALL POINTS THE SAME DISTANCE FROM THE PAIN.', r: 70 }); }
-      if (t === hits[5] + 30) fx.anim(w, [[1, 'stand'], [14, 'bow'], [40, 'bow']]);
-    },
-    draw: function (fx, t) {
-      var s = fx.s, g = fx.gb, scene = fx.scene;
-      if (t < ORBIT.from - 10) return;
-      // The circle she runs, drawn as she goes, its centre and radius to her.
-      var cx = s.cx, cy = GY - 6, r = s.R, th = this.theta(Math.min(t, ORBIT.to)), fade = t > fx.w.def.ultimate.hits[5] + 40 ? 0.4 : 1;
-      var pts = [];
-      for (var i = 0; i <= 48; i++) { var a = th * i / 48; pts.push([cx - fx.dir * r * Math.cos(a), cy - r * 0.32 * Math.sin(a)]); }
-      g.setAlpha(fade);
-      stroke(g, pts, 0xffd23f, 3, 1);
-      dot(g, cx, cy, 3, 0xffffff);
-      var hx = cx - fx.dir * r * Math.cos(th), hy = cy - r * 0.32 * Math.sin(th);
-      if (t <= ORBIT.to + 6) { chalkLine(g, cx, cy, hx, hy, 0xffffff, 2); var sp = fx.at2(fx.w, 0); fx.text(0, 'R', (fx.sx(cx) + sp[0]) / 2, fx.sy(cy) - 14, 0xffffff, 2); }
-      // Each kick marks its angle on the circle.
-      for (var k = 0; k <= Math.min(4, s.mark == null ? -1 : s.mark); k++) {
-        var ak = TAU * (k + 1) / 6, mx = cx - fx.dir * r * Math.cos(ak), my = cy - r * 0.32 * Math.sin(ak);
-        dot(g, mx, my, 3, 0xff9a3d);
-        fx.text(1 + k, RADIANS[k], fx.sx(mx), fx.sy(my) + 14, 0xff9a3d, 1.5, 0, s.mark === k ? Math.min(1, (t - s.markT) / 4) : 0.8);
-      }
-      // The giant circle on screen for the finish.
-      if (s.arcT && t >= s.arcT) {
-        var u = clamp01((t - s.arcT) / 14), sc = fx.sx(cx), scy = fx.sy(GY - 76), R = 100;
-        chalkArc(fx.gs, sc, scy, R, -Math.PI / 2, -Math.PI / 2 + TAU * u, 0xffd23f, 4);
-        if (u >= 1) { chalkLine(fx.gs, sc, scy, sc + R * 0.8, scy - R * 0.6, 0xffffff, 3); fx.text(6, 'R', sc + R * 0.4 + 10, scy - R * 0.3 - 14, 0xffffff, 3); fx.text(7, 'C = 2ΠR', sc, scy - R - 14, 0xffd23f, 2); }
-      }
-    }
-  };
-
-  // DALSASS — Two-Column Proof: the screen splits into STATEMENTS | REASONS, every
-  // hit proves a line, and the last stamps the conclusion.
-  var PROOF = [
-    ['YOU ATTACKED', 'GIVEN'],
-    ['YOU LEFT AN OPENING', 'DEF. OF A WHIFF'],
-    ['∠ GUARD ≅ ∠ ZERO', 'VERTICAL ANGLES'],
-    ['YOU ≅ DIZZY', 'S.A.S.'],
-    ['∴ YOU LOSE.', 'BY CONTRADICTION']
-  ];
-  var DAL_HITS = [['jab_c', 'jab_x', 'jab', 'hit_high'], ['feint_c', 'drop_x', 'overhead', 'hit_low'], ['pw_palm_c', 'pw_palm', 'body', 'hit_mid'], ['axe_c', 'axe_x', 'overhead', 'hit_high'], ['spin', 'hv_x', 'power', 'juggle']];
-  FG.ULTIMATES.dalsass = {
-    start: function (fx) {
-      fx.at(fx.l, fx.x0 + fx.dir * 46, 0);
-      fx.pose(fx.l, 'hit_mid');
-      fx.anim(fx.w, [[1, 'idle'], [8, 'point'], [30, 'point'], [36, 'idle']]);
-      fx.zoom(0.08, fx.x0 + fx.dir * 24, 50, 260);
-      fx.s.lines = 0;
-    },
-    step: function (fx, t) {
-      var w = fx.w, l = fx.l, s = fx.s, hits = w.def.ultimate.hits;
-      for (var k = 0; k < 5; k++) {
-        var h = DAL_HITS[k], lead = k === 4 ? 20 : k === 1 ? 10 : 6;
-        if (t === hits[k] - lead) {
-          if (k === 1) fx.anim(w, [[1, 'feint_c'], [5, 'feint_x'], [8, 'idle'], [10, 'drop_x'], [18, 'drop_x']]); // a feint first
-          else fx.strike(w, h[0], h[1], lead, 10);
-        }
-        if (t === hits[k]) {
-          fx.hit(l, h[2], { strength: k === 4 ? 'heavy' : 'medium', hits: k + 1, ch: k === 4, shake: k === 4 ? 0.02 : 0.008 });
-          fx.pose(l, h[3]);
-          s.lines = k + 1; s.lineT = t;
-          FG.Sfx.chalk();
-          if (k === 2) fx.diagram({ kind: 'triangles', caption: 'CONGRUENT', sub: 'SAME SIDES. SAME ANGLES. SAME RESULT.' });
-          if (k === 4) { fx.slow(30, 0.4); fx.shake(0.02); }
-        }
-      }
-      if (t === hits[3] + 10) fx.diagram({ kind: 'angles', caption: 'VERTICAL ANGLES', sub: 'OPPOSITE ANGLES ARE CONGRUENT. SO ARE WE.' });
-      if (t > hits[4]) { var u = clamp01((t - hits[4]) / 36); fx.at(l, fx.x0 + fx.dir * (46 + 30 * u), Math.sin(u * Math.PI) * 40); }
-      if (t === hits[4] + 36) { fx.pose(l, 'down'); fx.dust(fx.px(l), 8, 2); }
-      if (t === hits[4] + 8) { FG.Sfx.play({ type: 'hit', move: { strength: 'heavy' }, impact: 'overhead', hits: 1 }); fx.scene.stage.cheer(3, true); }
-      if (t === hits[4] + 24) fx.anim(w, [[1, 'wag'], [10, 'wag2'], [20, 'wag'], [30, 'wag2']], true);
-    },
-    draw: function (fx, t) {
-      var s = fx.s, g = fx.gs;
-      // The split: a line drops down the middle, then the two columns.
-      // The table sits right of the combo counter.
-      var u = clamp01((t - 2) / 14), top = 62, rowH = 18, bh = 28 + rowH * 5, x0 = 166, x1 = W - 12, mid = (x0 + x1) / 2;
-      var cl = (x0 + mid) / 2, cr = (mid + x1) / 2;
-      g.fillStyle(0x0d1a12, 0.82 * u); g.fillRect(x0, top, x1 - x0, bh * u);
-      g.lineStyle(2, CHALK, 0.9 * u); g.strokeRect(x0, top, x1 - x0, bh * u);
-      chalkLine(g, mid, top, mid, top + bh * u, CHALK, 3);
-      if (u < 1) return;
-      chalkLine(g, x0 + 6, top + 26, x1 - 6, top + 26, CHALK, 2);
-      fx.text(0, 'STATEMENTS', cl, top + 13, 0xffd23f, 2);
-      fx.text(1, 'REASONS', cr, top + 13, 0xffd23f, 2);
-      for (var k = 0; k < s.lines; k++) {
-        var y = top + 38 + k * rowH, a = k === s.lines - 1 ? clamp01((t - s.lineT) / 6) : 1, last = k === 4;
-        if (last) continue; // the conclusion gets the stamp
-        fx.text(2 + k, (k + 1) + '. ' + PROOF[k][0], cl, y, CHALK, 1.5, 0, a);
-        fx.text(8 + k, PROOF[k][1], cr, y, CHALK_B, 1.5, 0, a);
-      }
-      if (s.lines >= 5) {
-        var sc = stamp(t, s.lineT), yy = top + 38 + 4 * rowH + 6;
-        fx.text(6, '∴ YOU LOSE.', cl, yy, 0xff3d3d, 2.4 * sc, -6);
-        fx.text(7, PROOF[4][1], cr, yy, CHALK_B, 1.5, 0, clamp01((t - s.lineT - 8) / 6));
-        g.lineStyle(3, 0xff3d3d, 0.9); g.strokeRect(cl - 106 * sc, yy - 13 * sc, 212 * sc, 26 * sc);
-      }
-    }
-  };
 
   // LEE — Geometric Series: every hit twice as fast as the last until he's a blur,
   // "r > 1: DIVERGES", then it all goes off in a cloud of chalk dust.

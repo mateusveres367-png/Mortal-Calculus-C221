@@ -2,7 +2,7 @@
 
 Generated from the fighter data by `node tools/movelist.js`; don't edit by hand. Identity, looks and lines are in [`ROSTER.md`](ROSTER.md).
 
-**Grade meter:** three bars, C, B and A, under your health bar. They fill as you land hits, block and take damage, a little faster while you're behind, and carry over between rounds. **Enhanced specials** cost one bar: press P+K during the startup of a special that has one (listed under each fighter) and it powers up, the fighter flashing in their colour. **Ultimates** cost all three: down, down-forward, forward + P+K+H (also straight out of a move that hits). If it connects, a cinematic plays (a cut-in, slow motion and DIAGRAM VIEW freeze frames) and takes about a third of their health; blocked or whiffed, it leaves you wide open. **Extra Credit:** once a match, under 25% health, P+K+H (no motion) refills the meter and adds 20% damage for 7 seconds. **Stage objects:** next to one, T is a springboard dive (Springboard below) and back + T a vault over the opponent out of the corner (Vault); each object then needs 6 seconds.
+**Grade meter:** three bars, C, B and A, under your health bar. They fill as you land hits, block and take damage, a little faster while you're behind, and carry over between rounds. **Enhanced specials** cost one bar: press P+K during the startup of a special that has one (listed under each fighter) and it powers up, the fighter flashing in their colour. **Ultimates** cost all three: down, down-forward, forward + P+K+H (also straight out of a move that hits). If it connects, the fighter's own cinematic plays (each one listed under the fighter) and takes about a third of their health; blocked or whiffed, it leaves you wide open. **Extra Credit:** once a match, under 25% health, P+K+H (no motion) refills the meter and adds 20% damage for 7 seconds. **Stage objects:** next to one, T is a springboard dive (Springboard below) and back + T a vault over the opponent out of the corner (Vault); each object then needs 6 seconds.
 
 Frame data: **i** is startup (the frame the move hits, counting the press as frame 1), then active and recovery frames. Block / hit / counter hit are frame advantage for the attacker. Inputs assume you face right: F = toward the opponent, B = away, D = down.
 
@@ -89,7 +89,7 @@ Nice, easygoing, a good sport. Best for new players.
 | K (DOWN) | Rolling Zero | low | 14 | 3 | 22 | -14 | -2 | +1 | 10 | ducks highs |
 | P/H (DOWN) | Spring Theorem | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
 | T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
-| D,D/F,F+P+K+H | Order Of Operations | mid | 19 | 3 | 52 | -34 | +6 | launch | 22 | wall splats, Long Arms: +25% damage at the tip |
+| D,D/F,F+P+K+H | Fast Break | mid | 19 | 3 | 52 | -34 | +6 | launch | 22 | wall splats, Long Arms: +25% damage at the tip |
 | T (BY AN OBJECT) | Springboard | mid | 16 | 5 | 18 | -6 | knockdown | knockdown | 18 |  |
 | B+T (BY AN OBJECT) | Vault | — | 38 total |  |  |  |  |  |  |  |
 
@@ -99,7 +99,7 @@ Nice, easygoing, a good sport. Best for new players.
 - **Long Arms+** (`F+P`, then `P+K`): Two hits, knockdown — 2 hits of 10, hit: knockdown.
 - **Linear Rush+** (`H`, then `P+K`): Armored, launches — 29 damage (from 22), hit: launch, armor on frames 1-19 (1 hit).
 
-**Ultimate:** Order Of Operations — `D, D/F, F + P+K+H` with all three bars: six hits in PEMDAS order, a letter for each: Parentheses, Exponents, Multiplication, Division, Addition, and a Subtraction launch. 6 hits, 32% of their health; blocked -34, whiffed 73 frames.
+**Ultimate:** Fast Break — `D, D/F, F + P+K+H` with all three bars: a blast on the coach's whistle, a sprint down the running track and over a bench, then back into the stage with a flying knee: a giant X stamps SOLVED. 2 hits, 32% of their health; blocked -34, whiffed 73 frames.
 
 **KO finisher:** Solve For X — `F, F, H` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).
 
@@ -147,7 +147,7 @@ Very kind, precise and graceful. Bows before fights.
 | P/H (DOWN) | Spring Theorem | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
 | T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
 | PARRY | Reflection | mid | 6 | 3 | 18 | -6 | knockdown | knockdown | 20 |  |
-| D,D/F,F+P+K+H | Circle Theorem | high | 13 | 3 | 48 | -34 | +5 | +10 | 13 |  |
+| D,D/F,F+P+K+H | Compass Construction | high | 13 | 3 | 48 | -34 | +5 | +10 | 13 |  |
 | T (BY AN OBJECT) | Springboard | mid | 16 | 5 | 18 | -6 | knockdown | knockdown | 18 |  |
 | B+T (BY AN OBJECT) | Vault | — | 38 total |  |  |  |  |  |  |  |
 
@@ -157,7 +157,7 @@ Very kind, precise and graceful. Bows before fights.
 - **Reflex Angle+** (`B+K`, then `P+K`): Launches — 21 damage (from 16), hit: launch.
 - **Vertex Drop+** (`F+H`, then `P+K`): Two hits, knockdown — 2 hits of 15, hit: knockdown.
 
-**Ultimate:** Circle Theorem — `D, D/F, F + P+K+H` with all three bars: a full 360-degree sidestep around them with a kick from every sixth of the circle, the circle and its radius drawn behind, then an arc kick. 6 hits, 32% of their health; blocked -34, whiffed 63 frames.
+**Ultimate:** Compass Construction — `D, D/F, F + P+K+H` with all three bars: she plants a giant drawing compass next to them and spins around them, a kick on every pass, while a glowing circle draws itself; a protractor snaps into place at 90 degrees, then an axe kick (and an apology). 7 hits, 32% of their health; blocked -34, whiffed 63 frames.
 
 **KO finisher:** Q.E.D. — `B, F, K` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).
 
@@ -206,7 +206,7 @@ Happy, sassy, everyone's favorite. Fakes you out with a grin.
 | P/H (DOWN) | Spring Theorem | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
 | T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
 | B+K, P | The Converse | mid | 8 | 3 | 18 | -6 | launch | launch | 16 | enhance with P+K |
-| D,D/F,F+P+K+H | Two-Column Proof | mid | 18 | 3 | 52 | -35 | +5 | launch | 20 | wall splats |
+| D,D/F,F+P+K+H | Pop Quiz | mid | 18 | 3 | 52 | -35 | +5 | launch | 20 | wall splats |
 | T (BY AN OBJECT) | Springboard | mid | 16 | 5 | 18 | -6 | knockdown | knockdown | 18 |  |
 | B+T (BY AN OBJECT) | Vault | — | 38 total |  |  |  |  |  |  |  |
 
@@ -216,9 +216,9 @@ Happy, sassy, everyone's favorite. Fakes you out with a grin.
 - **Indirect Proof+** (`F+H, H`, then `P+K`): Armored, knockdown — 23 damage (from 18), hit: knockdown, armor on frames 1-14 (1 hit).
 - **The Converse+** (`B+K, P`, then `P+K`): Higher launch — 21 damage (from 16).
 
-**Ultimate:** Two-Column Proof — `D, D/F, F + P+K+H` with all three bars: the screen splits into STATEMENTS | REASONS; every hit proves a line, and the last one stamps the conclusion. 5 hits, 32% of their health; blocked -35, whiffed 72 frames.
+**Ultimate:** Pop Quiz — `D, D/F, F + P+K+H` with all three bars: he slams down a stack of papers: they are at a student desk with a quiz and a ticking timer, sweating; he snatches the paper, red-pens a giant F, and smacks them with the whole stack while the class goes wild. 4 hits, 32% of their health; blocked -35, whiffed 72 frames.
 
-**KO finisher:** Pop Quiz — `D, D, P` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).
+**KO finisher:** See Me After Class — `D, D, P` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).
 
 **Combo routes** (tested in `tests/sim.test.js`):
 

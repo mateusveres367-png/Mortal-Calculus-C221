@@ -120,8 +120,8 @@
     }
   };
 
-  // DALSASS — Pop Quiz: three fake punches (they flinch every time), a finger flick
-  // knocks them down, and a red 0/10 stamp.
+  // DALSASS — See Me After Class: three fake punches (they flinch every time), a finger
+  // flick knocks them down, and a sticky note slaps onto the screen.
   FG.FINISHERS.dalsass = {
     len: 220,
     step: function (fx, t) {
@@ -144,10 +144,18 @@
       if (fx.s.flinch && t - fx.s.flinch < 14 && t < 70) bigText(fx, 1, '!', fx.sx(fx.l.x), GY - 120, 0xffd23f, 4, 0);
       else fx.texts[1].setVisible(false);
       if (t < 108) return;
-      var sc = stampScale(t, 108), cx = W / 2 + 40, cy = 118;
-      g.lineStyle(8 * sc, 0xd8202a, 1); g.strokeCircle(cx, cy, 70 * sc);
-      bigText(fx, 0, '0/10', cx, cy, 0xd8202a, 7 * sc, -12);
-      if (t > 120) bigText(fx, 2, 'SEE ME AFTER CLASS', cx, cy + 86, 0xd8202a, 2, -6);
+      // A yellow sticky note, slapped on crooked, a frowny face doodled on it.
+      var sc = stampScale(t, 108), cx = W / 2 + 40, cy = 124, nw = 150 * sc, nh = 120 * sc;
+      g.save(); g.translateCanvas(cx, cy); g.rotateCanvas(-0.08); g.translateCanvas(-cx, -cy);
+      g.fillStyle(0x000000, 0.3); g.fillRect(cx - nw / 2 + 5, cy - nh / 2 + 6, nw, nh);
+      g.fillStyle(0xfff07a, 1); g.fillRect(cx - nw / 2, cy - nh / 2, nw, nh);
+      g.fillStyle(0xf2dc50, 1); g.fillRect(cx - nw / 2, cy - nh / 2, nw, 14 * sc);
+      g.lineStyle(3 * sc, 0x2a4a9a, 1); g.strokeCircle(cx + 50 * sc, cy + 36 * sc, 13 * sc);
+      g.fillStyle(0x2a4a9a, 1); g.fillCircle(cx + 45 * sc, cy + 32 * sc, 2 * sc); g.fillCircle(cx + 55 * sc, cy + 32 * sc, 2 * sc);
+      g.beginPath(); g.arc(cx + 50 * sc, cy + 46 * sc, 6 * sc, Math.PI + 0.5, -0.5); g.strokePath();
+      g.restore();
+      bigText(fx, 0, 'SEE ME', cx - 10 * sc, cy - 22 * sc, 0x2a4a9a, 3 * sc, -5);
+      if (t > 120) bigText(fx, 2, 'AFTER CLASS', cx - 12, cy + 6, 0x2a4a9a, 1.5, -5);
     }
   };
 
