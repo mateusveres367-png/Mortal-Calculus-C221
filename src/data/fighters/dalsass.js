@@ -132,7 +132,7 @@
     stanceName: 'SIMILAR TRIANGLES', // the alternate stance, shown over his head
     bio: "HAPPY, SASSY, EVERYONE'S FAVORITE. FAKES YOU OUT WITH A GRIN.",
     signature: ['SIMILAR TRIANGLES', 'PROOF BY CONTRADICTION', 'SUPPLEMENTARY SLIDE', 'PYTHAGOREAN LAUNCHER', 'CONGRUENCE LOCK'],
-    scale: 1.0, health: 170,
+    scale: 1.0, health: 198,
     // Movement: light on his feet backward, the best backdash of the strikers.
     walkF: 2.0, walkB: 1.8, dashSpeed: 8.6, backdashSpeed: 9.6,
     jumpVy: 9.4, weight: 1.02, react: 1.35,
@@ -152,12 +152,12 @@
     idleAnim: { breath: 1.4, sway: 3.5, bob: 1.5, rate: 0.08, switchEvery: 150 },
     poses: poses,
     // How the CPU plays him: feints, sways, stance mixups.
-    ai: { spacing: 48, pokes: ['K', 'D/F+K', 'B+P'], close: ['P', 'F+H', 'D+K', 'B+K'], aggro: 1.0, feint: 0.3, sway: 0.25 },
+    ai: { spacing: 48, pokes: ['K', 'D/F+K', 'K', 'D+K', 'B+P'], close: ['P', 'D+K', 'F+H>H', 'F+H>P+K', 'P', 'B+K'], aggro: 1.0, feint: 0.12, sway: 0.15 },
 
     moves: FG.kit.moves({
       jab: {
         name: 'Flicker Jab', label: 'GIVEN', cmd: 'P', level: 'high', strength: 'light', motion: 'jab',
-        startup: 10, active: 2, recovery: 13, damage: 7,
+        startup: 10, active: 2, recovery: 13, damage: 11,
         block: 1, hit: { adv: 8 }, ch: { adv: 10 },
         hitbox: { x: 22, w: 26, y: 66, h: 16 }, push: 6, juggle: 3.2,
         cancels: [{ btn: 'p', into: 'jab2', from: 10, to: 22 }],
@@ -165,7 +165,7 @@
       },
       jab2: {
         name: 'Backfist', label: 'STATEMENT', cmd: 'P,P', level: 'high', strength: 'light', motion: 'hook',
-        startup: 10, active: 2, recovery: 17, damage: 10,
+        startup: 10, active: 2, recovery: 17, damage: 15,
         block: -4, hit: { adv: 5 }, ch: { adv: 9 },
         hitbox: { x: 26, w: 26, y: 66, h: 16 }, push: 9, juggle: 3.4,
         // Into the feint straight from the string: P, P, K (P, P, H is the string heavy).
@@ -174,14 +174,14 @@
       },
       mid: {
         name: 'Lazy Snap Kick', label: 'REASON KICK', cmd: 'K', level: 'mid', strength: 'medium', motion: 'kick',
-        startup: 15, active: 3, recovery: 19, damage: 15,
+        startup: 15, active: 3, recovery: 19, damage: 20,
         block: -7, hit: { adv: 4 }, ch: { adv: 9 },
         hitbox: { x: 30, w: 28, y: 44, h: 24 }, push: 16, juggle: 3.8, shake: 0.003,
         anim: [[1, 'idle'], [10, 'mid_c'], [15, 'mid_x'], [18, 'mid_x'], [26, 'mid_c'], [37, 'idle']]
       },
       low: {
         name: 'Ducking Shin Poke', label: 'LEG KICK', cmd: 'D+K', level: 'low', strength: 'medium', motion: 'low',
-        startup: 16, active: 3, recovery: 20, damage: 10, crouching: true, tracks: true, otg: true,
+        startup: 16, active: 3, recovery: 20, damage: 15, crouching: true, tracks: true, otg: true,
         block: -11, hit: { adv: 0 }, ch: { adv: 6 },
         hitbox: { x: 28, w: 24, y: 0, h: 16 }, push: 10, juggle: 2.5, shake: 0.002,
         anim: [[1, 'crouch'], [11, 'low_c'], [16, 'low_x'], [19, 'low_x'], [29, 'low_c'], [38, 'crouch']]
@@ -190,7 +190,7 @@
       dfK: {
         ex: { text: 'TWO HITS, LAUNCHES', multi: 1, hit: { launch: true } }, // enhanced (P+K during startup, 1 bar)
         name: 'Slide', label: 'SUPPLEMENTARY SLIDE', cmd: 'D/F+K', level: 'low', strength: 'heavy', motion: 'sweep', crouching: true,
-        startup: 18, active: 5, recovery: 24, damage: 14,
+        startup: 18, active: 5, recovery: 24, damage: 19,
         block: -16, hit: { knockdown: true }, ch: { knockdown: true },
         hitbox: { x: 20, w: 32, y: 0, h: 16 }, push: 10, juggle: 2.5, shake: 0.004,
         step: [6, 22, 4.2],
@@ -198,7 +198,7 @@
       },
       heavy: {
         name: 'Bolo Punch', label: 'SIDE-ANGLE-SIDE', cmd: 'H', level: 'mid', strength: 'heavy', motion: 'hook', wallSplat: true,
-        startup: 18, active: 3, recovery: 22, damage: 20,
+        startup: 18, active: 3, recovery: 22, damage: 28,
         block: -5, hit: { adv: 5 }, ch: { launch: 6 },
         hitbox: { x: 20, w: 26, y: 50, h: 22 }, push: 24, juggle: 3.6, carry: 2, shake: 0.006,
         step: [10, 18, 1.6],
@@ -220,7 +220,7 @@
       drop: {
         ex: { text: 'ARMORED, KNOCKDOWN', armor: { hits: 1 }, hit: { knockdown: true } }, // enhanced (P+K during startup, 1 bar)
         name: 'Overhead', label: 'INDIRECT PROOF', cmd: 'F+H, H', level: 'mid', strength: 'heavy', motion: 'overhead', bound: true,
-        startup: 14, active: 3, recovery: 22, damage: 18, guardDmg: 22,
+        startup: 14, active: 3, recovery: 22, damage: 26, guardDmg: 22,
         block: -8, hit: { adv: 4 }, ch: { knockdown: true },
         hitbox: { x: 26, w: 20, y: 32, h: 26 }, push: 16, juggle: 2.5, shake: 0.007,
         step: [6, 14, 1.4],
@@ -237,7 +237,7 @@
       swayP: {
         ex: { text: 'HIGHER LAUNCH', hit: { launch: 7.6 } }, // enhanced (P+K during startup, 1 bar)
         name: 'Sway Counter', label: 'THE CONVERSE', cmd: 'B+K, P', level: 'mid', strength: 'heavy', motion: 'straight',
-        startup: 8, active: 3, recovery: 18, damage: 16,
+        startup: 8, active: 3, recovery: 18, damage: 21,
         block: -6, hit: { launch: 6.2 }, ch: { launch: 6.8 },
         hitbox: { x: 22, w: 30, y: 52, h: 22 }, push: 8, juggle: 4, carry: 0.6, shake: 0.006,
         step: [2, 8, 2.4],
@@ -251,28 +251,28 @@
       },
       pwP: {
         name: 'Twin Palms', label: 'SIMILAR PALM', cmd: 'STANCE P', level: 'mid', strength: 'medium', motion: 'straight',
-        startup: 12, active: 2, recovery: 18, damage: 12,
+        startup: 12, active: 2, recovery: 18, damage: 17,
         block: -4, hit: { adv: 6 }, ch: { adv: 10 },
         hitbox: { x: 24, w: 22, y: 40, h: 22 }, push: 12, juggle: 3.4, shake: 0.002,
         anim: [[1, 'pw_idle'], [8, 'pw_palm_c'], [12, 'pw_palm'], [14, 'pw_palm'], [31, 'idle']]
       },
       pwK: {
         name: 'Spinning Low Heel', label: 'SCALE FACTOR', cmd: 'STANCE K', level: 'low', strength: 'medium', motion: 'sweep', crouching: true,
-        startup: 13, active: 3, recovery: 20, damage: 11, otg: true,
+        startup: 13, active: 3, recovery: 20, damage: 16, otg: true,
         block: -12, hit: { adv: 1 }, ch: { adv: 6 },
         hitbox: { x: 26, w: 24, y: 0, h: 16 }, push: 10, juggle: 2.5, shake: 0.002,
         anim: [[1, 'pw_idle'], [9, 'sweep_c'], [13, 'pw_low'], [16, 'pw_low'], [26, 'crouch'], [35, 'idle']]
       },
       pwH: {
         name: 'Axe Kick', label: 'ANGLE-ANGLE', cmd: 'STANCE H', level: 'mid', strength: 'heavy', motion: 'overhead', bound: true,
-        startup: 20, active: 3, recovery: 20, damage: 20, guardDmg: 22,
+        startup: 20, active: 3, recovery: 20, damage: 28, guardDmg: 22,
         block: -6, hit: { adv: 4 }, ch: { launch: 6 },
         hitbox: { x: 30, w: 22, y: 30, h: 30 }, push: 14, juggle: 2.5, shake: 0.007,
         anim: [[1, 'pw_idle'], [12, 'axe_c'], [20, 'axe_x'], [23, 'axe_x'], [32, 'hv_r'], [42, 'idle']]
       },
       launcher: {
         name: 'Rising Uppercut', label: 'PYTHAGOREAN LAUNCHER', cmd: 'D+H', level: 'mid', strength: 'launch', motion: 'launcher',
-        startup: 15, active: 4, recovery: 23, damage: 17,
+        startup: 15, active: 4, recovery: 23, damage: 23,
         block: -15, hit: { launch: 7.6 }, ch: { launch: 8.2 },
         hitbox: { x: 8, w: 26, y: 30, h: 78 }, push: 6, juggle: 5.5, carry: 0.6, shake: 0.008,
         step: [9, 15, 1.2],
@@ -281,7 +281,7 @@
       }
     },
     FG.kit.air(['ANGLE BISECTOR', 'MEDIAN KICK', 'CENTROID SPIKE'], { chain: { airP: ['h'], airK: ['h'] } }),
-    FG.kit.throws('CONGRUENCE LOCK', 'COUNTEREXAMPLE', { throwB: { damage: 33 } }),
+    FG.kit.throws('CONGRUENCE LOCK', 'COUNTEREXAMPLE', { throwB: { damage: 46 } }),
     FG.kit.wake(),
     FG.kit.taunt()),
 

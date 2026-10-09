@@ -121,7 +121,7 @@
     signatureText: 'his strings get faster with every hit, and once an attack connects (hit or block) forward, forward dash-cancels its recovery to keep the pressure on (once per string)',
     bio: 'SARCASTIC AND FUNNY. TAUNTS MID-COMBO. RELENTLESS PRESSURE.',
     signature: ['ARITHMETIC SEQUENCE', 'RECURSIVE RUSH', 'FIBONACCI UPPERCUT', 'SERIES EXPANSION'],
-    scale: 1.0, health: 165,
+    scale: 1.0, health: 176,
     // Movement: walks forward fast and backward slowly; a quick dash he can attack out of early.
     walkF: 2.6, walkB: 1.5, dashSpeed: 9.4, dashFrames: 15, dashAttackFrom: 4, backdashSpeed: 7.6,
     jumpVy: 9.0, weight: 0.97, react: 0.9,
@@ -140,13 +140,13 @@
     idleAnim: { breath: 0.8, bob: 2.2, sway: 1.5, rate: 0.2 }, // bobbing and weaving
     poses: poses,
     // How the CPU plays him: rushes in and never lets up.
-    ai: { spacing: 30, pokes: ['F+P', 'P'], close: ['P', 'F+P', 'K', 'D+K', 'P+K'], aggro: 1.35, dashIn: 0.7, dashCancel: 0.6 },
+    ai: { spacing: 44, pokes: ['F+P', 'K', 'D+K'], close: ['P', 'F+P', 'K', 'D+K', 'P+K', 'P>P>P>P', 'P>P>P>K'], aggro: 1.1, dashIn: 0.5, dashCancel: 0.6 },
 
     moves: FG.kit.moves({
       // Arithmetic Sequence: P, P, P, then P or K. Each hit is faster than the last.
       jab: {
         name: 'Jab', label: 'FIRST TERM', cmd: 'P', level: 'high', strength: 'light', motion: 'jab',
-        startup: 10, active: 2, recovery: 12, damage: 6,
+        startup: 10, active: 2, recovery: 12, damage: 8,
         block: 2, hit: { adv: 9 }, ch: { adv: 11 },
         hitbox: { x: 20, w: 26, y: 62, h: 16 }, push: 5, juggle: 3.2,
         cancels: [{ btn: 'p', into: 'seq2', from: 10, to: 21, onContact: true }],
@@ -154,7 +154,7 @@
       },
       seq2: {
         name: 'Cross', label: 'SECOND TERM', cmd: 'P,P', level: 'high', strength: 'light', motion: 'cross',
-        startup: 9, active: 2, recovery: 14, damage: 7,
+        startup: 9, active: 2, recovery: 14, damage: 10,
         block: -1, hit: { adv: 7 }, ch: { adv: 10 },
         hitbox: { x: 22, w: 28, y: 60, h: 18 }, push: 6, juggle: 3.3,
         cancels: [{ btn: 'p', into: 'seq3', from: 9, to: 21, onContact: true }],
@@ -162,7 +162,7 @@
       },
       seq3: {
         name: 'Body Hook', label: 'THIRD TERM', cmd: 'P,P,P', level: 'mid', strength: 'medium', motion: 'hook',
-        startup: 8, active: 2, recovery: 16, damage: 8,
+        startup: 8, active: 2, recovery: 16, damage: 11,
         block: -4, hit: { adv: 5 }, ch: { adv: 9 },
         hitbox: { x: 18, w: 28, y: 44, h: 20 }, push: 7, juggle: 3.4, shake: 0.002,
         cancels: [{ btn: 'p', into: 'seqP', from: 8, to: 20, onContact: true }, { btn: 'k', into: 'seqK', from: 8, to: 20, onContact: true }],
@@ -171,14 +171,14 @@
       seqP: {
         ex: { text: 'THREE HITS, WALL SPLAT', multi: 2, wallSplat: true }, // enhanced (P+K during startup, 1 bar)
         name: 'Elbow', label: 'NTH TERM', cmd: 'P,P,P,P', level: 'mid', strength: 'heavy', motion: 'hook',
-        startup: 7, active: 3, recovery: 22, damage: 14,
+        startup: 7, active: 3, recovery: 22, damage: 20,
         block: -12, hit: { knockdown: true }, ch: { knockdown: true },
         hitbox: { x: 22, w: 26, y: 54, h: 22 }, push: 18, juggle: 3.6, carry: 1.8, shake: 0.006,
         anim: [[1, 'body_x'], [4, 'elbow_c'], [7, 'elbow_x'], [10, 'elbow_x'], [31, 'idle']]
       },
       seqK: {
         name: 'Low Kick', label: 'DIVERGENT LOW', cmd: 'P,P,P,K', level: 'low', strength: 'medium', motion: 'low', crouching: true,
-        startup: 7, active: 3, recovery: 22, damage: 11,
+        startup: 7, active: 3, recovery: 22, damage: 16,
         block: -14, hit: { adv: 1 }, ch: { knockdown: true },
         hitbox: { x: 24, w: 26, y: 0, h: 18 }, push: 10, juggle: 2.5, shake: 0.003,
         anim: [[1, 'body_x'], [4, 'lowk_c'], [7, 'lowk_x'], [10, 'lowk_x'], [31, 'crouch']]
@@ -187,7 +187,7 @@
       fP: {
         ex: { text: 'TWO HITS', multi: 1 }, // enhanced (P+K during startup, 1 bar)
         name: 'Rush', label: 'RECURSIVE RUSH', cmd: 'F+P', level: 'mid', strength: 'medium', motion: 'lunge',
-        startup: 13, active: 3, recovery: 15, damage: 10,
+        startup: 13, active: 3, recovery: 15, damage: 14,
         block: 1, hit: { adv: 5 }, ch: { adv: 9 },
         hitbox: { x: 26, w: 28, y: 52, h: 20 }, push: 10, juggle: 3.4, shake: 0.003,
         step: [5, 14, 2.6],
@@ -196,14 +196,14 @@
       },
       mid: {
         name: 'Knee', label: 'COMMON DIFFERENCE', cmd: 'K', level: 'mid', strength: 'medium', motion: 'kick',
-        startup: 12, active: 3, recovery: 17, damage: 12,
+        startup: 12, active: 3, recovery: 17, damage: 17,
         block: -3, hit: { adv: 5 }, ch: { adv: 9 },
         hitbox: { x: 14, w: 26, y: 44, h: 24 }, push: 10, juggle: 3.6, shake: 0.002,
         anim: [[1, 'idle'], [8, 'knee_c'], [12, 'knee_x'], [15, 'knee_x'], [31, 'idle']]
       },
       low: {
         name: 'Low Push Kick', label: 'GEOMETRIC LOW', cmd: 'D+K', level: 'low', strength: 'light', motion: 'low',
-        startup: 15, active: 3, recovery: 19, damage: 9, crouching: true, otg: true,
+        startup: 15, active: 3, recovery: 19, damage: 13, crouching: true, otg: true,
         block: -10, hit: { adv: 1 }, ch: { adv: 6 },
         hitbox: { x: 28, w: 24, y: 0, h: 16 }, push: 10, juggle: 2.5, shake: 0.002,
         anim: [[1, 'crouch'], [10, 'low_c'], [15, 'low_x'], [18, 'low_x'], [28, 'low_c'], [36, 'crouch']]
@@ -212,7 +212,7 @@
       heavy: {
         ex: { text: 'LAUNCHES', hit: { launch: true } }, // enhanced (P+K during startup, 1 bar)
         name: 'Liver Shot', label: 'PARTIAL SUM', cmd: 'H', level: 'mid', strength: 'heavy', motion: 'body', wallSplat: true,
-        startup: 17, active: 3, recovery: 18, damage: 18,
+        startup: 17, active: 3, recovery: 18, damage: 24,
         block: 2, hit: { adv: 7 }, ch: { launch: 5.8 },
         hitbox: { x: 26, w: 26, y: 42, h: 20 }, push: 22, juggle: 3.6, carry: 2, shake: 0.005,
         step: [9, 17, 2],
@@ -220,7 +220,7 @@
       },
       fH: {
         name: 'Hopping Elbow', label: 'INDUCTION STEP', cmd: 'F+H', level: 'mid', strength: 'heavy', motion: 'overhead', bound: true,
-        startup: 20, active: 3, recovery: 20, damage: 17, guardDmg: 22,
+        startup: 20, active: 3, recovery: 20, damage: 23, guardDmg: 22,
         block: -5, hit: { adv: 4 }, ch: { knockdown: true },
         hitbox: { x: 26, w: 26, y: 44, h: 26 }, push: 16, juggle: 2.5, shake: 0.006,
         step: [10, 20, 1.6],
@@ -228,7 +228,7 @@
       },
       launcher: {
         name: 'Uppercut', label: 'FIBONACCI UPPERCUT', cmd: 'D+H', level: 'mid', strength: 'launch', motion: 'launcher',
-        startup: 14, active: 4, recovery: 22, damage: 15,
+        startup: 14, active: 4, recovery: 22, damage: 21,
         block: -14, hit: { launch: 7.6 }, ch: { launch: 8.2 },
         hitbox: { x: 8, w: 26, y: 30, h: 80 }, push: 6, juggle: 5.5, carry: 0.6, shake: 0.008,
         step: [8, 14, 1.4],
@@ -237,7 +237,7 @@
       }
     },
     FG.kit.air(['FIRST DIFFERENCE', 'SECOND DIFFERENCE', 'SUMMATION SPIKE']),
-    FG.kit.throws('SERIES EXPANSION', 'TELESCOPING TOSS', { throw: { damage: 28 }, throwB: { damage: 32 } }),
+    FG.kit.throws('SERIES EXPANSION', 'TELESCOPING TOSS', { throw: { damage: 39 }, throwB: { damage: 45 } }),
     FG.kit.wake(),
     FG.kit.taunt()),
 

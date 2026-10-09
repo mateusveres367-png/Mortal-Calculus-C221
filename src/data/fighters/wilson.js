@@ -126,7 +126,7 @@
     passive: '29years', seenItAll: true,
     bio: 'TWENTY-NINE YEARS AT EL CAMINO. TEACHES EVERY MATH CLASS. NEVER SMILES. NEVER WASTES A WORD.',
     signature: ['29 YEARS', 'SEEN IT ALL', 'CHAIN RULE', 'SINE WAVE', 'ABSOLUTE VALUE'],
-    scale: 1.06, health: 175,
+    scale: 1.06, health: 160,
     // Movement: smooth and unhurried, with a long reach to cover the gaps.
     walkF: 1.9, walkB: 1.8, dashSpeed: 7.6, dashFrames: 15, dashAttackFrom: 6, backdashSpeed: 9,
     jumpVy: 9.6, weight: 1, react: 0.7,
@@ -149,7 +149,7 @@
     moves: FG.kit.moves({
       jab: {
         name: 'Long Jab', label: 'POINT', cmd: 'P', level: 'high', strength: 'light', motion: 'jab',
-        startup: 9, active: 2, recovery: 15, damage: 8,
+        startup: 9, active: 2, recovery: 15, damage: 6,
         block: 0, hit: { adv: 7 }, ch: { adv: 10 },
         hitbox: { x: 22, w: 32, y: 66, h: 16 }, push: 9, juggle: 3.2,
         cancels: [{ btn: 'p', into: 'jab2', from: 9, to: 21 }],
@@ -158,7 +158,7 @@
       // Chain Rule: the second hit, which cancels into any of his other moves (once a string).
       jab2: {
         name: 'Chain Straight', label: 'CHAIN RULE', cmd: 'P,P', level: 'high', strength: 'medium', motion: 'cross',
-        startup: 10, active: 2, recovery: 17, damage: 10,
+        startup: 10, active: 2, recovery: 17, damage: 7,
         block: -3, hit: { adv: 6 }, ch: { adv: 9 },
         hitbox: { x: 24, w: 32, y: 64, h: 18 }, push: 10, juggle: 3.4,
         cancels: [{ btn: 'any', from: 10, to: 24, onContact: true }],
@@ -168,8 +168,8 @@
       fP: {
         ex: { text: 'TWO HITS, WALL SPLAT', multi: 1, wallSplat: true }, // enhanced (P+K during startup, 1 bar)
         name: 'Long Poke', label: 'DISTANCE FORMULA', cmd: 'F+P', level: 'mid', strength: 'medium', motion: 'straight',
-        startup: 14, active: 3, recovery: 19, damage: 13,
-        block: -5, hit: { adv: 4 }, ch: { adv: 9 },
+        startup: 15, active: 3, recovery: 19, damage: 8,
+        block: -6, hit: { adv: 3 }, ch: { adv: 9 },
         hitbox: { x: 30, w: 36, y: 60, h: 18 }, push: 16, juggle: 3.4, shake: 0.003,
         step: [6, 14, 1.6],
         anim: [[1, 'idle'], [9, 'dist_c'], [14, 'dist_x'], [17, 'dist_x'], [33, 'idle']]
@@ -178,7 +178,7 @@
       dashP: {
         ex: { text: 'ARMORED, LAUNCHES', armor: { hits: 1 }, hit: { launch: true } }, // enhanced (P+K during startup, 1 bar)
         name: 'Dash Straight', label: 'SLOPE-INTERCEPT', cmd: 'F,F+P', level: 'mid', strength: 'heavy', motion: 'lunge', wallSplat: true,
-        startup: 13, active: 3, recovery: 19, damage: 17,
+        startup: 13, active: 3, recovery: 19, damage: 13,
         block: -6, hit: { adv: 5 }, ch: { launch: 6.4 },
         hitbox: { x: 26, w: 32, y: 52, h: 24 }, push: 20, juggle: 3.6, carry: 1.6, shake: 0.005,
         step: [1, 13, 3.4],
@@ -186,7 +186,7 @@
       },
       mid: {
         name: 'Whip Kick', label: 'TANGENT LINE', cmd: 'K', level: 'mid', strength: 'medium', motion: 'kick',
-        startup: 13, active: 3, recovery: 18, damage: 14,
+        startup: 13, active: 3, recovery: 18, damage: 10,
         block: -4, hit: { adv: 4 }, ch: { adv: 9 },
         hitbox: { x: 30, w: 32, y: 40, h: 20 }, push: 16, juggle: 3.8, shake: 0.003,
         anim: [[1, 'idle'], [8, 'whip_c'], [13, 'whip_x'], [16, 'whip_x'], [24, 'whip_c'], [33, 'idle']]
@@ -195,7 +195,7 @@
       fK: {
         ex: { text: 'LAUNCHES', hit: { launch: true } }, // enhanced (P+K during startup, 1 bar)
         name: 'Weave', label: 'SINE WAVE', cmd: 'F+K', level: 'mid', strength: 'medium', motion: 'hook',
-        startup: 20, active: 3, recovery: 16, damage: 15,
+        startup: 20, active: 3, recovery: 16, damage: 11,
         block: -5, hit: { adv: 5 }, ch: { knockdown: true },
         evade: { from: 3, to: 18, levels: ['high'] },
         hitbox: { x: 22, w: 30, y: 40, h: 24 }, push: 14, juggle: 3.4, shake: 0.004,
@@ -204,7 +204,7 @@
       },
       low: {
         name: 'Low Whip', label: 'FLOOR FUNCTION', cmd: 'D+K', level: 'low', strength: 'medium', motion: 'low', crouching: true, otg: true,
-        startup: 14, active: 3, recovery: 20, damage: 11,
+        startup: 14, active: 3, recovery: 20, damage: 8,
         block: -12, hit: { adv: 0 }, ch: { adv: 6 },
         hitbox: { x: 28, w: 30, y: 0, h: 18 }, push: 10, juggle: 2.5, shake: 0.002,
         anim: [[1, 'crouch'], [9, 'low_c'], [14, 'low_x'], [17, 'low_x'], [27, 'low_c'], [36, 'crouch']]
@@ -212,7 +212,7 @@
       sweep: FG.kit.sweep('LIMIT TO ZERO', { startup: 20, motion: 'sweep', hitbox: { x: 32, w: 28, y: 0, h: 14 } }),
       heavy: {
         name: 'Stepping Straight', label: 'LONG DIVISION', cmd: 'H', level: 'mid', strength: 'heavy', motion: 'straight', wallSplat: true,
-        startup: 18, active: 3, recovery: 21, damage: 21,
+        startup: 18, active: 3, recovery: 21, damage: 16,
         block: -4, hit: { adv: 6 }, ch: { launch: 6 },
         hitbox: { x: 28, w: 32, y: 54, h: 22 }, push: 24, juggle: 3.6, carry: 2, shake: 0.006,
         step: [10, 18, 1.8],
@@ -220,7 +220,7 @@
       },
       fH: {
         name: 'Axe Kick', label: 'QUADRATIC FORMULA', cmd: 'F+H', level: 'mid', strength: 'heavy', motion: 'overhead', bound: true,
-        startup: 22, active: 3, recovery: 20, damage: 19, guardDmg: 22,
+        startup: 22, active: 3, recovery: 20, damage: 15, guardDmg: 22,
         block: -7, hit: { adv: 3 }, ch: { knockdown: true },
         hitbox: { x: 24, w: 30, y: 36, h: 40 }, push: 16, juggle: 2.5, shake: 0.006,
         step: [12, 22, 1.2],
@@ -235,7 +235,7 @@
       },
       absCounter: {
         name: 'Reflected Strike', label: '|ABSOLUTE VALUE|', cmd: 'PARRY', level: 'mid', strength: 'heavy', motion: 'straight', reflect: true,
-        startup: 6, active: 3, recovery: 18, damage: 16,
+        startup: 6, active: 3, recovery: 18, damage: 12,
         block: -6, hit: { knockdown: true }, ch: { knockdown: true },
         hitbox: { x: 20, w: 34, y: 46, h: 30 }, push: 20, juggle: 3.5, carry: 1.6, shake: 0.007,
         anim: [[1, 'parry'], [6, 'abs_x'], [9, 'abs_x'], [26, 'idle']]
@@ -243,14 +243,14 @@
       // Seen It All: the counter (see 29 YEARS); it comes out on its own.
       seenCounter: {
         name: 'Counter', label: 'SEEN IT ALL', cmd: 'AUTO (ONCE A ROUND)', level: 'mid', strength: 'heavy', motion: 'straight',
-        startup: 5, active: 3, recovery: 16, damage: 18,
+        startup: 5, active: 3, recovery: 16, damage: 14,
         block: -4, hit: { knockdown: true }, ch: { knockdown: true },
         hitbox: { x: 18, w: 38, y: 40, h: 40 }, push: 20, juggle: 3.5, carry: 1.6, shake: 0.008,
         anim: [[1, 'parry'], [5, 'seen_x'], [8, 'seen_x'], [24, 'idle']]
       },
       launcher: {
         name: 'Rising Heel', label: 'SQUARE ROOT', cmd: 'D+H', level: 'mid', strength: 'launch', motion: 'launcher',
-        startup: 15, active: 4, recovery: 22, damage: 16,
+        startup: 15, active: 4, recovery: 22, damage: 12,
         block: -15, hit: { launch: 7.6 }, ch: { launch: 8.2 },
         hitbox: { x: 10, w: 28, y: 30, h: 84 }, push: 6, juggle: 5.5, carry: 0.6, shake: 0.008,
         step: [8, 15, 1.2],
@@ -259,7 +259,7 @@
       }
     },
     FG.kit.air(['RATIONAL JAB', 'RADIAN KICK', 'VERTICAL ASYMPTOTE']),
-    FG.kit.throws('PRIME FACTORIZATION', 'INVERSE FUNCTION', { throw: { damage: 34, flurry: 6 }, throwB: { damage: 32 } }),
+    FG.kit.throws('PRIME FACTORIZATION', 'INVERSE FUNCTION', { throw: { damage: 26, flurry: 6 }, throwB: { damage: 24 } }),
     FG.kit.wake(),
     // He doesn't taunt. STARE: a second of standing still, for a little meter. Still leaves him open.
     FG.kit.taunt({ name: 'Stare', label: 'STARE', stare: true, anim: [[1, 'idle'], [8, 'stare'], [56, 'stare'], [61, 'idle']] })),

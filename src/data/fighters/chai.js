@@ -143,7 +143,7 @@
     idleAnim: { breath: 0.8, bob: 1.6, rate: 0.13 }, // a light bounce on her toes
     poses: poses,
     // How the CPU plays her: sidesteps and counters, then kick chains.
-    ai: { spacing: 52, pokes: ['K', 'F+K', 'D+K'], close: ['P', 'K', 'B+K', 'P+K'], aggro: 0.9, sidestep: 3, ssFollow: 'P', parry: 0.2 },
+    ai: { spacing: 52, pokes: ['K', 'F+K', 'D+K', 'SI>K'], close: ['P', 'K', 'B+K', 'P+K', 'P>K'], aggro: 0.9, sidestep: 3, ssFollow: 'P', parry: 0.2 },
 
     moves: FG.kit.moves({
       jab: {
@@ -163,21 +163,21 @@
       },
       jabK: {
         name: 'Roundhouse', label: 'COMPLEMENTARY KICK', cmd: 'P,K', level: 'mid', strength: 'medium', motion: 'roundhouse', kick: true,
-        startup: 12, active: 3, recovery: 20, damage: 12,
+        startup: 12, active: 3, recovery: 20, damage: 13,
         block: -9, hit: { adv: 3 }, ch: { adv: 8 },
         hitbox: { x: 26, w: 28, y: 48, h: 22 }, push: 14, juggle: 3.6, shake: 0.002,
         anim: [[1, 'jab_x'], [8, 'rk_c'], [12, 'rk_x'], [15, 'rk_x'], [34, 'idle']]
       },
       mid: {
         name: 'Turning Kick', label: 'ISOSCELES KICK', cmd: 'K', level: 'mid', strength: 'medium', motion: 'roundhouse', kick: true,
-        startup: 12, active: 3, recovery: 19, damage: 12,
+        startup: 12, active: 3, recovery: 19, damage: 13,
         block: -6, hit: { adv: 4 }, ch: { adv: 9 },
         hitbox: { x: 28, w: 28, y: 48, h: 20 }, push: 12, juggle: 3.8, shake: 0.002,
         anim: [[1, 'idle'], [8, 'tk_c'], [12, 'tk_x'], [15, 'tk_x'], [23, 'tk_c'], [33, 'idle']]
       },
       fK: {
         name: 'High Kick', label: 'ALTITUDE KICK', cmd: 'F+K', level: 'high', strength: 'medium', motion: 'kick', kick: true,
-        startup: 13, active: 3, recovery: 18, damage: 13,
+        startup: 13, active: 3, recovery: 18, damage: 14,
         block: -4, hit: { adv: 5 }, ch: { adv: 10 },
         hitbox: { x: 26, w: 28, y: 66, h: 22 }, push: 12, juggle: 3.8, shake: 0.003,
         step: [4, 10, 1],
@@ -186,7 +186,7 @@
       bK: {
         ex: { text: 'LAUNCHES', hit: { launch: true } }, // enhanced (P+K during startup, 1 bar)
         name: 'Spinning Back Kick', label: 'REFLEX ANGLE', cmd: 'B+K', level: 'mid', strength: 'heavy', motion: 'kick', kick: true,
-        startup: 16, active: 3, recovery: 22, damage: 16,
+        startup: 16, active: 3, recovery: 22, damage: 17,
         block: -10, hit: { knockdown: true }, ch: { knockdown: true },
         hitbox: { x: 26, w: 30, y: 40, h: 22 }, push: 18, juggle: 3.6, carry: 1.6, shake: 0.006,
         anim: [[1, 'idle'], [10, 'bk_c'], [16, 'bk_x'], [19, 'bk_x'], [29, 'bk_c'], [41, 'idle']]
@@ -198,10 +198,10 @@
         hitbox: { x: 28, w: 24, y: 0, h: 16 }, push: 10, juggle: 2.5, shake: 0.002,
         anim: [[1, 'crouch'], [10, 'low_c'], [15, 'low_x'], [18, 'low_x'], [28, 'low_c'], [36, 'crouch']]
       },
-      sweep: FG.kit.sweep('OBTUSE SWEEP', { startup: 19, damage: 15, motion: 'sweep', kick: true }),
+      sweep: FG.kit.sweep('OBTUSE SWEEP', { startup: 19, damage: 16, motion: 'sweep', kick: true }),
       heavy: {
         name: 'Spinning Hook Kick', label: 'HYPOTENUSE', cmd: 'H', level: 'mid', strength: 'heavy', motion: 'roundhouse', kick: true, wallSplat: true,
-        startup: 17, active: 3, recovery: 22, damage: 19,
+        startup: 17, active: 3, recovery: 22, damage: 20,
         block: -6, hit: { adv: 5 }, ch: { launch: 6 },
         hitbox: { x: 30, w: 26, y: 54, h: 20 }, push: 24, juggle: 3.6, carry: 2, shake: 0.005,
         step: [9, 18, 1.8],
@@ -210,7 +210,7 @@
       fH: {
         ex: { text: 'TWO HITS, KNOCKDOWN', multi: 1, hit: { knockdown: true } }, // enhanced (P+K during startup, 1 bar)
         name: 'Axe Kick', label: 'VERTEX DROP', cmd: 'F+H', level: 'mid', strength: 'heavy', motion: 'overhead', kick: true, bound: true,
-        startup: 20, active: 3, recovery: 20, damage: 17, guardDmg: 22,
+        startup: 20, active: 3, recovery: 20, damage: 18, guardDmg: 22,
         block: -7, hit: { adv: 3 }, ch: { knockdown: true },
         hitbox: { x: 28, w: 24, y: 30, h: 30 }, push: 14, juggle: 2.5, shake: 0.006,
         step: [12, 20, 1.3],
@@ -224,7 +224,7 @@
       },
       reflect: {
         name: 'Counter Kick', label: 'REFLECTION', cmd: 'PARRY', level: 'mid', strength: 'heavy', motion: 'roundhouse',
-        startup: 6, active: 3, recovery: 18, damage: 20,
+        startup: 6, active: 3, recovery: 18, damage: 21,
         block: -6, hit: { knockdown: true }, ch: { knockdown: true },
         hitbox: { x: 18, w: 36, y: 46, h: 32 }, push: 20, juggle: 3.5, carry: 1.6, shake: 0.007,
         anim: [[1, 'parry'], [6, 'reflect_x'], [9, 'reflect_x'], [26, 'idle']]
@@ -233,21 +233,21 @@
       ssP: {
         ex: { text: 'THREE KICKS', multi: 2 }, // enhanced (P+K during startup, 1 bar)
         name: 'Sidestep Kick', label: 'TANGENT STEP', cmd: 'SS, P', level: 'mid', strength: 'medium', motion: 'roundhouse', kick: true, tracks: true, keepZ: true,
-        startup: 12, active: 3, recovery: 16, damage: 15,
+        startup: 12, active: 3, recovery: 16, damage: 16,
         block: -3, hit: { adv: 6 }, ch: { knockdown: true },
         hitbox: { x: 18, w: 30, y: 52, h: 24 }, push: 14, juggle: 3.6, shake: 0.004,
         anim: [[1, 'sidestep'], [7, 'tangent_c'], [12, 'tangent_x'], [15, 'tangent_x'], [31, 'idle']]
       },
       ssK: {
         name: 'Sidestep Low', label: 'SECANT SWEEP', cmd: 'SS, K', level: 'low', strength: 'medium', motion: 'sweep', kick: true, tracks: true, crouching: true, keepZ: true,
-        startup: 15, active: 3, recovery: 22, damage: 12,
+        startup: 15, active: 3, recovery: 22, damage: 13,
         block: -13, hit: { knockdown: true }, ch: { knockdown: true },
         hitbox: { x: 28, w: 24, y: 0, h: 14 }, push: 8, juggle: 2.5, shake: 0.003,
         anim: [[1, 'sidestep'], [9, 'sweep_c'], [15, 'secant_x'], [18, 'secant_x'], [30, 'sweep_c'], [40, 'crouch']]
       },
       launcher: {
         name: 'Flip Kick', label: 'ARC LAUNCHER', cmd: 'D+H', level: 'mid', strength: 'launch', motion: 'launcher', kick: true,
-        startup: 14, active: 4, recovery: 24, damage: 15,
+        startup: 14, active: 4, recovery: 24, damage: 16,
         block: -16, hit: { launch: 7.8 }, ch: { launch: 8.4 },
         hitbox: { x: 10, w: 28, y: 36, h: 76 }, push: 6, juggle: 5.5, carry: 0.6, shake: 0.008,
         step: [8, 14, 1.4],
@@ -256,7 +256,7 @@
       }
     },
     FG.kit.air(['TANGENT JAB', 'CHORD KICK', 'VERTEX SPIKE']),
-    FG.kit.throws('TRANSFORMATION', 'ROTATION', { throw: { damage: 28 }, throwB: { damage: 32 } }),
+    FG.kit.throws('TRANSFORMATION', 'ROTATION', { throw: { damage: 29 }, throwB: { damage: 34 } }),
     FG.kit.wake(),
     FG.kit.taunt()),
 

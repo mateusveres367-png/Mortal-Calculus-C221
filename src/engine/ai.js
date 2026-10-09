@@ -81,7 +81,7 @@
     return r;
   }
 
-  function reach(self, m) { return m && m.box ? m.box.x + m.box.w : 0; }
+  function reach(self, m) { var b = m && (m.box || m.hitbox); return b ? b.x + b.w : 0; } // (grabs have only a hitbox)
   function attacking(f) { return f.state === 'attack' && f.move && f.move.box; }
 
   // Combo routes it knows: ones that start with a plain press at any spacing.
@@ -321,7 +321,10 @@
       if (cornered) return toRaw('B+T', self.facing);
       if (dist > 50 && dist < 130) return toRaw('T', self.facing);
     }
-    var close = dist < reach(self, moves.jab) + 10, mid = dist < reach(self, moves.mid) + 18;
+    // Poking range: as far as their K, or their own pokes (a lunge like LEE's F+P), reach.
+    var pokeReach = reach(self, moves.mid);
+    (st.pokes || []).forEach(function (tok) { var pm = moves[TOKEN_MOVE[tok]]; if (pm) pokeReach = Math.max(pokeReach, reach(self, pm)); });
+    var close = dist < reach(self, moves.jab) + 10, mid = dist < pokeReach + 18;
     // Each fighter's style (def.ai): the moves they like up close and at poking range,
     // the distance they like to fight from, and their tricks.
     var pick = function (list) { return list && list.length ? list[Math.floor(rnd() * list.length)] : null; };
@@ -341,6 +344,8 @@
         return toRaw(q[0], self.facing);
       }
     }
+    // A grab ultimate (RAMOS) can't be blocked: with three bars, up close, go for it.
+    if (close && moves.ultimate && moves.ultimate.throw && this.hasUltimate(self) && roll < 0.4) return this.ultimate(match, self);
     if (close && st.close && roll < a * 0.5 * styled) return this.styleAttack(pick(st.close), match, self);
     if (!close && mid && st.pokes && roll < a * 0.45 * styled) return this.styleAttack(pick(st.pokes), match, self);
     // PROFESSOR: in range of a move it has learned, it waits for it, guard up.
@@ -357,10 +362,14 @@
       return raw;
     }
     if (close) {
-      if (roll < a * 0.45) { this.startRoute('P', match, self); return toRaw('P', self.facing); }
-      if (roll < a * 0.6) return toRaw('P+K', self.facing);                       // throw
-      if (roll < a * 0.75) { this.startRoute('D+H', match, self); return toRaw('D+H', self.facing); }
-      if (roll < a * 0.9) return toRaw(rnd() < 0.5 ? 'D+K' : 'K', self.facing);
+      if (roll < a * 0.42) { this.startRoute('P', match, self); return toRaw('P', self.facing); }
+      if (roll < a * 0.56) return toRaw(rnd() < 0.3 ? 'B+P+K' : 'P+K', self.facing); // throw (sometimes the reverse one)
+      if (roll < a * 0.7) { this.startRoute('D+H', match, self); return toRaw('D+H', self.facing); }
+      if (roll < a * 0.82) { var lowTok = ['D+K', 'K', 'D/B+K'][Math.floor(rnd() * 3)]; return toRaw(lowTok, self.facing); } // a low, a mid or the sweep
+      if (roll < a * 0.92) { // something heavy (not a feint: that's in their style list with its follow-up)
+        var hTok = rnd() < 0.5 && moves.fH && moves.fH.box ? 'F+H' : 'H';
+        this.startRoute(hTok, match, self); return toRaw(hTok, self.facing);
+      }
       if (roll < a + 0.15) { this.walk = { dir: 'back', until: match.frame + 12 }; return raw; }
       // Hold your ground and guard for a moment.
       this.walk = { dir: 'back', until: match.frame + 6 };
@@ -379,7 +388,11 @@
     // Runners (RAMOS) sprint in from range.
     if (st.run && self.def.runSpeed && dist > 90 && rnd() < st.run * (0.4 + L.combo * 0.6)) { this.runIn = { t: 1, until: match.frame + 70 }; raw[fwdKey] = true; return raw; }
     // Far: close the distance (dash when feeling aggressive; rushdown styles dash more).
-    if (roll < a * 0.5 + (st.dashIn || 0) * 0.4) { var dp = {}; dp[0] = 'F'; dp[2] = 'F'; this.startScript(dp, match, self); return raw; }
+    if (roll < a * 0.5 + (st.dashIn || 0) * 0.4) {
+      var dp = {}; dp[0] = 'F'; dp[2] = 'F';
+      if (moves.dashP && dist < 150 && rnd() < 0.3) dp[8] = 'P'; // straight into the dash attack
+      this.startScript(dp, match, self); return raw;
+    }
     this.walk = { dir: 'fwd', until: match.frame + 16 + Math.floor(rnd() * 20) };
     return raw;
   };
@@ -388,6 +401,14 @@
   // DALSASS-style feints (start it, tap back to cancel, then mix up).
   AI.prototype.styleAttack = function (tok, match, self) {
     var st = self.def.ai || {}, rnd = this.rng;
+    // 'F+H>H': a move and its follow-up (DALSASS's feint into the drop), 8 frames apart.
+    if (tok.indexOf('>') > 0) {
+      var parts = tok.split('>'), sc = {};
+      parts.forEach(function (p, i) { sc[i * 8] = p; });
+      this.startScript(sc, match, self);
+      this.script.keep = true;
+      return toRaw(parts[0], self.facing);
+    }
     if (st.feint && self.def.feintCancel && /[PKH]/.test(tok) && tok !== 'P+K' && rnd() < st.feint) {
       var follow = ['P+K', 'D+K', 'P', 'F+H'][Math.floor(rnd() * 4)];
       this.startScript({ 0: tok, 5: 'B', 13: follow }, match, self);

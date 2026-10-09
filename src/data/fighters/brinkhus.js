@@ -117,7 +117,7 @@
     signatureText: 'his straights outrange everyone\'s, and landing one with the very tip hits 25% harder',
     bio: 'NICE, EASYGOING, A GOOD SPORT. BEST FOR NEW PLAYERS.',
     signature: ['SLOPE JAB', 'DISTRIBUTIVE PROPERTY', 'LINEAR RUSH', 'SOLVE FOR X', 'FOIL'],
-    scale: 1.08, health: 175,
+    scale: 1.08, health: 170,
     // Movement: a quick, springy walk and the fastest dash of the straight-line fighters.
     walkF: 2.2, walkB: 1.9, dashSpeed: 9.8, dashFrames: 14, backdashSpeed: 8.4,
     jumpVy: 9.9, weight: 1.0, react: 1.0,
@@ -134,7 +134,7 @@
     idleAnim: { breath: 0.6, bob: 2.6, rate: 0.2 }, // bouncing on his toes
     poses: poses,
     // How the CPU plays him: solid fundamentals, poking with Long Arms from range.
-    ai: { spacing: 64, pokes: ['F+P', 'P', 'K'], close: ['P', 'D+K', 'P+K'], aggro: 1.0 },
+    ai: { spacing: 64, pokes: ['F+P', 'P', 'K'], close: ['P', 'D+K', 'P+K', 'P>K>K'], aggro: 1.0 },
 
     moves: FG.kit.moves({
       jab: {
@@ -147,7 +147,7 @@
       },
       jab2: {
         name: 'Cross', label: 'RISE OVER RUN', cmd: 'P,P', level: 'high', strength: 'light', motion: 'cross', tip: 54,
-        startup: 9, active: 2, recovery: 16, damage: 9,
+        startup: 9, active: 2, recovery: 16, damage: 8,
         block: -3, hit: { adv: 6 }, ch: { adv: 9 },
         hitbox: { x: 24, w: 34, y: 66, h: 16 }, push: 9, juggle: 3.4,
         anim: [[1, 'jab_x'], [6, 'cross_c'], [9, 'cross_x'], [12, 'cross_x'], [26, 'idle']]
@@ -156,7 +156,7 @@
       fP: {
         ex: { text: 'TWO HITS, KNOCKDOWN', multi: 1, hit: { knockdown: true } }, // enhanced (P+K during startup, 1 bar)
         name: 'Long Poke', label: 'LONG ARMS', cmd: 'F+P', level: 'high', strength: 'medium', motion: 'jab', tip: 60,
-        startup: 13, active: 3, recovery: 18, damage: 11,
+        startup: 13, active: 3, recovery: 18, damage: 10,
         block: -4, hit: { adv: 4 }, ch: { adv: 8 },
         hitbox: { x: 30, w: 38, y: 68, h: 14 }, push: 10, juggle: 3.4, shake: 0.002,
         step: [5, 12, 1.4],
@@ -165,7 +165,7 @@
       },
       eps: {
         name: 'Switch Kick', label: 'DISTRIBUTE', cmd: 'P,K', level: 'mid', strength: 'medium', motion: 'roundhouse',
-        startup: 11, active: 3, recovery: 18, damage: 11,
+        startup: 11, active: 3, recovery: 18, damage: 10,
         block: -7, hit: { adv: 4 }, ch: { adv: 8 },
         hitbox: { x: 20, w: 30, y: 44, h: 20 }, push: 8, juggle: 3.4, shake: 0.002,
         cancels: [{ btn: 'k', into: 'delta', from: 11, to: 24, onContact: true }],
@@ -174,21 +174,21 @@
       delta: {
         ex: { text: 'THREE HITS', multi: 2 }, // enhanced (P+K during startup, 1 bar)
         name: 'Spinning Back Kick', label: 'DISTRIBUTIVE PROPERTY', cmd: 'P,K,K', level: 'mid', strength: 'heavy', motion: 'kick', wallSplat: true,
-        startup: 13, active: 3, recovery: 22, damage: 16,
+        startup: 13, active: 3, recovery: 22, damage: 14,
         block: -13, hit: { knockdown: true }, ch: { knockdown: true },
         hitbox: { x: 28, w: 28, y: 40, h: 24 }, push: 18, juggle: 3.6, carry: 1.6, shake: 0.006,
         anim: [[1, 'eps_x'], [8, 'delta_c'], [13, 'delta_x'], [16, 'delta_x'], [26, 'delta_c'], [37, 'idle']]
       },
       mid: {
         name: 'Teep', label: 'VARIABLE KICK', cmd: 'K', level: 'mid', strength: 'medium', motion: 'kick',
-        startup: 14, active: 3, recovery: 18, damage: 14,
+        startup: 14, active: 3, recovery: 18, damage: 12,
         block: -6, hit: { adv: 4 }, ch: { adv: 9 },
         hitbox: { x: 30, w: 28, y: 40, h: 20 }, push: 14, juggle: 3.8, shake: 0.003,
         anim: [[1, 'idle'], [10, 'mid_c'], [14, 'mid_x'], [17, 'mid_x'], [24, 'mid_c'], [34, 'idle']]
       },
       low: {
         name: 'Calf Kick', label: 'INEQUALITY', cmd: 'D+K', level: 'low', strength: 'medium', motion: 'low',
-        startup: 16, active: 3, recovery: 21, damage: 10, crouching: true, tracks: true, otg: true,
+        startup: 16, active: 3, recovery: 21, damage: 9, crouching: true, tracks: true, otg: true,
         block: -12, hit: { adv: -1 }, ch: { adv: 5 },
         hitbox: { x: 28, w: 24, y: 0, h: 16 }, push: 10, juggle: 2.5, shake: 0.002,
         anim: [[1, 'crouch'], [11, 'low_c'], [16, 'low_x'], [19, 'low_x'], [30, 'low_c'], [39, 'crouch']]
@@ -197,7 +197,7 @@
       heavy: {
         ex: { text: 'ARMORED, LAUNCHES', armor: { hits: 1 }, hit: { launch: true } }, // enhanced (P+K during startup, 1 bar)
         name: 'Stepping Straight', label: 'LINEAR RUSH', cmd: 'H', level: 'mid', strength: 'heavy', motion: 'straight', tip: 50, wallSplat: true,
-        startup: 19, active: 3, recovery: 22, damage: 22,
+        startup: 19, active: 3, recovery: 22, damage: 20,
         block: -4, hit: { adv: 6 }, ch: { launch: 6 },
         hitbox: { x: 22, w: 28, y: 56, h: 18 }, push: 26, juggle: 3.6, carry: 2, shake: 0.006,
         step: [11, 20, 1.8],
@@ -205,7 +205,7 @@
       },
       fH: {
         name: 'Superman Punch', label: 'ORDER OF OPERATIONS', cmd: 'F+H', level: 'mid', strength: 'heavy', motion: 'overhead', bound: true,
-        startup: 21, active: 3, recovery: 21, damage: 18, guardDmg: 24,
+        startup: 21, active: 3, recovery: 21, damage: 16, guardDmg: 24,
         block: -6, hit: { adv: 3 }, ch: { knockdown: true },
         hitbox: { x: 30, w: 24, y: 48, h: 24 }, push: 16, juggle: 2.5, shake: 0.006,
         step: [12, 21, 1.4],
@@ -213,7 +213,7 @@
       },
       launcher: {
         name: 'Vertical Kick', label: 'SOLVE FOR X', cmd: 'D+H', level: 'mid', strength: 'launch', motion: 'launcher',
-        startup: 15, active: 4, recovery: 22, damage: 16,
+        startup: 15, active: 4, recovery: 22, damage: 14,
         block: -15, hit: { launch: 7.6 }, ch: { launch: 8.2 },
         hitbox: { x: 8, w: 26, y: 30, h: 78 }, push: 6, juggle: 5.5, carry: 0.6, shake: 0.008,
         step: [9, 15, 1.2],

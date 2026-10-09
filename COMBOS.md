@@ -16,59 +16,59 @@ Every fighter's combo routes, and what the combo feel pass changed. The routes l
 
 | Route | Level | Inputs | Hits | Meter | Damage |
 | --- | --- | --- | --- | --- | --- |
-| SQUARED | easy | P, P | 2 | - | 25 |
-| LOGARITHMIC JUGGLE | medium | D+H, P, P, H | 4 | - | 55 |
-| EXPONENTIAL GROWTH | medium | AT THE WALL: H, D+H | 2 | - | 47 |
-| OVERDRIVE LAUNCH | medium | F+H, P+K, P, P, H | 4 | 1 bar | 80 |
-| TOWER OF POWERS | hard | D+H, UP, AIR K, AIR H, D+K ON THE GROUND | 4 | - | 62 |
-| EXPONENTIAL OVERDRIVE | hard | P, D, D/F, F+P+K+H | 2 | 3 bars | 61 |
+| SQUARED | easy | P, P | 2 | - | 23 |
+| LOGARITHMIC JUGGLE | medium | D+H, P, P, H | 4 | - | 51 |
+| EXPONENTIAL GROWTH | medium | AT THE WALL: H, D+H | 2 | - | 39 |
+| OVERDRIVE LAUNCH | medium | F+H, P+K, P, P, H | 4 | 1 bar | 65 |
+| TOWER OF POWERS | hard | D+H, UP, AIR K, AIR H, D+K ON THE GROUND | 4 | - | 59 |
+| EXPONENTIAL OVERDRIVE | hard | P, D, D/F, F+P+K+H | 2 | 3 bars | 60 |
 
 ### BRINKHUS (balanced, algebra 1)
 
 | Route | Level | Inputs | Hits | Meter | Damage |
 | --- | --- | --- | --- | --- | --- |
-| DISTRIBUTIVE PROPERTY | easy | P, K, K | 3 | - | 32 |
-| LONG ARMS | easy | F+P, P, H | 3 | - | 31 |
-| SOLVE FOR X JUGGLE | medium | D+H, P, P, H | 4 | - | 45 |
-| ISOLATE THE VARIABLE | medium | AT THE WALL: H, P, P, D+H | 4 | - | 43 |
-| EXPANDED FORM | medium | H, P+K, P, P, H | 4 | 1 bar | 58 |
-| POINT-SLOPE SPIKE | hard | D+H, UP, AIR P, AIR K, AIR H, K | 5 | - | 55 |
+| DISTRIBUTIVE PROPERTY | easy | P, K, K | 3 | - | 29 |
+| LONG ARMS | easy | F+P, P, H | 3 | - | 29 |
+| SOLVE FOR X JUGGLE | medium | D+H, P, P, H | 4 | - | 42 |
+| ISOLATE THE VARIABLE | medium | AT THE WALL: H, P, P, D+H | 4 | - | 40 |
+| EXPANDED FORM | medium | H, P+K, P, P, H | 4 | 1 bar | 54 |
+| POINT-SLOPE SPIKE | hard | D+H, UP, AIR P, AIR K, AIR H, K | 5 | - | 52 |
 | ORDER OF OPERATIONS | hard | P, D, D/F, F+P+K+H | 2 | 3 bars | 58 |
 
 ### CHAI (technical, geometry)
 
 | Route | Level | Inputs | Hits | Meter | Damage |
 | --- | --- | --- | --- | --- | --- |
-| RIGHT TRIANGLE | easy | P, K | 2 | - | 18 |
-| KICK CHAIN | easy | K, F+K, B+K | 3 | - | 39 |
-| ARC JUGGLE | medium | D+H, P, P, H | 4 | - | 38 |
-| FULL CIRCLE | medium | D+K, K, F+K, H | 4 | - | 46 |
-| DOUBLE VERTEX | medium | F+H, P+K | 2 | 1 bar | 30 |
-| VERTEX SPIKE | hard | D+H, UP, AIR P, AIR K, AIR H, K | 5 | - | 53 |
+| RIGHT TRIANGLE | easy | P, K | 2 | - | 19 |
+| KICK CHAIN | easy | K, F+K, B+K | 3 | - | 42 |
+| ARC JUGGLE | medium | D+H, P, P, H | 4 | - | 39 |
+| FULL CIRCLE | medium | D+K, K, F+K, H | 4 | - | 49 |
+| DOUBLE VERTEX | medium | F+H, P+K | 2 | 1 bar | 32 |
+| VERTEX SPIKE | hard | D+H, UP, AIR P, AIR K, AIR H, K | 5 | - | 54 |
 | CIRCLE THEOREM | hard | P, D, D/F, F+P+K+H | 2 | 3 bars | 57 |
 
 ### DALSASS (tricky, geometry proofs)
 
 | Route | Level | Inputs | Hits | Meter | Damage |
 | --- | --- | --- | --- | --- | --- |
-| GIVEN, PROVE | easy | P, P | 2 | - | 17 |
-| PYTHAGOREAN JUGGLE | medium | D+H, P, P, H | 4 | - | 43 |
-| SUPPLEMENTARY STOMP | medium | D/F+K, D+K ON THE GROUND | 2 | - | 20 |
-| SUPPLEMENTARY LAUNCH | medium | D/F+K, P+K, P, P, H | 5 | 1 bar | 46 |
-| CENTROID SPIKE | hard | D+H, UP, AIR K, AIR H, K | 4 | - | 53 |
-| TWO-COLUMN PROOF | hard | P, D, D/F, F+P+K+H | 2 | 3 bars | 58 |
+| GIVEN, PROVE | easy | P, P | 2 | - | 26 |
+| PYTHAGOREAN JUGGLE | medium | D+H, P, P, H | 4 | - | 57 |
+| SUPPLEMENTARY STOMP | medium | D/F+K, D+K ON THE GROUND | 2 | - | 28 |
+| SUPPLEMENTARY LAUNCH | medium | D/F+K, P+K, P, P, H | 5 | 1 bar | 61 |
+| CENTROID SPIKE | hard | D+H, UP, AIR K, AIR H, K | 4 | - | 63 |
+| TWO-COLUMN PROOF | hard | P, D, D/F, F+P+K+H | 2 | 3 bars | 62 |
 
 ### LEE (rushdown, sequences)
 
 | Route | Level | Inputs | Hits | Meter | Damage |
 | --- | --- | --- | --- | --- | --- |
-| ARITHMETIC SEQUENCE | easy | P, P, P, P | 4 | - | 31 |
-| RECURSIVE RUSH | easy | F+P, P, P | 3 | - | 29 |
-| PARTIAL SUMS | medium | P, P, F, F, P, P, P | 5 | - | 28 |
-| FIBONACCI JUGGLE | medium | D+H, P, P, H | 4 | - | 37 |
-| PARTIAL SUM PLUS | medium | H, P+K, P, P, H | 4 | 1 bar | 45 |
-| FIBONACCI SPIKE | hard | D+H, UP, AIR P, AIR K, AIR H, K | 5 | - | 53 |
-| GEOMETRIC SERIES | hard | P, D, D/F, F+P+K+H | 2 | 3 bars | 57 |
+| ARITHMETIC SEQUENCE | easy | P, P, P, P | 4 | - | 43 |
+| RECURSIVE RUSH | easy | F+P, P, P | 3 | - | 40 |
+| PARTIAL SUMS | medium | P, P, F, F, P, P, P | 5 | - | 40 |
+| FIBONACCI JUGGLE | medium | D+H, P, P, H | 4 | - | 48 |
+| PARTIAL SUM PLUS | medium | H, P+K, P, P, H | 4 | 1 bar | 58 |
+| FIBONACCI SPIKE | hard | D+H, UP, AIR P, AIR K, AIR H, K | 5 | - | 62 |
+| GEOMETRIC SERIES | hard | P, D, D/F, F+P+K+H | 2 | 3 bars | 59 |
 
 ### LOPEZ (defensive, calculus)
 
@@ -97,24 +97,24 @@ Every fighter's combo routes, and what the combo feel pass changed. The routes l
 
 | Route | Level | Inputs | Hits | Meter | Damage |
 | --- | --- | --- | --- | --- | --- |
-| ROW AND COLUMN | easy | P, P | 2 | - | 18 |
-| TRANSPOSE JUGGLE | medium | D+H, P, P, H | 4 | - | 44 |
-| IDENTITY STOMP | medium | F+P+K, D+K ON THE GROUND | 2 | - | 38 |
-| CARDIO | medium | RUN, K, P, P, H | 4 | - | 42 |
-| AUGMENTED JUGGLE | medium | F, F+P, P+K, P, P, H | 4 | 1 bar | 49 |
-| RANK SPIKE | hard | D+H, UP, AIR P, AIR K, AIR H, K | 5 | - | 55 |
+| ROW AND COLUMN | easy | P, P | 2 | - | 20 |
+| TRANSPOSE JUGGLE | medium | D+H, P, P, H | 4 | - | 47 |
+| IDENTITY STOMP | medium | F+P+K, D+K ON THE GROUND | 2 | - | 42 |
+| CARDIO | medium | RUN, K, P, P, H | 4 | - | 45 |
+| AUGMENTED JUGGLE | medium | F, F+P, P+K, P, P, H | 4 | 1 bar | 52 |
+| RANK SPIKE | hard | D+H, UP, AIR P, AIR K, AIR H, K | 5 | - | 57 |
 | MATRIX MULTIPLICATION | hard | D, D/F, F+P+K+H | 1 | 3 bars | 51 |
 
 ### WILSON (veteran master, every subject)
 
 | Route | Level | Inputs | Hits | Meter | Damage |
 | --- | --- | --- | --- | --- | --- |
-| POINT, CHAIN | easy | P, P | 2 | - | 18 |
-| SQUARE ROOT JUGGLE | medium | D+H, P, P, H | 4 | - | 43 |
-| CHAIN RULE | medium | P, P, F+P | 3 | - | 29 |
-| DISTANCE SQUARED | medium | F+P, P+K | 2 | 1 bar | 22 |
-| VERTICAL ASYMPTOTE | hard | D+H, UP, AIR P, AIR K, AIR H, K | 5 | - | 55 |
-| TENURE | hard | P, D, D/F, F+P+K+H | 2 | 3 bars | 59 |
+| POINT, CHAIN | easy | P, P | 2 | - | 13 |
+| SQUARE ROOT JUGGLE | medium | D+H, P, P, H | 4 | - | 34 |
+| CHAIN RULE | medium | P, P, F+P | 3 | - | 20 |
+| DISTANCE SQUARED | medium | F+P, P+K | 2 | 1 bar | 14 |
+| VERTICAL ASYMPTOTE | hard | D+H, UP, AIR P, AIR K, AIR H, K | 5 | - | 48 |
+| TENURE | hard | P, D, D/F, F+P+K+H | 2 | 3 bars | 57 |
 <!-- /routes -->
 
 ## Easier combos (the second pass)

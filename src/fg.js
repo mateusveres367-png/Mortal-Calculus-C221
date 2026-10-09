@@ -122,8 +122,8 @@ FG.C = {
   EXTRA_CREDIT_HEALTH: 0.25, // Extra Credit: available below this share of health, once a match
   BOOST_FRAMES: 420,    // Extra Credit: how long the damage boost lasts (7 seconds)
   BOOST_DAMAGE: 1.2,    // Extra Credit: damage multiplier while boosted
-  YEARS_SPEED: 1.2,     // WILSON's 29 YEARS: movement from round 2
-  YEARS_DAMAGE: 1.15,   // WILSON's 29 YEARS: damage from round 3
+  YEARS_SPEED: 1.1,     // WILSON's 29 YEARS: movement from round 2
+  YEARS_DAMAGE: 1.1,    // WILSON's 29 YEARS: damage from round 3
   SEEN_IT_ALL: 3,       // WILSON's Seen It All: uses of a move before he counters it on sight
   STARE_METER: 25,      // WILSON's Stare: meter for standing there a second
   PROP_REACH: 60,       // stage objects: how close to one you must be to use it

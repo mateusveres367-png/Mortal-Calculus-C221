@@ -120,7 +120,7 @@
     signatureText: 'he never slows down: the fastest walk and dash, chained dashes, a guard that recovers twice as fast, and a run he can keep up for as long as he likes (dash, then hold forward), with a tackle, a running knee, a slide, a plancha and a running command grab out of it',
     bio: 'FAST, EXPLOSIVE GRAPPLER WHO CLOSES DISTANCE QUICKLY. CONFIDENT AND FOCUSED.',
     signature: ['MATRIX LOCK', 'DETERMINANT SLAM', 'IDENTITY', 'TRANSPOSE TOSS'],
-    scale: 1.02, health: 178,
+    scale: 1.02, health: 197,
     // Movement: the fastest in the game, in every direction.
     walkF: 2.8, walkB: 1.9, dashSpeed: 10.5, dashFrames: 14, backdashSpeed: 9.0,
     jumpVy: 9.6, weight: 0.96, react: 1.0,
@@ -147,7 +147,7 @@
     moves: FG.kit.moves({
       jab: {
         name: 'Snap Jab', label: 'ROW JAB', cmd: 'P', level: 'high', strength: 'light', motion: 'jab',
-        startup: 10, active: 2, recovery: 13, damage: 7,
+        startup: 10, active: 2, recovery: 13, damage: 8,
         block: 1, hit: { adv: 8 }, ch: { adv: 10 },
         hitbox: { x: 22, w: 28, y: 60, h: 18 }, push: 5, juggle: 3.2,
         cancels: [{ btn: 'p', into: 'jab2', from: 10, to: 22 }],
@@ -155,7 +155,7 @@
       },
       jab2: {
         name: 'Elbow Smash', label: 'COLUMN ELBOW', cmd: 'P,P', level: 'high', strength: 'medium', motion: 'hook',
-        startup: 10, active: 3, recovery: 16, damage: 11,
+        startup: 10, active: 3, recovery: 16, damage: 12,
         block: -2, hit: { adv: 6 }, ch: { adv: 10 },
         hitbox: { x: 14, w: 32, y: 58, h: 24 }, push: 6, juggle: 3.4, shake: 0.002,
         anim: [[1, 'jab_x'], [6, 'elbow_c'], [10, 'elbow_x'], [13, 'elbow_x'], [28, 'idle']]
@@ -164,7 +164,7 @@
       dashP: {
         ex: { text: 'ARMORED, LAUNCHES', armor: { hits: 1 }, hit: { launch: true } }, // enhanced (P+K during startup, 1 bar)
         name: 'Shoulder Charge', label: 'AUGMENTED CHARGE', cmd: 'F,F+P', level: 'mid', strength: 'heavy', motion: 'lunge',
-        startup: 13, active: 4, recovery: 20, damage: 17,
+        startup: 13, active: 4, recovery: 20, damage: 18,
         block: -9, hit: { knockdown: true }, ch: { knockdown: true },
         hitbox: { x: 10, w: 30, y: 36, h: 32 }, push: 22, juggle: 3.6, carry: 1.8, shake: 0.006,
         step: [1, 13, 3.4],
@@ -172,14 +172,14 @@
       },
       mid: {
         name: 'Jumping Knee', label: 'PIVOT KNEE', cmd: 'K', level: 'mid', strength: 'medium', motion: 'kick',
-        startup: 13, active: 3, recovery: 17, damage: 13,
+        startup: 13, active: 3, recovery: 17, damage: 14,
         block: -4, hit: { adv: 5 }, ch: { adv: 9 },
         hitbox: { x: 14, w: 26, y: 42, h: 26 }, push: 8, juggle: 3.6, shake: 0.002,
         anim: [[1, 'idle'], [8, 'knee_c'], [13, 'knee_x'], [16, 'knee_x'], [32, 'idle']]
       },
       low: {
         name: 'Shin Trip', label: 'LOWER TRIANGULAR', cmd: 'D+K', level: 'low', strength: 'light', motion: 'low', crouching: true, otg: true,
-        startup: 15, active: 3, recovery: 20, damage: 10,
+        startup: 15, active: 3, recovery: 20, damage: 11,
         block: -11, hit: { adv: 0 }, ch: { adv: 6 },
         hitbox: { x: 26, w: 24, y: 0, h: 16 }, push: 8, juggle: 2.5, shake: 0.002,
         anim: [[1, 'crouch'], [10, 'low_c'], [15, 'low_x'], [18, 'low_x'], [28, 'low_c'], [37, 'crouch']]
@@ -187,7 +187,7 @@
       sweep: FG.kit.sweep('NULL SPACE SWEEP', { motion: 'sweep' }),
       heavy: {
         name: 'Lariat', label: 'ROW REDUCTION', cmd: 'H', level: 'mid', strength: 'heavy', motion: 'straight', wallSplat: true,
-        startup: 18, active: 3, recovery: 21, damage: 20,
+        startup: 18, active: 3, recovery: 21, damage: 22,
         block: -4, hit: { adv: 6 }, ch: { launch: 6 },
         hitbox: { x: 20, w: 28, y: 50, h: 24 }, push: 24, juggle: 3.6, carry: 2, shake: 0.006,
         step: [10, 18, 2],
@@ -195,7 +195,7 @@
       },
       fH: {
         name: 'Double Axe Handle', label: 'SCALAR SLAM', cmd: 'F+H', level: 'mid', strength: 'heavy', motion: 'overhead', bound: true,
-        startup: 21, active: 3, recovery: 21, damage: 18, guardDmg: 24,
+        startup: 21, active: 3, recovery: 21, damage: 19, guardDmg: 24,
         block: -6, hit: { adv: 3 }, ch: { knockdown: true },
         hitbox: { x: 28, w: 26, y: 40, h: 26 }, push: 16, juggle: 2.5, shake: 0.006,
         step: [12, 21, 1.4],
@@ -203,7 +203,7 @@
       },
       launcher: {
         name: 'European Uppercut', label: 'TRANSPOSE TOSS', cmd: 'D+H', level: 'mid', strength: 'launch', motion: 'launcher',
-        startup: 15, active: 4, recovery: 23, damage: 17,
+        startup: 15, active: 4, recovery: 23, damage: 18,
         block: -15, hit: { launch: 7.8 }, ch: { launch: 8.4 },
         hitbox: { x: 8, w: 28, y: 26, h: 80 }, push: 6, juggle: 5.5, carry: 0.35, shake: 0.008,
         step: [8, 15, 1.6],
@@ -213,7 +213,7 @@
       // Identity: forward + P+K. A slower command grab: no break, and it takes crouching opponents.
       cmdGrab: {
         name: 'Command Grab', label: 'IDENTITY', cmd: 'F+P+K', level: 'mid', strength: 'heavy', throw: true, grabsCrouch: true, breakBtn: null,
-        startup: 16, active: 3, recovery: 32, damage: 32,
+        startup: 16, active: 3, recovery: 32, damage: 35,
         hitbox: { x: 10, w: 28, y: 20, h: 60 }, push: 0, juggle: 0, shake: 0.011,
         anim: [[1, 'idle'], [10, 'grab_c'], [16, 'grab_x'], [19, 'grab_x'], [50, 'idle']]
       },
@@ -221,7 +221,7 @@
       runP: {
         ex: { text: 'TWO HITS, WALL SPLAT', multi: 1, wallSplat: true }, // enhanced (P+K during startup, 1 bar)
         name: 'Spear Tackle', label: 'ROW OPERATION', cmd: 'RUN, P', level: 'mid', strength: 'heavy', motion: 'lunge',
-        startup: 10, active: 4, recovery: 22, damage: 16,
+        startup: 10, active: 4, recovery: 22, damage: 17,
         block: -8, hit: { knockdown: true }, ch: { knockdown: true },
         hitbox: { x: 8, w: 30, y: 20, h: 40 }, push: 24, juggle: 3.6, carry: 2.2, shake: 0.008,
         step: [1, 12, 4],
@@ -230,7 +230,7 @@
       runK: {
         ex: { text: 'HIGHER LAUNCH', hit: { launch: 8.4 } }, // enhanced (P+K during startup, 1 bar)
         name: 'Running Knee', label: 'ELEMENTARY KNEE', cmd: 'RUN, K', level: 'mid', strength: 'launch', motion: 'launcher',
-        startup: 9, active: 3, recovery: 22, damage: 15,
+        startup: 9, active: 3, recovery: 22, damage: 16,
         block: -12, hit: { launch: 7 }, ch: { launch: 7.6 },
         hitbox: { x: 12, w: 26, y: 44, h: 32 }, push: 6, juggle: 5, carry: 0.5, shake: 0.008,
         step: [1, 9, 3.6],
@@ -239,7 +239,7 @@
       },
       runDK: {
         name: 'Baseball Slide', label: 'ZERO VECTOR', cmd: 'RUN, D+K', level: 'low', strength: 'heavy', motion: 'sweep', crouching: true,
-        startup: 10, active: 6, recovery: 24, damage: 13,
+        startup: 10, active: 6, recovery: 24, damage: 14,
         block: -16, hit: { knockdown: true }, ch: { knockdown: true },
         hitbox: { x: 18, w: 34, y: 0, h: 16 }, push: 10, juggle: 2.5, shake: 0.004,
         step: [1, 18, 4.6],
@@ -247,7 +247,7 @@
       },
       runH: {
         name: 'Plancha', label: 'MATRIX PLANCHA', cmd: 'RUN, H', level: 'mid', strength: 'heavy', motion: 'overhead', guardDmg: 26,
-        startup: 16, active: 4, recovery: 26, damage: 22,
+        startup: 16, active: 4, recovery: 26, damage: 24,
         block: -10, hit: { knockdown: true }, ch: { knockdown: true },
         hitbox: { x: 14, w: 34, y: 20, h: 40 }, push: 18, juggle: 3, shake: 0.01,
         step: [1, 16, 4.2],
@@ -256,7 +256,7 @@
       // Gauss-Jordan: P+K on the run. A running command grab: no break, and it takes crouchers.
       runGrab: {
         name: 'Running Grab', label: 'GAUSS-JORDAN', cmd: 'RUN, P+K', level: 'mid', strength: 'heavy', throw: true, grabsCrouch: true, breakBtn: null,
-        startup: 8, active: 4, recovery: 30, damage: 30,
+        startup: 8, active: 4, recovery: 30, damage: 32,
         hitbox: { x: 8, w: 30, y: 20, h: 60 }, push: 0, juggle: 0, shake: 0.011,
         step: [1, 10, 3.4],
         anim: [[1, 'run1'], [5, 'rgrab'], [8, 'grab_x'], [12, 'grab_x'], [42, 'idle']]
@@ -264,7 +264,7 @@
     },
     FG.kit.air(['PIVOT DROP', 'EIGEN KICK', 'RANK SPIKE']),
     // Matrix Lock has a short break window (8 frames instead of 15).
-    FG.kit.throws('MATRIX LOCK', 'DETERMINANT SLAM', { throw: { damage: 34, breakWindow: 8 }, throwB: { damage: 38, shake: 0.012 } }),
+    FG.kit.throws('MATRIX LOCK', 'DETERMINANT SLAM', { throw: { damage: 37, breakWindow: 8 }, throwB: { damage: 41, shake: 0.012 } }),
     FG.kit.wake(),
     FG.kit.taunt()),
 

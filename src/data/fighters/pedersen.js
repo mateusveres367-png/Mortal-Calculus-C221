@@ -110,7 +110,7 @@
     signatureText: 'his heavy attacks (Base Hook, the Exponential Haymaker, Order of Magnitude) absorb one hit during their windup and keep going; a fully charged Order of Magnitude absorbs two',
     bio: 'CALM AND FRIENDLY, BUT EVERY HIT IS HEAVY. SLOW, PATIENT, DEVASTATING.',
     signature: ['EXPONENTIAL HAYMAKER', 'ORDER OF MAGNITUDE', 'LOGARITHMIC LAUNCHER', 'RIGHT ANGLE ELBOW', 'LONG DIVISION'],
-    scale: 1.12, health: 200,
+    scale: 1.12, health: 172,
     // Movement: a slow walk, a short dash, a low jump; heavy in juggles, barely flinches.
     walkF: 1.4, walkB: 1.2, dashSpeed: 6.2, dashFrames: 13, backdashSpeed: 6.8,
     jumpVy: 8.6, weight: 1.12, react: 0.6,
@@ -142,7 +142,7 @@
     moves: FG.kit.moves({
       jab: {
         name: 'Power Jab', label: 'POWER JAB', cmd: 'P', level: 'high', strength: 'light', motion: 'jab',
-        startup: 11, active: 2, recovery: 14, damage: 10,
+        startup: 11, active: 2, recovery: 14, damage: 9,
         block: 0, hit: { adv: 7 }, ch: { adv: 10 },
         hitbox: { x: 22, w: 26, y: 64, h: 18 }, push: 9, juggle: 3,
         cancels: [{ btn: 'p', into: 'jab2', from: 11, to: 23 }],
@@ -150,7 +150,7 @@
       },
       jab2: {
         name: 'Hammer Fist', label: 'SQUARED', cmd: 'P,P', level: 'high', strength: 'medium', motion: 'overhead',
-        startup: 12, active: 3, recovery: 19, damage: 15,
+        startup: 12, active: 3, recovery: 19, damage: 14,
         block: -5, hit: { adv: 4 }, ch: { adv: 10 },
         hitbox: { x: 24, w: 28, y: 60, h: 22 }, push: 14, juggle: 3.4, shake: 0.003,
         anim: [[1, 'jab_x'], [7, 'cross_c'], [12, 'cross_x'], [15, 'cross_x'], [33, 'idle']]
@@ -159,7 +159,7 @@
       dashP: {
         ex: { text: 'ARMORED, WALL SPLAT', armor: { hits: 1 }, wallSplat: true }, // enhanced (P+K during startup, 1 bar)
         name: 'Shoulder Charge', label: 'COMMON LOG', cmd: 'F,F+P', level: 'mid', strength: 'heavy', motion: 'lunge',
-        startup: 14, active: 4, recovery: 22, damage: 20,
+        startup: 14, active: 4, recovery: 22, damage: 18,
         block: -10, hit: { knockdown: true }, ch: { knockdown: true },
         hitbox: { x: 10, w: 30, y: 36, h: 34 }, push: 24, juggle: 3.6, carry: 2, shake: 0.008,
         step: [1, 14, 2.8],
@@ -167,23 +167,23 @@
       },
       mid: {
         name: 'Push Stomp', label: 'EXPONENT KICK', cmd: 'K', level: 'mid', strength: 'medium', motion: 'kick',
-        startup: 16, active: 3, recovery: 20, damage: 19,
+        startup: 16, active: 3, recovery: 20, damage: 17,
         block: -7, hit: { adv: 5 }, ch: { adv: 10 },
         hitbox: { x: 28, w: 28, y: 36, h: 24 }, push: 18, juggle: 3.6, shake: 0.004,
         anim: [[1, 'idle'], [11, 'stomp_c'], [16, 'stomp_x'], [19, 'stomp_x'], [27, 'stomp_c'], [38, 'idle']]
       },
       low: {
         name: 'Ground Stomp', label: 'NEGATIVE EXPONENT', cmd: 'D+K', level: 'low', strength: 'medium', motion: 'low', crouching: true, otg: true,
-        startup: 18, active: 3, recovery: 22, damage: 13,
+        startup: 18, active: 3, recovery: 22, damage: 12,
         block: -13, hit: { adv: 0 }, ch: { adv: 6 },
         hitbox: { x: 26, w: 28, y: 0, h: 18 }, push: 10, juggle: 2.5, shake: 0.004,
         anim: [[1, 'crouch'], [12, 'st_c'], [18, 'st_x'], [21, 'st_x'], [32, 'st_c'], [42, 'crouch']]
       },
-      sweep: FG.kit.sweep('ZERO POWER SWEEP', { startup: 22, damage: 20, strength: 'heavy', shake: 0.008, motion: 'low',
+      sweep: FG.kit.sweep('ZERO POWER SWEEP', { startup: 22, damage: 18, strength: 'heavy', shake: 0.008, motion: 'low',
         anim: [[1, 'crouch'], [12, 'pound_c'], [22, 'pound_x'], [25, 'pound_x'], [38, 'crouch'], [49, 'crouch']] }),
       heavy: {
         name: 'Big Hook', label: 'BASE HOOK', cmd: 'H', level: 'mid', strength: 'heavy', motion: 'hook', wallSplat: true,
-        startup: 21, active: 4, recovery: 20, damage: 28, armor: { from: 6, to: 20, hits: 1 },
+        startup: 21, active: 4, recovery: 20, damage: 22, armor: { from: 6, to: 20, hits: 1 },
         block: 1, hit: { adv: 8 }, ch: { launch: 6.2 },
         hitbox: { x: 24, w: 28, y: 52, h: 22 }, push: 30, juggle: 3.6, carry: 2.2, shake: 0.008,
         step: [12, 21, 1.5],
@@ -193,7 +193,7 @@
       fP: {
         ex: { text: 'TWO ELBOWS, KNOCKDOWN', multi: 1, hit: { knockdown: true } }, // enhanced (P+K during startup, 1 bar)
         name: 'Elbow', label: 'RIGHT ANGLE ELBOW', cmd: 'F+P', level: 'mid', strength: 'heavy', motion: 'hook',
-        startup: 15, active: 3, recovery: 18, damage: 18,
+        startup: 15, active: 3, recovery: 18, damage: 16,
         block: -5, hit: { adv: 5 }, ch: { launch: 6.4 },
         hitbox: { x: 14, w: 30, y: 56, h: 24 }, push: 14, carry: 0.8, shake: 0.006,
         step: [6, 14, 2.2],
@@ -203,7 +203,7 @@
       fH: {
         ex: { text: 'ABSORBS TWO HITS, LAUNCHES', armor: { hits: 2 }, hit: { launch: true } }, // enhanced (P+K during startup, 1 bar)
         name: 'Haymaker', label: 'EXPONENTIAL HAYMAKER', cmd: 'F+H', level: 'mid', strength: 'heavy', motion: 'straight', wallSplat: true, guardDmg: 34,
-        startup: 26, active: 4, recovery: 22, damage: 36, armor: { from: 8, to: 25, hits: 1 },
+        startup: 26, active: 4, recovery: 22, damage: 26, armor: { from: 8, to: 25, hits: 1 },
         block: -6, hit: { knockdown: true }, ch: { launch: 6.6 },
         hitbox: { x: 28, w: 32, y: 54, h: 24 }, push: 34, juggle: 3.6, carry: 2.6, shake: 0.011,
         step: [14, 26, 1.8],
@@ -212,7 +212,7 @@
       // Order of Magnitude: hold H to charge. Half charge knocks down; full charge breaks the guard.
       bH: {
         name: 'Charge Punch', label: 'ORDER OF MAGNITUDE', cmd: 'B+H (HOLD)', level: 'mid', strength: 'heavy', motion: 'straight', wallSplat: true,
-        startup: 20, active: 4, recovery: 22, damage: 20, armor: { from: 6, to: 19, hits: 1 },
+        startup: 20, active: 4, recovery: 22, damage: 18, armor: { from: 6, to: 19, hits: 1 },
         block: -8, hit: { adv: 4 }, ch: { knockdown: true },
         charge: { at: 12, btn: 'h', mid: 16, max: 40, damage: [1, 1.5, 2.1] },
         hitbox: { x: 28, w: 32, y: 48, h: 24 }, push: 30, juggle: 3.6, carry: 2.4, shake: 0.009,
@@ -221,7 +221,7 @@
       },
       launcher: {
         name: 'Double Uppercut', label: 'LOGARITHMIC LAUNCHER', cmd: 'D+H', level: 'mid', strength: 'launch', motion: 'launcher',
-        startup: 17, active: 4, recovery: 24, damage: 22,
+        startup: 17, active: 4, recovery: 24, damage: 20,
         block: -17, hit: { launch: 8.2 }, ch: { launch: 8.8 },
         hitbox: { x: 8, w: 28, y: 30, h: 82 }, push: 6, juggle: 5.5, carry: 0.6, shake: 0.01,
         step: [10, 17, 1.3],
@@ -231,7 +231,7 @@
     },
     FG.kit.air(['EXPONENT DROP', 'POWER KICK', 'TOWER OF POWERS'], { slow: 2, chain: { airP: ['h'], airK: ['h'] } }),
     // Long Division: a slam throw.
-    FG.kit.throws('LONG DIVISION', 'SYNTHETIC DIVISION', { throw: { damage: 40, shake: 0.013, recovery: 28 }, throwB: { damage: 38, recovery: 28 } }),
+    FG.kit.throws('LONG DIVISION', 'SYNTHETIC DIVISION', { throw: { damage: 36, shake: 0.013, recovery: 28 }, throwB: { damage: 34, recovery: 28 } }),
     FG.kit.wake(),
     FG.kit.taunt()),
 

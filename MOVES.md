@@ -16,35 +16,35 @@ Calm and friendly, but every hit is heavy. Slow, patient, devastating.
 
 | Input | Move | Level | i | Active | Recovery | Block | Hit | Counter hit | Damage | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| P | Power Jab | high | 11 | 2 | 14 | 0 | +7 | +10 | 10 |  |
-| P,P | Squared | high | 12 | 3 | 19 | -5 | +4 | +10 | 15 |  |
+| P | Power Jab | high | 11 | 2 | 14 | 0 | +7 | +10 | 9 |  |
+| P,P | Squared | high | 12 | 3 | 19 | -5 | +4 | +10 | 14 |  |
 | P,P,H | Exponent Rule | mid | 12 | 3 | 20 | -9 | knockdown | knockdown | 13 |  |
-| F+P | Right Angle Elbow | mid | 15 | 3 | 18 | -5 | +5 | launch | 18 | enhance with P+K |
-| F,F+P | Common Log | mid | 14 | 4 | 22 | -10 | knockdown | knockdown | 20 | enhance with P+K |
-| K | Exponent Kick | mid | 16 | 3 | 20 | -7 | +5 | +10 | 19 |  |
-| D+K | Negative Exponent | low | 18 | 3 | 22 | -13 | 0 | +6 | 13 | hits downed opponents, ducks highs |
-| D/B+K | Zero Power Sweep | low | 22 | 3 | 26 | -18 | knockdown | knockdown | 20 | ducks highs |
-| H | Base Hook | mid | 21 | 4 | 20 | +1 | +8 | launch | 28 | wall splats, armor: absorbs 1 hit on frames 6-20 |
-| F+H | Exponential Haymaker | mid | 26 | 4 | 22 | -6 | knockdown | launch | 36 | wall splats, armor: absorbs 1 hit on frames 8-25, enhance with P+K |
-| B+H (HOLD) | Order Of Magnitude | mid | 20 | 4 | 22 | -8 | +4 | knockdown | 20 | wall splats, armor: absorbs 1 hit on frames 6-19 (2 at full charge), hold to charge |
-| D+H | Logarithmic Launcher | mid | 17 | 4 | 24 | -17 | launch | launch | 22 | jump cancel on hit (UP) |
-| P+K | Long Division | throw | 12 | 2 | 28 |  |  |  | 40 | break with P |
-| B+P+K | Synthetic Division | throw | 12 | 2 | 28 |  |  |  | 38 | break with K |
+| F+P | Right Angle Elbow | mid | 15 | 3 | 18 | -5 | +5 | launch | 16 | enhance with P+K |
+| F,F+P | Common Log | mid | 14 | 4 | 22 | -10 | knockdown | knockdown | 18 | enhance with P+K |
+| K | Exponent Kick | mid | 16 | 3 | 20 | -7 | +5 | +10 | 17 |  |
+| D+K | Negative Exponent | low | 18 | 3 | 22 | -13 | 0 | +6 | 12 | hits downed opponents, ducks highs |
+| D/B+K | Zero Power Sweep | low | 22 | 3 | 26 | -18 | knockdown | knockdown | 18 | ducks highs |
+| H | Base Hook | mid | 21 | 4 | 20 | +1 | +8 | launch | 22 | wall splats, armor: absorbs 1 hit on frames 6-20 |
+| F+H | Exponential Haymaker | mid | 26 | 4 | 22 | -6 | knockdown | launch | 26 | wall splats, armor: absorbs 1 hit on frames 8-25, enhance with P+K |
+| B+H (HOLD) | Order Of Magnitude | mid | 20 | 4 | 22 | -8 | +4 | knockdown | 18 | wall splats, armor: absorbs 1 hit on frames 6-19 (2 at full charge), hold to charge |
+| D+H | Logarithmic Launcher | mid | 17 | 4 | 24 | -17 | launch | launch | 20 | jump cancel on hit (UP) |
+| P+K | Long Division | throw | 12 | 2 | 28 |  |  |  | 36 | break with P |
+| B+P+K | Synthetic Division | throw | 12 | 2 | 28 |  |  |  | 34 | break with K |
 | AIR P | Exponent Drop | mid | 9 | 4 | 10 |  |  |  | 12 | hitstun 16, blockstun 10, landing 6 |
 | AIR K | Power Kick | mid | 11 | 5 | 12 |  |  |  | 15 | hitstun 18, blockstun 12, landing 8 |
 | AIR H | Tower Of Powers | mid | 14 | 4 | 16 |  |  |  | 22 | bounds, hitstun 22, blockstun 14, landing 12 |
 | K (DOWN) | Rolling Zero | low | 14 | 3 | 22 | -14 | -2 | +1 | 10 | ducks highs |
 | P/H (DOWN) | Spring Theorem | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
 | T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
-| D,D/F,F+P+K+H | Horsepower | mid | 21 | 4 | 50 | -29 | +8 | launch | 28 | wall splats, armor: absorbs 1 hit on frames 6-20 |
+| D,D/F,F+P+K+H | Horsepower | mid | 21 | 4 | 50 | -29 | +8 | launch | 22 | wall splats, armor: absorbs 1 hit on frames 6-20 |
 | T (BY AN OBJECT) | Springboard | mid | 16 | 5 | 18 | -6 | knockdown | knockdown | 18 |  |
 | B+T (BY AN OBJECT) | Vault | — | 38 total |  |  |  |  |  |  |  |
 
 **Enhanced specials** (P+K during the startup, 1 bar):
 
-- **Right Angle Elbow+** (`F+P`, then `P+K`): Two elbows, knockdown — 2 hits of 16, hit: knockdown.
-- **Common Log+** (`F,F+P`, then `P+K`): Armored, wall splat — 26 damage (from 20), armor on frames 1-14 (1 hit), wall splats.
-- **Exponential Haymaker+** (`F+H`, then `P+K`): Absorbs two hits, launches — 47 damage (from 36), hit: launch, armor on frames 1-26 (2 hits).
+- **Right Angle Elbow+** (`F+P`, then `P+K`): Two elbows, knockdown — 2 hits of 14, hit: knockdown.
+- **Common Log+** (`F,F+P`, then `P+K`): Armored, wall splat — 23 damage (from 18), armor on frames 1-14 (1 hit), wall splats.
+- **Exponential Haymaker+** (`F+H`, then `P+K`): Absorbs two hits, launches — 34 damage (from 26), hit: launch, armor on frames 1-26 (2 hits).
 
 **Ultimate:** Horsepower — the ultimate key (`U` / `Numpad 0`) or `D, D/F, F + P+K+H`, with all three bars: on go the sunglasses; he gets into his red sports car, revs it, and drives straight across the stage into them; they bounce off the hood, the car skids to a stop, and he leans out of the window with his line. 2 hits, 32% of their health; blocked -29, whiffed 74 frames.
 
@@ -70,17 +70,17 @@ Nice, easygoing, a good sport. Best for new players.
 | Input | Move | Level | i | Active | Recovery | Block | Hit | Counter hit | Damage | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | P | Slope Jab | high | 10 | 2 | 13 | +1 | +8 | +10 | 7 | Long Arms: +25% damage at the tip |
-| P,P | Rise Over Run | high | 9 | 2 | 16 | -3 | +6 | +9 | 9 | Long Arms: +25% damage at the tip |
-| P,K | Distribute | mid | 11 | 3 | 18 | -7 | +4 | +8 | 11 |  |
-| P,K,K | Distributive Property | mid | 13 | 3 | 22 | -13 | knockdown | knockdown | 16 | wall splats, enhance with P+K |
+| P,P | Rise Over Run | high | 9 | 2 | 16 | -3 | +6 | +9 | 8 | Long Arms: +25% damage at the tip |
+| P,K | Distribute | mid | 11 | 3 | 18 | -7 | +4 | +8 | 10 |  |
+| P,K,K | Distributive Property | mid | 13 | 3 | 22 | -13 | knockdown | knockdown | 14 | wall splats, enhance with P+K |
 | P,P,H | Combine Like Terms | mid | 12 | 3 | 20 | -9 | knockdown | knockdown | 13 |  |
-| F+P | Long Arms | high | 13 | 3 | 18 | -4 | +4 | +8 | 11 | enhance with P+K, Long Arms: +25% damage at the tip |
-| K | Variable Kick | mid | 14 | 3 | 18 | -6 | +4 | +9 | 14 |  |
-| D+K | Inequality | low | 16 | 3 | 21 | -12 | -1 | +5 | 10 | tracks, hits downed opponents, ducks highs |
+| F+P | Long Arms | high | 13 | 3 | 18 | -4 | +4 | +8 | 10 | enhance with P+K, Long Arms: +25% damage at the tip |
+| K | Variable Kick | mid | 14 | 3 | 18 | -6 | +4 | +9 | 12 |  |
+| D+K | Inequality | low | 16 | 3 | 21 | -12 | -1 | +5 | 9 | tracks, hits downed opponents, ducks highs |
 | D/B+K | Zero Product Sweep | low | 20 | 3 | 26 | -18 | knockdown | knockdown | 16 | ducks highs |
-| H | Linear Rush | mid | 19 | 3 | 22 | -4 | +6 | launch | 22 | wall splats, enhance with P+K, Long Arms: +25% damage at the tip |
-| F+H | Order Of Operations | mid | 21 | 3 | 21 | -6 | +3 | knockdown | 18 | bounds |
-| D+H | Solve For X | mid | 15 | 4 | 22 | -15 | launch | launch | 16 | jump cancel on hit (UP) |
+| H | Linear Rush | mid | 19 | 3 | 22 | -4 | +6 | launch | 20 | wall splats, enhance with P+K, Long Arms: +25% damage at the tip |
+| F+H | Order Of Operations | mid | 21 | 3 | 21 | -6 | +3 | knockdown | 16 | bounds |
+| D+H | Solve For X | mid | 15 | 4 | 22 | -15 | launch | launch | 14 | jump cancel on hit (UP) |
 | P+K | Foil | throw | 12 | 2 | 26 |  |  |  | 30 | break with P |
 | B+P+K | Substitution | throw | 12 | 2 | 26 |  |  |  | 34 | break with K |
 | AIR P | X-Intercept | mid | 7 | 4 | 10 |  |  |  | 8 | hitstun 16, blockstun 10, landing 4 |
@@ -89,15 +89,15 @@ Nice, easygoing, a good sport. Best for new players.
 | K (DOWN) | Rolling Zero | low | 14 | 3 | 22 | -14 | -2 | +1 | 10 | ducks highs |
 | P/H (DOWN) | Spring Theorem | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
 | T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
-| D,D/F,F+P+K+H | Fast Break | mid | 19 | 3 | 52 | -34 | +6 | launch | 22 | wall splats, Long Arms: +25% damage at the tip |
+| D,D/F,F+P+K+H | Fast Break | mid | 19 | 3 | 52 | -34 | +6 | launch | 20 | wall splats, Long Arms: +25% damage at the tip |
 | T (BY AN OBJECT) | Springboard | mid | 16 | 5 | 18 | -6 | knockdown | knockdown | 18 |  |
 | B+T (BY AN OBJECT) | Vault | — | 38 total |  |  |  |  |  |  |  |
 
 **Enhanced specials** (P+K during the startup, 1 bar):
 
-- **Distributive Property+** (`P,K,K`, then `P+K`): Three hits — 3 hits of 10.
-- **Long Arms+** (`F+P`, then `P+K`): Two hits, knockdown — 2 hits of 10, hit: knockdown.
-- **Linear Rush+** (`H`, then `P+K`): Armored, launches — 29 damage (from 22), hit: launch, armor on frames 1-19 (1 hit).
+- **Distributive Property+** (`P,K,K`, then `P+K`): Three hits — 3 hits of 9.
+- **Long Arms+** (`F+P`, then `P+K`): Two hits, knockdown — 2 hits of 9, hit: knockdown.
+- **Linear Rush+** (`H`, then `P+K`): Armored, launches — 26 damage (from 20), hit: launch, armor on frames 1-19 (1 hit).
 
 **Ultimate:** Fast Break — the ultimate key (`U` / `Numpad 0`) or `D, D/F, F + P+K+H`, with all three bars: a blast on the coach's whistle, a sprint down the running track and over a bench, then back into the stage with a flying knee: a giant X stamps SOLVED. 2 hits, 32% of their health; blocked -34, whiffed 73 frames.
 
@@ -125,37 +125,37 @@ Very kind, precise and graceful. Bows before fights.
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | P | Right Angle | high | 10 | 2 | 12 | +2 | +8 | +11 | 6 |  |
 | P,P | Inscribed Angle | high | 9 | 2 | 16 | -3 | +6 | +9 | 8 |  |
-| P,K | Complementary Kick | mid | 12 | 3 | 20 | -9 | +3 | +8 | 12 | kick chain |
+| P,K | Complementary Kick | mid | 12 | 3 | 20 | -9 | +3 | +8 | 13 | kick chain |
 | P,P,H | Central Angle | mid | 12 | 3 | 20 | -9 | knockdown | knockdown | 13 |  |
-| SS, P | Tangent Step | mid | 12 | 3 | 16 | -3 | +6 | knockdown | 15 | tracks, stays off the line until it hits, enhance with P+K, kick chain |
-| SS, K | Secant Sweep | low | 15 | 3 | 22 | -13 | knockdown | knockdown | 12 | tracks, ducks highs, stays off the line until it hits, kick chain |
-| K | Isosceles Kick | mid | 12 | 3 | 19 | -6 | +4 | +9 | 12 | kick chain |
-| F+K | Altitude Kick | high | 13 | 3 | 18 | -4 | +5 | +10 | 13 | kick chain |
-| B+K | Reflex Angle | mid | 16 | 3 | 22 | -10 | knockdown | knockdown | 16 | enhance with P+K, kick chain |
+| SS, P | Tangent Step | mid | 12 | 3 | 16 | -3 | +6 | knockdown | 16 | tracks, stays off the line until it hits, enhance with P+K, kick chain |
+| SS, K | Secant Sweep | low | 15 | 3 | 22 | -13 | knockdown | knockdown | 13 | tracks, ducks highs, stays off the line until it hits, kick chain |
+| K | Isosceles Kick | mid | 12 | 3 | 19 | -6 | +4 | +9 | 13 | kick chain |
+| F+K | Altitude Kick | high | 13 | 3 | 18 | -4 | +5 | +10 | 14 | kick chain |
+| B+K | Reflex Angle | mid | 16 | 3 | 22 | -10 | knockdown | knockdown | 17 | enhance with P+K, kick chain |
 | D+K | Acute Low | low | 15 | 3 | 19 | -11 | 0 | +6 | 9 | hits downed opponents, ducks highs, kick chain |
-| D/B+K | Obtuse Sweep | low | 19 | 3 | 26 | -18 | knockdown | knockdown | 15 | ducks highs, kick chain |
-| H | Hypotenuse | mid | 17 | 3 | 22 | -6 | +5 | launch | 19 | wall splats, kick chain |
-| F+H | Vertex Drop | mid | 20 | 3 | 20 | -7 | +3 | knockdown | 17 | bounds, enhance with P+K, kick chain |
+| D/B+K | Obtuse Sweep | low | 19 | 3 | 26 | -18 | knockdown | knockdown | 16 | ducks highs, kick chain |
+| H | Hypotenuse | mid | 17 | 3 | 22 | -6 | +5 | launch | 20 | wall splats, kick chain |
+| F+H | Vertex Drop | mid | 20 | 3 | 20 | -7 | +3 | knockdown | 18 | bounds, enhance with P+K, kick chain |
 | B+H | Reflection Counter | — | 31 total |  |  |  |  |  |  | parry |
-| D+H | Arc Launcher | mid | 14 | 4 | 24 | -16 | launch | launch | 15 | kick chain, jump cancel on hit (UP) |
-| P+K | Transformation | throw | 12 | 2 | 26 |  |  |  | 28 | break with P |
-| B+P+K | Rotation | throw | 12 | 2 | 26 |  |  |  | 32 | break with K |
+| D+H | Arc Launcher | mid | 14 | 4 | 24 | -16 | launch | launch | 16 | kick chain, jump cancel on hit (UP) |
+| P+K | Transformation | throw | 12 | 2 | 26 |  |  |  | 29 | break with P |
+| B+P+K | Rotation | throw | 12 | 2 | 26 |  |  |  | 34 | break with K |
 | AIR P | Tangent Jab | mid | 7 | 4 | 10 |  |  |  | 8 | hitstun 16, blockstun 10, landing 4 |
 | AIR K | Chord Kick | mid | 9 | 5 | 12 |  |  |  | 11 | hitstun 18, blockstun 12, landing 6 |
 | AIR H | Vertex Spike | mid | 12 | 4 | 16 |  |  |  | 16 | bounds, hitstun 22, blockstun 14, landing 10 |
 | K (DOWN) | Rolling Zero | low | 14 | 3 | 22 | -14 | -2 | +1 | 10 | ducks highs |
 | P/H (DOWN) | Spring Theorem | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
 | T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
-| PARRY | Reflection | mid | 6 | 3 | 18 | -6 | knockdown | knockdown | 20 |  |
-| D,D/F,F+P+K+H | Compass Construction | high | 13 | 3 | 48 | -34 | +5 | +10 | 13 |  |
+| PARRY | Reflection | mid | 6 | 3 | 18 | -6 | knockdown | knockdown | 21 |  |
+| D,D/F,F+P+K+H | Compass Construction | high | 13 | 3 | 48 | -34 | +5 | +10 | 14 |  |
 | T (BY AN OBJECT) | Springboard | mid | 16 | 5 | 18 | -6 | knockdown | knockdown | 18 |  |
 | B+T (BY AN OBJECT) | Vault | — | 38 total |  |  |  |  |  |  |  |
 
 **Enhanced specials** (P+K during the startup, 1 bar):
 
 - **Tangent Step+** (`SS, P`, then `P+K`): Three kicks — 3 hits of 10.
-- **Reflex Angle+** (`B+K`, then `P+K`): Launches — 21 damage (from 16), hit: launch.
-- **Vertex Drop+** (`F+H`, then `P+K`): Two hits, knockdown — 2 hits of 15, hit: knockdown.
+- **Reflex Angle+** (`B+K`, then `P+K`): Launches — 22 damage (from 17), hit: launch.
+- **Vertex Drop+** (`F+H`, then `P+K`): Two hits, knockdown — 2 hits of 16, hit: knockdown.
 
 **Ultimate:** Compass Construction — the ultimate key (`U` / `Numpad 0`) or `D, D/F, F + P+K+H`, with all three bars: she plants a giant drawing compass next to them and spins around them, a kick on every pass, while a glowing circle draws itself; a protractor snaps into place at 90 degrees, then an axe kick (and an apology). 7 hits, 32% of their health; blocked -34, whiffed 63 frames.
 
@@ -181,40 +181,40 @@ Happy, sassy, everyone's favorite. Fakes you out with a grin.
 
 | Input | Move | Level | i | Active | Recovery | Block | Hit | Counter hit | Damage | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| P | Given | high | 10 | 2 | 13 | +1 | +8 | +10 | 7 |  |
-| P,P | Statement | high | 10 | 2 | 17 | -4 | +5 | +9 | 10 |  |
+| P | Given | high | 10 | 2 | 13 | +1 | +8 | +10 | 11 |  |
+| P,P | Statement | high | 10 | 2 | 17 | -4 | +5 | +9 | 15 |  |
 | P,P,H | Therefore | mid | 12 | 3 | 20 | -9 | knockdown | knockdown | 13 |  |
 | B+P | Similar Triangles | — | 13 total |  |  |  |  |  |  | switches stance |
-| STANCE P | Similar Palm | mid | 12 | 2 | 18 | -4 | +6 | +10 | 12 |  |
-| STANCE K | Scale Factor | low | 13 | 3 | 20 | -12 | +1 | +6 | 11 | hits downed opponents, ducks highs |
-| STANCE H | Angle-Angle | mid | 20 | 3 | 20 | -6 | +4 | launch | 20 | bounds |
-| K | Reason Kick | mid | 15 | 3 | 19 | -7 | +4 | +9 | 15 |  |
+| STANCE P | Similar Palm | mid | 12 | 2 | 18 | -4 | +6 | +10 | 17 |  |
+| STANCE K | Scale Factor | low | 13 | 3 | 20 | -12 | +1 | +6 | 16 | hits downed opponents, ducks highs |
+| STANCE H | Angle-Angle | mid | 20 | 3 | 20 | -6 | +4 | launch | 28 | bounds |
+| K | Reason Kick | mid | 15 | 3 | 19 | -7 | +4 | +9 | 20 |  |
 | B+K | Assume The Contrary | — | 26 total |  |  |  |  |  |  | evades highs and mids on frames 3-16, P after a miss: The Converse |
-| D+K | Leg Kick | low | 16 | 3 | 20 | -11 | 0 | +6 | 10 | tracks, hits downed opponents, ducks highs |
-| D/F+K | Supplementary Slide | low | 18 | 5 | 24 | -16 | knockdown | knockdown | 14 | ducks highs, enhance with P+K |
+| D+K | Leg Kick | low | 16 | 3 | 20 | -11 | 0 | +6 | 15 | tracks, hits downed opponents, ducks highs |
+| D/F+K | Supplementary Slide | low | 18 | 5 | 24 | -16 | knockdown | knockdown | 19 | ducks highs, enhance with P+K |
 | D/B+K | Base Sweep | low | 21 | 3 | 26 | -18 | knockdown | knockdown | 16 | ducks highs |
-| H | Side-Angle-Side | mid | 18 | 3 | 22 | -5 | +5 | launch | 20 | wall splats |
+| H | Side-Angle-Side | mid | 18 | 3 | 22 | -5 | +5 | launch | 28 | wall splats |
 | F+H | Proof By Contradiction | — | 24 total |  |  |  |  |  |  | feint: cancel with P, K, H or P+K during frames 6-18 |
-| F+H, H | Indirect Proof | mid | 14 | 3 | 22 | -8 | +4 | knockdown | 18 | bounds, enhance with P+K |
-| D+H | Pythagorean Launcher | mid | 15 | 4 | 23 | -15 | launch | launch | 17 | jump cancel on hit (UP) |
+| F+H, H | Indirect Proof | mid | 14 | 3 | 22 | -8 | +4 | knockdown | 26 | bounds, enhance with P+K |
+| D+H | Pythagorean Launcher | mid | 15 | 4 | 23 | -15 | launch | launch | 23 | jump cancel on hit (UP) |
 | P+K | Congruence Lock | throw | 12 | 2 | 26 |  |  |  | 30 | break with P |
-| B+P+K | Counterexample | throw | 12 | 2 | 26 |  |  |  | 33 | break with K |
+| B+P+K | Counterexample | throw | 12 | 2 | 26 |  |  |  | 46 | break with K |
 | AIR P | Angle Bisector | mid | 7 | 4 | 10 |  |  |  | 8 | hitstun 16, blockstun 10, landing 4 |
 | AIR K | Median Kick | mid | 9 | 5 | 12 |  |  |  | 11 | hitstun 18, blockstun 12, landing 6 |
 | AIR H | Centroid Spike | mid | 12 | 4 | 16 |  |  |  | 16 | bounds, hitstun 22, blockstun 14, landing 10 |
 | K (DOWN) | Rolling Zero | low | 14 | 3 | 22 | -14 | -2 | +1 | 10 | ducks highs |
 | P/H (DOWN) | Spring Theorem | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
 | T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
-| B+K, P | The Converse | mid | 8 | 3 | 18 | -6 | launch | launch | 16 | enhance with P+K |
-| D,D/F,F+P+K+H | Pop Quiz | mid | 18 | 3 | 52 | -35 | +5 | launch | 20 | wall splats |
+| B+K, P | The Converse | mid | 8 | 3 | 18 | -6 | launch | launch | 21 | enhance with P+K |
+| D,D/F,F+P+K+H | Pop Quiz | mid | 18 | 3 | 52 | -35 | +5 | launch | 28 | wall splats |
 | T (BY AN OBJECT) | Springboard | mid | 16 | 5 | 18 | -6 | knockdown | knockdown | 18 |  |
 | B+T (BY AN OBJECT) | Vault | — | 38 total |  |  |  |  |  |  |  |
 
 **Enhanced specials** (P+K during the startup, 1 bar):
 
-- **Supplementary Slide+** (`D/F+K`, then `P+K`): Two hits, launches — 2 hits of 12, hit: launch.
-- **Indirect Proof+** (`F+H, H`, then `P+K`): Armored, knockdown — 23 damage (from 18), hit: knockdown, armor on frames 1-14 (1 hit).
-- **The Converse+** (`B+K, P`, then `P+K`): Higher launch — 21 damage (from 16).
+- **Supplementary Slide+** (`D/F+K`, then `P+K`): Two hits, launches — 2 hits of 16, hit: launch.
+- **Indirect Proof+** (`F+H, H`, then `P+K`): Armored, knockdown — 34 damage (from 26), hit: knockdown, armor on frames 1-14 (1 hit).
+- **The Converse+** (`B+K, P`, then `P+K`): Higher launch — 27 damage (from 21).
 
 **Ultimate:** Pop Quiz — the ultimate key (`U` / `Numpad 0`) or `D, D/F, F + P+K+H`, with all three bars: he slams down a stack of papers: they are at a student desk with a quiz and a ticking timer, sweating; he snatches the paper, red-pens a giant F, and smacks them with the whole stack while the class goes wild. 4 hits, 32% of their health; blocked -35, whiffed 72 frames.
 
@@ -239,36 +239,36 @@ Sarcastic and funny. Taunts mid-combo. Relentless pressure.
 
 | Input | Move | Level | i | Active | Recovery | Block | Hit | Counter hit | Damage | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| P | First Term | high | 10 | 2 | 12 | +2 | +9 | +11 | 6 |  |
-| P,P | Second Term | high | 9 | 2 | 14 | -1 | +7 | +10 | 7 |  |
-| P,P,P | Third Term | mid | 8 | 2 | 16 | -4 | +5 | +9 | 8 |  |
+| P | First Term | high | 10 | 2 | 12 | +2 | +9 | +11 | 8 |  |
+| P,P | Second Term | high | 9 | 2 | 14 | -1 | +7 | +10 | 10 |  |
+| P,P,P | Third Term | mid | 8 | 2 | 16 | -4 | +5 | +9 | 11 |  |
 | P,P,H | Next Term | mid | 12 | 3 | 20 | -9 | knockdown | knockdown | 13 |  |
-| P,P,P,P | Nth Term | mid | 7 | 3 | 22 | -12 | knockdown | knockdown | 14 | enhance with P+K |
-| P,P,P,K | Divergent Low | low | 7 | 3 | 22 | -14 | +1 | knockdown | 11 | ducks highs |
-| F+P | Recursive Rush | mid | 13 | 3 | 15 | +1 | +5 | +9 | 10 | enhance with P+K |
-| K | Common Difference | mid | 12 | 3 | 17 | -3 | +5 | +9 | 12 |  |
-| D+K | Geometric Low | low | 15 | 3 | 19 | -10 | +1 | +6 | 9 | hits downed opponents, ducks highs |
+| P,P,P,P | Nth Term | mid | 7 | 3 | 22 | -12 | knockdown | knockdown | 20 | enhance with P+K |
+| P,P,P,K | Divergent Low | low | 7 | 3 | 22 | -14 | +1 | knockdown | 16 | ducks highs |
+| F+P | Recursive Rush | mid | 13 | 3 | 15 | +1 | +5 | +9 | 14 | enhance with P+K |
+| K | Common Difference | mid | 12 | 3 | 17 | -3 | +5 | +9 | 17 |  |
+| D+K | Geometric Low | low | 15 | 3 | 19 | -10 | +1 | +6 | 13 | hits downed opponents, ducks highs |
 | D/B+K | Divergent Sweep | low | 19 | 3 | 26 | -18 | knockdown | knockdown | 16 | ducks highs |
-| H | Partial Sum | mid | 17 | 3 | 18 | +2 | +7 | launch | 18 | wall splats, enhance with P+K |
-| F+H | Induction Step | mid | 20 | 3 | 20 | -5 | +4 | knockdown | 17 | bounds |
-| D+H | Fibonacci Uppercut | mid | 14 | 4 | 22 | -14 | launch | launch | 15 | jump cancel on hit (UP) |
-| P+K | Series Expansion | throw | 12 | 2 | 26 |  |  |  | 28 | break with P |
-| B+P+K | Telescoping Toss | throw | 12 | 2 | 26 |  |  |  | 32 | break with K |
+| H | Partial Sum | mid | 17 | 3 | 18 | +2 | +7 | launch | 24 | wall splats, enhance with P+K |
+| F+H | Induction Step | mid | 20 | 3 | 20 | -5 | +4 | knockdown | 23 | bounds |
+| D+H | Fibonacci Uppercut | mid | 14 | 4 | 22 | -14 | launch | launch | 21 | jump cancel on hit (UP) |
+| P+K | Series Expansion | throw | 12 | 2 | 26 |  |  |  | 39 | break with P |
+| B+P+K | Telescoping Toss | throw | 12 | 2 | 26 |  |  |  | 45 | break with K |
 | AIR P | First Difference | mid | 7 | 4 | 10 |  |  |  | 8 | hitstun 16, blockstun 10, landing 4 |
 | AIR K | Second Difference | mid | 9 | 5 | 12 |  |  |  | 11 | hitstun 18, blockstun 12, landing 6 |
 | AIR H | Summation Spike | mid | 12 | 4 | 16 |  |  |  | 16 | bounds, hitstun 22, blockstun 14, landing 10 |
 | K (DOWN) | Rolling Zero | low | 14 | 3 | 22 | -14 | -2 | +1 | 10 | ducks highs |
 | P/H (DOWN) | Spring Theorem | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
 | T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
-| D,D/F,F+P+K+H | Grading At 11 Pm | mid | 13 | 3 | 45 | -29 | +5 | +9 | 10 |  |
+| D,D/F,F+P+K+H | Grading At 11 Pm | mid | 13 | 3 | 45 | -29 | +5 | +9 | 14 |  |
 | T (BY AN OBJECT) | Springboard | mid | 16 | 5 | 18 | -6 | knockdown | knockdown | 18 |  |
 | B+T (BY AN OBJECT) | Vault | — | 38 total |  |  |  |  |  |  |  |
 
 **Enhanced specials** (P+K during the startup, 1 bar):
 
-- **Nth Term+** (`P,P,P,P`, then `P+K`): Three hits, wall splat — 3 hits of 9, wall splats.
-- **Recursive Rush+** (`F+P`, then `P+K`): Two hits — 2 hits of 9.
-- **Partial Sum+** (`H`, then `P+K`): Launches — 23 damage (from 18), hit: launch.
+- **Nth Term+** (`P,P,P,P`, then `P+K`): Three hits, wall splat — 3 hits of 13, wall splats.
+- **Recursive Rush+** (`F+P`, then `P+K`): Two hits — 2 hits of 12.
+- **Partial Sum+** (`H`, then `P+K`): Launches — 31 damage (from 24), hit: launch.
 
 **Ultimate:** Grading At 11 Pm — the ultimate key (`U` / `Numpad 0`) or `D, D/F, F + P+K+H`, with all three bars: cut to his desk at night (a lamp, cold coffee, a mountain of papers): he grades faster and faster and every red check mark is a hit; done, he sighs, adjusts his glasses and flicks the red pen at them. 15 hits, 32% of their health; blocked -29, whiffed 60 frames.
 
@@ -404,39 +404,39 @@ Fast, explosive grappler who closes distance quickly. Confident and focused.
 
 | Input | Move | Level | i | Active | Recovery | Block | Hit | Counter hit | Damage | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| P | Row Jab | high | 10 | 2 | 13 | +1 | +8 | +10 | 7 |  |
-| P,P | Column Elbow | high | 10 | 3 | 16 | -2 | +6 | +10 | 11 |  |
+| P | Row Jab | high | 10 | 2 | 13 | +1 | +8 | +10 | 8 |  |
+| P,P | Column Elbow | high | 10 | 3 | 16 | -2 | +6 | +10 | 12 |  |
 | P,P,H | Row Reduction | mid | 12 | 3 | 20 | -9 | knockdown | knockdown | 13 |  |
-| F,F+P | Augmented Charge | mid | 13 | 4 | 20 | -9 | knockdown | knockdown | 17 | enhance with P+K |
-| RUN, P | Row Operation | mid | 10 | 4 | 22 | -8 | knockdown | knockdown | 16 | enhance with P+K |
-| RUN, K | Elementary Knee | mid | 9 | 3 | 22 | -12 | launch | launch | 15 | enhance with P+K, jump cancel on hit (UP) |
-| RUN, D+K | Zero Vector | low | 10 | 6 | 24 | -16 | knockdown | knockdown | 13 | ducks highs |
-| RUN, H | Matrix Plancha | mid | 16 | 4 | 26 | -10 | knockdown | knockdown | 22 |  |
-| RUN, P+K | Gauss-Jordan | throw | 8 | 4 | 30 |  |  |  | 30 | unbreakable |
-| K | Pivot Knee | mid | 13 | 3 | 17 | -4 | +5 | +9 | 13 |  |
-| D+K | Lower Triangular | low | 15 | 3 | 20 | -11 | 0 | +6 | 10 | hits downed opponents, ducks highs |
+| F,F+P | Augmented Charge | mid | 13 | 4 | 20 | -9 | knockdown | knockdown | 18 | enhance with P+K |
+| RUN, P | Row Operation | mid | 10 | 4 | 22 | -8 | knockdown | knockdown | 17 | enhance with P+K |
+| RUN, K | Elementary Knee | mid | 9 | 3 | 22 | -12 | launch | launch | 16 | enhance with P+K, jump cancel on hit (UP) |
+| RUN, D+K | Zero Vector | low | 10 | 6 | 24 | -16 | knockdown | knockdown | 14 | ducks highs |
+| RUN, H | Matrix Plancha | mid | 16 | 4 | 26 | -10 | knockdown | knockdown | 24 |  |
+| RUN, P+K | Gauss-Jordan | throw | 8 | 4 | 30 |  |  |  | 32 | unbreakable |
+| K | Pivot Knee | mid | 13 | 3 | 17 | -4 | +5 | +9 | 14 |  |
+| D+K | Lower Triangular | low | 15 | 3 | 20 | -11 | 0 | +6 | 11 | hits downed opponents, ducks highs |
 | D/B+K | Null Space Sweep | low | 20 | 3 | 26 | -18 | knockdown | knockdown | 16 | ducks highs |
-| H | Row Reduction | mid | 18 | 3 | 21 | -4 | +6 | launch | 20 | wall splats |
-| F+H | Scalar Slam | mid | 21 | 3 | 21 | -6 | +3 | knockdown | 18 | bounds |
-| D+H | Transpose Toss | mid | 15 | 4 | 23 | -15 | launch | launch | 17 | jump cancel on hit (UP) |
-| P+K | Matrix Lock | throw | 12 | 2 | 26 |  |  |  | 34 | break with P |
-| B+P+K | Determinant Slam | throw | 12 | 2 | 26 |  |  |  | 38 | break with K |
-| F+P+K | Identity | throw | 16 | 3 | 32 |  |  |  | 32 | unbreakable |
+| H | Row Reduction | mid | 18 | 3 | 21 | -4 | +6 | launch | 22 | wall splats |
+| F+H | Scalar Slam | mid | 21 | 3 | 21 | -6 | +3 | knockdown | 19 | bounds |
+| D+H | Transpose Toss | mid | 15 | 4 | 23 | -15 | launch | launch | 18 | jump cancel on hit (UP) |
+| P+K | Matrix Lock | throw | 12 | 2 | 26 |  |  |  | 37 | break with P |
+| B+P+K | Determinant Slam | throw | 12 | 2 | 26 |  |  |  | 41 | break with K |
+| F+P+K | Identity | throw | 16 | 3 | 32 |  |  |  | 35 | unbreakable |
 | AIR P | Pivot Drop | mid | 7 | 4 | 10 |  |  |  | 8 | hitstun 16, blockstun 10, landing 4 |
 | AIR K | Eigen Kick | mid | 9 | 5 | 12 |  |  |  | 11 | hitstun 18, blockstun 12, landing 6 |
 | AIR H | Rank Spike | mid | 12 | 4 | 16 |  |  |  | 16 | bounds, hitstun 22, blockstun 14, landing 10 |
 | K (DOWN) | Rolling Zero | low | 14 | 3 | 22 | -14 | -2 | +1 | 10 | ducks highs |
 | P/H (DOWN) | Spring Theorem | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
 | T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
-| D,D/F,F+P+K+H | Max Incline | throw | 16 | 3 | 62 |  |  |  | 32 | unbreakable |
+| D,D/F,F+P+K+H | Max Incline | throw | 16 | 3 | 62 |  |  |  | 35 | unbreakable |
 | T (BY AN OBJECT) | Springboard | mid | 16 | 5 | 18 | -6 | knockdown | knockdown | 18 |  |
 | B+T (BY AN OBJECT) | Vault | — | 38 total |  |  |  |  |  |  |  |
 
 **Enhanced specials** (P+K during the startup, 1 bar):
 
-- **Augmented Charge+** (`F,F+P`, then `P+K`): Armored, launches — 22 damage (from 17), hit: launch, armor on frames 1-13 (1 hit).
-- **Row Operation+** (`RUN, P`, then `P+K`): Two hits, wall splat — 2 hits of 14, wall splats.
-- **Elementary Knee+** (`RUN, K`, then `P+K`): Higher launch — 20 damage (from 15).
+- **Augmented Charge+** (`F,F+P`, then `P+K`): Armored, launches — 23 damage (from 18), hit: launch, armor on frames 1-13 (1 hit).
+- **Row Operation+** (`RUN, P`, then `P+K`): Two hits, wall splat — 2 hits of 15, wall splats.
+- **Elementary Knee+** (`RUN, K`, then `P+K`): Higher launch — 21 damage (from 16).
 
 **Ultimate:** Max Incline — the ultimate key (`U` / `Numpad 0`) or `D, D/F, F + P+K+H`, with all three bars: cut to a 24-hour gym: he cranks a treadmill to max, sparks flying, speed climbing, bowl cut flapping; he launches off the end, smashes back into the stage, and finishes with a flying tackle and a slam. 2 hits, 32% of their health; a grab, so it can't be blocked.
 
@@ -462,42 +462,42 @@ Twenty-nine years at el camino. Teaches every math class. Never smiles. Never wa
 
 | Input | Move | Level | i | Active | Recovery | Block | Hit | Counter hit | Damage | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| P | Point | high | 9 | 2 | 15 | 0 | +7 | +10 | 8 |  |
-| P,P | Chain Rule | high | 10 | 2 | 17 | -3 | +6 | +9 | 10 | Chain Rule: on contact, cancels into any of his other moves (once a string) |
+| P | Point | high | 9 | 2 | 15 | 0 | +7 | +10 | 6 |  |
+| P,P | Chain Rule | high | 10 | 2 | 17 | -3 | +6 | +9 | 7 | Chain Rule: on contact, cancels into any of his other moves (once a string) |
 | P,P,H | Common Core | mid | 12 | 3 | 20 | -9 | knockdown | knockdown | 13 |  |
-| F+P | Distance Formula | mid | 14 | 3 | 19 | -5 | +4 | +9 | 13 | enhance with P+K |
-| F,F+P | Slope-Intercept | mid | 13 | 3 | 19 | -6 | +5 | launch | 17 | wall splats, enhance with P+K |
-| K | Tangent Line | mid | 13 | 3 | 18 | -4 | +4 | +9 | 14 |  |
-| F+K | Sine Wave | mid | 20 | 3 | 16 | -5 | +5 | knockdown | 15 | enhance with P+K, evades highs on frames 3-18 |
-| D+K | Floor Function | low | 14 | 3 | 20 | -12 | 0 | +6 | 11 | hits downed opponents, ducks highs |
+| F+P | Distance Formula | mid | 15 | 3 | 19 | -6 | +3 | +9 | 8 | enhance with P+K |
+| F,F+P | Slope-Intercept | mid | 13 | 3 | 19 | -6 | +5 | launch | 13 | wall splats, enhance with P+K |
+| K | Tangent Line | mid | 13 | 3 | 18 | -4 | +4 | +9 | 10 |  |
+| F+K | Sine Wave | mid | 20 | 3 | 16 | -5 | +5 | knockdown | 11 | enhance with P+K, evades highs on frames 3-18 |
+| D+K | Floor Function | low | 14 | 3 | 20 | -12 | 0 | +6 | 8 | hits downed opponents, ducks highs |
 | D/B+K | Limit To Zero | low | 20 | 3 | 26 | -18 | knockdown | knockdown | 16 | ducks highs |
-| H | Long Division | mid | 18 | 3 | 21 | -4 | +6 | launch | 21 | wall splats |
-| F+H | Quadratic Formula | mid | 22 | 3 | 20 | -7 | +3 | knockdown | 19 | bounds |
+| H | Long Division | mid | 18 | 3 | 21 | -4 | +6 | launch | 16 | wall splats |
+| F+H | Quadratic Formula | mid | 22 | 3 | 20 | -7 | +3 | knockdown | 15 | bounds |
 | B+H | Absolute Value | — | 29 total |  |  |  |  |  |  | parry, the counter hits at least as hard as what it caught |
-| D+H | Square Root | mid | 15 | 4 | 22 | -15 | launch | launch | 16 | jump cancel on hit (UP) |
-| P+K | Prime Factorization | throw | 12 | 2 | 26 |  |  |  | 34 | break with P |
-| B+P+K | Inverse Function | throw | 12 | 2 | 26 |  |  |  | 32 | break with K |
+| D+H | Square Root | mid | 15 | 4 | 22 | -15 | launch | launch | 12 | jump cancel on hit (UP) |
+| P+K | Prime Factorization | throw | 12 | 2 | 26 |  |  |  | 26 | break with P |
+| B+P+K | Inverse Function | throw | 12 | 2 | 26 |  |  |  | 24 | break with K |
 | AIR P | Rational Jab | mid | 7 | 4 | 10 |  |  |  | 8 | hitstun 16, blockstun 10, landing 4 |
 | AIR K | Radian Kick | mid | 9 | 5 | 12 |  |  |  | 11 | hitstun 18, blockstun 12, landing 6 |
 | AIR H | Vertical Asymptote | mid | 12 | 4 | 16 |  |  |  | 16 | bounds, hitstun 22, blockstun 14, landing 10 |
 | K (DOWN) | Rolling Zero | low | 14 | 3 | 22 | -14 | -2 | +1 | 10 | ducks highs |
 | P/H (DOWN) | Spring Theorem | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
 | T | Stare | — | 61 total |  |  |  |  |  |  | he doesn't taunt: he stares, for 25 meter; counter-hittable the whole time |
-| PARRY | |absolute Value| | mid | 6 | 3 | 18 | -6 | knockdown | knockdown | 16 |  |
-| AUTO (ONCE A ROUND) | Seen It All | mid | 5 | 3 | 16 | -4 | knockdown | knockdown | 18 | comes out on its own, once a round (see 29 Years) |
-| D,D/F,F+P+K+H | Tenure | mid | 14 | 3 | 49 | -35 | +4 | +9 | 13 |  |
+| PARRY | |absolute Value| | mid | 6 | 3 | 18 | -6 | knockdown | knockdown | 12 |  |
+| AUTO (ONCE A ROUND) | Seen It All | mid | 5 | 3 | 16 | -4 | knockdown | knockdown | 14 | comes out on its own, once a round (see 29 Years) |
+| D,D/F,F+P+K+H | Tenure | mid | 15 | 3 | 49 | -36 | +3 | +9 | 8 |  |
 | T (BY AN OBJECT) | Springboard | mid | 16 | 5 | 18 | -6 | knockdown | knockdown | 18 |  |
 | B+T (BY AN OBJECT) | Vault | — | 38 total |  |  |  |  |  |  |  |
 
 **Enhanced specials** (P+K during the startup, 1 bar):
 
-- **Distance Formula+** (`F+P`, then `P+K`): Two hits, wall splat — 2 hits of 11, wall splats.
-- **Slope-Intercept+** (`F,F+P`, then `P+K`): Armored, launches — 22 damage (from 17), hit: launch, armor on frames 1-13 (1 hit).
-- **Sine Wave+** (`F+K`, then `P+K`): Launches — 20 damage (from 15), hit: launch.
+- **Distance Formula+** (`F+P`, then `P+K`): Two hits, wall splat — 2 hits of 7, wall splats.
+- **Slope-Intercept+** (`F,F+P`, then `P+K`): Armored, launches — 17 damage (from 13), hit: launch, armor on frames 1-13 (1 hit).
+- **Sine Wave+** (`F+K`, then `P+K`): Launches — 14 damage (from 11), hit: launch.
 
 **Boss:** the final fight in arcade mode. Playable in training and versus from the start, and in arcade and VS CPU once arcade has been beaten.
 
-**Ultimate:** Tenure — the ultimate key (`U` / `Numpad 0`) or `D, D/F, F + P+K+H`, with all three bars: the stage goes dark but for a chalkboard; he writes one equation in silence while 29 years of classes flicker past, a hit landing with each year as the counter ticks up to 29; he caps the marker, turns around, and they are already down. 29 hits, 32% of their health; blocked -35, whiffed 65 frames.
+**Ultimate:** Tenure — the ultimate key (`U` / `Numpad 0`) or `D, D/F, F + P+K+H`, with all three bars: the stage goes dark but for a chalkboard; he writes one equation in silence while 29 years of classes flicker past, a hit landing with each year as the counter ticks up to 29; he caps the marker, turns around, and they are already down. 29 hits, 32% of their health; blocked -36, whiffed 66 frames.
 
 **KO finisher:** Class Dismissed — `D, B, H` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).
 

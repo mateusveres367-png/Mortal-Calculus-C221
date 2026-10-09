@@ -276,6 +276,8 @@ src/render/             fighter drawing, procedural motion (motion.js), stage, e
 src/scenes/             title (menu, options, attract demo), character select, stage select, the fight scene
                         (training, arcade, versus, attract) and the arcade ending
 tools/movelist.js       regenerates MOVES.md from the fighter data
+tools/combotable.js     regenerates the route tables in COMBOS.md
+tools/balance.js        headless Hard CPU vs Hard CPU matches: win rates, matchups, move use (see BALANCE.md)
 tests/sim.test.js       headless engine tests (node tests/sim.test.js)
 tests/smoke.js          optional browser smoke test over file:// (needs Playwright)
 ```
@@ -287,6 +289,7 @@ Playing needs nothing but a browser. For development:
 ```bash
 node tests/sim.test.js   # engine tests: frame data, hit levels, counter hits, sidestep, juggles, movement
 node tests/smoke.js      # optional: opens index.html from disk in headless Chromium (requires Playwright)
+node tools/balance.js 24 # self-playtest: every pairing, 24 matches each side, Hard CPU vs Hard CPU
 ```
 
 ## Tech stack
@@ -301,4 +304,5 @@ node tests/smoke.js      # optional: opens index.html from disk in headless Chro
 - [`ROSTER.md`](ROSTER.md) — the nine fighters: archetypes, looks, personalities, moves and victory lines
 - [`MOVES.md`](MOVES.md) — generated move lists with frame data and combo routes
 - [`COMBOS.md`](COMBOS.md) — every fighter's combo routes by difficulty, and what the combo feel pass changed
+- [`BALANCE.md`](BALANCE.md) — Hard CPU vs Hard CPU win rates before and after tuning, and what changed
 - [`CLAUDE.md`](CLAUDE.md) — working rules for AI-assisted development
