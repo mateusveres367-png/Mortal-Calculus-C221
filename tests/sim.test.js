@@ -1700,5 +1700,37 @@ defs.forEach(function (d) {
   });
 })();
 
+// Controls respond on the frame they're pressed: attacks, guard, crouch, sidestep,
+// walking and turning round all take effect in the step that reads the press.
+(function () {
+  defs.forEach(function (d) {
+    var tag = d.name + ' controls: ';
+    function fresh() { var m = setup(d, D, 120); for (var i = 0; i < 4; i++) m.step([raw({}), raw({})]); return m; }
+    var m = fresh(); m.step([raw({ p: true }), raw({})]);
+    check(tag + 'an attack starts on the press frame', m.fighters[0].state === 'attack' && m.fighters[0].moveFrame === 1, [m.fighters[0].state, m.fighters[0].moveFrame]);
+    m = fresh(); m.step([raw({ down: true }), raw({})]);
+    check(tag + 'crouching is immediate', m.fighters[0].state === 'crouch');
+    m = fresh(); m.step([raw({ ssIn: true }), raw({})]);
+    check(tag + 'sidestepping is immediate', m.fighters[0].state === 'sidestep');
+    m = fresh(); var x0 = m.fighters[0].x; m.step([raw({ right: true }), raw({})]);
+    check(tag + 'walking starts at full speed', m.fighters[0].state === 'walkF' && m.fighters[0].x > x0 && Math.abs(m.fighters[0].vx) >= d.walkF * 0.99, m.fighters[0].vx);
+    m = fresh(); m.step([raw({ up: true }), raw({})]);
+    check(tag + 'a jump starts at once', m.fighters[0].state === 'prejump');
+  });
+  // Turning round: the moment they're on the other side.
+  var m = setup(S, D, 60);
+  m.step([raw({}), raw({})]);
+  m.fighters[1].x = m.fighters[0].x - 30; // they've crossed over
+  m.step([raw({}), raw({})]);
+  check('controls: turning round is immediate', m.fighters[0].facing === -1 && m.fighters[1].facing === 1, [m.fighters[0].facing, m.fighters[1].facing]);
+  // Guard: holding back blocks an attack that lands the very next frame.
+  var g2 = setup(S, D, 40), r = [], jab = D.moves.jab;
+  for (var i = 0; i < 30; i++) {
+    g2.step([raw(i >= jab.startup - 2 ? { left: true } : {}), raw(i === 0 ? { p: true } : {})]);
+    r = r.concat(g2.events);
+  }
+  check('controls: back held just before the hit still guards', r.some(function (e) { return e.type === 'block' && e.defender === 0; }), r.map(function (e) { return e.type; }));
+})();
+
 console.log(passes + ' passed, ' + failures + ' failed');
 process.exit(failures ? 1 : 0);

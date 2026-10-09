@@ -621,6 +621,7 @@
       FG.Sfx.unlock();
       TAPS[e.keyCode] = true;
       CODES[e.code] = true; CODE_TAPS[e.code] = true; // the ultimate keys are read by code (remappable)
+      if (!e.repeat) self.pressed = true; // a fresh press: run the next tick a little early
       if (self.mode === 'attract') { self.toTitle(); return; } // any key ends the demo
       if (self.menu.open) { self.menu.key(e.code); return; }
       if (self.intro) {
@@ -703,6 +704,10 @@
     // The training menu pauses the fight.
     var rate = (this.training.slow && !this.intro && !this.win ? 0.25 : 1) * (this.slowmo ? this.slowmo.scale : 1);
     this.acc = this.menu.open ? 0 : this.acc + Math.min(delta, 100) * rate;
+    // A key just went down: if the next tick is due within half a step, run it now so
+    // the press reaches the fight this frame rather than the next.
+    if (this.pressed && rate === 1 && this.acc >= STEP_MS * 0.5 && this.acc < STEP_MS) this.acc = STEP_MS;
+    this.pressed = false;
     while (this.acc >= STEP_MS) {
       this.tick();
       this.acc -= STEP_MS;

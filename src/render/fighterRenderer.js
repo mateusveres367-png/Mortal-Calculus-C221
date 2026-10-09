@@ -135,8 +135,11 @@
   }
 
   // Smoothly blend toward the target, except during attacks and on fresh hits (snap
-  // for impact). Then the procedural motion layer (motion.js) adds anticipation,
-  // weight shift, planted feet and reactions. opts.frozen: hitstop is on.
+  // for impact). Defence and movement (guard, crouch, sidestep, dashes, jumps) blend
+  // in almost at once on their first frames, so the controls never look late. Then the
+  // procedural motion layer (motion.js) adds anticipation, weight shift, planted feet
+  // and reactions. opts.frozen: hitstop is on.
+  var QUICK = { blockstun: 1, crouch: 1, sidestep: 1, dash: 1, backdash: 1, prejump: 1, run: 1, land: 1, walkF: 1, walkB: 1, idle: 1 };
   FG.updatePose = function (f, t, opts) {
     // LOPEZ squints while his parry is up, before he counters.
     if (f.state === 'attack' && f.move && f.move.parry && f.def.parryFace) f._face = { type: f.def.parryFace, t: 2 };
@@ -146,7 +149,7 @@
     var snap = !f._override && (f.state === 'attack' || f.state === 'juggle' || f.state === 'thrown' || f.state === 'wallsplat' ||
       ((f.state === 'hitstun' || f.state === 'guardbreak') && f.stateFrame <= 1));
     if (!f._base || snap) f._base = target.slice();
-    else f._base = lerp(f._base, target, f._override ? 0.6 : 0.45);
+    else f._base = lerp(f._base, target, f._override ? 0.6 : QUICK[f.state] && f.stateFrame <= 2 ? 0.8 : 0.55);
     f._pose = FG.applyMotion ? FG.applyMotion(f, f._base, opts) : f._base;
   };
 
