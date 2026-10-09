@@ -20,6 +20,10 @@
     idle: stance,
     stand: stand,
     // Arms folded; the stare; checking his watch; walking away.
+    // Tenure (the ultimate): writing on the board, then capping the marker.
+    write1: R({ hip: [0, 53], lean: 2, neck: 6, fa: { hand: [20, 98] }, ba: [-94, -90], fl: { foot: [5, 0] }, bl: { foot: [-5, 0] } }),
+    write2: R({ hip: [0, 53], lean: 3, neck: 8, fa: { hand: [27, 92] }, ba: [-94, -90], fl: { foot: [5, 0] }, bl: { foot: [-5, 0] } }),
+    cap: R({ hip: [0, 53], lean: 0, neck: 4, fa: { hand: [13, 76] }, ba: { hand: [11, 78] }, fl: { foot: [5, 0] }, bl: { foot: [-5, 0] } }),
     folded: R({ hip: [0, 53], lean: 0, fa: { hand: [-1, 80] }, ba: { hand: [10, 80] }, fl: { foot: [4, 0] }, bl: { foot: [-4, 0] } }),
     stare: R({ hip: [0, 53], lean: -1, neck: -2, fa: [-88, -92], ba: [-92, -88], fl: { foot: [5, 0] }, bl: { foot: [-5, 0] } }),
     watch: R({ hip: [0, 53], lean: 2, neck: 8, fa: { hand: [8, 72] }, ba: { hand: [14, 76] }, fl: { foot: [4, 0] }, bl: { foot: [-4, 0] } }),
@@ -114,8 +118,8 @@
     stringH: 'COMMON CORE', // P, P, H: the universal string ender (see FG.defineFighter)
     cutIn: { a: 0x4a1a7a, b: 0xffd23f }, // purple and gold
     finisher: { name: 'CLASS DISMISSED', input: 'D, B, H' },
-    ultimate: { name: 'TENURE', text: 'time freezes, chalkboard flashbacks flicker past labelled with the years, then 29 rapid hits with a counter ticking up to 29', from: 'fP',
-      len: 250, hits: (function () { var h = []; for (var k = 0; k < 29; k++) h.push(84 + k * 4); return h; })(), end: { gap: 92, down: true } },
+    ultimate: { name: 'TENURE', text: 'the stage goes dark but for a chalkboard; he writes one equation in silence while 29 years of classes flicker past, a hit landing with each year as the counter ticks up to 29; he caps the marker, turns around, and they are already down', from: 'fP',
+      len: 330, hits: (function () { var h = []; for (var k = 0; k < 29; k++) h.push(44 + k * 7); return h; })(), end: { gap: 92, down: true } },
     name: 'WILSON', archetype: 'VETERAN MASTER', theme: 'EVERY SUBJECT',
     style: 'LONG-LIMBED, EFFICIENT, SMOOTH', signatureMechanic: '29 YEARS',
     signatureText: 'faster in round 2, stronger in round 3; once a round, Seen It All counters the move you have used most',

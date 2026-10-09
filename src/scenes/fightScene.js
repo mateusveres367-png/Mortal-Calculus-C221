@@ -90,13 +90,9 @@
     this.finFront = this.add.graphics().setDepth(0.6);
     this.finScreen = this.add.graphics().setScrollFactor(0).setDepth(44);
     this.finTexts = [0, 1, 2].map(function () { return FG.text(this, 0, 0, '', 'w', 3).setOrigin(0.5, 0.5).setDepth(46).setVisible(false); }, this);
-    // Ultimates: a layer over everything on screen (PEDERSEN's cracked glass), DIAGRAM
-    // VIEW (the chalkboard, chalk outlines of the fighters, the diagram) and text.
+    // Ultimates: a layer over everything on screen, and text.
     this.ultTop = this.add.graphics().setScrollFactor(0).setDepth(45.5);
     this.ultGhost = this.add.graphics().setDepth(-0.2).setAlpha(0.4); // afterimages on an ultimate's set
-    this.diagG = this.add.graphics().setScrollFactor(0).setDepth(44.5);
-    this.diagFig = this.add.graphics().setScrollFactor(0).setDepth(44.6);
-    this.diagTop = this.add.graphics().setScrollFactor(0).setDepth(44.7);
     this.ultTexts = []; for (var ut = 0; ut < 21; ut++) this.ultTexts.push(FG.text(this, 0, 0, '', 'w', 2).setOrigin(0.5, 0.5).setDepth(47).setVisible(false));
     this.finishWin = null;  // { wi, t, len, tokens, prev } the input window after the final K.O.
     this.finisher = null;   // { fx, script, t, len } the cinematic
@@ -138,7 +134,6 @@
     this.ult = null;      // { fx, script, wi, t } an ultimate's cinematic (src/render/ultimates.js)
     this.ultCam = null;   // { x, y, zoom, rot, k, cut } where the ultimate points the camera (fx.cam)
     this._ucam = null;    // the camera easing toward it
-    this.diagram = null;  // { spec, t, len } a DIAGRAM VIEW freeze frame
     this.ultFlash = null; // { t, wi, color } the flash as an ultimate starts
     this.cutinUsed = [false, false]; // one cut-in per combo
     this.cutinCool = 0;              // ticks before another may play
@@ -770,12 +765,6 @@
     var m = this.match, f = m.fighters;
     // A cut-in freezes the fight while it plays (presses still buffer: TAPS are kept).
     if (this.cutin.busy()) { this.cutin.tick(); this.tickCount++; this.stage.update(); return; }
-    // So does DIAGRAM VIEW.
-    if (this.diagram) {
-      this.tickCount++;
-      if (++this.diagram.t >= this.diagram.len) this.diagram = null;
-      return;
-    }
     if (this.cutinCool > 0) this.cutinCool--;
     var raw1 = this.inputFor(0), raw2 = this.inputFor(1);
     TAPS = {}; CODE_TAPS = {}; // taps since the last tick have been read
@@ -1116,7 +1105,7 @@
 
     g.clear();
     this.drawProps();
-    if (!(this.ult && this.ult.fx.cutaway)) this.drawCars(g); // a cutaway is somewhere else
+    if (!(this.ult && (this.ult.fx.cutaway || this.ult.fx.hideCars))) this.drawCars(g); // a cutaway is somewhere else
     this.effects.drawBack(g);
     this.ghosts.clear();
     for (var gi = 0; gi < 2; gi++) {
@@ -1208,7 +1197,7 @@
 
   // Draw a fighter where the screen wants them: an ultimate can move, lift, turn,
   // flip or shrink them on screen only (_drawX, _drawY, _drawFacing, _drawRot,
-  // _drawScale). opts.screen: draw on a screen layer (DIAGRAM VIEW), zoom included.
+  // _drawScale, _drawGround). opts.screen: draw on a screen layer, zoom included.
   FightScene.prototype.drawFigure = function (g, fi, opts) {
     opts = Object.assign({}, opts);
     if (opts.x == null && fi._drawX != null) opts.x = fi._drawX;
@@ -1275,16 +1264,10 @@
     var f = this.match.fighters;
     FG.clearUltimateDraw(f);
     if (this.ult && this.ult.fx.speaker) this.speech.hide();
-    this.ult = null; this.diagram = null; this.ultCam = null;
+    this.ult = null; this.ultCam = null;
     if (this._ucam) this._ucam.out = ULT_CAM_OUT;
     this.ultTexts.forEach(function (t) { t.setVisible(false); });
     if (f[ev.defender].ko) this.hud.koBanner(ev.attacker);
-  };
-
-  // DIAGRAM VIEW: the fight freezes on a chalkboard drawing of the hit.
-  FightScene.prototype.startDiagram = function (spec) {
-    this.diagram = { spec: spec, t: 0, len: spec.len || 54 };
-    FG.Sfx.chalk();
   };
 
   // The ultimate's camera eases toward where its script points it (fx.cam), once
@@ -1304,7 +1287,7 @@
   };
 
   FightScene.prototype.drawUltimate = function (camX, onScreen) {
-    this.ultTop.clear(); this.ultGhost.clear(); this.diagG.clear(); this.diagFig.clear(); this.diagTop.clear();
+    this.ultTop.clear(); this.ultGhost.clear();
     this.ultTexts.forEach(function (t) { t.setVisible(false); });
     var cam = this.cameras.main;
     // An ultimate starting: the stage goes dark behind the fighters for a moment.
@@ -1316,9 +1299,8 @@
     var u = this.ult;
     if (!u) return;
     [this.finBack, this.finFront, this.finScreen, this.ultTop].forEach(function (g) { g.setAlpha(1); });
-    if (!this.diagram) u.script.draw(u.fx, u.t);
+    u.script.draw(u.fx, u.t);
     if (u.script.drawTop) u.script.drawTop(u.fx, u.t);
-    if (this.diagram) FG.drawDiagram(this, this.diagram);
     var sp = u.fx.speaker;
     if (sp) this.speech.draw(sp, camX, onScreen(sp._drawX != null ? sp._drawX : sp.x));
   };

@@ -19,6 +19,10 @@
     stand: stand,
     knuckles: R({ hip: [0, 46], lean: 2, fa: { hand: [14, 70] }, ba: { hand: [10, 70] }, fl: { foot: [6, 0] }, bl: { foot: [-6, 0] } }),
     stretch: R({ hip: [0, 46], lean: -4, fa: [85, 95], ba: [95, 92], fl: { foot: [6, 0] }, bl: { foot: [-6, 0] } }),
+    // Max Incline (the ultimate): flying off the treadmill, the flying tackle.
+    superman: R({ hip: [0, 46], lean: 70, neck: -30, fa: [10, 12], ba: [16, 18], fl: [-150, -165], bl: [-165, -175] }),
+    pbomb: R({ hip: [8, 28], lean: 44, neck: 10, fa: [-24, -58], ba: [-30, -62], fl: { foot: [22, 0] }, bl: { foot: [-14, 0] } }),
+    tackle_c: R({ hip: [0, 32], lean: 30, fa: { hand: [20, 50] }, ba: { hand: [14, 46] }, fl: { foot: [20, 0] }, bl: { foot: [-20, 0] } }),
     hairflip: R({ hip: [0, 46], lean: 14, neck: 20, fa: [60, 140], ba: [-96, -92], fl: { foot: [6, 0] }, bl: { foot: [-6, 0] } }),
     hairflip2: R({ hip: [0, 46], lean: -14, neck: -24, fa: [80, 160], ba: [-96, -92], fl: { foot: [6, 0] }, bl: { foot: [-6, 0] } }),
     pump: R({ hip: [0, 46], lean: 0, fa: [70, 100], ba: [-96, -92], fl: { foot: [6, 0] }, bl: { foot: [-6, 0] } }),
@@ -110,7 +114,7 @@
     // KO finisher: after winning the final round, this input within 2 seconds of the K.O.
     finisher: { name: 'CARDIO FINALE', input: 'F, D, F, P' },
     // Ultimate (D, D/F, F + P+K+H, three bars): a cinematic in src/render/ultimates.js.
-    ultimate: { name: 'MATRIX MULTIPLICATION', text: 'he grabs them and slams them across the stage in a 3x3 grid, row by column, then flips his hair', from: 'cmdGrab', len: 250, hits: [30, 46, 62, 84, 100, 116, 138, 154, 170], end: { gap: 70, down: true } },
+    ultimate: { name: 'MAX INCLINE', text: 'cut to a 24-hour gym: he cranks a treadmill to max, sparks flying, speed climbing, bowl cut flapping; he launches off the end, smashes back into the stage, and finishes with a flying tackle and a slam', from: 'cmdGrab', len: 300, hits: [170, 214], weights: [2, 4], end: { gap: 60, down: true } },
     name: 'RAMOS', archetype: 'GRAPPLER', theme: 'MATRICES',
     style: 'WRESTLER', signatureMechanic: 'CARDIO',
     signatureText: 'he never slows down: the fastest walk and dash, chained dashes, a guard that recovers twice as fast, and a run he can keep up for as long as he likes (dash, then hold forward), with a tackle, a running knee, a slide, a plancha and a running command grab out of it',

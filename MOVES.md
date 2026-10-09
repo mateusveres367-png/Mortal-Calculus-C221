@@ -36,7 +36,7 @@ Calm and friendly, but every hit is heavy. Slow, patient, devastating.
 | K (DOWN) | Rolling Zero | low | 14 | 3 | 22 | -14 | -2 | +1 | 10 | ducks highs |
 | P/H (DOWN) | Spring Theorem | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
 | T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
-| D,D/F,F+P+K+H | Exponential Overdrive | mid | 21 | 4 | 50 | -29 | +8 | launch | 28 | wall splats, armor: absorbs 1 hit on frames 6-20 |
+| D,D/F,F+P+K+H | Horsepower | mid | 21 | 4 | 50 | -29 | +8 | launch | 28 | wall splats, armor: absorbs 1 hit on frames 6-20 |
 | T (BY AN OBJECT) | Springboard | mid | 16 | 5 | 18 | -6 | knockdown | knockdown | 18 |  |
 | B+T (BY AN OBJECT) | Vault | — | 38 total |  |  |  |  |  |  |  |
 
@@ -46,9 +46,9 @@ Calm and friendly, but every hit is heavy. Slow, patient, devastating.
 - **Common Log+** (`F,F+P`, then `P+K`): Armored, wall splat — 26 damage (from 20), armor on frames 1-14 (1 hit), wall splats.
 - **Exponential Haymaker+** (`F+H`, then `P+K`): Absorbs two hits, launches — 47 damage (from 36), hit: launch, armor on frames 1-26 (2 hits).
 
-**Ultimate:** Exponential Overdrive — the ultimate key (`U` / `Numpad 0`) or `D, D/F, F + P+K+H`, with all three bars: off come the sunglasses; three punches worth 2, 4 and 8, and the last cracks the screen. 3 hits, 32% of their health; blocked -29, whiffed 74 frames.
+**Ultimate:** Horsepower — the ultimate key (`U` / `Numpad 0`) or `D, D/F, F + P+K+H`, with all three bars: on go the sunglasses; he gets into his red sports car, revs it, and drives straight across the stage into them; they bounce off the hood, the car skids to a stop, and he leans out of the window with his line. 2 hits, 32% of their health; blocked -29, whiffed 74 frames.
 
-**KO finisher:** Horse To Water — `B, F, H` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).
+**KO finisher:** Escape Velocity — `B, F, H` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).
 
 **Combo routes** (tested in `tests/sim.test.js`):
 
@@ -428,7 +428,7 @@ Fast, explosive grappler who closes distance quickly. Confident and focused.
 | K (DOWN) | Rolling Zero | low | 14 | 3 | 22 | -14 | -2 | +1 | 10 | ducks highs |
 | P/H (DOWN) | Spring Theorem | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
 | T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
-| D,D/F,F+P+K+H | Matrix Multiplication | throw | 16 | 3 | 62 |  |  |  | 32 | unbreakable |
+| D,D/F,F+P+K+H | Max Incline | throw | 16 | 3 | 62 |  |  |  | 32 | unbreakable |
 | T (BY AN OBJECT) | Springboard | mid | 16 | 5 | 18 | -6 | knockdown | knockdown | 18 |  |
 | B+T (BY AN OBJECT) | Vault | — | 38 total |  |  |  |  |  |  |  |
 
@@ -438,7 +438,7 @@ Fast, explosive grappler who closes distance quickly. Confident and focused.
 - **Row Operation+** (`RUN, P`, then `P+K`): Two hits, wall splat — 2 hits of 14, wall splats.
 - **Elementary Knee+** (`RUN, K`, then `P+K`): Higher launch — 20 damage (from 15).
 
-**Ultimate:** Matrix Multiplication — the ultimate key (`U` / `Numpad 0`) or `D, D/F, F + P+K+H`, with all three bars: he grabs them and slams them across the stage in a 3x3 grid, row by column, then flips his hair. 9 hits, 32% of their health; a grab, so it can't be blocked.
+**Ultimate:** Max Incline — the ultimate key (`U` / `Numpad 0`) or `D, D/F, F + P+K+H`, with all three bars: cut to a 24-hour gym: he cranks a treadmill to max, sparks flying, speed climbing, bowl cut flapping; he launches off the end, smashes back into the stage, and finishes with a flying tackle and a slam. 2 hits, 32% of their health; a grab, so it can't be blocked.
 
 **KO finisher:** Cardio Finale — `F, D, F, P` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).
 
@@ -497,7 +497,7 @@ Twenty-nine years at el camino. Teaches every math class. Never smiles. Never wa
 
 **Boss:** the final fight in arcade mode. Playable in training and versus from the start, and in arcade and VS CPU once arcade has been beaten.
 
-**Ultimate:** Tenure — the ultimate key (`U` / `Numpad 0`) or `D, D/F, F + P+K+H`, with all three bars: time freezes, chalkboard flashbacks flicker past labelled with the years, then 29 rapid hits with a counter ticking up to 29. 29 hits, 32% of their health; blocked -35, whiffed 65 frames.
+**Ultimate:** Tenure — the ultimate key (`U` / `Numpad 0`) or `D, D/F, F + P+K+H`, with all three bars: the stage goes dark but for a chalkboard; he writes one equation in silence while 29 years of classes flicker past, a hit landing with each year as the counter ticks up to 29; he caps the marker, turns around, and they are already down. 29 hits, 32% of their health; blocked -35, whiffed 65 frames.
 
 **KO finisher:** Class Dismissed — `D, B, H` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).
 

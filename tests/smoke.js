@@ -231,7 +231,6 @@ try { playwright = require('playwright'); } catch (e) {
       s.tick(); s.render();
       if (s.ult && s.cutin.busy()) out.cutin = true;
       if (s.ult && s._ucam && s.ultCam) out.camera = true;
-      if (s.diagram) out.camera = true; // (an ultimate not yet reworked: DIAGRAM VIEW)
       if (s.ultTexts.some(function (x) { return x.visible; })) out.texts = true;
       if (out.cutin && !s.ult && !m.cinematic) out.ended = true;
     }

@@ -322,6 +322,7 @@
   // so dashes, jumps and landings show), and the bottom edge flicks outward on throws
   // and hair flips. Points are in head space (facing right), mirrored by dir.
   function bowlFlick(f) {
+    if (f._hairFlick != null) return f._hairFlick; // set by a cinematic (flapping on a treadmill)
     if (f.state === 'throwing' || f.state === 'thrown') return 1;
     var o = f._override;
     if (!o) return 0;

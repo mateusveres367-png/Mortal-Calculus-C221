@@ -294,35 +294,31 @@
     return { x: x, y: y };
   }
 
-  // PEDERSEN — Horse to Water: he loosens his tie, one massive Exponential Haymaker,
-  // and they fly into his red sports car and set off the alarm.
+  // PEDERSEN — Escape Velocity: he loosens his tie, one massive Exponential Haymaker
+  // sends them up and off the top of the screen, and they twinkle out like a star.
   FG.FINISHERS.pedersen = {
-    len: 280,
-    start: function (fx) {
-      var wall = fx.dir > 0 ? C.WALL_R : C.WALL_L;
-      fx.s.carX = wall - fx.dir * 90;
-      fx.s.from = fx.l.x;
-    },
+    len: 260,
+    start: function (fx) { fx.s.from = fx.l.x; },
     step: function (fx, t) {
       var w = fx.w, l = fx.l, s = fx.s;
       if (t === 1) { fx.anim(w, [[1, 'stand'], [10, 'tie'], [24, 'tie2'], [36, 'tie'], [50, 'idle']]); fx.anim(l, FG.dazedAnim, true); }
       if (t === 56) fx.anim(w, [[1, 'hay_c'], [16, 'hay_x'], [50, 'hay_x'], [70, 'idle']]);
-      if (t === 72) { fx.hit(l, 'power', { ch: true, shake: 0.03 }); fx.flash(0xffffff, 0.8); fx.pose(l, 'juggle'); fx.slow(36, 0.3); fx.label('EXPONENTIAL!'); }
-      if (t > 72 && t <= 112) {
-        var u = (t - 72) / 40;
-        l.x = s.from + (s.carX - s.from) * u; l.y = 40 + Math.sin(u * Math.PI) * 70;
-      }
-      if (t === 112) { l.y = 40; fx.pose(l, 'down'); FG.Sfx.play({ type: 'wallsplat' }); fx.shake(0.025); s.alarm = t; }
-      if (t > 112 && t < 140) l.y = Math.max(0, l.y - 1.5);
-      if (s.alarm && (t - s.alarm) % 16 === 0 && t - s.alarm < 150) FG.Sfx.alarm((t - s.alarm) % 32 === 0);
-      if (t === 130) fx.anim(w, [[1, 'stand'], [10, 'calm'], [60, 'calm']], true);
-      if (t === 136) fx.say(w, "You can lead a horse to water, but you can't make them drink.", 140);
+      if (t === 72) { fx.hit(l, 'power', { ch: true, shake: 0.03 }); fx.flash(0xffffff, 0.8); fx.pose(l, 'juggle'); fx.slow(30, 0.3); fx.label('ESCAPE VELOCITY!'); }
+      if (t > 72 && t <= 120) { var u = (t - 72) / 48; l.x = s.from + fx.dir * 90 * u; l.y = 40 + u * u * 420; }
+      if (t === 120) { l._hidden = true; s.star = t; FG.Sfx.play({ type: 'parry' }); }
+      if (t === 150) fx.anim(w, [[1, 'idle'], [10, 'tie'], [30, 'tie2'], [44, 'stand'], [60, 'calm']]);
+      if (t === 176) fx.say(w, 'Next.', 70);
+      if (t === 240) { l._hidden = false; l.y = 0; l.x = s.from + fx.dir * 90; fx.pose(l, 'down'); }
     },
     draw: function (fx, t) {
-      var s = fx.s, lights = s.alarm && t > s.alarm ? ((t - s.alarm) % 16 < 8 ? 1 : 0) : 0, bump = s.alarm && t - s.alarm < 10 ? Math.sin((t - s.alarm) * 1.5) * 2 : 0;
-      FG.drawCar(fx.gb, s.carX, GY - 26 + bump, { scale: 0.82, facing: -fx.dir, lights: lights });
-      if (lights) bigText(fx, 0, 'WEE-OO WEE-OO', fx.sx(s.carX), GY - 90, 0xff4a3d, 2, -6);
-      else if (!s.alarm || t - s.alarm > 150) fx.texts[0].setVisible(false);
+      var s = fx.s;
+      // A twinkle high in the sky where they went.
+      if (s.star && t - s.star < 60) {
+        var x = fx.sx(s.from + fx.dir * 90), y = 84, r = 10 * Math.sin((t - s.star) / 60 * Math.PI), g = fx.gs;
+        g.fillStyle(0xffffff, 1); g.fillTriangle(x - r, y, x + r, y, x, y - r * 2.4); g.fillTriangle(x - r, y, x + r, y, x, y + r * 2.4);
+        g.fillTriangle(x, y - r, x, y + r, x - r * 2.4, y); g.fillTriangle(x, y - r, x, y + r, x + r * 2.4, y);
+        bigText(fx, 0, 'PING!', x + fx.dir * 40, y + 30, 0xffd23f, 2, -6);
+      } else fx.texts[0].setVisible(false);
     }
   };
 

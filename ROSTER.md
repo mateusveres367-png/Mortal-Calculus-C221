@@ -176,6 +176,8 @@ Every fighter needs unique normals, launcher, throw, combo routes, stance, idle 
 
 **Signature — Exponential Armor:** his heavy attacks (Base Hook, the Exponential Haymaker, Order of Magnitude) absorb one hit during their windup and keep going (he still takes some damage; throws go through). Charging Order of Magnitude all the way makes it absorb two.
 
+**Ultimate — Horsepower:** he puts on his sunglasses, gets into his red sports car, revs the engine and drives straight across the stage into the opponent, who bounces off the hood cartoon-style. The car skids to a stop, and he leans out of the window: "You can lead a horse to water, but you can't make them drink."
+
 **Look:** Broad and solid. Slicked-back brown hair, a short gray-brown beard, light blue eyes and a friendly smile. Signature red dress shirt with a black tie, sleeves rolled, and a pen in the chest pocket.
 
 **Personality:** Calm and friendly, but every hit is heavy. Slow, patient, and devastating when he connects.
@@ -206,6 +208,8 @@ Every fighter needs unique normals, launcher, throw, combo routes, stance, idle 
 
 **Signature — Cardio:** he never slows down. He can run for as long as he likes, has the fastest movement in the game (walk, dash, chained dashes), his guard recovers twice as fast, and he has a running command grab.
 
+**Ultimate — Max Incline:** cut to a 24-hour gym (no real logos). He's on a treadmill cranked to max, sparks flying, the speed climbing, his bowl cut flapping. He launches off the end of the treadmill, smashes back into the stage, and finishes with a flying tackle and a slam.
+
 **Look:** Lean and athletic. A thick, medium-length black bowl cut that covers his whole head like a helmet: straight bangs just above the eyebrows, sides over his ears hanging straight to the jaw with a rounded, even edge (a mushroom from the side). It bounces on every dash and jump, and the edge flicks out on throws and hair flips. Light stubble and an easy smile. Wears an olive-brown heathered polo and a red-and-white wristband (he's Peruvian).
 
 **Personality:** A fast, explosive grappler who closes distance quickly. Confident and focused. A cardio machine: never gets tired, and dashes faster than any other grappler.
@@ -232,7 +236,7 @@ He teaches all the math classes and has been at El Camino for 29 years. **The bo
 
 **Taunt:** WILSON doesn't taunt. His taunt button is **Stare**: he stands still and stares for a second, gaining a little meter. It leaves him open, same as a taunt.
 
-**Ultimate — Tenure:** time freezes, chalkboard flashbacks flicker by labelled with years, then 29 rapid hits with a counter ticking up to 29.
+**Ultimate — Tenure:** the stage goes dark except for a chalkboard. He writes one equation in silence while flashbacks of 29 years of classes flicker by, a hit landing on each year as the counter ticks up to 29. He caps the marker and turns around, and the opponent is already down.
 
 **KO finisher — Class Dismissed:** he checks his watch, one clean strike, the school bell rings, the opponent drops, and he walks off without looking back.
 

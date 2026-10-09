@@ -22,6 +22,9 @@
     tie2: P(stand, { fe: [12, 70], fh: [8, 76], be: [-2, 58], bh: [2, 48], head: [2, 87] }),
     wave: P(stand, { fe: [16, 78], fh: [22, 94] }),
     calm: P(stand, { head: [5, 85] }),
+    // Horsepower (the ultimate): sunglasses on, then leaning out of the driver's window.
+    shades_on: R({ hip: [0, 47], lean: -2, neck: -6, fa: { hand: [12, 86], bend: -1 }, ba: [-96, -92], fl: { foot: [6, 0] }, bl: { foot: [-6, 0] } }),
+    lean_out: R({ hip: [0, 24], lean: 34, neck: -10, fa: [-14, -100], ba: { hand: [22, 40] }, fl: [0, -90], bl: [6, -86] }),
     // Title screen: leaning back on the hood of his car, arms crossed, ankles crossed;
     // now and then a puff on the cigar.
     lean: P('idle', { hip: [-5, 40], chest: [-8, 66], head: [-8, 78], fe: [0, 57], fh: [-12, 60], be: [-15, 58], bh: [-3, 61], fk: [4, 21], ff: [10, 0], bk: [2, 20], bf: [12, 1] }),
@@ -118,9 +121,9 @@
     stringH: 'EXPONENT RULE', // P, P, H: the universal string ender (see FG.defineFighter)
     cutIn: { a: 0xc8202a, b: 0x111111 }, // cut-in colours: main and accent
     // KO finisher: after winning the final round, this input within 2 seconds of the K.O.
-    finisher: { name: 'HORSE TO WATER', input: 'B, F, H' },
+    finisher: { name: 'ESCAPE VELOCITY', input: 'B, F, H' },
     // Ultimate (D, D/F, F + P+K+H, three bars): a cinematic in src/render/ultimates.js.
-    ultimate: { name: 'EXPONENTIAL OVERDRIVE', text: 'off come the sunglasses; three punches worth 2, 4 and 8, and the last cracks the screen', from: 'heavy', len: 250, hits: [74, 118, 176], weights: [2, 4, 8], end: { gap: 120, launch: 7, height: 40 } },
+    ultimate: { name: 'HORSEPOWER', text: 'on go the sunglasses; he gets into his red sports car, revs it, and drives straight across the stage into them; they bounce off the hood, the car skids to a stop, and he leans out of the window with his line', from: 'heavy', len: 310, hits: [124, 166], weights: [4, 1], end: { gap: 110, down: true } },
     look: {
       skin: 0xe2ad85, eyeColor: 0x7cc4f0,
       hair: { style: 'slick', color: 0x5a3c24 },

@@ -537,7 +537,7 @@
     }
   };
 
-  // Chalk on a board: a few short scratches (DIAGRAM VIEW, proofs being written).
+  // Chalk on a board: a few short scratches.
   Sfx.chalk = function () {
     if (!Sfx.ctx || Sfx.muted) return;
     burst(0.07, 5200, 6, 0.16, 'bandpass');

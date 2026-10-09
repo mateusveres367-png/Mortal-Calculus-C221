@@ -140,15 +140,16 @@ Every fighter uses the same input layout. What each input does, and its frame da
 
 - **Grade meter:** three bars under your health bar, graded **C**, **B** and **A**. It fills when you land hits, when you block and when you take damage, and a little faster (×1.25) while you're behind on health. A bar chimes and flashes when it fills, and all three full pulses. The meter carries over between rounds.
 - **Enhanced specials (1 bar):** press `P`+`K` during the startup of a special to power it up: more damage plus extra hits, armor, a launch or a wall splat, depending on the move. The fighter flashes in their colour and a `+` pops onto the move's name. Every fighter has three; they're listed in [`MOVES.md`](MOVES.md).
-- **Ultimates (3 bars):** press the ultimate key (`U` for player 1, `Numpad 0` or `[` for player 2; both can be remapped in OPTIONS), or the motion down, down-forward, forward + `P`+`K`+`H` (either also works straight out of a move that hits). When your meter is full, the key flashes next to it. If it connects, a cinematic plays: a cut-in, a camera zoom, slow motion, and **DIAGRAM VIEW** freeze frames where the impact is drawn as a glowing chalkboard diagram. It takes about a third of their health; blocked or whiffed, it leaves you wide open.
+- **Ultimates (3 bars):** press the ultimate key (`U` for player 1, `Numpad 0` or `[` for player 2; both can be remapped in OPTIONS), or the motion down, down-forward, forward + `P`+`K`+`H` (either also works straight out of a move that hits). When your meter is full, the key flashes next to it. If it connects, the fighter's own cinematic plays: a cut-in, then a scene of their own (often somewhere else entirely) with its own camera work and sounds. Big hits stay cartoony. It takes about a third of their health; blocked or whiffed, it leaves you wide open.
   - **BRINKHUS — Fast Break:** a whistle, a cut to the running track (a sprint, a hurdle over a bench), back in with a flying knee; a giant X stamps SOLVED.
   - **CHAI — Compass Construction:** a giant compass planted beside them; she circles them kicking on every pass as the circle draws itself, a protractor snaps to 90°, an axe kick, and "Sorry!"
   - **DALSASS — Pop Quiz:** they're suddenly at a student desk with a quiz and a ticking timer; he snatches it, red-pens a giant F, and smacks them with the whole stack as the class goes wild.
   - **LEE — Grading at 11 PM:** his desk at night; every red check mark is a hit, faster and faster; a sigh, the glasses, and the red pen flicked across the room.
   - **LOPEZ — I Knew It:** a counter stance: hit him in it and the blinds come down on a corkboard of red string and photos of your habits; you attack three times, he dodges without looking, "I knew it.", one perfect punish.
   - **MIYASHIRO — System of Equations:** two glowing lines from opposite corners, a copy of him charging down each; they meet exactly at the intersection: SOLUTION FOUND.
-  - **PEDERSEN — Exponential Overdrive:** off come the sunglasses; three punches marked 2¹, 2², 2³; the last cracks the screen like glass.
-  - **RAMOS — Matrix Multiplication:** a grab, then slams across the stage in a 3×3 grid, row by column, and a hair flip.
+  - **PEDERSEN — Horsepower:** on go the sunglasses; he revs his red sports car and drives straight across the stage into them; they bounce off the hood, the car skids to a stop, and he leans out of the window with his line.
+  - **RAMOS — Max Incline:** a grab, then a 24-hour gym: a treadmill cranked to max, sparks, the speed climbing, his bowl cut flapping; he launches off the end, crashes back into the stage, and finishes with a flying tackle and a slam.
+  - **WILSON — Tenure:** the stage goes dark but for a chalkboard; he writes one equation in silence while 29 years of classes flicker past, a hit on every year; he caps the marker, turns around, and they're already down.
 - **Stage objects:** every stage has one or two things near the walls you can use: a rolling whiteboard and a student desk (Classroom C221), lockers and the vending machine (Math Hallway), a monitor cart and a swivel chair (Computer Lab), a bench and a trash can (Outdoor Campus), a filing cabinet and a desk (Department Office), the gate arm and PEDERSEN's own car, alarm and all (Faculty Parking). Stand next to one and press `T` for a springboard dive at your opponent, or back + `T` to vault over them out of the corner (you can't be hit during the vault). They're free, but each needs 6 seconds before it can be used again (a dial shows it); a `T` key shows when you're close enough. Away from them, `T` is still your taunt.
 - **Extra Credit (last chance):** under 25% health, once per match, press `P`+`K`+`H` (no motion): a big EXTRA CREDIT cut-in, your meter refills to three bars, and you hit 20% harder for 7 seconds (you glow gold while it lasts). The HUD tells you when it's ready.
 
@@ -203,7 +204,7 @@ The fighters, and what they teach:
 
 | Fighter | Finisher | Input |
 | --- | --- | --- |
-| PEDERSEN | Horse to Water: loosens his tie, one massive Exponential Haymaker into his red sports car, car alarm, and his line | `B, F, H` |
+| PEDERSEN | Escape Velocity: loosens his tie, one massive Exponential Haymaker sends them off the top of the screen to twinkle out like a star | `B, F, H` |
 | BRINKHUS | Solve for X: a flurry, an uppercut off the top of the screen, a giant X stamp | `F, F, H` |
 | CHAI | Q.E.D.: a spinning combo of kicks, a Q.E.D. box, a bow and a hand up | `B, F, K` |
 | DALSASS | See Me After Class: three fake punches (they flinch every time), a finger flick, a sticky note | `D, D, P` |

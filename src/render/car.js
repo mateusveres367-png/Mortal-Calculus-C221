@@ -11,12 +11,20 @@
   var INTAKE = [[50, 30], [64, 34], [68, 22], [52, 18]];
   var DOOR = [[64, 33], [114, 33], [112, 16], [70, 14]];
 
-  // opts: { scale, facing (1 = nose to the right), door (0..1 open), wheelSpin (radians), alpha, lights (0..1) }
+  // opts: { scale, facing (1 = nose to the right), door (0..1 open), wheelSpin (radians), alpha, lights (0..1),
+  //   lower (only the body below the windows, to draw over someone sitting in it) }
   FG.drawCar = function (g, x, groundY, opts) {
     opts = opts || {};
     var s = opts.scale || 1, dir = opts.facing || 1, a = opts.alpha == null ? 1 : opts.alpha;
     function P(pt) { return { x: Math.round(x + (pt[0] - 75) * s * dir), y: Math.round(groundY - pt[1] * s) }; }
     function poly(points, color) { g.fillStyle(color, a); g.fillPoints(points.map(P), true); }
+    if (opts.lower) {
+      poly(BODY.map(function (pt) { return [pt[0], Math.min(pt[1], 33)]; }), RED);
+      poly(LOWER, RED_DARK);
+      g.lineStyle(Math.max(1, Math.round(1.5 * s)), RED_LIGHT, a);
+      var l1 = P([10, 30]), l2 = P([140, 26]); g.lineBetween(l1.x, l1.y, l2.x, l2.y);
+      return;
+    }
 
     // Shadow.
     g.fillStyle(0x000000, 0.35 * a);
