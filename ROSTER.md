@@ -300,7 +300,7 @@ Five 10th graders. Character select has two tabs, **TEACHERS | STUDENTS** (Q/E, 
 
 **KO finisher — Lights Out:** he steps back, the crowd goes silent, then a slow-motion flying knee. The opponent drops; he turns and walks away before they hit the floor, and "GNOMED." stamps the screen in red.
 
-**Look:** Medium-length wavy dark brown hair with curtain bangs, navy t-shirt, red hand wraps, a red Muay Thai armband on his upper arm, athletic shorts, barefoot. Bounces lightly on the balls of his feet. Cut-ins in deep red and black, sharp brushstrokes.
+**Look:** Medium-length wavy dark brown hair with curtain bangs, navy t-shirt, dark jeans, white sneakers: no gloves, no wraps, just his school clothes. Bounces lightly on the balls of his feet. Cut-ins in deep red and black, sharp brushstrokes.
 
 **Personality:** Calm, focused, a little cocky. Doesn't talk much during the fight, then says one cold line after a big hit.
 

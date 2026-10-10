@@ -15,7 +15,7 @@
   var R = FG.rigger({ torso: 26, neck: 11, upper: 14.5, fore: 13, thigh: 23, shin: 23.5 });
   var hands = function (fx, fy, bx, by) { return { fa: { hand: [fx, fy] }, ba: { hand: [bx, by] } }; };
   var pose = function (spec, h) { return R(Object.assign(spec, h || {})); };
-  var GUARD = hands(13, 79, 7, 80);       // hands high: lead glove at the brow, rear at the cheek
+  var GUARD = hands(13, 79, 7, 80);       // hands high: lead fist at the brow, rear at the cheek
   var FEET = { fl: { foot: [9, 0] }, bl: { foot: [-10, 0] } }; // square, not wide
 
   var poses = {
@@ -24,10 +24,10 @@
     stand: R({ hip: [0, 45.5], lean: -1, fa: [-84, -76], ba: [-92, -86], fl: { foot: [5, 0] }, bl: { foot: [-6, 0] } }),
     // Wai: palms together at his chest, a small bow.
     wai: R({ hip: [0, 45], lean: 20, neck: 18, fa: { hand: [10, 68] }, ba: { hand: [9, 67] }, fl: { foot: [4, 0] }, bl: { foot: [-4, 0] } }),
-    // Touching the red armband on his lead arm.
+    // A hand on his lead shoulder, rolling it loose.
     band: R({ hip: [0, 45.5], lean: -2, neck: 6, fa: [-80, -60], ba: { hand: [8, 60] }, fl: { foot: [5, 0] }, bl: { foot: [-6, 0] } }),
     nod: pose({ hip: [0, 44.5], lean: 0, neck: 14, fl: { foot: [9, 0] }, bl: { foot: [-10, 0] } }, GUARD),
-    // Taunt: lead glove up and open, two fingers beckoning.
+    // Taunt: lead hand up and open, two fingers beckoning.
     beckon: R({ hip: [0, 45], lean: -6, neck: -4, fa: [20, 80], ba: { hand: [7, 80] }, fl: { foot: [9, 0] }, bl: { foot: [-10, 0] } }),
     beckon2: R({ hip: [0, 45], lean: -6, neck: -4, fa: [20, 110], ba: { hand: [7, 80] }, fl: { foot: [9, 0] }, bl: { foot: [-10, 0] } }),
     // Walking away: hands down, shoulders loose.
@@ -170,8 +170,7 @@
       hair: { style: 'curtain', color: 0x3b2416 },
       mouth: 'smirk', brows: 'stern',
       top: { style: 'tee', color: 0x1d2c5e, sleeves: 'short' },
-      legs: 0x16161a, shorts: true, shoes: 0xe3b48c, // athletic shorts, barefoot
-      wraps: 0xc8102e, armband: 0xc8102e,           // red hand wraps; a red armband on the lead arm
+      legs: 0x2e3a52, shoes: 0xe8e8e4, // jeans and white sneakers: just his school clothes
       build: { torso: 0.94, limb: 0.95 }
     },
     // On the balls of his feet: a rhythmic bounce, the lead foot light.

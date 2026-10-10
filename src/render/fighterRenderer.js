@@ -526,17 +526,6 @@
       if (sleeves === 'long') { limb(sh, e, 7, sl); limb(e, h, 6, sl); }
       else if (sleeves === 'rolled') { limb(sh, e, 7, sl); limb(e, h, 6, sk); part(e, h, 0, 0.3, 7, shade(sl, 0.9)); }
       else { limb(e, h, 6, sk); part(sh, e, 0, 0.62, 8, sl); }
-      if (look.armband && !back) { // a Muay Thai armband round the lead arm, its tails hanging
-        part(sh, e, 0.66, 0.78, 8.5, look.armband);
-        g.lineStyle(Math.max(1, Math.round(1.2 * s)), c(shade(look.armband, 0.75)), 1);
-        var ax = X(sh) + (X(e) - X(sh)) * 0.72, ay = Y(sh) + (Y(e) - Y(sh)) * 0.72;
-        g.lineBetween(ax, ay, ax - dir * 2 * s, ay + 5 * s); g.lineBetween(ax, ay, ax + dir * 1 * s, ay + 6 * s);
-      }
-      if (look.wraps) { // hand wraps: the hand and the wrist bound in red
-        part(e, h, 0.62, 1, 6.5, back ? shade(look.wraps, 0.8) : look.wraps);
-        block(h, 7.5, 7.5, back ? shade(look.wraps, 0.8) : look.wraps);
-        return;
-      }
       if (look.wristband) { // red-white-red band at the wrist
         part(e, h, 0.68, 0.76, 7, look.wristband[0]); part(e, h, 0.76, 0.83, 7, look.wristband[1]); part(e, h, 0.83, 0.9, 7, look.wristband[0]);
       }
@@ -547,12 +536,7 @@
     // Joint indices: 0 hip, 1 chest, 2 head, 3 fElbow, 4 fHand, 5 bElbow, 6 bHand, 7 fKnee, 8 fFoot, 9 bKnee, 10 bFoot
     // Back limbs first, in darker shades.
     var legsBack = shade(look.legs, 0.72);
-    // Athletic shorts (look.shorts): bare knees and shins below them.
-    function leg(hip, knee, foot, col, sk) {
-      if (look.shorts) { limb(hip, knee, 8, sk); limb(knee, foot, 6.5, sk); part(hip, knee, 0, 0.62, 10, col); }
-      else { limb(hip, knee, 9, col); limb(knee, foot, 7, col); }
-    }
-    leg(14, 9, 10, legsBack, skinBack);
+    limb(14, 9, 9, legsBack); limb(9, 10, 7, legsBack);
     block(10, shoeW - 1, shoeH - 1, shade(look.shoes, 0.7), true);
     arm(5, 6, true);
 
@@ -679,7 +663,7 @@
     if (look.hair.style === 'bowl') drawBowl(g, f, hdx, hdy, s, dir, c(look.hair.color), look.hair.color, flash == null);
 
     // Front limbs on top.
-    leg(13, 7, 8, look.legs, skin);
+    limb(13, 7, 9, look.legs); limb(7, 8, 7, look.legs);
     block(8, shoeW, shoeH, look.shoes, true);
     arm(3, 4, false);
   };
