@@ -21,6 +21,21 @@
 
   function save() { try { window.localStorage.setItem(KEY, JSON.stringify(P)); } catch (e) { /* not saved */ } }
 
+  // --- Student mode ------------------------------------------------------------------
+  // The STUDENTS tab on character select is locked behind a code, typed on a keypad
+  // (selectScene.js). Once it's open it stays open in this browser.
+  var STUDENTS_KEY = 'mc221.students', studentsOpen = false;
+  FG.STUDENT_CODE = '0620';
+  FG.studentsUnlocked = function () {
+    if (studentsOpen) return true;
+    try { studentsOpen = window.localStorage.getItem(STUDENTS_KEY) === '1'; } catch (e) { /* no storage: still locked */ }
+    return studentsOpen;
+  };
+  FG.unlockStudents = function () {
+    studentsOpen = true; // open for this visit even if it can't be saved
+    try { window.localStorage.setItem(STUDENTS_KEY, '1'); } catch (e) { /* not saved */ }
+  };
+
   // --- Outfits ------------------------------------------------------------------------
   // Each fighter's own look recoloured; `wins` with that fighter unlocks it.
   FG.OUTFITS = [

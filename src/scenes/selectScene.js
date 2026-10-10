@@ -38,6 +38,8 @@
       var d = self2.prev[key] && FG.fighterById(self2.prev[key]);
       if (d) { self2.tab[side] = d.side; self2.cursor[side] = Math.max(0, FG.rosterSide(d.side).indexOf(d)); }
     });
+    // The STUDENTS tab is locked until its code has been entered (the keypad below).
+    if (!FG.studentsUnlocked()) for (var ls = 0; ls < 2; ls++) if (this.tab[ls] === 'student') { this.tab[ls] = 'teacher'; this.cursor[ls] = 0; }
     this.view = this.tab[0]; // the tab the grid shows
     this.chosen = [null, null];
     this.outfit = [0, 0]; // the outfit each side wears (unlocked by winning with that fighter)
@@ -118,6 +120,8 @@
       return p;
     });
 
+    this.makeKeypad();
+
     var kb = this.input.keyboard;
     kb.addCapture([Phaser.Input.Keyboard.KeyCodes.ENTER, Phaser.Input.Keyboard.KeyCodes.SPACE, Phaser.Input.Keyboard.KeyCodes.ESC]);
     kb.on('keydown', function (e) { FG.Sfx.unlock(); self.key(e.code); });
@@ -133,9 +137,12 @@
   SelectScene.prototype.list = function (side) { return FG.rosterSide(this.tab[side]); };
   SelectScene.prototype.def = function (side) { var l = this.list(side); return l[Math.min(this.cursor[side], l.length - 1)]; };
 
-  // Switch a side's tab (TEACHERS / STUDENTS); the grid follows.
+  // Switch a side's tab (TEACHERS / STUDENTS); the grid follows. A locked STUDENTS tab
+  // opens the keypad instead.
   SelectScene.prototype.setTab = function (side, tab) {
+    if (this.pad.open) return;
     if (this.chosen[side] && this.mode === 'versus') return;
+    if (tab === 'student' && this.tab[side] !== 'student' && !FG.studentsUnlocked()) { this.openKeypad(side); return; }
     if (this.tab[side] !== tab) { this.tab[side] = tab; this.cursor[side] = 0; FG.Sfx.ui('move'); }
     this.view = tab;
     this.refresh();
@@ -144,6 +151,7 @@
   // Which player a key belongs to, and what it does.
   SelectScene.prototype.key = function (code) {
     if (this.leaving) return;
+    if (this.pad.open) { this.keypadKey(code); return; }
     if (code === 'Escape' || code === 'Backspace') { this.back(this.mode === 'versus' ? null : this.step); return; }
     var side, act;
     if (this.mode === 'versus') {
@@ -235,9 +243,12 @@
     this.footer.setText(m === 'versus' ? 'P1: WASD+J (K UNDO) Q/E TAB   P2: ARROWS+NUM1 (NUM2 UNDO) [ ] TAB   ESC BACK' : 'ARROWS MOVE   Q/E TEACHERS/STUDENTS   Z/X OUTFIT   ENTER CONFIRM   ESC BACK');
     // Only the shown tab's cards.
     FG.SIDES.forEach(function (side) {
-      self.cards[side].forEach(function (cd) { var on = side === self.view; cd.g.setVisible(on); cd.name.setVisible(on); if (cd.zone.input) cd.zone.input.enabled = on; });
+      self.cards[side].forEach(function (cd) { var on = side === self.view; cd.g.setVisible(on); cd.name.setVisible(on); if (cd.zone.input) cd.zone.input.enabled = on && !self.pad.open; });
     });
-    this.tabs.forEach(function (tb) { tb.text.setFont(tb.side === self.view ? 'pf_y' : 'pf_g'); });
+    var studentsLocked = !FG.studentsUnlocked();
+    this.tabs.forEach(function (tb) {
+      tb.text.setFont(tb.side === self.view ? 'pf_y' : 'pf_g').setText(TAB_NAME[tb.side] + (tb.side === 'student' && studentsLocked ? ' [LOCKED]' : ''));
+    });
     for (var side = 0; side < 2; side++) {
       var def = this.def(side), p = this.previews[side];
       if (!p.puppet || p.puppet.def !== def) {
@@ -260,6 +271,119 @@
     }
   };
 
+  // --- The student keypad ------------------------------------------------------------
+  // A retro keypad over the screen: a green LCD and twelve keys. Four digits (number keys,
+  // or tap the keys); FG.STUDENT_CODE opens the STUDENTS tab for good (FG.unlockStudents),
+  // anything else is ACCESS DENIED (a red flash and a shake) and it clears.
+  var PAD_KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'CLR', '0', 'X'];
+  var PAD = { x: C.VIEW_W / 2 - 92, y: 52, w: 184, h: 262, kw: 48, kh: 26, gap: 6, kx: 0, ky: 112 };
+  PAD.kx = (PAD.w - 3 * PAD.kw - 2 * PAD.gap) / 2;
+
+  SelectScene.prototype.makeKeypad = function () {
+    var self = this;
+    this.pad = { open: false, side: 0, digits: '', state: null, t: 0, press: null };
+    this.padG = this.add.graphics().setDepth(40);
+    this.padTitle = FG.text(this, C.VIEW_W / 2, PAD.y + 10, 'STUDENT ACCESS', 'k').setOrigin(0.5, 0).setDepth(41).setVisible(false);
+    this.padSub = FG.text(this, C.VIEW_W / 2, PAD.y + 22, 'ENTER YOUR 4-DIGIT CODE', 'k').setOrigin(0.5, 0).setDepth(41).setVisible(false);
+    this.padLcd = FG.text(this, C.VIEW_W / 2, PAD.y + 50, '', 'g', 3).setOrigin(0.5, 0).setDepth(41).setVisible(false);
+    this.padMsg = FG.text(this, C.VIEW_W / 2, PAD.y + 88, '', 'r', 1).setOrigin(0.5, 0).setDepth(41).setVisible(false);
+    this.padHint = FG.text(this, C.VIEW_W / 2, PAD.y + PAD.h - 12, 'TYPE OR TAP   ESC CANCEL', 'k').setOrigin(0.5, 0).setDepth(41).setVisible(false);
+    this.padKeys = PAD_KEYS.map(function (label, i) {
+      var col = i % 3, row = Math.floor(i / 3);
+      var x = PAD.x + PAD.kx + col * (PAD.kw + PAD.gap), y = PAD.y + PAD.ky + row * (PAD.kh + PAD.gap);
+      var text = FG.text(self, x + PAD.kw / 2, y + PAD.kh / 2 - 4, label, label === 'X' ? 'r' : 'w', label.length > 1 ? 1 : 2).setOrigin(0.5, 0).setDepth(42).setVisible(false);
+      var zone = self.add.zone(x, y, PAD.kw, PAD.kh).setOrigin(0, 0).setDepth(43).setInteractive();
+      zone.input.enabled = false;
+      zone.on('pointerdown', function () { FG.Sfx.unlock(); self.keypadPress(label); });
+      return { label: label, x: x, y: y, text: text, zone: zone };
+    });
+  };
+
+  SelectScene.prototype.openKeypad = function (side) {
+    var pd = this.pad;
+    pd.open = true; pd.side = side; pd.digits = ''; pd.state = null; pd.t = 0; pd.press = null;
+    this.padKeys.forEach(function (k) { k.zone.input.enabled = true; });
+    FG.Sfx.ui('move');
+    this.refresh();
+  };
+
+  SelectScene.prototype.closeKeypad = function () {
+    this.pad.open = false;
+    this.padKeys.forEach(function (k) { k.zone.input.enabled = false; });
+    this.refresh();
+  };
+
+  // A key from the keyboard while the keypad is up.
+  SelectScene.prototype.keypadKey = function (code) {
+    var m = /^(?:Digit|Numpad)(\d)$/.exec(code);
+    if (m) { this.keypadPress(m[1]); return; }
+    if (code === 'Escape') { this.keypadPress('X'); return; }
+    if (code === 'Backspace' || code === 'Delete') { this.keypadPress('<'); return; }
+  };
+
+  SelectScene.prototype.keypadPress = function (label) {
+    var pd = this.pad;
+    if (!pd.open || pd.state === 'granted') return;
+    if (pd.state === 'denied') { pd.state = null; pd.digits = ''; } // a key cuts the denial short
+    pd.press = { label: label, t: 0 };
+    if (label === 'X') { FG.Sfx.ui('back'); this.closeKeypad(); return; }
+    if (label === 'CLR') { pd.digits = ''; FG.Sfx.ui('move'); return; }
+    if (label === '<') { pd.digits = pd.digits.slice(0, -1); FG.Sfx.ui('move'); return; }
+    if (pd.digits.length >= 4) return;
+    pd.digits += label;
+    FG.Sfx.synth(function (S) { S.osc({ dur: 0.06, f0: 1320, gain: 0.06, type: 'square' }); });
+    if (pd.digits.length < 4) return;
+    pd.t = 0;
+    if (pd.digits === FG.STUDENT_CODE) {
+      pd.state = 'granted';
+      FG.unlockStudents();
+      FG.Sfx.synth(function (S) { [660, 880, 1320].forEach(function (f, k) { S.osc({ dur: 0.12, f0: f, gain: 0.08, type: 'square', at: k * 0.09 }); }); });
+    } else {
+      pd.state = 'denied';
+      FG.Sfx.synth(function (S) { S.osc({ dur: 0.45, f0: 110, f1: 90, gain: 0.18, type: 'sawtooth' }); S.osc({ dur: 0.45, f0: 116, gain: 0.12, type: 'square' }); });
+    }
+  };
+
+  SelectScene.prototype.drawKeypad = function () {
+    var pd = this.pad, g = this.padG, texts = [this.padTitle, this.padSub, this.padLcd, this.padMsg, this.padHint];
+    g.clear();
+    texts.forEach(function (t) { t.setVisible(pd.open); });
+    this.padKeys.forEach(function (k) { k.text.setVisible(pd.open); });
+    if (!pd.open) return;
+    pd.t++;
+    if (pd.press && ++pd.press.t > 6) pd.press = null;
+    // Granted: hold the message a moment, then open the tab. Denied: clear and try again.
+    if (pd.state === 'granted' && pd.t > 55) { var side = pd.side; this.closeKeypad(); this.setTab(side, 'student'); return; }
+    if (pd.state === 'denied' && pd.t > 45) { pd.state = null; pd.digits = ''; }
+    var shake = pd.state === 'denied' && pd.t < 18 ? Math.round(Math.sin(pd.t * 1.9) * 6 * (1 - pd.t / 18)) : 0;
+    var x = PAD.x + shake, y = PAD.y;
+    g.fillStyle(0x000000, 0.6); g.fillRect(0, 0, C.VIEW_W, C.VIEW_H);
+    // The case: beige plastic, a darker rim, screws in the corners.
+    g.fillStyle(0x1a1610, 1); g.fillRect(x - 3, y - 3, PAD.w + 6, PAD.h + 6);
+    g.fillStyle(0xcfc6aa, 1); g.fillRect(x, y, PAD.w, PAD.h);
+    g.fillStyle(0xe4dcc2, 1); g.fillRect(x, y, PAD.w, 3);
+    g.fillStyle(0x9a927a, 1); g.fillRect(x, y + PAD.h - 3, PAD.w, 3);
+    [[6, 6], [PAD.w - 9, 6], [6, PAD.h - 9], [PAD.w - 9, PAD.h - 9]].forEach(function (c) { g.fillStyle(0x7a735e, 1); g.fillRect(x + c[0], y + c[1], 3, 3); });
+    // The LCD.
+    var red = pd.state === 'denied', green = pd.state === 'granted';
+    g.fillStyle(0x1a1610, 1); g.fillRect(x + 14, y + 38, PAD.w - 28, 44);
+    g.fillStyle(red ? (pd.t % 8 < 4 ? 0x5a1010 : 0x3a0a0a) : green ? 0x10401c : 0x1c2e1c, 1); g.fillRect(x + 16, y + 40, PAD.w - 32, 40);
+    g.fillStyle(0xffffff, 0.06); for (var sl = 0; sl < 40; sl += 3) g.fillRect(x + 16, y + 40 + sl, PAD.w - 32, 1);
+    var shown = '';
+    for (var i = 0; i < 4; i++) shown += (i ? ' ' : '') + (pd.digits[i] || '_');
+    this.padLcd.setText(shown).setFont(red ? 'pf_r' : green ? 'pf_c' : 'pf_g').setX(C.VIEW_W / 2 + shake);
+    this.padMsg.setText(red ? 'ACCESS DENIED' : green ? 'ACCESS GRANTED' : '').setFont(red ? 'pf_r' : 'pf_c').setScale(red || green ? 1.5 : 1).setX(C.VIEW_W / 2 + shake);
+    this.padTitle.setX(C.VIEW_W / 2 + shake); this.padSub.setX(C.VIEW_W / 2 + shake); this.padHint.setX(C.VIEW_W / 2 + shake);
+    // The keys: raised gray buttons, pushed in when pressed.
+    this.padKeys.forEach(function (k) {
+      var down = pd.press && pd.press.label === k.label, kx = k.x + shake, ky = k.y + (down ? 2 : 0);
+      g.fillStyle(0x4a4538, 1); g.fillRect(kx, k.y + 3, PAD.kw, PAD.kh);
+      g.fillStyle(down ? 0x8a8474 : k.label === 'X' ? 0xb86a5a : k.label === 'CLR' ? 0xa8a088 : 0xb8b2a0, 1); g.fillRect(kx, ky, PAD.kw, PAD.kh - 1);
+      g.fillStyle(0xffffff, 0.25); g.fillRect(kx, ky, PAD.kw, 2);
+      k.text.setPosition(kx + PAD.kw / 2, ky + PAD.kh / 2 - (k.label.length > 1 ? 3 : 6));
+    });
+  };
+
   SelectScene.prototype.showing = function (side) {
     if (side === 0) return true;
     return this.mode === 'versus' || (this.twoStep() && this.step === 1);
@@ -273,6 +397,7 @@
 
   SelectScene.prototype.update = function () {
     this.t++;
+    this.drawKeypad();
     var t = this.t, self = this, view = this.view, cards = this.cards[view];
     // Card portraits: head and shoulders, on the fighter's colour.
     for (var i = 0; i < cards.length; i++) {

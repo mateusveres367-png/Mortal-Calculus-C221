@@ -427,6 +427,25 @@ try { playwright = require('playwright'); } catch (e) {
   await page.screenshot({ path: path.join(out, '10-select-locked.png') });
   var lockOk = lock.still && lock.name === '???' && lock.msg && lock.cards === 9 && lock.students;
 
+  // Student mode: the STUDENTS tab opens a keypad; a wrong code is ACCESS DENIED, 0620 opens
+  // the tab (and it's remembered in this browser).
+  var studentPad = await page.evaluate(function () {
+    var s = window.FG_SELECT, r = {};
+    r.lockedAtFirst = !FG.studentsUnlocked();
+    s.setTab(0, 'student');
+    r.opened = s.pad.open && s.tab[0] === 'teacher';
+    ['1', '2', '3', '4'].forEach(function (d) { s.keypadPress(d); });
+    r.denied = s.pad.state === 'denied' && !FG.studentsUnlocked();
+    ['0', '6', '2', '0'].forEach(function (d) { s.keypadPress(d); });
+    r.granted = s.pad.state === 'granted' && FG.studentsUnlocked();
+    var stored = null; try { stored = window.localStorage.getItem('mc221.students'); } catch (e) { stored = 'n/a'; }
+    r.stored = stored === '1' || stored === 'n/a';
+    return r;
+  });
+  await page.screenshot({ path: path.join(out, '10-select-keypad.png') });
+  await page.waitForFunction(function () { var s = window.FG_SELECT; return !s.pad.open && s.tab[0] === 'student'; }, null, { timeout: 15000 });
+  var padOk = studentPad.lockedAtFirst && studentPad.opened && studentPad.denied && studentPad.granted && studentPad.stored;
+
   // The arcade ending.
   await page.evaluate(function () { window.FG_TITLE.scene.start('ending', { p1: 'pedersen', ladder: ['a', 'b'], continues: 1, started: Date.now() - 65000 }); });
   await page.waitForFunction(function () { return window.FG_ENDING && window.FG_ENDING.sys.isActive() && window.FG_ENDING.t > 30; }, null, { timeout: 15000 });
@@ -534,8 +553,8 @@ try { playwright = require('playwright'); } catch (e) {
   await browser.close();
   console.log(JSON.stringify({ mobile: mobile, title: title, matchup: matchup, renderer: renderer, hits: hits, counter: counterText, p1: p1, menuOk: menuOk, resetX: resetX, trial: trial, ko: ko, stage: stagePick, arcade: arcade, vsPanel: vsPanel, cutFreeze: cutFreeze, cpu: cpu, ladder: ladder, enhanced: ex, ultimate: ultR, extraCredit: ecR, prop: propR, ultTrial: ultTrial, lock: lock, unlocked: unlocked, wilson: wil, errors: errors }, null, 1));
   var ok = !errors.length && title === 'Mortal Calculus: C221' && matchup === expectMatchup && hits.join() === expectHits && counterText === String(hits.length) &&
-    p1.last && p1.last.kind === 'BLOCK' && p1.last.adv === p1.jabBlock && menuOk && resetOk && trialOk && koOk && stagePick === 'classroom' && arcadeOk && attractOk && vsPanel && cutFreeze && cpuOk && ladderOk && exOk && ultOk && ukeyOk && ecOk && propOk && mobileOk && lockOk && unlocked && wilOk;
-  if (!ok) console.log('checks:', JSON.stringify({ errors: errors.length, menuOk: menuOk, resetOk: resetOk, trialOk: trialOk, koOk: koOk, arcadeOk: arcadeOk, attractOk: attractOk, vsPanel: vsPanel, cutFreeze: cutFreeze, cpuOk: cpuOk, ladderOk: ladderOk, exOk: exOk, ultOk: ultOk, ukeyOk: ukeyOk, ukey: ukey, remap: remap, rewards: rewards, modes: modes, ecOk: ecOk, propOk: propOk, mobileOk: mobileOk, lockOk: lockOk, unlocked: unlocked, wilOk: wilOk }));
+    p1.last && p1.last.kind === 'BLOCK' && p1.last.adv === p1.jabBlock && menuOk && resetOk && trialOk && koOk && stagePick === 'classroom' && arcadeOk && attractOk && vsPanel && cutFreeze && cpuOk && ladderOk && exOk && ultOk && ukeyOk && ecOk && propOk && mobileOk && lockOk && padOk && unlocked && wilOk;
+  if (!ok) console.log('checks:', JSON.stringify({ errors: errors.length, menuOk: menuOk, resetOk: resetOk, trialOk: trialOk, koOk: koOk, arcadeOk: arcadeOk, attractOk: attractOk, vsPanel: vsPanel, cutFreeze: cutFreeze, cpuOk: cpuOk, ladderOk: ladderOk, exOk: exOk, ultOk: ultOk, ukeyOk: ukeyOk, ukey: ukey, remap: remap, rewards: rewards, modes: modes, ecOk: ecOk, propOk: propOk, mobileOk: mobileOk, lockOk: lockOk, studentPad: studentPad, unlocked: unlocked, wilOk: wilOk }));
   console.log(ok ? 'SMOKE OK' : 'SMOKE FAILED');
   if (!ok) process.exit(1);
 })().catch(function (e) { console.error(e); process.exit(1); });
