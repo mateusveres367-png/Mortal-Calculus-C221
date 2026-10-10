@@ -58,21 +58,19 @@
     }
   };
 
-  // NICOLAS — Tardy: the bell rings, he sprints right past them (one hit on the way),
-  // they spin like a top and drop, and a pink TARDY SLIP stamps the screen.
+  // NICOLAS — Tardy: he checks his watch. Then a 540 kick, in slow motion; the bell
+  // rings as it lands, they spin like a top and drop, and a pink TARDY SLIP stamps it.
   FG.FINISHERS.nicolas = {
-    len: 210,
+    len: 220,
     step: function (fx, t) {
       var w = fx.w, l = fx.l, s = fx.s;
-      if (t === 1) { fx.anim(w, [[1, 'stand'], [8, 'watch'], [30, 'watch'], [36, 'dash']]); fx.anim(l, FG.dazedAnim, true); s.x0 = w.x; }
-      if (t === 14) { FG.Sfx.bell(); s.bell = t; }
-      if (t === 38) { s.run = t; fx.anim(w, [[1, 'run1'], [4, 'run2'], [8, 'run1']], true); sfx(function (S) { S.noise({ dur: 0.35, freq: 800, f1: 3200, q: 1, gain: 0.25 }); }); }
-      if (s.run && !s.stop) {
-        w.x += fx.dir * 14;
-        if (t % 2 === 0) fx.scene.effects.dust(w.x - fx.dir * 10, 2, 1);
-        if (!s.hit && (w.x - l.x) * fx.dir > -6) { s.hit = t; fx.hit(l, 'power', { ch: true, shake: 0.02, y: 56 }); fx.slow(18, 0.45); fx.pose(l, 'hit_high'); }
-        if ((w.x - l.x) * fx.dir > 150 || w.x < C.WALL_L + 30 || w.x > C.WALL_R - 30) { s.stop = t; fx.anim(w, [[1, 'dash'], [8, 'stand'], [20, 'watch'], [60, 'watch'], [70, 'thumb']]); }
-      }
+      if (t === 1) { fx.anim(w, [[1, 'stand'], [8, 'watch'], [26, 'watch'], [32, 'idle']]); fx.anim(l, FG.dazedAnim, true); s.x0 = w.x; s.to = l.x - fx.dir * 36 * w.def.scale; }
+      // The jump, the full turn, slowed right down.
+      if (t === 34) { fx.anim(w, [[1, 'tor_c'], [8, 'k540_c'], [18, 'k540_x'], [40, 'k540_x'], [52, 'k540_r'], [64, 'stand'], [80, 'watch'], [110, 'watch'], [120, 'thumb']]); fx.slow(70, 0.25); sfx(function (S) { S.noise({ dur: 0.6, freq: 500, f1: 2600, q: 0.8, gain: 0.25 }); }); }
+      if (t > 34 && t < 64) { var u = (t - 34) / 30; w.y = Math.sin(u * Math.PI) * 40; w.x = s.x0 + (s.to - s.x0) * Math.min(1, u * 1.4); }
+      if (t === 64) w.y = 0;
+      // It lands, and the bell rings.
+      if (t === 52) { s.hit = t; fx.hit(l, 'power', { ch: true, shake: 0.025, y: 72 }); fx.pose(l, 'hit_high'); FG.Sfx.bell(); s.bell = t; fx.flash(0xffffff, 0.5); }
       // They spin like a top, then drop.
       if (s.hit && t > s.hit && t < s.hit + 34) { if ((t - s.hit) % 3 === 0) l.facing = -l.facing; }
       if (s.hit && t === s.hit + 34) { l.facing = -fx.dir; fx.anim(l, [[1, 'hit_mid'], [10, 'down']]); }

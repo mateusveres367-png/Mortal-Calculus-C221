@@ -179,6 +179,7 @@
     def.moves.propAtk = atk; def.moves.propEsc = esc;
   }
 
+  FG.prepareMove = function (def, key, m) { prepareMove(def, key, m); return m; }; // (tests build test-only moves)
   function prepareMove(def, key, m) {
     m.id = key;
     m.total = m.startup + m.active - 1 + m.recovery;

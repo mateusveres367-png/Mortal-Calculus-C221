@@ -1,15 +1,16 @@
 // NICOLAS — Five-Minute Passing Period: the bell rings and a huge LED clock slams up
-// reading 5:00. It counts down at hyperspeed while he blitzes them from one end of the
-// stage to the other, striking from both sides at once, the hallway crowd rushing past
-// in the foreground. At 0:05 everything slows; at 0:00 the bell rings again and a
-// flying shoulder sends them into the far wall. "Made it."
+// reading 5:00. It counts down at hyperspeed while he lands a nonstop chain of jumping,
+// spinning and flying kicks from one end of the stage to the other, from both sides at
+// once, the hallway crowd rushing past in the foreground. At 0:05 everything slows; at
+// 0:00 the bell rings again and a flying side kick sends them into the far wall. "Made it."
 // Camera: a fast tracking dolly that follows the opponent across the stage, snapping
 // a few degrees one way and the other with every hit, pulling back for the last
 // seconds, then a hard push-in on the final hit.
 (function () {
   var C = FG.C, W = C.VIEW_W, H = C.VIEW_H, GY = C.GROUND_Y, K = FG.ultKit;
   var BELL = 8, COUNT = [20, 222], SLOW = 186, LAST = 236, MADE = 252;
-  var STRIKES = ['jab_x', 'cross_x', 'knee_x', 'kick_x', 'hv_x', 'skip_x', 'rh_x', 'up_x', 'shoulder_x'];
+  // Snap, double roundhouse, side, tornado, 540, back, axe, roundhouse: kick after kick.
+  var STRIKES = ['snap_x', 'dbl_x2', 'side_x', 'tor_x', 'k540_x', 'back_x', 'axe_x', 'rh_x', 'snap2_x', 'dbl_x1'];
 
   // The clock: 5:00 down to 0:00, slow at first, then a blur, then the last seconds.
   function secondsLeft(t) {
@@ -39,7 +40,7 @@
       s.far = fx.S(wallX); s.trail = []; s.runners = [];
       for (var r = 0; r < 7; r++) s.runners.push({ s: K.hash(r, 9) * 600 - 300, sp: 6 + K.hash(r, 3) * 5, col: [0x2a5fb8, 0x3a8a3a, 0xd8a020, 0x8a3ab0, 0xc05a2a, 0x2a2a2a, 0xe8e8e8][r] });
       fx.place(fx.l, s.l0, 0); fx.pose(fx.l, 'hit_mid');
-      fx.pose(fx.w, 'hv_x');
+      fx.pose(fx.w, 'snap_x');
       fx.cam(s.l0 - 20, 110, 1.3, { k: 0.3 });
     },
     step: function (fx, t) {
@@ -67,10 +68,10 @@
       // The crowd of students in the hall, rushing past.
       s.runners.forEach(function (r) { r.s += r.sp * (t < SLOW ? 1 : 0.2); if (r.s > 420) r.s -= 840; });
       // The last five seconds, slowed right down.
-      if (t === SLOW) { fx.slow(40, 0.35); fx.place(w, s.far - 110, 0); fx.face(w, fx.dir); fx.anim(w, [[1, 'dash'], [20, 'shoulder_c']]); fx.cam(s.far - 60, 110, 1.0, { k: 0.1 }); s.trail = []; }
+      if (t === SLOW) { fx.slow(40, 0.35); fx.place(w, s.far - 110, 0); fx.face(w, fx.dir); fx.anim(w, [[1, 'dash'], [20, 'side_c']]); fx.cam(s.far - 60, 110, 1.0, { k: 0.1 }); s.trail = []; }
       if (t > SLOW && t < LAST - 8) { var u = (t - SLOW) / (LAST - 8 - SLOW); fx.place(w, s.far - 110 + 20 * u, 0); }
       if (t === COUNT[1]) { FG.Sfx.bell(); s.zero = t; fx.flash(0xff3a2a, 0.4); }
-      if (t === LAST - 8) { fx.anim(w, [[1, 'shoulder_c'], [6, 'shoulder_x'], [30, 'shoulder_x'], [40, 'stand']]); fx.sfx(function (S) { S.noise({ dur: 0.3, freq: 700, f1: 3000, q: 1, gain: 0.25 }); }); }
+      if (t === LAST - 8) { fx.anim(w, [[1, 'side_c'], [6, 'side_x'], [30, 'side_x'], [40, 'stand']]); fx.sfx(function (S) { S.noise({ dur: 0.3, freq: 700, f1: 3000, q: 1, gain: 0.25 }); }); }
       if (t > LAST - 8 && t <= LAST) fx.place(w, s.far - 90 + 70 * (t - LAST + 8) / 8, 0);
       if (t === LAST) {
         fx.hit(l, 'power', { ch: true, shake: 0.035, hits: hits.length, y: 60 });

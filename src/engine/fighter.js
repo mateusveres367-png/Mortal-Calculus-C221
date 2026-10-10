@@ -396,15 +396,20 @@
   };
 
   // Kick Chain (CHAI): once a kick connects, K or H into a different kick cancels
-  // it, up to KICK_CHAIN_MAX kicks in a row.
+  // it, up to KICK_CHAIN_MAX kicks in a row. def.kickChain can be { max, onHit }
+  // (NICOLAS: only kicks that hit chain, but the chains run longer).
   Fighter.prototype.tryKickChain = function (buf, frame) {
-    var m = this.move;
-    if (!this.def.kickChain || !m.kick || !this.contact) return false;
+    var m = this.move, kc = this.def.kickChain;
+    if (!kc || !m.kick || !this.contact) return false;
+    if (kc.onHit && this.contact !== 'hit') return false;
     if (this.moveFrame < m.startup || this.moveFrame > m.startup + m.active - 1 + KICK_CHAIN_LATE) return false;
     var used = (this.kickChain || []).concat([m.id]);
-    if (used.length >= KICK_CHAIN_MAX) return false;
+    if (used.length >= (kc.max || KICK_CHAIN_MAX)) return false;
     var btn = buf.latest(['k', 'h'], frame);
     if (!btn) return false;
+    // The move's own follow-up on that button wins (NICOLAS's Snap Kick: K, K, K).
+    var self = this;
+    if ((m.cancels || []).some(function (c) { return c.btn === btn && self.cancelOpen(c) && self.plainOk(c, buf, frame); })) return false;
     var id = this.resolveMove(btn, buf, frame), next = id && this.def.moves[id];
     if (!next || !next.kick || used.indexOf(id) >= 0) return false;
     buf.consume(btn);
@@ -478,6 +483,7 @@
       if (st) return st;
     }
     if (this.state === 'dash' && btn === 'p') { var dp = this.pick(['dashP']); if (dp) return dp; }
+    if (this.state === 'dash' && btn === 'k') { var dk = this.pick(['dashK']); if (dk) return dk; } // NICOLAS's Hopping Side Kick
     // Attacks out of a run: P, K, D+K, H.
     if (this.state === 'run') { var rn = this.pick([btn === 'k' && down ? 'runDK' : 'run' + B]); if (rn) return rn; }
     if (this.state === 'sidestep') { var sp = this.pick(['ss' + B]); if (sp) return sp; }
@@ -586,6 +592,14 @@
     return true;
   };
 
+  // A cancel marked `plain` only takes the button with no direction (NICOLAS's Snap
+  // Kick: K, K, K; F+K out of it is a Kick Chain into the Back Kick instead).
+  Fighter.prototype.plainOk = function (c, buf, frame) {
+    if (!c.plain) return true;
+    var d = buf.dirsFor(c.btn, frame);
+    return !d.down && !buf.forward(this.facing, d) && !buf.back(this.facing, d);
+  };
+
   // Is cancel c open on this frame?
   Fighter.prototype.cancelOpen = function (c) {
     if (this.moveFrame < c.from || this.moveFrame > c.to) return false;
@@ -623,7 +637,7 @@
         if (!throwPressed(buf, frame)) continue;
         buf.consume('p'); buf.consume('k');
       } else {
-        if (!buf.wasPressed(c.btn, frame)) continue;
+        if (!buf.wasPressed(c.btn, frame) || !this.plainOk(c, buf, frame)) continue;
         buf.consume(c.btn);
       }
       return this.doCancel(c);
@@ -663,6 +677,8 @@
       this.superJump = true;
     } else {
       if (this.move.air) this.airActions++;
+      // A kick cancelled into another kick keeps the Kick Chain's count going.
+      if (this.def.kickChain && this.move.kick && this.def.moves[c.into] && this.def.moves[c.into].kick && !this.chainNext) this.chainNext = (this.kickChain || []).concat([this.move.id]);
       this.startMove(c.into);
       this.fromCancel = true; // a string follow-up (gets the combo hitstun bonus)
     }

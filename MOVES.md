@@ -581,56 +581,59 @@ Calm, focused, a little cocky. Lets his shins do the talking.
 
 ## NICOLAS "THE LATE PASS" — Rushdown — Passing Period
 
-Always in a hurry. Talks fast. Never stops moving.
+Always in a hurry. Flashy, fast, and all kicks.
 
-**Style:** Hallway sprinter. **Signature:** Bell Sprint — the fastest dash in the game: forward, forward again during a dash chains another one, he can attack out of it almost at once, and F, F, P is Bell Sprint, a flying shoulder. Tardy Rush (P, P, K, K) is his string; Skip Day (P out of a sidestep) slips past your attack; Backpack Toss (B+P) throws his bag.
+**Style:** Taekwondo. **Signature:** Kick Chain — any kick that hits cancels into a different kick, up to five in a row. The Snap Kick (K) chains into itself: head, body, head. Double Roundhouse (B+K) is two kicks off one leg; Back Kick (F+K) knocks them across the screen; Axe Kick (F+H) drops the heel on their head; Tornado Kick (D+H) launches; the 540 Kick (B+H) is slow and huge; out of a dash, K is a Hopping Side Kick. He still has the fastest dash in the game.
 
-**Movement:** walk 2.7 forward / 1.7 back, dash 12.5 for 12 frames, backdash 9.4, jump 9.7, weight 0.94 (higher falls faster in juggles).
+**Movement:** walk 2.7 forward / 1.7 back, dash 12.5 for 12 frames, backdash 9.4, jump 9.8, weight 0.94 (higher falls faster in juggles).
 
 | Input | Move | Level | i | Active | Recovery | Block | Hit | Counter hit | Damage | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | P | Late Start | high | 9 | 2 | 13 | +1 | +8 | +10 | 7 |  |
-| P,P | Running Late | high | 9 | 2 | 15 | -2 | +6 | +9 | 9 |  |
-| P,P,K | Tardy Rush | mid | 9 | 3 | 18 | -6 | +4 | +8 | 11 |  |
+| P,P | Running Late | high | 10 | 2 | 15 | -2 | +6 | +9 | 9 |  |
 | P,P,H | Detention | mid | 12 | 3 | 20 | -9 | knockdown | knockdown | 13 |  |
-| P,P,K,K | Late Bell | mid | 10 | 3 | 22 | -12 | knockdown | knockdown | 16 |  |
-| B+P | Backpack Toss | mid | 15 | projectile | 21 | -5 | +3 | +7 | 12 | projectile: flies straight, range 420, enhance with P+K |
-| F,F,P | Bell Sprint | mid | 11 | 4 | 20 | -8 | knockdown | knockdown | 16 | enhance with P+K |
-| SIDESTEP, P | Skip Day | mid | 12 | 3 | 17 | -4 | +6 | knockdown | 14 | stays off the line until it hits |
-| K | Shortcut | mid | 12 | 3 | 17 | -4 | +4 | +8 | 12 |  |
-| D+K | Slide In | low | 15 | 4 | 20 | -12 | +1 | +6 | 11 | hits downed opponents, ducks highs |
-| D/B+K | Trip Hazard | low | 19 | 3 | 26 | -18 | knockdown | knockdown | 14 | ducks highs |
-| H | Speed Bump | mid | 17 | 3 | 19 | -4 | +5 | launch | 19 | enhance with P+K |
-| D+H | Hall Pass | mid | 14 | 4 | 22 | -14 | launch | launch | 15 | jump cancel on hit (UP) |
-| P+K | Locker Slam | throw | 12 | 2 | 26 |  |  |  | 30 | break with P |
-| B+P+K | Wrong Room | throw | 12 | 2 | 26 |  |  |  | 33 | break with K |
-| AIR P | Hallway Hop | mid | 7 | 4 | 10 |  |  |  | 8 | hitstun 16, blockstun 10, landing 4 |
-| AIR K | Door Kick | mid | 9 | 5 | 12 |  |  |  | 11 | hitstun 18, blockstun 12, landing 6 |
-| AIR H | Slam Dunk | mid | 12 | 4 | 16 |  |  |  | 16 | bounds, hitstun 22, blockstun 14, landing 10 |
+| K | Snap Kick | high | 10 | 2 | 14 | -1 | +6 | +9 | 10 | kick chain |
+| F+K | Back Kick | mid | 16 | 3 | 18 | -6 | +2 | knockdown | 17 | wall splats, enhance with P+K, kick chain |
+| B+K | Double Roundhouse | mid | 13 | 8 | 16 | -5 | +3 | +7 | 8 | kick chain |
+| D+K | Low Cut Kick | low | 12 | 3 | 17 | -8 | +2 | +6 | 9 | kick chain |
+| D/B+K | Spinning Sweep | low | 19 | 3 | 26 | -18 | knockdown | knockdown | 14 | ducks highs, kick chain |
+| H | Roundhouse | mid | 16 | 3 | 19 | -5 | +4 | launch | 18 | wall splats, kick chain |
+| F+H | Axe Kick | mid | 20 | 3 | 18 | -6 | +4 | knockdown | 20 | kick chain |
+| B+H | 540 Kick | high | 26 | 3 | 24 | -12 | knockdown | knockdown | 28 | enhance with P+K, kick chain |
+| D+H | Tornado Kick | mid | 15 | 4 | 22 | -14 | launch | launch | 15 | enhance with P+K, kick chain, jump cancel on hit (UP) |
+| P+K | Push And Hook | throw | 12 | 2 | 26 |  |  |  | 30 | break with P |
+| B+P+K | Spin Around | throw | 12 | 2 | 26 |  |  |  | 33 | break with K |
+| AIR P | Flying Side Kick | mid | 7 | 4 | 10 |  |  |  | 8 | hitstun 16, blockstun 10, landing 4 |
+| AIR K | Scissor Kick | mid | 9 | 5 | 12 |  |  |  | 11 | hitstun 18, blockstun 12, landing 6 |
+| AIR H | Butterfly Kick | mid | 12 | 4 | 16 |  |  |  | 16 | bounds, hitstun 22, blockstun 14, landing 10 |
 | K (DOWN) | Snooze Button | low | 14 | 3 | 22 | -14 | -2 | +1 | 10 | ducks highs |
 | P/H (DOWN) | First Bell | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
 | T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
-| D,D/F,F+P+K+H | Five-Minute Passing Period | mid | 17 | 3 | 49 | -34 | +5 | launch | 19 |  |
+| K,K | Snap Kick 2 | mid | 9 | 2 | 14 | -3 | +5 | +8 | 10 | kick chain |
+| K,K,K | Snap Kick 3 | high | 10 | 2 | 20 | -8 | knockdown | knockdown | 14 | kick chain |
+| F,F,K | Hopping Side Kick | mid | 14 | 4 | 20 | -6 | knockdown | knockdown | 18 | kick chain |
+| D,D/F,F+P+K+H | Five-Minute Passing Period | high | 10 | 2 | 44 | -31 | +6 | +9 | 10 |  |
 | T (BY AN OBJECT) | Springboard | mid | 16 | 5 | 18 | -6 | knockdown | knockdown | 18 |  |
 | B+T (BY AN OBJECT) | Vault | — | 38 total |  |  |  |  |  |  |  |
 
 **Enhanced specials** (P+K during the startup, 1 bar):
 
-- **Backpack Toss+** (`B+P`, then `P+K`): Faster, knockdown — 16 damage (from 12), a bigger or faster projectile, hit: knockdown.
-- **Bell Sprint+** (`F,F,P`, then `P+K`): Two hits, wall splat — 2 hits of 14, wall splats.
-- **Speed Bump+** (`H`, then `P+K`): Armored, launches — 25 damage (from 19), hit: launch, armor on frames 1-17 (1 hit).
+- **Back Kick+** (`F+K`, then `P+K`): Two spins, wall splat — 2 hits of 15.
+- **540 Kick+** (`B+H`, then `P+K`): Armored — 36 damage (from 28), armor on frames 1-26 (1 hit).
+- **Tornado Kick+** (`D+H`, then `P+K`): Armored — 20 damage (from 15), armor on frames 1-15 (1 hit).
 
-**Ultimate:** Five-Minute Passing Period — the ultimate key (`U` / `Numpad 0`) or `D, D/F, F + P+K+H`, with all three bars: a 5:00 timer counts down at hyperspeed while he blitzes them from one end of the stage to the other before it hits 0:00. 14 hits, 32% of their health; blocked -34, whiffed 68 frames.
+**Ultimate:** Five-Minute Passing Period — the ultimate key (`U` / `Numpad 0`) or `D, D/F, F + P+K+H`, with all three bars: a 5:00 timer counts down at hyperspeed while he lands a nonstop chain of jumping, spinning and flying kicks across the whole stage before it hits 0:00. 14 hits, 32% of their health; blocked -31, whiffed 55 frames.
 
 **KO finisher:** Tardy — `F, F, F, K` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).
 
 **Combo routes** (tested in `tests/sim.test.js`):
 
-- **Tardy Rush:** P, P, K, K (frames: P @0, P @12, K @24, K @37)
+- **Snap, Snap, Snap:** K, K, K (frames: K @0, K @12, K @23)
 - **Running Late:** P, P, H (frames: P @0, P @12, H @24)
-- **Hall Pass:** D+H, P, P, H (frames: D+H @0, P @42, P @52, H @59)
-- **Never Stops:** D+H, up, air P, air K, air H, D+K (frames: D+H @0, UP @16, P @22, K @28, H @34, D+K @66)
-- **Speed Bump Plus (1 bar):** H, P+K, P, P, H (frames: H @0, P+K @3, P @45, P @55, H @62)
+- **Tornado:** D+H, P, P, H (frames: D+H @0, P @42, P @52, H @59)
+- **Kick Chain:** K, K, H (frames: K @0, K @12, H @21)
+- **Flying Kicks:** D+H, up, air P, air K, air H (frames: D+H @0, UP @16, P @30, K @39, H @46)
+- **Tornado Plus (1 bar):** D+H, P+K, P, P, H (frames: D+H @0, P+K @3, P @41, P @52, H @60)
 - **Passing Period (3 bars):** P, D, D/F, F+P+K+H (frames: P @0, D @3, D/F @4, F @5, F+P+K+H @9)
 
 ## MAX "HEAVY COURSE LOAD" — Power — Heavy Course Load

@@ -133,11 +133,12 @@ Every fighter's combo routes, and what the combo feel pass changed. The routes l
 
 | Route | Level | Inputs | Hits | Meter | Damage |
 | --- | --- | --- | --- | --- | --- |
-| TARDY RUSH | easy | P, P, K, K | 4 | - | 38 |
+| SNAP, SNAP, SNAP | easy | K, K, K | 3 | - | 32 |
 | RUNNING LATE | easy | P, P, H | 3 | - | 27 |
-| HALL PASS | medium | D+H, P, P, H | 4 | - | 40 |
-| SPEED BUMP PLUS | medium | H, P+K, P, P, H | 4 | 1 bar | 50 |
-| NEVER STOPS | hard | D+H, UP, AIR P, AIR K, AIR H, D+K | 5 | - | 52 |
+| TORNADO | medium | D+H, P, P, H | 4 | - | 40 |
+| KICK CHAIN | medium | K, K, H | 3 | - | 36 |
+| TORNADO PLUS | medium | D+H, P+K, P, P, H | 4 | 1 bar | 45 |
+| FLYING KICKS | hard | D+H, UP, AIR P, AIR K, AIR H | 4 | - | 45 |
 | PASSING PERIOD | hard | P, D, D/F, F+P+K+H | 2 | 3 bars | 58 |
 
 ### MAX (power, heavy course load)

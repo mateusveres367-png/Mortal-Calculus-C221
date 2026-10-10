@@ -451,6 +451,7 @@
     if (roll < a * 0.5 + (st.dashIn || 0) * 0.4) {
       var dp = {}; dp[0] = 'F'; dp[2] = 'F';
       if (moves.dashP && dist < 150 && rnd() < 0.3) dp[8] = 'P'; // straight into the dash attack
+      else if (moves.dashK && dist < 220 && rnd() < 0.4) dp[8] = 'K'; // NICOLAS: a hopping side kick out of it
       this.startScript(dp, match, self);
       this.script.fired[0] = true;
       return toRaw('F', self.facing); // the first tap now (the script presses the second)

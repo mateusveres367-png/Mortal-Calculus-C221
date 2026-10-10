@@ -319,17 +319,31 @@ Five 10th graders. Character select has two tabs, **TEACHERS | STUDENTS** (Q/E, 
 - "Eight limbs. You had four."
 - "Should've checked the kick."
 
-## NICOLAS "The Late Pass" — Rushdown
+## NICOLAS "The Late Pass" — Rushdown / Kicks
 
-**Moves:** Bell Sprint (the fastest dash in the game; F, F, P is a flying shoulder out of it), Tardy Rush (string: P, P, K, K), Hall Pass (launcher), Skip Day (sidestep attack: P out of a sidestep), Backpack Toss (projectile: his backpack, thrown straight), Locker Slam (throw).
+**Moves:** almost all kicks; his hands are just a jab and a cross.
+- Jab–Cross (P, P): quick hands to get in.
+- Snap Kick (K): lightning-fast lead-leg kick. It chains into itself up to three times: head, body, head (the third knocks them down).
+- Double Roundhouse (B+K): two kicks off the same leg without touching the floor.
+- Back Kick (F+K): a spin and the rear foot into the stomach. Huge knockback, and at the wall it splats them.
+- Axe Kick (F+H): the leg goes straight up and the heel comes down on their head (an overhead mid: crouching doesn't block it).
+- Tornado Kick (D+H): his launcher, a jumping 360° spinning kick.
+- 540 Kick (B+H): a huge jumping, spinning hook kick. Slow, massive damage.
+- Roundhouse (H): the rear leg, the hip turned all the way over.
+- Hopping Side Kick (F, F, K): out of his dash, a side kick that covers the screen.
+- Low Cut Kick (D+K): quick, to the shin. Spinning Sweep (D/B+K).
+- Air: Flying Side Kick, Scissor Kick, Butterfly Kick.
+- Throws: Push and Hook, Spin Around.
 
-**Style:** Hallway sprinter. Up on his toes, bouncing, always leaning in: flicking jabs, knees, a lunging straight, a baseball slide for his low.
+**Style:** Taekwondo. Bladed side-on stance, bouncing, the lead leg always flicking. Flashy, fast and aggressive: jumping and spinning kicks from everywhere. Nothing like CHAI, a precise, technical kicker who holds his ground: NICOLAS never stops moving and goes for the highlight.
 
-**Signature — Bell Sprint:** his dash covers more ground than anyone's, he can chain one dash straight into the next (forward, forward again while dashing) and attack out of it almost at once.
+**Signature — Kick Chain:** any kick that hits cancels into a different kick, up to five in a row (only on hit: a blocked kick doesn't chain). He still has the fastest dash in the game.
 
-**Ultimate — Five-Minute Passing Period:** the bell rings and a huge LED clock slams up: 5:00. It counts down at hyperspeed while he blitzes the opponent from one end of the stage to the other, hitting from both sides at once, the hallway crowd rushing past. At 0:00 the bell rings again and a flying shoulder sends them into the far wall.
+**Enhanced (1 bar):** the Back Kick spins twice and always wall splats; the Tornado Kick and the 540 Kick get armor.
 
-**KO finisher — Tardy:** the bell rings, he sprints past them, the opponent spins and drops, and a TARDY SLIP stamps the screen.
+**Ultimate — Five-Minute Passing Period:** the bell rings and a huge LED clock slams up: 5:00. It counts down at hyperspeed while he lands a nonstop chain of jumping, spinning and flying kicks across the whole stage, the hallway crowd rushing past. At 0:00 the bell rings again and one last kick sends them into the far wall.
+
+**KO finisher — Tardy:** a slow-motion 540 kick; the bell rings on impact, the opponent spins and drops, and a TARDY SLIP stamps the screen.
 
 **Look:** Short dark hair with a fringe, red t-shirt, slight grin.
 

@@ -70,7 +70,7 @@ var INPUT = {
 };
 // Moves measured by the generic frame data check: plain strikes with an input above.
 function measurable(m) {
-  return INPUT[m.id] && m.box && !m.feint && !m.stanceSwitch && !m.parry && !m.charge && !m.throw && !m.air;
+  return INPUT[m.id] && m.box && !m.feint && !m.stanceSwitch && !m.parry && !m.charge && !m.throw && !m.air && !m.multi; // (multi-hit moves are tested on their own)
 }
 
 var defs = FG.ROSTER;
@@ -1765,9 +1765,8 @@ defs.forEach(function (d) {
   check('the students are the ones in ROSTER.md', teachers.length === 9 && students.length >= 1 && students.every(function (s, k) { return s.id === PLANNED[k]; }), students.map(function (s) { return s.id; }));
   check('students are smaller than every teacher', students.every(function (s) { return teachers.every(function (t) { return s.scale < t.scale; }); }), students.map(function (s) { return s.scale; }));
   // Only students throw things (MATEUS, a Muay Thai fighter, doesn't).
-  check('only students throw projectiles', defs.every(function (d) {
-    var has = Object.keys(d.moves).some(function (id) { return !!d.moves[id].projectile; });
-    return d.side === 'student' ? has || d.id === 'mateus' : !has;
+  check('no teacher throws a projectile', teachers.every(function (d) {
+    return !Object.keys(d.moves).some(function (id) { return !!d.moves[id].projectile; });
   }));
   // Every student's projectiles: frame data at point-blank range like any strike.
   students.forEach(function (d) {
@@ -1787,9 +1786,15 @@ defs.forEach(function (d) {
     });
   });
 
-  // Projectiles in general (NICOLAS's backpack): one at a time, a sidestep dodges it, two
-  // cancel out, a parry knocks it away.
+  // Projectiles in general: one at a time, a sidestep dodges it, two cancel out, a parry
+  // knocks it away. (Tested on a test-only fighter: a thrown backpack.)
   var NI = FG.fighterById('nicolas'), LO = FG.fighterById('lopez');
+  var PJ = Object.assign({}, NI, { id: 'pjtest', moves: Object.assign({}, NI.moves) });
+  PJ.moves.bP = FG.prepareMove(PJ, 'bP', { name: 'Projectile', label: 'TEST BACKPACK', cmd: 'B+P', level: 'mid', strength: 'medium', motion: 'cross',
+    startup: 15, active: 1, recovery: 21, damage: 12, block: -5, hit: { adv: 3 }, ch: { adv: 7 }, push: 10,
+    projectile: { kind: 'backpack', x: 24, y: 50, vx: 6.4, vy: 0.9, g: 0.05, w: 16, h: 16, range: 420, life: 120 },
+    anim: [[1, 'idle'], [36, 'idle']] });
+  NI = PJ;
   var m = setup(NI, P, 400), e;
   evs(m, 20, function (i) { return [i === 0 ? { p: true, left: true } : {}]; });
   check('projectiles: one on screen at a time', m.projectiles.length === 1, m.projectiles.length);
@@ -1880,6 +1885,28 @@ defs.forEach(function (d) {
   e = evs(m, 80, function (i) { return [i === 0 ? { h: true, right: true } : {}, i === 2 ? { h: true } : {}]; });
   var hk = e.filter(function (x) { return x.type === 'hit' && x.attacker === 0; })[0];
   check('head kick: a counter hit carries them into the wall', hk && hk.ch && e.some(function (x) { return x.type === 'wallsplat'; }), types(e));
+
+  // NICOLAS (Taekwondo): the Snap Kick chains into itself (head, body, head); Kick Chain
+  // cancels a kick that hits (not one that's blocked) into a different kick; Double
+  // Roundhouse is two kicks; out of a dash, K is a Hopping Side Kick across the screen.
+  var NC = FG.fighterById('nicolas');
+  if (NC) {
+    var nr = FG.runCombo(NC, P, { plan: { 0: 'K', 12: 'K', 23: 'K' } });
+    check('nicolas: K, K, K is head, body, head', nr.hits.join() === 'mid,snap2,snap3' && NC.moves.mid.level === 'high' && NC.moves.snap2.level === 'mid' && NC.moves.snap3.level === 'high', nr.hits);
+    nr = FG.runCombo(NC, P, { plan: { 0: 'K', 12: 'F+K' } });
+    check('nicolas: a kick that hits chains into another kick', nr.hits.join() === 'mid,fK' && nr.trueCombo, nr.hits);
+    m = setup(NC, P, 40); e = evs(m, 60, function (i) { return [i === 0 ? { k: true } : i === 12 ? { k: true, right: true } : {}, i >= 4 ? { right: true } : {}]; });
+    check('nicolas: a blocked kick does not chain', e.filter(function (x) { return x.type === 'block' && x.attacker === 0; }).length === 1 && !e.some(function (x) { return x.attacker === 0 && x.move && x.move.id === 'fK' && (x.type === 'hit' || x.type === 'block'); }), types(e));
+    nr = FG.runCombo(NC, P, { plan: { 0: 'B+K' } });
+    check('nicolas: double roundhouse is two kicks', nr.hits.join() === 'bK,bK' && nr.trueCombo, nr.hits);
+    m = setup(NC, P, 40); e = evs(m, 80, function (i) { return [i === 0 ? { k: true, left: true } : {}, i >= 4 ? { right: true } : {}]; });
+    var dbk = e.filter(function (x) { return x.type === 'block' && x.attacker === 0; });
+    check('nicolas: double roundhouse block adv', dbk.length === 2 && m.lastResult[0] && m.lastResult[0].adv === NC.moves.bK.block, [dbk.length, m.lastResult[0]]);
+    m = setup(NC, P, 170); var nx0 = m.fighters[0].x;
+    e = evs(m, 60, function (i) { return [i === 0 || i === 2 ? { right: true } : i === 6 ? { k: true } : {}]; });
+    check('nicolas: F, F, K is a hopping side kick across the screen', e.some(function (x) { return x.type === 'hit' && x.move.id === 'dashK'; }), [types(e), m.fighters[0].x - nx0]);
+    check('nicolas: no projectile', Object.keys(NC.moves).every(function (id) { return !NC.moves[id].projectile; }));
+  }
 
   // JACK: the paper airplane curves up, the nose dive skims the floor as a low, and Seat
   // Swap switches sides.

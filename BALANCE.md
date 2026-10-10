@@ -132,6 +132,22 @@ What changed on the way:
 - balance.js counts the clinch follow-ups as used moves (they play from the clinch, not as
   ordinary attacks).
 
+## NICOLAS the Taekwondo kicker
+
+NICOLAS was rebuilt as a Taekwondo fighter (the kick chain, snap kicks, spinning and jumping
+kicks; no projectile). He first came in at 26%: his CPU threw the slow Roundhouse, Tornado Kick
+and Axe Kick from range and whiffed most of them, and his old health (170) was low for a fighter
+without a projectile to keep them out. Changes:
+
+- Health 170 → 194.
+- Snap Kicks 9 / 9 / 12 → 10 / 10 / 14; Hopping Side Kick 16 → 18; Low Cut Kick -10 → -8 on block.
+- CPU: spacing 50; pokes are snap kicks, the Low Cut Kick, Back Kick and Double Roundhouse; up
+  close it chains (`K>K>K`, `K>K>H`) and keeps the slow kicks (F+H, D+H, B+H) as rarer mix-ups;
+  dash-in 0.65 (the Hopping Side Kick out of it).
+
+Quick runs (8 per pairing, `--only nicolas`, seeds 5 / 9 / 21): 52.9% / 40.9% / 51.0%, about
+48% pooled, with no never-used move.
+
 ## The student side (14 fighters)
 
 Adding the five students made it 14 fighters and 4368 matches per run (24 per pairing). Judged on
