@@ -154,62 +154,37 @@
     }
   };
 
-
-  // JACK — Back Row: he folds a giant paper airplane, climbs on and rides it across the
-  // stage straight into them, then glides down and lands it perfectly. The judges agree.
-  function bigPlane(g, x, y, dir, k, fold) {
-    var P = function (u, v) { return { x: x + u * dir * k, y: y + v * k }; };
-    if (fold < 1) { // still a sheet of paper, folding
-      var f = fold;
-      g.fillStyle(0xf6f6f0, 1); g.fillPoints([P(-30 + 20 * f, -14 + 10 * f), P(30, -14 + 14 * f), P(30, 14 - 14 * f), P(-30 + 20 * f, 14 - 10 * f)], true);
-      g.lineStyle(1, 0x8aa8e0, 0.8); for (var r = -10; r <= 10; r += 5) { var a = P(-28 + 20 * f, r * (1 - f)), b = P(28, r * (1 - f)); g.lineBetween(a.x, a.y, b.x, b.y); }
-      return;
-    }
-    g.fillStyle(0xf6f6f0, 1); g.fillPoints([P(32, 0), P(-30, -12), P(-20, 0)], true);
-    g.fillStyle(0xd8d8d0, 1); g.fillPoints([P(32, 0), P(-30, 10), P(-20, 0)], true);
-    g.lineStyle(2, 0x8a94a8, 1); var c = P(32, 0), e = P(-26, 0); g.lineBetween(c.x, c.y, e.x, e.y);
-    g.lineStyle(2, 0x2a3a8a, 1); g.strokeCircle(P(-8, -5).x, P(-8, -5).y, 3 * k); // a doodle on the wing
-  }
+  // JACK — Back Row: in slow motion, the question mark kick: chambered low like a body
+  // kick... turning over to the head. They spin and drop. He lands, does a little hop on
+  // the spot, turns his back and walks off to his seat. BACK ROW.
   FG.FINISHERS.jack = {
-    len: 220,
+    len: 230,
     step: function (fx, t) {
       var w = fx.w, l = fx.l, s = fx.s;
-      if (t === 1) { fx.anim(w, [[1, 'stand'], [8, 'fold'], [40, 'fold']]); fx.anim(l, FG.dazedAnim, true); s.px = w.x + fx.dir * 10; }
-      if (t > 1 && t < 40 && t % 4 === 0) sfx(function (S) { S.noise({ dur: 0.05, freq: 5200, q: 3, gain: 0.06, type: 'highpass' }); });
-      if (t === 44) { fx.pose(w, 'ride'); s.ride = t; sfx(function (S) { S.noise({ dur: 0.6, freq: 900, f1: 2600, q: 1, gain: 0.2 }); }); }
-      if (s.ride && !s.landed) {
-        var u = t - s.ride;
-        w.x += fx.dir * (u < 6 ? 2 : 9);
-        w.y = 30 + Math.sin(u * 0.2) * 4;
-        s.px = w.x; s.py = w.y;
-        if (!s.hit && (l.x - w.x) * fx.dir < 20) { s.hit = t; fx.hit(l, 'power', { ch: true, shake: 0.025, y: 50 }); fx.anim(l, [[1, 'juggle'], [30, 'down']]); fx.slow(18, 0.4); }
-        // Glide down and land it.
-        if (s.hit && t - s.hit > 10) { w.y = Math.max(0, 30 - (t - s.hit - 10) * 1.2); s.py = w.y; if (w.y === 0) { s.landed = t; fx.anim(w, [[1, 'ride'], [8, 'stand'], [24, 'lounge']]); sfx(function (S) { S.noise({ dur: 0.2, freq: 1400, q: 1, gain: 0.08 }); }); } }
-        if (w.x < C.WALL_L + 30 || w.x > C.WALL_R - 30) { s.landed = t; w.y = 0; fx.anim(w, [[1, 'stand'], [16, 'lounge']]); }
+      if (t === 1) { fx.pose(w, 'idle'); fx.anim(l, FG.dazedAnim, true); }
+      // The chamber, slowed right down: it looks like a body kick...
+      if (t === 10) { fx.anim(w, [[1, 'idle'], [8, 'qm_c']]); fx.slow(70, 0.3); sfx(function (S) { S.noise({ dur: 0.5, freq: 600, f1: 1600, q: 1, gain: 0.1 }); }); }
+      // ...and it turns over to the head.
+      if (t === 26) {
+        fx.pose(w, 'qm_x'); s.hit = t;
+        fx.hit(l, 'power', { ch: true, shake: 0.03, y: 76 }); fx.flash(0xffffff, 0.6);
+        fx.anim(l, [[1, 'hit_high'], [8, 'juggle'], [34, 'down']]);
       }
-      if (s.hit && t > s.hit && t < s.hit + 30) { l.y = Math.sin((t - s.hit) / 30 * Math.PI) * 60; l.x += fx.dir * 3; }
-      if (s.hit && t === s.hit + 30) { l.y = 0; FG.Sfx.play({ type: 'land' }); fx.shake(0.008); }
-      if (s.landed && t === s.landed + 20) { s.cards = t; sfx(function (S) { [0, 0.12, 0.24].forEach(function (d) { S.osc({ dur: 0.08, f0: 1100, gain: 0.05, type: 'square', at: d }); }); }); fx.scene.stage.react('wild'); }
+      if (s.hit && t > s.hit + 4 && t < s.hit + 34) { var u = (t - s.hit - 4) / 30; l.y = Math.sin(u * Math.PI) * 34; l.x += fx.dir * 1.6; l._drawRot = -fx.dir * u * 1.6; }
+      if (s.hit && t === s.hit + 34) { l.y = 0; l._drawRot = 0; FG.Sfx.play({ type: 'land' }); fx.shake(0.01); }
+      // A little hop on the spot...
+      if (t === 66) { fx.anim(w, [[1, 'qm_r'], [8, 'idle'], [14, 'hop'], [20, 'idle']]); }
+      if (t > 79 && t < 86) w.y = Math.sin((t - 79) / 6 * Math.PI) * 10;
+      if (t === 86) w.y = 0;
+      // ...then he turns his back and walks off to his seat.
+      if (t === 100) { w._drawFacing = -fx.dir; fx.anim(w, [[1, 'away1'], [10, 'away2'], [20, 'away1']], true); s.walk = t; }
+      if (s.walk && t > s.walk) w.x -= fx.dir * 1.3;
+      if (t === 120) { s.stamp = t; fx.scene.stage.react('wild'); sfx(function (S) { S.osc({ dur: 0.2, f0: 660, f1: 990, gain: 0.08, type: 'triangle' }); }); }
     },
     draw: function (fx, t) {
-      var s = fx.s, g = fx.gf;
-      if (t > 4) {
-        var fold = Math.min(1, (t - 4) / 34), x = s.ride ? s.px : fx.w.x + fx.dir * 30, y = GY - (s.ride ? s.py - 6 : 10);
-        bigPlane(s.ride ? fx.gb : g, x, y, fx.dir, s.ride ? 1.8 : 1.2, fold);
-      }
-      if (s.cards) { // the judges: 10, 10, 10
-        var gs = fx.gs;
-        for (var k = 0; k < 3; k++) {
-          var up = Math.min(1, (t - s.cards - k * 6) / 8);
-          if (up <= 0) continue;
-          var cx = W / 2 - 110 + k * 110, cy = 120 + (1 - up) * 60;
-          gs.fillStyle(0x000000, 0.4); gs.fillRect(cx - 34, cy - 24, 72, 52);
-          gs.fillStyle(0xf8f8f0, 1); gs.fillRect(cx - 38, cy - 28, 72, 52);
-          gs.fillStyle(0x6a4a2a, 1); gs.fillRect(cx - 4, cy + 24, 6, 40);
-          bigText(fx, k, '10', cx - 2, cy - 2, 0x2a3a8a, 4, 0);
-        }
-      } else if (s.landed && t - s.landed < 20) bigText(fx, 0, 'BACK ROW', W / 2, 100, 0x5fd7ff, 4, -5);
-      else if (!s.cards) { fx.texts[0].setVisible(false); fx.texts[1].setVisible(false); fx.texts[2].setVisible(false); }
+      var s = fx.s;
+      if (s.stamp) bigText(fx, 0, 'BACK ROW', W / 2, 110, 0x5fd7ff, 4 * stampScale(t, s.stamp), -5);
+      else fx.texts[0].setVisible(false);
     }
   };
 

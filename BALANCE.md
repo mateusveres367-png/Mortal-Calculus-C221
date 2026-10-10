@@ -163,6 +163,22 @@ and a throw into a hold took close to a third of a teacher's health. Changes:
 
 Quick runs (8 per pairing, `--only max`, seeds 5 / 9): 53.8% / 54.3%, with no never-used move.
 
+## JACK the kickboxer
+
+JACK was rebuilt as a kickboxer with FLOW (no projectiles, feint, teleport or stance). He
+first came in at 13.5%: with no projectile to keep anyone out, his short kicks lost every
+footsie battle at 50-60 px (BRINKHUS's long jab won them all). Changes:
+
+- More reach on the Front Kick, Low Kick and Switch Kick (each steps in a little).
+- Health 184 → 212; jab 8 → 9, cross 10 → 11, Front Kick 12 → 13, Low Kick 10 → 12 (-8 on
+  block), Switch Kick 16 → 18, Spinning Back Fist 14 → 16.
+- CPU: spacing 50, aggro 1.3, dash-in 0.55, and string tokens that feed FLOW (`P>P>K`, `P>K`).
+- The Flying Knee (his launcher) is a knee, not a kick: it doesn't flow (a flowing jab after
+  it came out too early to reach the juggle).
+
+Quick runs (8 per pairing, `--only jack`, seeds 5 / 9): 49.5% / 47.6%, with no never-used
+move.
+
 ## The student side (14 fighters)
 
 Adding the five students made it 14 fighters and 4368 matches per run (24 per pairing). Judged on

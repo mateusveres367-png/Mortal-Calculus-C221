@@ -908,6 +908,8 @@
       if (ev.type === 'check') { this.spawnGlyph({ x: ev.x, y: 50, attacker: ev.attacker, text: 'CHECKED!', ch: true }); this.quip(ev.attacker, 0.5); }
       if (ev.type === 'legdamage') this.spawnGlyph({ x: ev.x, y: 40, attacker: ev.attacker, text: 'LEG DAMAGE', ch: true });
       if (ev.type === 'grab' && ev.clinch) this.spawnGlyph({ x: ev.x, y: 70, attacker: ev.attacker, text: 'CLINCH' });
+      // JACK: FLOW (a punch into a kick or a kick into a punch, faster and stronger).
+      if (ev.type === 'flow') this.spawnGlyph({ x: ev.x, y: 84, attacker: ev.fighter, text: 'FLOW' });
       // MAX: the tap, or they got out (the hold's name is on its struggle meter).
       if (ev.type === 'tap') {
         this.tapFx = { start: this.tickCount, x: ev.x };
@@ -1271,7 +1273,7 @@
     // An enhanced special glows in the fighter's colour while it plays.
     this.auras.clear();
     for (var ai = 0; ai < 2; ai++) {
-      var af = f[ai], ex = (af.state === 'attack' && af.move && (af.move.enhanced || af.move.ultimate)) || (this.ult && this.ult.wi === ai);
+      var af = f[ai], ex = (af.state === 'attack' && af.move && (af.move.enhanced || af.move.ultimate || af.move.flowed)) || (this.ult && this.ult.wi === ai);
       var boosted = af.boost > 0; // Extra Credit: a gold glow
       if (!(af.calculated > 0 || ex || boosted) || af._hidden || !af._pose) continue;
       var pulse = ex ? 0.5 + 0.3 * Math.sin(this.tickCount * 0.6) : boosted ? 0.4 + 0.25 * Math.sin(this.tickCount * 0.35) : 0.35 + 0.25 * Math.sin(this.tickCount * 0.25);

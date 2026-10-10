@@ -534,7 +534,7 @@ Calm, focused, a little cocky. Lets his shins do the talking.
 | F,F,P | Superman Punch | mid | 13 | 3 | 19 | -5 | +5 | knockdown | 16 |  |
 | K | Teep | mid | 13 | 3 | 17 | -3 | +2 | +6 | 12 | wall splats |
 | F+K | Body Kick | mid | 15 | 3 | 18 | -6 | +3 | knockdown | 16 | enhance with P+K |
-| D+K | Low Kick | low | 14 | 3 | 17 | -10 | +3 | +7 | 12 |  |
+| D+K | Low Kick | low | 14 | 3 | 17 | -10 | +3 | +7 | 12 | leg damage (3 slow their walk) |
 | D/B+K | Sweep The Leg | low | 19 | 3 | 26 | -18 | knockdown | knockdown | 14 | ducks highs |
 | H | Knee | mid | 17 | 3 | 20 | -5 | +4 | launch | 19 | wall splats |
 | F+H | Head Kick | high | 20 | 3 | 22 | -10 | knockdown | knockdown | 24 | jump cancel on hit (UP) |
@@ -700,63 +700,63 @@ Chill and friendly, but strong. Every fight ends on the mat.
 - **Double Major (1 bar):** D+H, P+K, P, P, H (frames: D+H @0, P+K @3, P @43, P @56, H @66)
 - **Finals Week (3 bars):** P, D, D/F, F+P+K+H (frames: P @0, D @3, D/F @4, F @5, F+P+K+H @9)
 
-## JACK "BACK OF THE CLASSROOM" — Tricky — Back Row
+## JACK "BACK OF THE CLASSROOM" — Rushdown — Back Row
 
 Creative and sneaky. Always messing around in the back row.
 
-**Style:** School-supply zoner. **Signature:** Doodle — B+K drops him into his sketchbook stance (DOODLING): his next attack comes from a weird angle (P a hopping overhead from above, K a skidding low, H a cartwheel kick that launches). Paper Airplane flies out and curves, up (B+P) or diving (D+P, a low once it skims the floor); Eraser Flick (F+P) is a fast little high; Pass the Note (F+H) is a feint; Seat Swap (B+H) switches sides.
+**Style:** Kickboxing. **Signature:** Flow — a punch that lands makes his next kick faster and stronger, and a kick that lands does the same for his next punch. Jab-Cross-Hook (P, P, P) and Punch-to-Kick (P, P, K); Low Kick (D+K) slows them once three land; Question Mark Kick (F+H) turns over to the head (K during the chamber keeps it on the body); Spinning Back Fist (B+P) is huge on a counter hit.
 
-**Movement:** walk 2.2 forward / 1.6 back, dash 8.2 for 15 frames, backdash 9.6, jump 9.4, weight 0.93 (higher falls faster in juggles).
+**Movement:** walk 2.4 forward / 1.8 back, dash 8.6 for 14 frames, backdash 9.4, jump 9.4, weight 0.93 (higher falls faster in juggles).
 
 | Input | Move | Level | i | Active | Recovery | Block | Hit | Counter hit | Damage | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| P | Spitball | high | 10 | 2 | 13 | +1 | +8 | +10 | 8 |  |
-| P,P | Pencil Poke | high | 10 | 2 | 16 | -3 | +6 | +9 | 10 |  |
-| P,P,H | Book Report | mid | 12 | 3 | 20 | -9 | knockdown | knockdown | 13 |  |
-| F+P | Eraser Flick | high | 11 | projectile | 13 | +1 | +7 | +10 | 9 | projectile: flies straight, range 340, enhance with P+K |
-| B+P | Paper Airplane | mid | 14 | projectile | 16 | -1 | +6 | +9 | 13 | projectile: curves up, range 520, enhance with P+K |
-| STANCE P | Margin Note | mid | 18 | 3 | 20 | -6 | +4 | knockdown | 17 | bounds |
-| STANCE K | Scribble | low | 14 | 4 | 20 | -12 | +2 | knockdown | 13 | ducks highs |
-| STANCE H | Outside The Lines | mid | 16 | 4 | 22 | -13 | launch | launch | 16 |  |
-| D+P | Nose Dive | mid | 15 | projectile | 16 | -1 | +6 | +9 | 13 | projectile: lobbed; rolls along the floor (a low once it lands), range 520 |
-| K | Ruler Snap | mid | 14 | 3 | 17 | -5 | +4 | +8 | 14 |  |
-| B+K | Doodle | — | 13 total |  |  |  |  |  |  | switches stance |
-| D+K | Under The Desk | low | 14 | 3 | 18 | -11 | 0 | +5 | 9 | hits downed opponents, ducks highs |
-| D/B+K | Trip The Aisle | low | 19 | 3 | 26 | -18 | knockdown | knockdown | 14 | ducks highs |
-| H | Binder Slap | mid | 17 | 3 | 20 | -5 | +5 | launch | 21 | wall splats |
-| F+H | Pass The Note | — | 23 total |  |  |  |  |  |  | feint: cancel with P, K, H or P+K during frames 6-18 |
-| B+H | Seat Swap | — | 27 total |  |  |  |  |  |  | teleport: gone frames 5-14, reappears behind them on frame 15 |
-| D+H | Pencil Flip | mid | 15 | 4 | 22 | -15 | launch | launch | 15 | enhance with P+K, jump cancel on hit (UP) |
-| P+K | Fold In Half | throw | 12 | 2 | 26 |  |  |  | 28 | break with P |
-| B+P+K | Switcheroo | throw | 12 | 2 | 26 |  |  |  | 32 | break with K |
-| AIR P | Notebook Swat | mid | 7 | 4 | 10 |  |  |  | 8 | hitstun 16, blockstun 10, landing 4 |
-| AIR K | Desk Hop | mid | 9 | 5 | 12 |  |  |  | 11 | hitstun 18, blockstun 12, landing 6 |
-| AIR H | Pencil Drop | mid | 12 | 4 | 16 |  |  |  | 16 | bounds, hitstun 22, blockstun 14, landing 10 |
+| P | Jab | high | 9 | 2 | 13 | +1 | +8 | +10 | 9 | punch: a hit makes the next kick flow |
+| P,P | Cross | high | 10 | 2 | 16 | -2 | +6 | +9 | 11 | punch: a hit makes the next kick flow |
+| P,P,P | Lead Hook | high | 11 | 3 | 18 | -5 | knockdown | knockdown | 13 | punch: a hit makes the next kick flow |
+| P,P,K | Punch To Kick | mid | 13 | 3 | 19 | -7 | knockdown | knockdown | 15 | kick: a hit makes the next punch flow |
+| P,P,H | Uppercut | mid | 12 | 3 | 20 | -9 | knockdown | knockdown | 13 |  |
+| B+P | Spinning Back Fist | high | 15 | 3 | 18 | -4 | +4 | knockdown | 16 | enhance with P+K, punch: a hit makes the next kick flow |
+| K | Front Kick | mid | 12 | 3 | 17 | -3 | +4 | +8 | 13 | kick: a hit makes the next punch flow |
+| F+K | Switch Kick | mid | 15 | 3 | 18 | -5 | +3 | knockdown | 18 | enhance with P+K, kick: a hit makes the next punch flow |
+| D+K | Low Kick | low | 13 | 3 | 17 | -8 | +2 | +6 | 12 | kick: a hit makes the next punch flow, leg damage (3 slow their walk) |
+| D/B+K | Leg Sweep | low | 19 | 3 | 26 | -18 | knockdown | knockdown | 14 | ducks highs, kick: a hit makes the next punch flow |
+| H | High Kick | high | 16 | 3 | 20 | -6 | +5 | launch | 20 | wall splats, kick: a hit makes the next punch flow |
+| F+H | Question Mark Kick | high | 19 | 3 | 19 | -7 | knockdown | knockdown | 20 | kick: a hit makes the next punch flow |
+| F+H,K | Question Mark (body) | mid | 9 | 3 | 19 | -6 | +3 | knockdown | 16 | kick: a hit makes the next punch flow |
+| D+H | Flying Knee | mid | 15 | 4 | 22 | -15 | launch | launch | 15 | enhance with P+K, jump cancel on hit (UP) |
+| P+K | Knee Tap | throw | 12 | 2 | 26 |  |  |  | 28 | break with P |
+| B+P+K | Spin Behind | throw | 12 | 2 | 26 |  |  |  | 32 | break with K |
+| AIR P | Flying Jab | mid | 7 | 4 | 10 |  |  |  | 8 | hitstun 16, blockstun 10, landing 4 |
+| AIR K | Jumping Switch Kick | mid | 9 | 5 | 12 |  |  |  | 11 | hitstun 18, blockstun 12, landing 6 |
+| AIR H | Superman Punch | mid | 12 | 4 | 16 |  |  |  | 16 | bounds, hitstun 22, blockstun 14, landing 10 |
 | K (DOWN) | Not Asleep | low | 14 | 3 | 22 | -14 | -2 | +1 | 10 | ducks highs |
 | P/H (DOWN) | I Was Listening | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
 | T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
-| D,D/F,F+P+K+H | Paper Airplane Squadron | mid | 14 | 3 | 47 | -35 | +4 | +8 | 14 |  |
+| D,D/F,F+P+K+H | Highlight Reel | high | 9 | 2 | 43 | -29 | +8 | +10 | 9 | punch: a hit makes the next kick flow |
 | T (BY AN OBJECT) | Springboard | mid | 16 | 5 | 18 | -6 | knockdown | knockdown | 18 |  |
 | B+T (BY AN OBJECT) | Vault | — | 38 total |  |  |  |  |  |  |  |
 
 **Enhanced specials** (P+K during the startup, 1 bar):
 
-- **Eraser Flick+** (`F+P`, then `P+K`): A bigger eraser, knockdown — 12 damage (from 9), a bigger or faster projectile, hit: knockdown.
-- **Paper Airplane+** (`B+P`, then `P+K`): Faster, knockdown — 17 damage (from 13), a bigger or faster projectile, hit: knockdown.
-- **Pencil Flip+** (`D+H`, then `P+K`): Armored — 20 damage (from 15), armor on frames 1-15 (1 hit).
+- **Spinning Back Fist+** (`B+P`, then `P+K`): Armored — 21 damage (from 16), armor on frames 1-15 (1 hit).
+- **Switch Kick+** (`F+K`, then `P+K`): Two kicks — 2 hits of 16.
+- **Flying Knee+** (`D+H`, then `P+K`): Armored — 20 damage (from 15), armor on frames 1-15 (1 hit).
 
-**Ultimate:** Paper Airplane Squadron — the ultimate key (`U` / `Numpad 0`) or `D, D/F, F + P+K+H`, with all three bars: dozens of paper airplanes fill the screen in formation and dive-bomb them. 11 hits, 32% of their health; blocked -35, whiffed 63 frames.
+**Flow:** a punch that hits makes his next kick (within 60 frames) 3 frames faster to come out and 25% stronger, with the same frame advantage; a kick that hits does the same for his next punch.
+
+**Ultimate:** Highlight Reel — the ultimate key (`U` / `Numpad 0`) or `D, D/F, F + P+K+H`, with all three bars: a punch-kick flurry, an instant replay, and a spinning back fist into a head kick frozen on the frame. 11 hits, 32% of their health; blocked -29, whiffed 53 frames.
 
 **KO finisher:** Back Row — `B, D, F, K` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).
 
 **Combo routes** (tested in `tests/sim.test.js`):
 
-- **Spitballs:** P, P, H (frames: P @0, P @12, H @25)
-- **Pass It Back:** P, P (frames: P @0, P @12)
-- **Pencil Flip:** D+H, P, P, H (frames: D+H @0, P @41, P @51, H @58)
-- **Outside The Lines:** D+H, up, air P, air K, air H, D+K (frames: D+H @0, UP @16, P @23, K @31, H @39, D+K @92)
-- **Armored Flip (1 bar):** D+H, P+K, P, P, H (frames: D+H @0, P+K @3, P @41, P @51, H @58)
-- **Paper Airplane Squadron (3 bars):** P, D, D/F, F+P+K+H (frames: P @0, D @3, D/F @4, F @5, F+P+K+H @9)
+- **Jab, Cross, Hook:** P, P, P (frames: P @0, P @12, P @25)
+- **Punch To Kick:** P, P, K (frames: P @0, P @12, K @25)
+- **Two And An Uppercut:** P, P, H (frames: P @0, P @12, H @25)
+- **Flying Knee:** D+H, P, P, H (frames: D+H @0, P @41, P @53, H @63)
+- **Highlight:** D+H, up, air P, air K, air H (frames: D+H @0, UP @16, P @28, K @36, H @44)
+- **Armored Knee (1 bar):** D+H, P+K, P, P, H (frames: D+H @0, P+K @3, P @41, P @53, H @63)
+- **Highlight Reel (3 bars):** P, D, D/F, F+P+K+H (frames: P @0, D @3, D/F @4, F @5, F+P+K+H @9)
 
 ## HUDSON "CALCULATOR KID" — Defensive — Calculators
 

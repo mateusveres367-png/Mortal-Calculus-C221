@@ -153,16 +153,17 @@ Every fighter's combo routes, and what the combo feel pass changed. The routes l
 | CRAM SESSION | hard | D+H, UP, AIR P, AIR K, AIR H | 4 | - | 52 |
 | FINALS WEEK | hard | P, D, D/F, F+P+K+H | 2 | 3 bars | 61 |
 
-### JACK (tricky, back row)
+### JACK (rushdown, back row)
 
 | Route | Level | Inputs | Hits | Meter | Damage |
 | --- | --- | --- | --- | --- | --- |
-| SPITBALLS | easy | P, P, H | 3 | - | 29 |
-| PASS IT BACK | easy | P, P | 2 | - | 18 |
-| PENCIL FLIP | medium | D+H, P, P, H | 4 | - | 42 |
-| ARMORED FLIP | medium | D+H, P+K, P, P, H | 4 | 1 bar | 47 |
-| OUTSIDE THE LINES | hard | D+H, UP, AIR P, AIR K, AIR H, D+K | 5 | - | 48 |
-| PAPER AIRPLANE SQUADRON | hard | P, D, D/F, F+P+K+H | 2 | 3 bars | 59 |
+| JAB, CROSS, HOOK | easy | P, P, P | 3 | - | 31 |
+| PUNCH TO KICK | easy | P, P, K | 3 | - | 37 |
+| TWO AND AN UPPERCUT | easy | P, P, H | 3 | - | 31 |
+| FLYING KNEE | medium | D+H, P, P, H | 4 | - | 44 |
+| ARMORED KNEE | medium | D+H, P+K, P, P, H | 4 | 1 bar | 49 |
+| HIGHLIGHT | hard | D+H, UP, AIR P, AIR K, AIR H | 4 | - | 45 |
+| HIGHLIGHT REEL | hard | P, D, D/F, F+P+K+H | 2 | 3 bars | 60 |
 
 ### HUDSON (defensive, calculators)
 

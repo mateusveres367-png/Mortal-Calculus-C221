@@ -134,6 +134,28 @@
     def.moves[m.id] = m;
   }
 
+  // FLOW (JACK, def.flow { speed, damage }): the version of a punch or a kick he throws
+  // right after landing one of the other kind: `speed` frames faster to come out and
+  // `damage` times stronger, with the same frame advantage. Built once per move and kept
+  // off def.moves (Fighter.startMove swaps it in).
+  FG.flowMove = function (def, base) {
+    var cache = def._flowMoves || (def._flowMoves = {});
+    if (cache[base.id]) return cache[base.id];
+    var F = def.flow, d = Math.min(F.speed, base.startup - 2), st = base.startup - d;
+    var sh = function (f) { return f <= base.startup ? Math.max(1, Math.round(f * st / base.startup)) : f - d; };
+    var m = Object.assign({}, base, { flowed: true, startup: st, total: base.total - d, damage: Math.round(base.damage * F.damage), ex: null });
+    m.anim = [];
+    base.anim.forEach(function (k) {
+      var f = sh(k[0]), last = m.anim[m.anim.length - 1];
+      if (last && last[0] >= f) m.anim.pop(); // squeezed together: the later key wins
+      m.anim.push([f, k[1]]);
+    });
+    if (base.cancels) m.cancels = base.cancels.map(function (c) { return Object.assign({}, c, { from: Math.max(1, c.from - d), to: c.to - d }); });
+    if (base.step) m.step = [sh(base.step[0]), sh(base.step[1]), base.step[2]];
+    cache[base.id] = m;
+    return m;
+  };
+
   // Ultimates: def.ultimate { name, from, len, hits, weights, end, counter } becomes
   // moves.ultimate, the opening strike (or grab, or counter stance) built from the move
   // it names. It costs all three bars (down, down-forward, forward + P+K+H); if it

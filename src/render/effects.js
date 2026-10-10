@@ -515,6 +515,9 @@
       case 'submission':
         thump(0.2, 120, 40, 0.6); burst(0.15, 500, 1, 0.3);
         break;
+      case 'flow': // JACK: a quick rising swish
+        sweep(0.14, 600, 1800, 0.08, 'triangle'); burst(0.08, 3000, 2, 0.12, 'bandpass');
+        break;
       case 'tap':
         thump(0.5, 80, 24, 0.9); burst(0.3, 800, 0.7, 0.4);
         [0, 0.13, 0.26].forEach(function (at) { setTimeout(function () { burst(0.04, 2200, 2, 0.6, 'bandpass'); thump(0.06, 300, 150, 0.4); }, at * 1000); });

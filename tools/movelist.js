@@ -80,6 +80,8 @@ FG.ROSTER.forEach(function (d) {
     if (m.parry && m.parry.reflect) notes.push('the counter hits at least as hard as what it caught');
     if (id === 'seenCounter') notes.push('comes out on its own, once a round (see 29 Years)');
     if (m.kick && d.kickChain) notes.push('kick chain');
+    if (d.flow && (m.punch || m.kick)) notes.push(m.punch ? 'punch: a hit makes the next kick flow' : 'kick: a hit makes the next punch flow');
+    if (m.legKick) notes.push('leg damage (' + FG.C.LEG_HITS + ' slow their walk)');
     if (m.tip) notes.push('Long Arms: +' + Math.round((FG.C.TIP_BONUS - 1) * 100) + '% damage at the tip');
     if (m.evade) notes.push('evades ' + m.evade.levels.map(function (l) { return l + 's'; }).join(' and ') + ' on frames ' + m.evade.from + '-' + m.evade.to);
     if (m.cancels) m.cancels.forEach(function (c) { if (c.onSway) notes.push('P after a miss: ' + title(d.moves[c.into].label)); });
@@ -116,6 +118,10 @@ FG.ROSTER.forEach(function (d) {
         (x.armor ? ', armor on frames ' + x.armor.from + '-' + x.armor.to + ' (' + x.armor.hits + (x.armor.hits > 1 ? ' hits' : ' hit') + ')' : '') +
         (x.wallSplat && !b.wallSplat ? ', wall splats' : '') + '.');
     });
+    out.push('');
+  }
+  if (d.flow) {
+    out.push('**Flow:** a punch that hits makes his next kick (within ' + FG.C.FLOW_FRAMES + ' frames) ' + d.flow.speed + ' frames faster to come out and ' + Math.round((d.flow.damage - 1) * 100) + '% stronger, with the same frame advantage; a kick that hits does the same for his next punch.');
     out.push('');
   }
   if (d.submissions) {

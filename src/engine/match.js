@@ -93,6 +93,7 @@
       if (f[i].propUsed) { var pu = f[i].propUsed; this.events.push({ type: 'prop', fighter: i, prop: pu, use: pu.use, x: pu.x, y: 40 }); f[i].propUsed = null; }
       if (f[i].extraCreditNow) { this.events.push({ type: 'extracredit', fighter: i, x: f[i].x, y: 60 }); f[i].extraCreditNow = false; }
       if (f[i].ultStarted) { this.events.push({ type: 'ultstart', fighter: i, move: f[i].move, x: f[i].x, y: 60 }); f[i].ultStarted = false; }
+      if (f[i].flowNow) { this.events.push({ type: 'flow', fighter: i, move: f[i].move, x: f[i].x, y: 60 }); f[i].flowNow = false; }
       if (f[i].enhancedNow) { this.events.push({ type: 'enhance', fighter: i, move: f[i].move, x: f[i].x, y: 60 }); f[i].enhancedNow = false; }
       if (f[i].startedMove) {
         var sm = f[i].startedMove;

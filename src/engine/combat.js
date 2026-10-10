@@ -151,6 +151,8 @@
 
     a.contact = 'hit';
     d.stance = 'A'; // getting hit knocks you out of a stance
+    // FLOW (JACK): a punch that lands sets up a faster, stronger kick, and a kick a punch.
+    if (a.def.flow && (m.punch || m.kick) && !m.ultimate) { a.flowType = m.punch ? 'kick' : 'punch'; a.flowT = C.FLOW_FRAMES; ev.flowed = !!m.flowed; }
     var ch = c.ch;
     ev.feint = a.fromFeint; // the hit came out of a feint: the opponent fell for it
     var result = ch ? m.ch : m.hit;

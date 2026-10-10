@@ -403,27 +403,45 @@ A struggle meter appears over them: they mash to escape, he mashes to tighten, a
 - "Should've tapped sooner."
 - "Nap time."
 
-## JACK "Back of the Classroom" — Tricky / Zoner
+## JACK "Back of the Classroom" — Rushdown / Kickboxer
 
-**Moves:** Paper Airplane (projectile that curves up or down), Eraser Flick (fast small projectile), Ruler Snap (poke), Doodle (stance where he sketches, then his next attack comes from a weird angle), Pass the Note (feint), Seat Swap (teleport: switches sides).
+**Moves:** punches into kicks, kicks into punches.
+- Jab–Cross–Hook (P, P, P): the hook knocks them down.
+- Punch-to-Kick (P, P, K): off the cross, a rear body roundhouse.
+- Front Kick (K): the lead foot straight into the middle.
+- Switch Kick (F+K): a switch step, then the lead leg (now behind) whips round to the body.
+- Low Kick (D+K): the shin into the thigh. Land three and their walk slows (leg damage).
+- Question Mark Kick (F+H): chambered like a body kick, it turns over to the head (a high). K during the chamber keeps it on the body (a mid): the mid/high mix-up.
+- Spinning Back Fist (B+P): fast; on a counter hit it hits much harder and spins them down.
+- Flying Knee (D+H): his launcher.
+- High Kick (H): the rear shin to the head; at the wall it splats them.
+- Leg Sweep (D/B+K).
+- Air: Flying Jab, Jumping Switch Kick, Superman Punch.
+- Throws: Knee Tap, Spin Behind.
+
+**Style:** Kickboxing. Orthodox, hands high, light switch steps, always on his toes. Nothing like BRINKHUS, who keeps you out with long arms: JACK walks in behind the jab and flows from punches to kicks and back.
+
+**Signature — Flow:** a punch that lands makes his next kick faster (3 frames) and stronger (+25%); a kick that lands does the same for his next punch. It lasts a second. The Flying Knee is a knee: it doesn't flow.
+
+**Enhanced (1 bar):** the Switch Kick kicks twice; the Spinning Back Fist and the Flying Knee are armored.
+
+**Ultimate — Highlight Reel:** the jab lands and the picture turns into a broadcast (a LIVE bug, his name on a lower third): a punch-kick flurry, every strike called out. Then the tape rewinds and the INSTANT REPLAY plays the finish in slow motion: a spinning back fist, and a head kick that freezes on the frame. PLAY OF THE DAY.
+
+**KO finisher — Back Row:** in slow motion, the question mark kick: it looks like a body kick, then turns over to the head. They spin and drop. He does a little hop on the spot, turns his back and walks off to his seat.
 
 **Personality:** Creative and sneaky, always messing around in the back row.
-
-**Ultimate — Paper Airplane Squadron:** dozens of paper airplanes fill the screen in formation and dive-bomb the opponent.
-
-**KO finisher — Back Row:** he folds a giant paper airplane, rides it across the stage into the opponent, and lands it perfectly.
 
 **Look:** Shaggy medium brown hair with bangs, glasses, gray raglan t-shirt with dark sleeves.
 
 **Intro / taunt lines:**
 - "Wasn't paying attention. Doesn't matter."
-- "Back row's got range."
-- "Incoming."
+- "Hands up. Mine are."
+- "Watch the replay."
 
 **Victory lines:**
 - "Didn't even look up."
-- "Ten out of ten landing."
-- "Pass it to the back."
+- "Highlight reel."
+- "Back to my seat."
 
 ## HUDSON "Calculator Kid" — Defensive / Technical
 

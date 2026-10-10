@@ -1,129 +1,131 @@
-// JACK — Paper Airplane Squadron: cut to the back row of an empty classroom. He folds
-// paper airplanes at hyperspeed, stacks them up, stands on his chair and launches the
-// lot. Dozens of planes fly in formation across the room (a V, a loop, an arrow
-// pointing straight at the opponent), then dive-bomb them one after another. The last
-// one is his best: a plane with his doodle on the wing. He sits back down.
-// Camera: low behind his desk looking up the aisle, then a long smooth tracking pan
-// with the formation, rolling with the loop, and a steep low angle up at the dives.
+// JACK — Highlight Reel: the jab lands and it turns into a broadcast. A LIVE bug in the
+// corner, his name on a lower third, and a punch-kick flurry called hit by hit: jab, cross,
+// hook, body kick, low kick, switch kick, jab, cross, body kick. Then the tape rewinds
+// (static, the picture running backwards) and the INSTANT REPLAY plays the finish in slow
+// motion: a spinning back fist, and a head kick that freezes on the frame. PLAY OF THE DAY.
+// Camera: a tight two-shot that cuts on every strike, wider for the kicks; the replay is a
+// low, slow angle; the freeze frame holds.
 (function () {
-  var C = FG.C, W = C.VIEW_W, H = C.VIEW_H, GY = C.GROUND_Y, K = FG.ultKit;
-  var ROOM = 8, FOLD = [14, 62], LAUNCH = 66, LOOP = [80, 108], DIVE = 112, ACE = 196, SIT = 240;
-  var N = 30, DESK = -120, FRONT = 160;
-
-  // A plane in screen space: nose toward `ang`, scale k.
-  function plane(g, x, y, ang, k, col) {
-    var cs = Math.cos(ang), sn = Math.sin(ang);
-    var P = function (u, v) { return { x: x + (u * cs - v * sn) * k, y: y + (u * sn + v * cs) * k }; };
-    g.fillStyle(col || 0xf6f6f0, 1); g.fillPoints([P(9, 0), P(-9, -5), P(-6, 0)], true);
-    g.fillStyle(0xd0d0c8, 1); g.fillPoints([P(9, 0), P(-9, 4), P(-6, 0)], true);
-    g.lineStyle(1, 0x8a94a8, 1); var a = P(9, 0), b = P(-7, 0); g.lineBetween(a.x, a.y, b.x, b.y);
-  }
-
-  // Where plane i of the squadron is at time t (set space s, h), and its heading.
-  function wing(i, t, fx, s) {
-    var row = Math.floor(i / 2) + 1, side = i % 2 ? 1 : -1;
-    // A V formation flying across the room, then a loop, then an arrow aimed at them.
-    if (t < LOOP[0]) {
-      var u = (t - LAUNCH) / (LOOP[0] - LAUNCH);
-      return { s: DESK + 40 + u * 260 - row * 11, h: 120 + u * 30 + side * row * 9, ang: -0.1 };
-    }
-    if (t < LOOP[1]) {
-      var a = (t - LOOP[0]) / (LOOP[1] - LOOP[0]) * K.TAU, r = 60;
-      return { s: DESK + 300 - row * 9 * Math.cos(a) + Math.sin(a) * r, h: 150 + (1 - Math.cos(a)) * r + side * row * 5, ang: a - 0.1 };
-    }
-    var dv = s.dive[i];
-    if (t < dv) { var w = (t - LOOP[1]) / 20; return { s: FRONT - 120 - row * 10 + Math.min(1, w) * 40, h: 220 + side * row * 6, ang: 0.15 }; }
-    var p = Math.min(1, (t - dv) / 10), from = { s: FRONT - 80 - row * 10, h: 220 + side * row * 6 };
-    return { s: from.s + (FRONT - from.s) * p, h: from.h + (70 - from.h) * p, ang: Math.atan2(150, 90), hit: p >= 1 };
-  }
-
-  // The classroom from the back row: desks, the whiteboard, windows.
-  function drawRoom(fx, g) {
-    fx.fill(g, 0xd8d0b8);
-    fx.rect(g, -W * 1.6, 0, W * 1.6, 300, 0xe8e0c8);
-    fx.rect(g, -W * 1.6, 0, W * 1.6, 30, 0x8a7a5a);
-    fx.rect(g, 60, 70, 300, 170, 0xf4f6f8); fx.rect(g, 60, 66, 300, 70, 0x9aa0aa); // the whiteboard
-    for (var ln = 0; ln < 5; ln++) fx.rect(g, 76, 152 - ln * 16, 76 + 40 + K.hash(ln, 3) * 120, 150 - ln * 16, [0x3a5fc0, 0xc03a3a, 0x2a8a4a][ln % 3]);
-    fx.line(g, 250, 90, 280, 150, 0x2a3a8a, 2); fx.line(g, 280, 150, 290, 120, 0x2a3a8a, 2); // someone's doodle
-    fx.rect(g, -280, 80, -200, 200, 0x8ab8e0); fx.rect(g, -400, 80, -320, 200, 0x8ab8e0); // windows
-    for (var r = 0; r < 4; r++) for (var c = -3; c < 4; c++) { var ds = c * 70 + r * 8, dh = 10 + r * 16; fx.rect(g, ds, dh + 24, ds + 40, dh + 28, 0xc89a5a); fx.rect(g, ds + 4, dh, ds + 6, dh + 24, 0x5a5f6a); }
-  }
+  var C = FG.C, W = C.VIEW_W, H = C.VIEW_H, K = FG.ultKit;
+  var REWIND = 112, REPLAY = 134, FREEZE_LEN = 30, BOW = 246;
+  // The flurry: his wind-up, the strike, their reaction, the impact kind, the call.
+  var FLURRY = [
+    ['jab_c', 'jab_x', 'hit_high', 'jab', 'JAB'],
+    ['cross_c', 'cross_x', 'hit_high', 'jab', 'CROSS'],
+    ['hook_c', 'hook_x', 'hit_high', 'power', 'HOOK'],
+    ['rk_c', 'rk_x', 'hit_mid', 'body', 'BODY KICK'],
+    ['lk_c', 'lk_x', 'hit_low', 'low', 'LOW KICK'],
+    ['sw_c', 'sw_x', 'hit_mid', 'body', 'SWITCH KICK'],
+    ['jab_c', 'jab_x', 'hit_high', 'jab', 'JAB'],
+    ['cross_c', 'cross_x', 'hit_high', 'jab', 'CROSS'],
+    ['rk_c', 'rk_x', 'hit_mid', 'body', 'BODY KICK']
+  ];
 
   FG.ULTIMATES.jack = {
     start: function (fx) {
       var s = fx.s;
-      s.dive = [];
-      var hits = fx.w.def.ultimate.hits;
-      for (var i = 0; i < N; i++) s.dive.push(i < 10 ? hits[i] - 10 : DIVE + 4 + i * 2); // the hitting planes land on the hit frames
-      fx.place(fx.l, fx.S(fx.lx0), 0); fx.pose(fx.l, 'hit_mid');
-      fx.pose(fx.w, 'ruler_x');
-      fx.cam(fx.S(fx.lx0) - 30, 110, 1.3, { k: 0.3 });
+      s.ls = fx.S(fx.lx0);
+      fx.place(fx.w, 0, 0); fx.face(fx.w, fx.dir); fx.pose(fx.w, 'jab_x');
+      fx.place(fx.l, s.ls, 0); fx.face(fx.l, -fx.dir); fx.pose(fx.l, 'hit_high');
+      fx.cam(s.ls * 0.5, 80, 1.6, { k: 0.4 });
+      s.live = 1;
     },
     step: function (fx, t) {
-      var w = fx.w, l = fx.l, s = fx.s, hits = w.def.ultimate.hits;
-      if (t === ROOM) {
-        fx.cutaway = true; s.room = true;
-        fx.place(w, DESK, 0); fx.face(w, fx.dir); fx.pose(w, 'fold');
-        fx.place(l, FRONT, 0); fx.face(l, -fx.dir); fx.anim(l, FG.dazedAnim, true);
-        fx.cam(DESK + 30, 80, 1.5, { cut: true });
-        fx.flash(0xffffff, 0.7);
+      var w = fx.w, l = fx.l, s = fx.s, hits = w.def.ultimate.hits, dir = fx.dir, LAST = hits[hits.length - 1], SPIN = hits[hits.length - 2];
+      // The flurry, called hit by hit; he walks them back with every one.
+      for (var k = 0; k < FLURRY.length; k++) {
+        var f = FLURRY[k], at = hits[k];
+        if (t === at - 5) fx.pose(w, f[0]);
+        if (t === at) {
+          fx.pose(w, f[1]); fx.pose(l, f[2]);
+          fx.hit(l, f[3], { strength: k % 3 === 2 ? 'heavy' : 'medium', hits: k + 1, shake: 0.006, y: f[2] === 'hit_low' ? 24 : f[2] === 'hit_mid' ? 48 : 70 });
+          s.call = { text: f[4], t: t, n: k + 1 };
+          var kick = f[3] === 'body' || f[3] === 'low', side = k % 2 ? 1 : -1;
+          fx.cam(s.ls * 0.5 + 4 * k, kick ? 70 : 84, kick ? 1.5 : 1.8, { cut: true, rot: side * 0.025 });
+          s.back = (s.back || 0) + 3;
+          fx.place(l, s.ls + s.back, 0); fx.place(w, s.back * 0.8, 0);
+          var f0 = 160 + k * 18;
+          fx.sfx(function (S) { S.osc({ dur: 0.08, f0: f0, f1: 70, gain: 0.35 }); S.noise({ dur: 0.04, freq: 2600, q: 1.5, gain: 0.2, type: 'bandpass' }); });
+        }
+        if (t === at + 6) fx.pose(w, 'idle');
       }
-      // Folding at hyperspeed: the stack grows.
-      if (t >= FOLD[0] && t < FOLD[1]) {
-        s.folded = Math.floor((t - FOLD[0]) * N / (FOLD[1] - FOLD[0]));
-        if (t % 3 === 0) { fx.pose(w, t % 6 ? 'fold' : 'doodle2'); fx.sfx(function (S) { S.noise({ dur: 0.03, freq: 5000, q: 3, gain: 0.05, type: 'highpass' }); }); }
-        fx.cam(DESK + 30 + (t - FOLD[0]) * 0.3, 80, 1.5 + (t - FOLD[0]) * 0.006, { k: 0.2 });
+      // Rewind: static, the picture running backwards, a squeal.
+      if (t === REWIND) {
+        s.rewind = t; s.live = 0; fx.pose(l, 'idle'); fx.pose(w, 'idle');
+        fx.sfx(function (S) { S.noise({ dur: 0.7, freq: 2000, q: 0.4, gain: 0.25 }); S.osc({ dur: 0.7, f0: 1400, f1: 300, gain: 0.08, type: 'square' }); });
       }
-      // Up on the chair, and the whole stack goes.
-      if (t === LAUNCH) {
-        s.flying = true; s.folded = 0; fx.place(w, DESK, 22); fx.pose(w, 'plane_x');
-        fx.cam(DESK + 120, 140, 1.0, { k: 0.08 });
-        fx.sfx(function (S) { S.noise({ dur: 0.8, freq: 1200, f1: 3000, q: 0.8, gain: 0.2 }); });
+      if (s.rewind && t > REWIND && t < REPLAY) {
+        var u = (t - REWIND) / (REPLAY - REWIND);
+        fx.place(l, s.ls + s.back * (1 - u), 0); fx.place(w, s.back * 0.8 * (1 - u), 0);
+        fx.pose(w, t % 4 < 2 ? 'cross_x' : 'jab_x');
       }
-      if (t > LAUNCH && t < LOOP[1]) fx.cam(DESK + 120 + (t - LAUNCH) * 4, 150, 1.0, { k: 0.1, rot: t > LOOP[0] ? Math.sin((t - LOOP[0]) / (LOOP[1] - LOOP[0]) * K.TAU) * 0.06 : 0 });
-      if (t === LOOP[1]) { fx.cam(FRONT - 30, 130, 1.1, { k: 0.15, rot: -0.05 }); fx.pose(l, 'block'); }
-      // The dives.
-      var hi = hits.indexOf(t);
-      if (hi >= 0 && hi < hits.length - 1) {
-        fx.hit(l, hi % 3 ? 'jab' : 'body', { strength: 'light', hits: hi + 1, shake: 0.005, y: 60 + (hi % 3) * 10 });
-        fx.pose(l, hi % 2 ? 'hit_high' : 'hit_mid');
-        fx.sfx(function (S) { S.noise({ dur: 0.05, freq: 3600, q: 2, gain: 0.12 }); S.osc({ dur: 0.05, f0: 800 + hi * 50, f1: 400, gain: 0.05, type: 'triangle' }); });
+      // INSTANT REPLAY, in slow motion: the spin...
+      if (t === REPLAY) {
+        s.replay = t; fx.place(w, 0, 0); fx.place(l, s.ls, 0); fx.pose(w, 'idle'); fx.pose(l, 'idle');
+        fx.cam(s.ls * 0.5, 60, 1.7, { cut: true, rot: -0.04 });
+        fx.sfx(function (S) { S.osc({ dur: 0.3, f0: 880, gain: 0.12, type: 'square' }); });
       }
-      if (t > DIVE && t < ACE && t % 5 === 0) fx.sfx(function (S) { S.noise({ dur: 0.18, freq: 2600, f1: 1400, q: 1.5, gain: 0.05 }); }); // whooshes
-      // His best plane, last.
-      if (t === ACE) { s.ace = t; fx.cam(FRONT - 60, 140, 1.25, { k: 0.12, rot: 0.04 }); }
-      if (t === hits[hits.length - 1]) {
-        s.aceHit = t; fx.pose(l, 'down');
-        fx.hit(l, 'power', { ch: true, shake: 0.035, y: 70, hits: hits.length });
-        fx.flash(0xffffff, 0.6); fx.slow(26, 0.35);
-        fx.cam(FRONT, 80, 1.7, { cut: true, rot: -0.04 });
-        fx.sfx(function (S) { S.osc({ dur: 0.5, f0: 140, f1: 40, gain: 0.7 }); S.noise({ dur: 0.4, freq: 2000, q: 0.6, gain: 0.3 }); });
+      if (t === SPIN - 8) fx.pose(w, 'sbf_c');
+      if (t === SPIN) {
+        fx.pose(w, 'sbf_x'); fx.pose(l, 'hit_high'); fx.slow(26, 0.35);
+        fx.hit(l, 'power', { strength: 'heavy', hits: hits.length - 1, y: 72, shake: 0.012 });
+        s.call = { text: 'SPINNING BACK FIST', t: t, n: 0 };
+        fx.cam(s.ls * 0.45, 76, 2.0, { cut: true, rot: 0.03 });
+        fx.sfx(function (S) { S.osc({ dur: 0.3, f0: 120, f1: 40, gain: 0.7 }); S.noise({ dur: 0.2, freq: 1800, q: 1, gain: 0.3 }); });
+      }
+      // ...and the head kick. Freeze frame.
+      if (t === LAST - 12) { fx.pose(w, 'hk_c'); fx.cam(s.ls * 0.5, 66, 1.6, { cut: true, rot: -0.05 }); }
+      if (t === LAST) {
+        fx.pose(w, 'hk_x'); fx.pose(l, 'hit_high'); l._drawRot = -dir * 0.3;
+        fx.hit(l, 'power', { ch: true, hits: hits.length, y: 78, shake: 0.04 });
+        fx.flash(0xffffff, 0.9); fx.slow(FREEZE_LEN, 0.15); s.freeze = t; s.call = null;
+        fx.sfx(function (S) { S.osc({ dur: 1, f0: 90, f1: 26, gain: 1 }); S.noise({ dur: 0.4, freq: 3000, q: 0.6, gain: 0.4 }); S.osc({ dur: 0.1, f0: 2200, gain: 0.15, type: 'square', at: 0.05 }); });
         fx.crowd(3);
       }
-      if (t === SIT) { s.flying = false; fx.place(w, DESK, 0); fx.anim(w, [[1, 'stand'], [10, 'lounge']]); fx.say(w, "Didn't even look up.", 80); fx.cam(DESK + 60, 100, 1.3, { k: 0.1 }); }
+      // Off the freeze: they spin away and drop; he hops on the spot.
+      if (s.freeze && t > LAST + FREEZE_LEN && t < LAST + FREEZE_LEN + 22) {
+        var v = (t - LAST - FREEZE_LEN) / 22;
+        fx.place(l, s.ls + 50 * v, Math.sin(v * Math.PI) * 30); l._drawRot = -dir * (0.3 + v * 1.4);
+      }
+      if (t === LAST + FREEZE_LEN + 22) { l._drawRot = 0; fx.place(l, s.ls + 50, 0); fx.pose(l, 'down'); fx.shake(0.02); FG.Sfx.play({ type: 'land' }); }
+      if (t === BOW) { fx.anim(w, [[1, 'idle'], [6, 'hop'], [12, 'idle'], [20, 'shrug']]); fx.say(w, 'Watch the replay.', 60); fx.cam(s.ls * 0.5, 100, 1.3, { k: 0.1 }); }
     },
     draw: function (fx, t) {
-      var s = fx.s, g = fx.gb, gf = fx.gf;
-      if (!s.room) return;
-      drawRoom(fx, g);
-      // His desk, the stack of planes on it.
-      fx.rect(gf, DESK - 30, 30, DESK + 30, 36, 0xc89a5a); fx.rect(gf, DESK - 26, 0, DESK - 23, 30, 0x5a5f6a); fx.rect(gf, DESK + 23, 0, DESK + 26, 30, 0x5a5f6a);
-      for (var k = 0; k < (s.folded || 0); k++) { var sp = fx.P(DESK - 14 + (k % 3) * 10, 38 + Math.floor(k / 3) * 3); plane(gf, sp.x, sp.y, 0, 0.9); }
-      // The squadron.
-      if (s.flying && t > LAUNCH) for (var i = 0; i < N; i++) {
-        if (t >= s.dive[i] + 12) continue; // landed
-        var q = wing(i, t, fx, s), p = fx.P(q.s, q.h);
-        plane(gf, p.x, p.y, fx.dir > 0 ? q.ang : Math.PI - q.ang, 1.2, i === 0 ? 0xfff8d0 : null);
+      var s = fx.s, gs = fx.gs;
+      var frozen = s.freeze && t - s.freeze < FREEZE_LEN;
+      // The broadcast: a LIVE bug and his name on a lower third.
+      if (s.live && t < REWIND) {
+        gs.fillStyle(0xc0392b, 1); gs.fillRect(W - 76, 64, 56, 18); fx.text(0, 'LIVE', W - 44, 73, 0xffffff, 1.4);
+        if (t % 30 < 20) { gs.fillStyle(0xffffff, 1); gs.fillCircle(W - 68, 73, 3); }
+        gs.fillStyle(0x10141e, 0.85); gs.fillRect(30, H - 64, 230, 34); gs.fillStyle(0x5fd7ff, 1); gs.fillRect(30, H - 64, 6, 34);
+        fx.text(1, 'JACK  "BACK ROW"', 150, H - 54, 0xffffff, 1.4); fx.text(2, 'KICKBOXING  /  10TH GRADE', 150, H - 40, 0x9aa4b8, 1);
       }
-      // The ace: big, with a doodle on its wing.
-      if (s.ace && t < (s.aceHit || 1e9) + 2) {
-        var u = Math.min(1, (t - s.ace) / 32), a = fx.P(FRONT - 220 + 220 * u, 240 - 170 * u), ang = Math.atan2(170, 220);
-        plane(gf, a.x, a.y, fx.dir > 0 ? ang : Math.PI - ang, 3.2, 0xffffff);
-        gf.lineStyle(2, 0x2a3a8a, 1); gf.strokeCircle(a.x - fx.dir * 6, a.y - 4, 4); // a smiley on the wing
+      // The call for each strike, and the running count.
+      if (s.call && t - s.call.t < 16) {
+        fx.text(3, s.call.text, W / 2, 104, 0xffd23f, 2.4 * Math.min(1.4, K.stamp(t, s.call.t)), -3);
+        if (s.call.n) fx.text(4, s.call.n + ' HITS', W / 2, 128, 0xffffff, 1.6);
       }
-      if (t >= FOLD[0] && t < LAUNCH) fx.text(0, 'PLANES FOLDED: ' + (s.folded || 0), W / 2, 300, 0x2a3a8a, 2);
-      if (t >= LOOP[0] && t < DIVE) fx.text(1, 'SQUADRON!', W / 2, 80, 0x5fd7ff, 3, -4);
-      if (s.aceHit && t - s.aceHit < 50) fx.text(2, 'DIRECT HIT!', W / 2, 110, 0xe03a2a, 3 * K.stamp(t, s.aceHit), -5);
+      // Rewind: static and tracking lines, << on screen.
+      if (s.rewind && t < REPLAY) {
+        gs.fillStyle(0x000000, 0.25); gs.fillRect(0, 0, W, H);
+        for (var r = 0; r < 14; r++) { var y = (K.hash(t, r) * H) | 0; gs.fillStyle(0xffffff, 0.15 + K.hash(r, t) * 0.25); gs.fillRect(0, y, W, 1 + (K.hash(t + r, 3) * 3 | 0)); }
+        fx.text(5, '<<  REWIND', W - 110, 70, 0xffffff, 2);
+      }
+      // The replay: a tint, scanlines, a timecode, INSTANT REPLAY.
+      if (s.replay && t < BOW) {
+        gs.fillStyle(0x203040, frozen ? 0.0 : 0.18); gs.fillRect(0, 0, W, H);
+        for (var l2 = 0; l2 < H; l2 += 4) { gs.fillStyle(0x000000, 0.12); gs.fillRect(0, l2, W, 1); }
+        fx.text(6, 'INSTANT REPLAY', W - 110, 72, 0x5fd7ff, 1.8);
+        var tc = Math.max(0, t - s.replay), ss = ('0' + ((tc / 30) | 0)).slice(-2), ff = ('0' + (tc % 30)).slice(-2);
+        if (!frozen) fx.text(7, '00:00:' + ss + ':' + ff, W - 90, H - 40, 0xffffff, 1.4);
+      }
+      // The freeze frame: a hard white border, FREEZE FRAME, then PLAY OF THE DAY.
+      if (frozen) {
+        var a = 1 - (t - s.freeze) / FREEZE_LEN;
+        gs.lineStyle(8, 0xffffff, 0.6 + 0.4 * a); gs.strokeRect(6, 6, W - 12, H - 12);
+        fx.text(8, '|| FREEZE FRAME', W - 100, H - 40, 0xffffff, 1.4);
+      }
+      if (s.freeze && t - s.freeze >= 8 && t - s.freeze < 54) fx.text(9, 'PLAY OF THE DAY', W / 2, 112, 0xffd23f, 3 * K.stamp(t, s.freeze + 8), -5);
     }
   };
 })();

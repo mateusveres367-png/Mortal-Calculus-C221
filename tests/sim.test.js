@@ -1953,20 +1953,39 @@ defs.forEach(function (d) {
     check('max: no projectile, no backpack', Object.keys(MXD.moves).every(function (id) { return !MXD.moves[id].projectile; }) && !MXD.look.backpack);
   }
 
-  // JACK: the paper airplane curves up, the nose dive skims the floor as a low, and Seat
-  // Swap switches sides.
+  // JACK (kickboxing): FLOW makes the kick after a punch that landed faster and stronger
+  // (and the punch after a kick); the Low Kick builds leg damage; K in the Question Mark
+  // Kick's chamber keeps it on the body; the Spinning Back Fist hits much harder on a
+  // counter hit.
   var JA = FG.fighterById('jack');
   if (JA) {
-    m = setup(JA, P, 300); var ys = [];
-    evs(m, 60, function (i, mm) { if (mm.projectiles[0]) ys.push(mm.projectiles[0].y); return [i === 0 ? { p: true, left: true } : {}]; });
-    check('paper airplane: curves up', ys.length > 20 && ys[ys.length - 1] > ys[0] + 10, [ys[0], ys[ys.length - 1]]);
-    m = setup(JA, P, 330); m.fighters[1].holdGuard = true;
-    e = evs(m, 120, function (i) { return [i === 0 ? { p: true, down: true } : {}, i >= 4 ? { right: true } : {}]; });
-    check('nose dive: on the floor it beats a standing guard', e.some(function (x) { return x.type === 'hit' && x.projectile === 'plane' && x.level === 'low'; }), types(e));
-    m = setup(JA, P, 60);
-    e = evs(m, 40, function (i) { return [i === 0 ? { h: true, left: true } : {}]; });
-    tp = e.filter(function (x) { return x.type === 'teleport'; })[0];
-    check('seat swap: switches sides', tp && tp.behind && m.fighters[0].x > m.fighters[1].x, tp);
+    m = setup(JA, P, 40);
+    e = evs(m, 70, function (i) { return [i === 0 ? { p: true } : i === 24 ? { k: true } : {}]; });
+    var fl = e.filter(function (x) { return x.type === 'flow'; })[0], fk = e.filter(function (x) { return x.type === 'hit' && x.attacker === 0 && x.move.id === 'mid'; })[0];
+    check('jack: a punch that lands makes the next kick flow', fl && fl.move.flowed && fl.move.startup === JA.moves.mid.startup - JA.flow.speed && fk && fk.move.flowed, types(e));
+    check('jack: ...and stronger', fk && fk.move.damage === Math.round(JA.moves.mid.damage * JA.flow.damage), fk && fk.move.damage);
+    m = setup(JA, P, 40);
+    e = evs(m, 60, function (i) { return [i === 0 ? { p: true } : i === 24 ? { p: true } : {}]; });
+    check('jack: no flow from a punch to a punch', !e.some(function (x) { return x.type === 'flow'; }), types(e));
+    m = setup(JA, P, 40);
+    e = evs(m, 70, function (i) { return [i === 0 ? { k: true } : i === 32 ? { p: true } : {}]; });
+    check('jack: a kick that lands makes the next punch flow', e.some(function (x) { return x.type === 'flow' && x.move.id === 'jab'; }), types(e));
+    m = setup(JA, P, 40);
+    e = evs(m, 70, function (i) { return [i === 0 ? { p: true } : i === 24 ? { k: true } : {}, i >= 4 ? { right: true } : {}]; });
+    check('jack: a blocked punch does not flow', !e.some(function (x) { return x.type === 'flow'; }), types(e));
+    m = setup(JA, P, 40);
+    e = evs(m, 140, function (i) { return [i === 0 || i === 40 || i === 80 ? { k: true, down: true } : {}]; });
+    check('jack: three low kicks are leg damage', e.some(function (x) { return x.type === 'legdamage'; }) && m.fighters[1].legDamage > 0, types(e));
+    m = setup(JA, P, 44);
+    e = evs(m, 60, function (i) { return [i === 0 ? { h: true, right: true } : i === 7 ? { k: true } : {}]; });
+    check('jack: K in the question mark chamber keeps it on the body', e.some(function (x) { return x.type === 'hit' && x.attacker === 0 && x.move.id === 'qmBody' && x.level === 'mid'; }) && JA.moves.fH.level === 'high', types(e));
+    m = setup(JA, BR, 44);
+    e = evs(m, 60, function (i) { return [i === 4 ? { p: true, left: true } : {}, i === 0 ? { h: true } : {}]; });
+    var sbf = e.filter(function (x) { return x.type === 'hit' && x.attacker === 0 && x.move.id === 'bP'; })[0];
+    check('jack: spinning back fist: a counter hit knocks them down, hard', sbf && sbf.ch && sbf.knockdown && sbf.damage > JA.moves.bP.damage * 1.5, sbf && [sbf.ch, sbf.damage]);
+    var pk = FG.runCombo(JA, P, { plan: { 0: 'P', 12: 'P', 25: 'K' } });
+    check('jack: P, P, K ends in a body kick that flows', pk.hits.join() === 'jab,jab2,pkick' && pk.trueCombo, pk.hits);
+    check('jack: no projectile, no teleport, no stance', Object.keys(JA.moves).every(function (id) { var mv = JA.moves[id]; return !mv.projectile && !mv.teleport && !mv.stanceSwitch && !mv.feint; }));
   }
 
   // HUDSON: Show Your Work catches highs and mids (not lows) and counters; Pop-Up Error

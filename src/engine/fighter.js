@@ -70,6 +70,8 @@
     this.clinchAct = null;     // MATEUS in the clinch: the follow-up playing { move, t }
     this.checking = 0;         // MATEUS's Check: frames left of the shin-check pose
     this.sub = null;           // MAX's submissions: the hold they're in (the match's sub)
+    this.flowT = 0;            // JACK's FLOW: frames left to use it...
+    this.flowType = null;      // ...and on what ('kick' after a punch landed, 'punch' after a kick)
     this.clearComboFlags();
   };
 
@@ -145,6 +147,9 @@
 
   Fighter.prototype.startMove = function (id) {
     var m = this.def.moves[id];
+    // FLOW (JACK): after a punch lands his next kick is faster and stronger, and after a
+    // kick, his next punch.
+    if (this.flowT > 0 && this.def.flow && !m.enhanced && m[this.flowType]) { m = FG.flowMove(this.def, m); this.flowT = 0; this.flowNow = true; }
     if (m.projectile) this.projSerial++;
     var prev = this.state === 'attack' ? this.move : null;
     this.fromFeint = !!(prev && prev.feint) || this.feintPending > 0;
@@ -183,6 +188,7 @@
     if (this.boost > 0) this.boost--;
     if (this.legDamage > 0) this.legDamage--;
     if (this.checking > 0) this.checking--;
+    if (this.flowT > 0) this.flowT--;
     if (this.feintPending > 0) this.feintPending--;
     this.stateFrame++;
     var s = this.state;
