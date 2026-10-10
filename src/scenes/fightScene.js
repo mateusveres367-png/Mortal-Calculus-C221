@@ -908,6 +908,12 @@
       if (ev.type === 'check') { this.spawnGlyph({ x: ev.x, y: 50, attacker: ev.attacker, text: 'CHECKED!', ch: true }); this.quip(ev.attacker, 0.5); }
       if (ev.type === 'legdamage') this.spawnGlyph({ x: ev.x, y: 40, attacker: ev.attacker, text: 'LEG DAMAGE', ch: true });
       if (ev.type === 'grab' && ev.clinch) this.spawnGlyph({ x: ev.x, y: 70, attacker: ev.attacker, text: 'CLINCH' });
+      // HUDSON: a dodge that made them miss, and the counter that follows (a big flash).
+      if (ev.type === 'dodge') this.spawnGlyph({ x: ev.x, y: 88, attacker: ev.fighter, text: 'MISS' });
+      if (ev.type === 'hit' && ev.counterpunch) {
+        this.spawnGlyph({ x: ev.x, y: ev.y + 24, attacker: ev.attacker, text: 'COUNTER!', ch: true });
+        this.effects.screen = { color: 0xffffff, alpha: 0.55, life: 9, max: 9 };
+      }
       // JACK: FLOW (a punch into a kick or a kick into a punch, faster and stronger).
       if (ev.type === 'flow') this.spawnGlyph({ x: ev.x, y: 84, attacker: ev.fighter, text: 'FLOW' });
       // MAX: the tap, or they got out (the hold's name is on its struggle meter).

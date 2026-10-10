@@ -443,26 +443,44 @@ A struggle meter appears over them: they mash to escape, he mashes to tighten, a
 - "Highlight reel."
 - "Back to my seat."
 
-## HUDSON "Calculator Kid" — Defensive / Technical
+## HUDSON "Calculator Kid" — Defensive / Counterpuncher
 
-**Moves:** Show Your Work (parry into counter), Graphing Mode (long-range poke), Calculator Combo (string where each hit shows a number), Round Up (launcher), Answer Key (throw), Pop-Up Error (projectile: a "SYNTAX ERROR" box).
+**Moves:** a boxer. Punches, head movement, and one stomp.
+- Jab (P), Double Jab (P, P), Lead Hook (P, P, P): the hook knocks them down.
+- Body Jab (K): the level drops, the jab to the stomach.
+- Rear Uppercut (D+P): up the middle; launches on a counter hit.
+- Shovel Hook (F+P): to the liver, plus on block.
+- Overhand Right (F+H): looping over the top, his whole weight behind it.
+- Check Hook (B+H): the lead hook as he pivots off the line, away from a rush.
+- Bolo Punch (D+H): his launcher, wound down and round and up under the chin.
+- Pull Counter (B+P): he leans back out of a high or mid, then fires the right hand.
+- Right Hand (H): the rear straight.
+- Stomp (D/B+K): his one low, the heel on their foot.
+- Head movement: Slip (F+K), Duck (D+K), Weave (B+K) make highs miss; Lean Back (B+P+K, in place of a back throw) makes highs and mids miss. Dodges chain into each other and straight into any punch.
+- Air: Flying Jab, Drop Hook, Overhand Drop. Throw: Clinch and Spin.
+
+**Style:** Boxing, from a low shoulder roll: bent at the waist, lead hand down across his body, rear glove at his chin, always bobbing. Nothing like LEE, a peekaboo rusher: HUDSON waits, makes you miss, and makes you pay.
+
+**Signature — Counterpuncher:** anything he lands right after a dodge that made them miss is an automatic counter hit (and a little harder still), with a big flash. Dodges chain, so a slip into a duck into a weave can make a whole string miss.
+
+**Enhanced (1 bar):** the Overhand Right throws two; the Pull Counter knocks down; the Bolo Punch is armored.
+
+**Ultimate — Can't Touch This:** the jab lands and everything slows down and drains of colour. They throw punch after punch and he isn't there for any of them: a slip, a duck, a weave, a lean back, afterimages hanging in the air, MISS after MISS. Time snaps back: body, body, head, the right hand, and a rear uppercut that lifts them off the floor. "Missed."
+
+**KO finisher — Extra Credit:** they throw one last swing; in slow motion he leans back and it misses by an inch. One counter hook, clean, and they drop. He checks his calculator, nods, and a gold star stamps the screen.
 
 **Personality:** Calm and precise. Already finished the homework. Lets you make mistakes.
-
-**Ultimate — Calculator Overflow:** he types into a giant calculator, the screen fills with "ERROR", and every error box hits the opponent at once.
-
-**KO finisher — Extra Credit:** one clean counter, then a gold star stamps the screen.
 
 **Look:** Straight black hair with bangs, white t-shirt, calm expression.
 
 **Intro / taunt lines:**
 - "Already did the homework."
-- "Show your work."
+- "You'll miss."
 - "I'll wait."
 
 **Victory lines:**
 - "Checked my answer. Still right."
-- "That's a syntax error."
+- "Couldn't touch me."
 - "Extra credit."
 
 ---

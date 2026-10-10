@@ -82,6 +82,7 @@ FG.ROSTER.forEach(function (d) {
     if (m.kick && d.kickChain) notes.push('kick chain');
     if (d.flow && (m.punch || m.kick)) notes.push(m.punch ? 'punch: a hit makes the next kick flow' : 'kick: a hit makes the next punch flow');
     if (m.legKick) notes.push('leg damage (' + FG.C.LEG_HITS + ' slow their walk)');
+    if (m.dodge) notes.push('dodge: from frame ' + m.dodge.from + ' it comes out into another dodge or any attack');
     if (m.tip) notes.push('Long Arms: +' + Math.round((FG.C.TIP_BONUS - 1) * 100) + '% damage at the tip');
     if (m.evade) notes.push('evades ' + m.evade.levels.map(function (l) { return l + 's'; }).join(' and ') + ' on frames ' + m.evade.from + '-' + m.evade.to);
     if (m.cancels) m.cancels.forEach(function (c) { if (c.onSway) notes.push('P after a miss: ' + title(d.moves[c.into].label)); });
@@ -118,6 +119,10 @@ FG.ROSTER.forEach(function (d) {
         (x.armor ? ', armor on frames ' + x.armor.from + '-' + x.armor.to + ' (' + x.armor.hits + (x.armor.hits > 1 ? ' hits' : ' hit') + ')' : '') +
         (x.wallSplat && !b.wallSplat ? ', wall splats' : '') + '.');
     });
+    out.push('');
+  }
+  if (d.counterpuncher) {
+    out.push('**Counterpuncher:** when a dodge (or the Pull Counter\'s lean) makes an attack miss, the next thing he lands within ' + FG.C.COUNTER_FRAMES + ' frames is a counter hit, ' + Math.round((FG.C.COUNTERPUNCH_BONUS - 1) * 100) + '% harder than a plain one.');
     out.push('');
   }
   if (d.flow) {

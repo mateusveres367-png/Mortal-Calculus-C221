@@ -10,13 +10,14 @@
     var f = this.fighters, strikes = [], grabs = [], parries = [];
     for (var i = 0; i < 2; i++) {
       var a = f[i], d = f[1 - i];
-      if (!a.isActiveFrame() || a.contact) continue;
+      // (An attack that was dodged has missed: it can't hit on its later active frames.)
+      if (!a.isActiveFrame() || a.contact || a.evadedThis) continue;
       var m = a.move;
       if (d.isInvulnerable()) continue;
       // Sidestep: linear attacks and throws miss a fighter who has moved off the line.
       if (!m.tracks && Math.abs(a.z - d.z) > C.SIDESTEP_EVADE_Z) continue;
-      // Highs (and throws) go over crouching opponents.
-      if (m.level === 'high' && d.isCrouching()) continue;
+      // Highs (and throws) go over crouching opponents (a duck is a dodge: HUDSON).
+      if (m.level === 'high' && d.isCrouching()) { if (d.state === 'attack' && d.move.evade) this.dodged(a, d); continue; }
       // A backdash that evades lows early on (LOPEZ's Asymptote Backdash).
       if (m.level === 'low' && d.state === 'backdash' && d.stateFrame <= (d.def.backdashLowInvuln || 0)) continue;
       // Only ground-hitting moves reach a fighter who is lying down, or tripped and falling.
@@ -26,7 +27,7 @@
       for (var j = 0; j < hurts.length; j++) if (FG.overlap(hb, hurts[j])) { touching = true; break; }
       if (!touching) continue;
       // A sway (DALSASS) leans out of the way of the levels it covers.
-      if (d.evades(m)) { d.swayed = true; continue; }
+      if (d.evades(m)) { d.swayed = true; this.dodged(a, d); continue; }
       // Snapshot the defender's guard and counter-hit state before anything changes (trades).
       var c = { a: i, d: 1 - i, guard: d.guardStance(this.buffers[1 - i]), ch: d.inCounterHitWindow(), punish: d.inRecovery(),
         // The attacker's move as it is now: in a trade, the other hit lands first and changes their state.
@@ -42,6 +43,15 @@
     if (grabs.length === 2) { this.throwBreak(0, 1, 'clash'); grabs = []; }
     for (var k = 0; k < strikes.length; k++) this.applyContact(strikes[k]);
     if (grabs.length && !strikes.length) this.startGrab(grabs[0]);
+  };
+
+  // An attack made to miss by a sway, a slip, a duck... (once per attack). The
+  // Counterpuncher (HUDSON) gets a window in which his next hit is a counter hit.
+  Match.prototype.dodged = function (a, d) {
+    if (a.evadedThis) return;
+    a.evadedThis = true;
+    if (d.def.counterpuncher) d.counterReady = C.COUNTER_FRAMES;
+    this.events.push({ type: 'dodge', fighter: d.index, attacker: a.index, x: d.x, y: 70, counter: !!d.def.counterpuncher });
   };
 
   // Parry: the attacker staggers and the parrying fighter counters at once.
@@ -142,6 +152,7 @@
     var charge = c.charge;
     if (blocked) {
       a.contact = 'block';
+      a.counterReady = 0; // the counter was blocked: it's spent
       this.events.push(ev);
       // A fully charged Order of Magnitude breaks the guard outright.
       if (charge === 2) d.guard = C.GUARD_MAX;
@@ -154,6 +165,8 @@
     // FLOW (JACK): a punch that lands sets up a faster, stronger kick, and a kick a punch.
     if (a.def.flow && (m.punch || m.kick) && !m.ultimate) { a.flowType = m.punch ? 'kick' : 'punch'; a.flowT = C.FLOW_FRAMES; ev.flowed = !!m.flowed; }
     var ch = c.ch;
+    // Counterpuncher (HUDSON): the first hit he lands right after a dodge is a counter hit.
+    if (a.counterReady > 0 && a.def.counterpuncher && !m.ultimate) { ch = true; ev.counterpunch = true; a.counterReady = 0; }
     ev.feint = a.fromFeint; // the hit came out of a feint: the opponent fell for it
     var result = ch ? m.ch : m.hit;
     // A multi-hit move: only the last hit has the real result; the others hold them.
@@ -163,6 +176,7 @@
     // A move's own counter-hit multiplier (MATEUS's Spinning Elbow hits much harder).
     var mult = (ch ? (m.chDamage || 1.2) : 1) * (state === 'down' ? 0.6 : 1) * (state === 'wallsplat' ? 0.85 : 1);
     if (a.calculated > 0) { mult *= C.CALCULATED_BONUS; a.calculated = 0; ev.calculated = true; }
+    if (ev.counterpunch) mult *= C.COUNTERPUNCH_BONUS; // HUDSON's counters hit harder than a plain counter hit
     // Long Arms (BRINKHUS): landing with the very tip of a straight hits harder.
     if (m.tip && Math.abs(a.x - d.x) >= m.tip * a.def.scale) { mult *= C.TIP_BONUS; ev.tip = true; }
     if (m.charge) {

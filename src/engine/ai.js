@@ -304,7 +304,9 @@
           // Style: MATEUS checks low kicks with his shin (back, pressed as it lands).
           check: low && self.def.check && /^(low|sweep|kick|roundhouse)$/.test(m.motion) && rnd() < (st.check || 0) * L.lowRead,
           // Style: MAX sprawls on lows and takedowns.
-          sprawl: (low || m.takedown) && self.def.moves.bK && self.def.moves.bK.parry && self.def.moves.bK.parry.takedowns && rnd() < (st.sprawl || 0) * L.lowRead
+          sprawl: (low || m.takedown) && self.def.moves.bK && self.def.moves.bK.parry && self.def.moves.bK.parry.takedowns && rnd() < (st.sprawl || 0) * L.lowRead,
+          // Style: HUDSON slips, ducks, weaves or leans back from highs and mids, and counters.
+          dodge: !low && !m.throw && self.def.counterpuncher && rnd() < (st.dodge || 0) * L.block
         };
       }
       var gd = this.guard, st = self.def.ai || {};
@@ -336,6 +338,23 @@
         // CHAI follows her sidestep with an attack out of it.
         if (st.ssFollow) { this.startScript({ 0: 'SI', 6: st.ssFollow }, match, self); this.script.keep = true; }
         raw.ssIn = true;
+        return raw;
+      }
+      // (A new attack, even the same move again: the dodge is rolled again.)
+      var atkStart = match.frame - opp.moveFrame;
+      if (self.def.counterpuncher && gd.dodgeFor !== atkStart) {
+        gd.dodgeFor = atkStart;
+        gd.dodge = gd.move.level !== 'low' && !gd.move.throw && rnd() < (st.dodge || 0) * L.block;
+      }
+      if (gd.dodge && self.actionable) {
+        // Late, just before it lands; out of the dodge, a counter (an automatic counter hit).
+        if (opp.move.startup - opp.moveFrame <= 6) {
+          gd.dodge = false; gd.block = false;
+          var dtok = gd.move.level === 'mid' ? 'B+P+K' : ['F+K', 'D+K', 'B+K', 'B+P+K'][Math.floor(rnd() * 4)];
+          this.startScript({ 0: dtok, 9: ['P', 'D+P', 'F+P', 'H', 'B+H', 'P'][Math.floor(rnd() * 6)] }, match, self);
+          this.script.keep = true;
+          return toRaw(dtok, self.facing);
+        }
         return raw;
       }
       if (gd.sprawl && self.actionable) {

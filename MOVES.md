@@ -758,59 +758,61 @@ Creative and sneaky. Always messing around in the back row.
 - **Armored Knee (1 bar):** D+H, P+K, P, P, H (frames: D+H @0, P+K @3, P @41, P @53, H @63)
 - **Highlight Reel (3 bars):** P, D, D/F, F+P+K+H (frames: P @0, D @3, D/F @4, F @5, F+P+K+H @9)
 
-## HUDSON "CALCULATOR KID" — Defensive — Calculators
+## HUDSON "CALCULATOR KID" — Counterpuncher — Calculators
 
 Calm and precise. Already finished the homework.
 
-**Style:** Precise counter-fighter. **Signature:** Show Your Work — B+H is a quick parry for highs and mids (lows and throws beat it): catch a strike and he counters with a launching palm and elbow; catch a projectile and it is knocked away. Calculator Combo (F+P, P, P, H) shows a number on every hit: 1, +2, +3, =6. Graphing Mode (F+K) is a very long poke; Pop-Up Error (B+P) opens a SYNTAX ERROR box in the air in front of them.
+**Style:** Boxing. **Signature:** Counterpuncher — head movement: Slip (F+K), Duck (D+K), Weave (B+K) and Lean Back (B+P+K) make highs (and, leaning back, mids) miss, chain into each other and into any punch. Anything he lands right after a dodge that made them miss is a counter hit. Pull Counter (B+P) leans back and fires the right hand; Check Hook (B+H) pivots away as it lands.
 
-**Movement:** walk 2.3 forward / 1.7 back, dash 8 for 15 frames, backdash 8.8, jump 9.2, weight 1 (higher falls faster in juggles).
+**Movement:** walk 2.3 forward / 1.9 back, dash 8 for 15 frames, backdash 9, jump 9.2, weight 1 (higher falls faster in juggles).
 
 | Input | Move | Level | i | Active | Recovery | Block | Hit | Counter hit | Damage | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| P | Carry The One | high | 9 | 2 | 13 | +1 | +8 | +10 | 7 |  |
-| P,P | Double Check | high | 10 | 2 | 15 | -2 | +6 | +9 | 9 |  |
-| P,P,H | Equals Sign | mid | 12 | 3 | 20 | -9 | knockdown | knockdown | 13 |  |
-| F+P | Calculator Combo | mid | 12 | 3 | 16 | -3 | +5 | +8 | 9 |  |
-| B+P | Pop-Up Error | high | 16 | projectile | 22 | -2 | +6 | +9 | 11 | projectile: pops up 150 px in front, range 600 |
-| K | Straight Edge | mid | 13 | 3 | 17 | -4 | +4 | +8 | 12 |  |
-| F+K | Graphing Mode | mid | 16 | 3 | 19 | -6 | +3 | +8 | 13 | enhance with P+K |
-| D+K | Scratch Work | low | 14 | 3 | 19 | -11 | 0 | +5 | 9 | hits downed opponents, ducks highs |
-| D/B+K | Drop The Decimal | low | 19 | 3 | 26 | -18 | knockdown | knockdown | 14 | ducks highs |
-| H | Long Division | mid | 18 | 3 | 20 | -5 | +4 | launch | 19 | wall splats, enhance with P+K |
-| B+H | Show Your Work | — | 27 total |  |  |  |  |  |  | parry |
-| D+H | Round Up | mid | 15 | 4 | 22 | -15 | launch | launch | 15 | enhance with P+K, jump cancel on hit (UP) |
-| P+K | Answer Key | throw | 12 | 2 | 26 |  |  |  | 30 | break with P |
-| B+P+K | Wrong Answer | throw | 12 | 2 | 26 |  |  |  | 33 | break with K |
-| AIR P | Decimal Point | mid | 7 | 4 | 10 |  |  |  | 8 | hitstun 16, blockstun 10, landing 4 |
-| AIR K | Slope | mid | 9 | 5 | 12 |  |  |  | 11 | hitstun 18, blockstun 12, landing 6 |
-| AIR H | Divide | mid | 12 | 4 | 16 |  |  |  | 16 | bounds, hitstun 22, blockstun 14, landing 10 |
-| K (DOWN) | Recalculate | low | 14 | 3 | 22 | -14 | -2 | +1 | 10 | ducks highs |
-| P/H (DOWN) | Clear Entry | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
+| P | Jab | high | 9 | 2 | 13 | +1 | +8 | +10 | 9 |  |
+| P,P | Double Jab | high | 9 | 2 | 15 | -1 | +6 | +9 | 8 |  |
+| P,P,P | Lead Hook | high | 11 | 3 | 18 | -5 | knockdown | knockdown | 14 |  |
+| P,P,H | Uppercut | mid | 12 | 3 | 20 | -9 | knockdown | knockdown | 13 |  |
+| F+P | Shovel Hook | mid | 13 | 3 | 15 | +1 | +5 | +9 | 14 |  |
+| B+P | Pull Counter | high | 17 | 3 | 16 | -5 | +4 | knockdown | 15 | enhance with P+K, evades highs and mids on frames 2-11 |
+| D+P | Rear Uppercut | mid | 13 | 3 | 18 | -6 | +4 | launch | 16 |  |
+| K | Body Jab | mid | 11 | 2 | 15 | -2 | +5 | +8 | 10 |  |
+| F+K | Slip | — | 19 total |  |  |  |  |  |  | dodge: from frame 7 it comes out into another dodge or any attack, evades highs on frames 2-13 |
+| B+K | Weave | — | 21 total |  |  |  |  |  |  | steps back as it attacks, dodge: from frame 9 it comes out into another dodge or any attack, evades highs on frames 3-15 |
+| D+K | Duck | — | 21 total |  |  |  |  |  |  | ducks highs, dodge: from frame 8 it comes out into another dodge or any attack, evades highs on frames 1-15 |
+| D/B+K | Stomp | low | 13 | 3 | 18 | -9 | +2 | +6 | 10 |  |
+| H | Right Hand | high | 15 | 3 | 19 | -5 | +5 | launch | 21 | wall splats |
+| F+H | Overhand Right | high | 19 | 3 | 19 | -6 | knockdown | knockdown | 24 | enhance with P+K |
+| B+H | Check Hook | high | 12 | 3 | 18 | -4 | +4 | knockdown | 17 | steps back as it attacks |
+| D+H | Bolo Punch | mid | 16 | 4 | 22 | -15 | launch | launch | 15 | enhance with P+K, jump cancel on hit (UP) |
+| P+K | Clinch And Spin | throw | 12 | 2 | 26 |  |  |  | 30 | break with P |
+| B+P+K | Lean Back | — | 23 total |  |  |  |  |  |  | steps back as it attacks, dodge: from frame 10 it comes out into another dodge or any attack, evades highs and mids on frames 2-14 |
+| AIR P | Flying Jab | mid | 7 | 4 | 10 |  |  |  | 8 | hitstun 16, blockstun 10, landing 4 |
+| AIR K | Drop Hook | mid | 9 | 5 | 12 |  |  |  | 11 | hitstun 18, blockstun 12, landing 6 |
+| AIR H | Overhand Drop | mid | 12 | 4 | 16 |  |  |  | 16 | bounds, hitstun 22, blockstun 14, landing 10 |
+| K (DOWN) | Still Counting | low | 14 | 3 | 22 | -14 | -2 | +1 | 10 | ducks highs |
+| P/H (DOWN) | Up At Eight | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
 | T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
-| F+P,P | Plus Two | high | 10 | 2 | 16 | -4 | +5 | +8 | 8 |  |
-| F+P,P,P | Plus Three | mid | 10 | 3 | 18 | -6 | +4 | +8 | 9 |  |
-| F+P,P,P,H | Equals Six | mid | 12 | 3 | 22 | -10 | knockdown | knockdown | 15 |  |
-| SHOW YOUR WORK, CAUGHT | Checked | mid | 5 | 3 | 20 | -8 | launch | launch | 17 |  |
-| D,D/F,F+P+K+H | Calculator Overflow | mid | 12 | 3 | 46 | -33 | +5 | +8 | 9 |  |
+| D,D/F,F+P+K+H | Can't Touch This | high | 9 | 2 | 43 | -29 | +8 | +10 | 9 |  |
 | T (BY AN OBJECT) | Springboard | mid | 16 | 5 | 18 | -6 | knockdown | knockdown | 18 |  |
 | B+T (BY AN OBJECT) | Vault | — | 38 total |  |  |  |  |  |  |  |
 
 **Enhanced specials** (P+K during the startup, 1 bar):
 
-- **Graphing Mode+** (`F+K`, then `P+K`): Launches — 17 damage (from 13), hit: launch.
-- **Long Division+** (`H`, then `P+K`): Two hits, wall splat — 2 hits of 16.
-- **Round Up+** (`D+H`, then `P+K`): Armored, launches higher — 20 damage (from 15), armor on frames 1-15 (1 hit).
+- **Pull Counter+** (`B+P`, then `P+K`): Knockdown — 20 damage (from 15), hit: knockdown.
+- **Overhand Right+** (`F+H`, then `P+K`): Two overhands — 2 hits of 21.
+- **Bolo Punch+** (`D+H`, then `P+K`): Armored — 20 damage (from 15), armor on frames 1-16 (1 hit).
 
-**Ultimate:** Calculator Overflow — the ultimate key (`U` / `Numpad 0`) or `D, D/F, F + P+K+H`, with all three bars: he types into a giant calculator, the screen fills with ERROR boxes, and every one of them hits at once. 9 hits, 32% of their health; blocked -33, whiffed 60 frames.
+**Counterpuncher:** when a dodge (or the Pull Counter's lean) makes an attack miss, the next thing he lands within 40 frames is a counter hit, 20% harder than a plain one.
+
+**Ultimate:** Can't Touch This — the ultimate key (`U` / `Numpad 0`) or `D, D/F, F + P+K+H`, with all three bars: he slips a whole flurry in slow motion, then counters: body, body, head, and an uppercut that lifts them off the floor. 5 hits, 32% of their health; blocked -29, whiffed 53 frames.
 
 **KO finisher:** Extra Credit — `B, F, P` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).
 
 **Combo routes** (tested in `tests/sim.test.js`):
 
-- **Calculator Combo:** F+P, P, P, H (frames: F+P @0, P @14, P @28, H @41)
-- **Double Check:** P, P, H (frames: P @0, P @12, H @25)
-- **Round Up:** D+H, P, P, H (frames: D+H @0, P @41, P @53, H @63)
-- **Show Your Work:** D+H, up, air P, air K, air H, D+K (frames: D+H @0, UP @16, P @31, K @37, H @44, D+K @98)
-- **Rounded Up (1 bar):** D+H, P+K, P, P, H (frames: D+H @0, P+K @3, P @50, P @59, H @68)
-- **Calculator Overflow (3 bars):** P, D, D/F, F+P+K+H (frames: P @0, D @3, D/F @4, F @5, F+P+K+H @9)
+- **Jab, Jab, Hook:** P, P, P (frames: P @0, P @12, P @24)
+- **Double Jab, Uppercut:** P, P, H (frames: P @0, P @12, H @24)
+- **Bolo:** D+H, P, P, H (frames: D+H @0, P @42, P @54, H @64)
+- **Show Your Work:** D+H, up, air P, air K, air H (frames: D+H @0, UP @17, P @30, K @37, H @44)
+- **Armored Bolo (1 bar):** D+H, P+K, P, P, H (frames: D+H @0, P+K @3, P @42, P @54, H @64)
+- **Can't Touch This (3 bars):** P, D, D/F, F+P+K+H (frames: P @0, D @3, D/F @4, F @5, F+P+K+H @9)

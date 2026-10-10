@@ -165,16 +165,16 @@ Every fighter's combo routes, and what the combo feel pass changed. The routes l
 | HIGHLIGHT | hard | D+H, UP, AIR P, AIR K, AIR H | 4 | - | 45 |
 | HIGHLIGHT REEL | hard | P, D, D/F, F+P+K+H | 2 | 3 bars | 60 |
 
-### HUDSON (defensive, calculators)
+### HUDSON (counterpuncher, calculators)
 
 | Route | Level | Inputs | Hits | Meter | Damage |
 | --- | --- | --- | --- | --- | --- |
-| CALCULATOR COMBO | easy | F+P, P, P, H | 4 | - | 36 |
-| DOUBLE CHECK | easy | P, P, H | 3 | - | 27 |
-| ROUND UP | medium | D+H, P, P, H | 4 | - | 40 |
-| ROUNDED UP | medium | D+H, P+K, P, P, H | 4 | 1 bar | 45 |
-| SHOW YOUR WORK | hard | D+H, UP, AIR P, AIR K, AIR H, D+K | 5 | - | 48 |
-| CALCULATOR OVERFLOW | hard | P, D, D/F, F+P+K+H | 2 | 3 bars | 58 |
+| JAB, JAB, HOOK | easy | P, P, P | 3 | - | 29 |
+| DOUBLE JAB, UPPERCUT | easy | P, P, H | 3 | - | 28 |
+| BOLO | medium | D+H, P, P, H | 4 | - | 41 |
+| ARMORED BOLO | medium | D+H, P+K, P, P, H | 4 | 1 bar | 46 |
+| SHOW YOUR WORK | hard | D+H, UP, AIR P, AIR K, AIR H | 4 | - | 45 |
+| CAN'T TOUCH THIS | hard | P, D, D/F, F+P+K+H | 2 | 3 bars | 60 |
 <!-- /routes -->
 
 ## Easier combos (the second pass)

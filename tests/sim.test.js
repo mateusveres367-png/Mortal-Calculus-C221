@@ -1988,30 +1988,43 @@ defs.forEach(function (d) {
     check('jack: no projectile, no teleport, no stance', Object.keys(JA.moves).every(function (id) { var mv = JA.moves[id]; return !mv.projectile && !mv.teleport && !mv.stanceSwitch && !mv.feint; }));
   }
 
-  // HUDSON: Show Your Work catches highs and mids (not lows) and counters; Pop-Up Error
-  // opens in front of them, never past them, and can't hit until it has opened; every
-  // hit of Calculator Combo shows its number.
+  // HUDSON (boxing): the dodges make attacks miss (slip / duck / weave highs, lean back
+  // highs and mids) and chain into each other and into his punches; Counterpuncher turns
+  // the first hit after a dodge that made them miss into a counter hit.
   var HU = FG.fighterById('hudson');
   if (HU) {
-    m = setup(HU, P, 44); e = evs(m, 80, function (i) { return [i === 4 ? { h: true, left: true } : {}, i === 0 ? { p: true } : {}]; });
-    pr = e.filter(function (x) { return x.type === 'parry'; })[0];
-    check('show your work: a strike gets caught and countered', pr && pr.counter === 'checkWork' && e.some(function (x) { return x.type === 'hit' && x.attacker === 0 && x.move.id === 'checkWork' && x.launch; }), types(e));
-    m = setup(HU, P, 44); e = evs(m, 80, function (i) { return [i === 8 ? { h: true, left: true } : {}, i === 0 ? { k: true, down: true } : {}]; });
-    check('show your work: lows go through it', !e.some(function (x) { return x.type === 'parry'; }) && e.some(function (x) { return x.type === 'hit' && x.attacker === 1; }), types(e));
-    m = setup(HU, P, 300); var x0 = m.fighters[0].x, born = null, hitAt = null;
-    e = evs(m, 80, function (i, mm) { mm.events.forEach(function (x) { if (x.type === 'projectile') born = i; if (x.type === 'hit' && x.projectile) hitAt = i; }); return [i === 0 ? { p: true, left: true } : {}]; });
-    var pe = e.filter(function (x) { return x.type === 'projectile'; })[0];
-    check('pop-up error: opens 150 ahead, not flying there', pe && pe.kind === 'error' && Math.abs(pe.x - x0 - 150 * HU.scale) < 2, pe && pe.x - x0);
-    m = setup(HU, P, 70); x0 = m.fighters[0].x;
-    e = evs(m, 80, function (i, mm) { mm.events.forEach(function (x) { if (x.type === 'projectile') born = i; if (x.type === 'hit' && x.projectile) hitAt = i; }); return [i === 0 ? { p: true, left: true } : {}]; });
-    pe = e.filter(function (x) { return x.type === 'projectile'; })[0];
-    check('pop-up error: never opens past them', pe && pe.x <= m.fighters[1].x + 1 && pe.x > x0 + 50, pe && [pe.x - x0, m.fighters[1].x - x0]);
-    check('pop-up error: hits only once it has opened', born != null && hitAt != null && hitAt - born >= HU.moves.bP.projectile.arm, [born, hitAt]);
-    m = setup(HU, P, 70);
-    e = evs(m, 80, function (i) { return [i === 0 ? { p: true, left: true } : {}, i >= 4 ? { down: true } : {}]; });
-    check('pop-up error: a crouch ducks it', !e.some(function (x) { return (x.type === 'hit' || x.type === 'block') && x.projectile; }), types(e));
-    var calc = HU.combos.filter(function (c) { return c.name === 'CALCULATOR COMBO'; })[0], cr = FG.runCombo(HU, P, { plan: calc.plan, hits: calc.hits });
-    check('calculator combo: 1, +2, +3, =6, one number per hit', cr.trueCombo && cr.hits.map(function (id) { return HU.moves[id].hitText; }).join(' ') === '1 +2 +3 =6', cr.hits);
+    var dodgeTest = function (tok, oppTok, at) {
+      var mm = setup(HU, BR, 44);
+      var ee = evs(mm, 70, function (i) { return [i === at ? FG.parseInput(tok) : i === at + 8 ? { p: true } : {}, i === 0 ? FG.parseInput(oppTok) : {}]; });
+      return ee;
+    };
+    // BRINKHUS's jab (P) is a high (startup 9): dodge it, then the jab is a counter hit.
+    [['F+K', 'slip'], ['D+K', 'duck'], ['B+K', 'weave'], ['B+P+K', 'lean back']].forEach(function (t) {
+      var ee = dodgeTest(t[0], 'P', 2);
+      check('hudson: ' + t[1] + ' makes a jab miss', ee.some(function (x) { return x.type === 'dodge' && x.fighter === 0 && x.counter; }) && !ee.some(function (x) { return x.type === 'hit' && x.attacker === 1; }), types(ee));
+      var hit = ee.filter(function (x) { return x.type === 'hit' && x.attacker === 0; })[0];
+      check('hudson: ' + t[1] + ', then a punch: a counter hit', hit && hit.ch && hit.counterpunch, hit && [hit.move.id, hit.ch]);
+    });
+    // The lean back also makes mids miss; a slip doesn't.
+    var lb = dodgeTest('B+P+K', 'K', 6);
+    check('hudson: lean back makes a mid miss', lb.some(function (x) { return x.type === 'dodge' && x.fighter === 0; }), types(lb));
+    var sm = dodgeTest('F+K', 'K', 6);
+    check('hudson: a slip does not dodge a mid', sm.some(function (x) { return x.type === 'hit' && x.attacker === 1; }), types(sm));
+    // Nothing to dodge: the punch out of a dodge is a plain hit.
+    m = setup(HU, BR, 44);
+    e = evs(m, 60, function (i) { return [i === 0 ? FG.parseInput('F+K') : i === 8 ? { p: true } : {}]; });
+    var ph = e.filter(function (x) { return x.type === 'hit' && x.attacker === 0; })[0];
+    check('hudson: no dodge, no counter', ph && !ph.ch, ph && ph.ch);
+    // Dodges chain: slip, then duck, then weave, each straight out of the last.
+    m = setup(HU, BR, 80); var seq = [];
+    evs(m, 60, function (i, mm) { var f0 = mm.fighters[0]; if (f0.state === 'attack' && f0.moveFrame === 1) seq.push(f0.move.id); return [i === 0 ? FG.parseInput('F+K') : i === 8 ? FG.parseInput('D+K') : i === 17 ? FG.parseInput('B+K') : {}]; });
+    check('hudson: dodges chain', seq.join() === 'fK,low,bK', seq);
+    // Pull Counter: it leans out of their jab and the right hand comes back as a counter hit.
+    var pc = dodgeTest('B+P', 'P', 2);
+    var pch = pc.filter(function (x) { return x.type === 'hit' && x.attacker === 0 && x.move.id === 'bP'; })[0];
+    check('hudson: pull counter leans out and counters', pch && pch.ch && pch.counterpunch, types(pc));
+    check('hudson: P, P, P is jab, jab, hook', FG.runCombo(HU, BR, { plan: { 0: 'P', 12: 'P', 24: 'P' } }).hits.join() === 'jab,jab2,jab3');
+    check('hudson: no projectile, no parry', Object.keys(HU.moves).every(function (id) { return !HU.moves[id].projectile && !HU.moves[id].parry; }));
   }
 })();
 

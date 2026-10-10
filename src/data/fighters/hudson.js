@@ -1,30 +1,35 @@
-// HUDSON — Defensive / Technical — "CALCULATOR KID". A 10th grader who already did the
-// homework. Calm and precise: he lets you make the mistake, then shows you the answer.
+// HUDSON — Defensive / Counterpuncher — "CALCULATOR KID". A 10th grader who already did
+// the homework, and a boxer who lets you make the mistake. Low, bent at the waist, lead
+// hand down across his body (a shoulder roll), always bobbing.
 //
-// Signature: SHOW YOUR WORK. B+H is a quick parry for highs and mids (lows and throws
-// beat it): catch a strike and he counters with a palm and a rising elbow that
-// launches; catch a projectile and it's knocked away. Calculator Combo (F+P, P, P, H)
-// is a string where every hit shows a number: 1, +2, +3, =6. Graphing Mode (F+K) is
-// the longest poke on the student side; Pop-Up Error (B+P) opens a "SYNTAX ERROR" box
-// in the air in front of them (a high, up to 150 away).
+// Moves: Jab (P), Double Jab (P, P), Lead Hook (P, P, P), Rear Uppercut (D+P), Shovel
+// Hook (F+P), Overhand Right (F+H), Check Hook (B+H: pivots away as it lands), Bolo
+// Punch (D+H, his launcher), Pull Counter (B+P: leans back, then the right hand), Body
+// Jab (K), and one stomp for lows (D/B+K). Not a LEE: no peekaboo rush. He waits, makes
+// you miss, and makes you pay.
+//
+// Head movement: Slip (F+K), Duck (D+K), Weave (B+K), Lean Back (B+P+K). Dodges chain
+// into each other and into any punch (move.dodge).
+// Signature: COUNTERPUNCHER. A dodge that makes something miss turns the next thing he
+// lands (within COUNTER_FRAMES) into a counter hit, with a big flash.
 (function () {
   // A 10th grader: shorter limbs than the teachers, a little lanky.
   var R = FG.rigger({ torso: 25, neck: 11.5, upper: 14.5, fore: 12.5, thigh: 23, shin: 23 });
-  // Upright and still: lead hand open at chest height, rear hand by his chin. Waiting.
-  var stance = R({ hip: [0, 44], lean: 3, neck: -2, fa: { hand: [17, 66] }, ba: { hand: [6, 70] }, fl: { foot: [10, 0] }, bl: { foot: [-12, 0] } });
-  var stand = R({ hip: [0, 45], lean: 0, fa: [-88, -80], ba: [-92, -84], fl: { foot: [5, 0] }, bl: { foot: [-5, 0] } });
+  var hands = function (fx, fy, bx, by) { return { fa: { hand: [fx, fy] }, ba: { hand: [bx, by] } }; };
+  var pose = function (spec, h) { return R(Object.assign(spec, h || {})); };
+  var SHELL = hands(15, 45, 18, 68);    // lead hand low across the belly, rear glove at the chin
+  var FEET = { fl: { foot: [12, 0] }, bl: { foot: [-13, 0] } };
 
   var poses = {
-    idle: stance,
-    stand: stand,
+    // The shoulder roll: bent at the waist, lead shoulder up, chin tucked behind it.
+    idle: pose(Object.assign({ hip: [0, 39], lean: 22, neck: -8 }, FEET), SHELL),
+    stand: R({ hip: [0, 45], lean: 0, fa: [-88, -80], ba: [-92, -84], fl: { foot: [5, 0] }, bl: { foot: [-5, 0] } }),
     // Arms folded, weight on one leg: "I'll wait."
     wait: R({ hip: [0, 45], lean: -2, neck: -4, fa: { hand: [8, 64] }, ba: { hand: [10, 62] }, fl: { foot: [6, 0] }, bl: { foot: [-7, 0] } }),
     // Holding up his calculator, checking the answer.
     check: R({ hip: [0, 45], lean: 2, neck: 8, fa: { hand: [14, 66] }, ba: { hand: [10, 60] }, fl: { foot: [6, 0] }, bl: { foot: [-6, 0] } }),
-    // Typing: the lead hand taps, up and down.
     type1: R({ hip: [0, 45], lean: 6, neck: 10, fa: { hand: [16, 62] }, ba: { hand: [12, 60] }, fl: { foot: [6, 0] }, bl: { foot: [-6, 0] } }),
     type2: R({ hip: [0, 45], lean: 6, neck: 10, fa: { hand: [15, 58] }, ba: { hand: [12, 60] }, fl: { foot: [6, 0] }, bl: { foot: [-6, 0] } }),
-    // Pressing ENTER: one finger, a little flourish.
     enter: R({ hip: [0, 45], lean: 4, neck: 4, fa: [10, 30], ba: { hand: [12, 60] }, fl: { foot: [6, 0] }, bl: { foot: [-6, 0] } }),
     // A gold star, held up for the class.
     star: R({ hip: [0, 45], lean: -2, neck: -6, fa: [60, 70], ba: [-95, -84], fl: { foot: [6, 0] }, bl: { foot: [-6, 0] } }),
@@ -32,103 +37,111 @@
     hands: R({ hip: [0, 42], lean: 14, neck: 12, fa: { hand: [10, 34] }, ba: { hand: [4, 32] }, fl: { foot: [8, 0] }, bl: { foot: [-8, 0] } }),
     hands2: R({ hip: [0, 41], lean: 18, neck: 14, fa: { hand: [10, 33] }, ba: { hand: [4, 31] }, fl: { foot: [8, 0] }, bl: { foot: [-8, 0] } }),
 
-    // Movement: small, measured steps; he never lunges.
-    crouch: R({ hip: [0, 26], lean: 16, neck: 2, fa: { hand: [17, 50] }, ba: { hand: [7, 52] }, fl: { foot: [12, 0] }, bl: { foot: [-13, 0] } }),
-    squat: R({ hip: [0, 32], lean: 12, fa: { hand: [16, 54] }, ba: { hand: [7, 56] }, fl: { foot: [11, 0] }, bl: { foot: [-12, 0] } }),
-    jump: R({ hip: [0, 42], lean: 4, fa: { hand: [16, 66] }, ba: { hand: [6, 70] }, fl: [-30, -110], bl: [-100, -70] }),
-    dash: R({ hip: [3, 38], lean: 20, neck: 4, fa: { hand: [18, 62] }, ba: { hand: [6, 64] }, fl: { foot: [16, 0] }, bl: { foot: [-14, 5] } }),
-    backdash: R({ hip: [-3, 42], lean: -4, fa: { hand: [15, 68] }, ba: { hand: [5, 70] }, fl: { foot: [12, 5] }, bl: { foot: [-15, 0] } }),
-    sidestep: R({ hip: [0, 36], lean: 10, neck: 4, fa: { hand: [15, 60] }, ba: { hand: [6, 64] }, fl: { foot: [8, 0] }, bl: { foot: [-9, 0] } }),
-    // Guard: both forearms stacked up the centre line, chin tucked.
-    block: R({ hip: [-1, 41], lean: 10, neck: 6, fa: { hand: [12, 72] }, ba: { hand: [10, 64] }, fl: { foot: [10, 0] }, bl: { foot: [-13, 0] } }),
-    cblock: R({ hip: [-1, 26], lean: 16, fa: { hand: [14, 52] }, ba: { hand: [11, 46] }, fl: { foot: [12, 0] }, bl: { foot: [-13, 0] } }),
-    // Hit reactions: he keeps his feet, mostly; the head snaps.
-    hit_high: R({ hip: [-3, 44], lean: -12, neck: -18, fa: [40, -20], ba: { hand: [2, 66] }, fl: { foot: [11, 0] }, bl: { foot: [-15, 0] } }),
-    hit_mid: R({ hip: [-4, 38], lean: 26, neck: 12, fa: { hand: [12, 40] }, ba: { hand: [5, 42] }, fl: { foot: [9, 0] }, bl: { foot: [-15, 0] } }),
-    hit_low: R({ hip: [-2, 36], lean: 12, fa: { hand: [16, 52] }, ba: [-140, -100], fl: [-50, -100], bl: { foot: [-14, 0] } }),
-    gbreak: R({ hip: [-4, 42], lean: -12, neck: -8, fa: [40, 90], ba: [60, 110], fl: { foot: [12, 0] }, bl: { foot: [-16, 0] } }),
-    juggle: R({ hip: [0, 22], lean: -52, neck: -14, fa: [60, 120], ba: [90, 150], fl: [30, -30], bl: [0, -60] }),
-    down: R({ hip: [0, 6], lean: -86, fa: [120, 170], ba: [-170, -130], fl: [12, -12], bl: [-4, 4] }),
+    // Movement: short steps, the shell never opens.
+    crouch: pose({ hip: [0, 25], lean: 26, neck: -4, fl: { foot: [12, 0] }, bl: { foot: [-13, 0] } }, hands(17, 38, 19, 54)),
+    squat: pose({ hip: [0, 31], lean: 22, fl: { foot: [12, 0] }, bl: { foot: [-12, 0] } }, hands(15, 40, 18, 59)),
+    jump: pose({ hip: [0, 42], lean: 10, fl: [-30, -110], bl: [-100, -70] }, hands(14, 52, 14, 72)),
+    dash: pose({ hip: [4, 36], lean: 28, neck: -8, fl: { foot: [16, 0] }, bl: { foot: [-14, 5] } }, hands(20, 46, 22, 64)),
+    backdash: pose({ hip: [-3, 40], lean: 8, neck: -4, fl: { foot: [12, 5] }, bl: { foot: [-15, 0] } }, hands(12, 46, 12, 68)),
+    sidestep: pose({ hip: [0, 33], lean: 24, neck: -6, fl: { foot: [10, 0] }, bl: { foot: [-10, 0] } }, hands(15, 42, 18, 62)),
+    // Guard: the shoulder up, the rear glove catching.
+    block: pose({ hip: [-2, 38], lean: 18, neck: 4, fl: { foot: [11, 0] }, bl: { foot: [-14, 0] } }, hands(15, 56, 14, 68)),
+    cblock: pose({ hip: [-2, 24], lean: 24, neck: 2, fl: { foot: [12, 0] }, bl: { foot: [-13, 0] } }, hands(16, 42, 17, 52)),
+    hit_high: R({ hip: [-3, 42], lean: -14, neck: -16, fa: [50, -10], ba: { hand: [4, 62] }, fl: { foot: [11, 0] }, bl: { foot: [-15, 0] } }),
+    hit_mid: R({ hip: [-4, 36], lean: 34, neck: 12, fa: { hand: [10, 34] }, ba: { hand: [4, 36] }, fl: { foot: [8, 0] }, bl: { foot: [-15, 0] } }),
+    hit_low: R({ hip: [-2, 36], lean: 14, fa: { hand: [14, 48] }, ba: { hand: [8, 60] }, fl: [-50, -110], bl: { foot: [-13, 0] } }),
+    gbreak: R({ hip: [-4, 43], lean: -14, neck: -8, fa: [40, 100], ba: [60, 120], fl: { foot: [12, 0] }, bl: { foot: [-16, 0] } }),
+    juggle: R({ hip: [0, 22], lean: -56, neck: -14, fa: [70, 130], ba: [100, 150], fl: [40, -20], bl: [10, -50] }),
+    down: R({ hip: [0, 6], lean: -86, fa: [110, 170], ba: [-170, -130], fl: [14, -14], bl: [-6, 6] }),
 
-    // Carry the One and Double Check: a straight lead jab, then a short, exact cross.
-    jab_c: R({ hip: [1, 44], lean: 6, fa: { hand: [15, 68] }, ba: { hand: [6, 70] }, fl: { foot: [11, 0] }, bl: { foot: [-12, 0] } }),
-    jab_x: R({ hip: [5, 44], lean: 8, neck: 2, fa: [0, 0], ba: { hand: [6, 70] }, fl: { foot: [15, 0] }, bl: { foot: [-11, 0] } }),
-    cross_c: R({ hip: [2, 44], lean: 4, fa: { hand: [14, 68] }, ba: { hand: [2, 68] }, fl: { foot: [12, 0] }, bl: { foot: [-12, 0] } }),
-    cross_x: R({ hip: [8, 42], lean: 14, fa: { hand: [10, 64] }, ba: [4, -2], fl: { foot: [17, 0] }, bl: { foot: [-9, 1] } }),
-    // Calculator Combo: 1 (a palm), +2 (a backfist), +3 (a knee), =6 (a two-handed push).
-    c1_c: R({ hip: [0, 43], lean: 2, fa: [-150, -40], ba: { hand: [6, 70] }, fl: { foot: [11, 0] }, bl: { foot: [-12, 0] } }),
-    c1_x: R({ hip: [6, 42], lean: 12, fa: [-10, -14], ba: { hand: [7, 68] }, fl: { foot: [16, 0] }, bl: { foot: [-11, 0] } }),
-    c2_c: R({ hip: [5, 42], lean: 8, fa: { hand: [4, 72] }, ba: { hand: [6, 66] }, fl: { foot: [15, 0] }, bl: { foot: [-11, 0] } }),
-    c2_x: R({ hip: [7, 42], lean: 6, neck: -2, fa: [-20, 50], ba: { hand: [6, 66] }, fl: { foot: [16, 0] }, bl: { foot: [-10, 0] } }),
-    c3_c: R({ hip: [6, 44], lean: 6, fa: { hand: [12, 66] }, ba: { hand: [4, 66] }, fl: [30, -110], bl: { foot: [-11, 0] } }),
-    c3_x: R({ hip: [9, 46], lean: 16, fa: { hand: [14, 60] }, ba: { hand: [2, 62] }, fl: [70, -100], bl: { foot: [-10, 0] } }),
-    c4_c: R({ hip: [4, 42], lean: -6, neck: -4, fa: { hand: [6, 60] }, ba: { hand: [2, 58] }, fl: { foot: [14, 0] }, bl: { foot: [-12, 0] } }),
-    c4_x: R({ hip: [12, 40], lean: 20, neck: 6, fa: [0, -4], ba: [6, 4], fl: { foot: [22, 0] }, bl: { foot: [-8, 2] } }),
-    c4_r: R({ hip: [9, 42], lean: 10, fa: { hand: [18, 58] }, ba: { hand: [14, 56] }, fl: { foot: [18, 0] }, bl: { foot: [-10, 0] } }),
-    // Straight Edge: a clean front kick, arms still up.
-    kick_c: R({ hip: [-1, 45], lean: -4, fa: { hand: [15, 68] }, ba: { hand: [6, 70] }, fl: [40, -60], bl: { foot: [-12, 0] } }),
-    kick_x: R({ hip: [0, 45], lean: -10, fa: { hand: [12, 70] }, ba: { hand: [4, 70] }, fl: [4, 2], bl: { foot: [-12, 0] } }),
-    // Graphing Mode: a long side kick, flat as a line on a graph, lead arm pointing along it.
-    graph_c: R({ hip: [-4, 44], lean: -10, fa: { hand: [12, 64] }, ba: { hand: [2, 70] }, fl: [60, -110], bl: { foot: [-12, 0] } }),
-    graph_x: R({ hip: [-2, 44], lean: -30, neck: 10, fa: [-20, -10], ba: [-160, -150], fl: [-6, -2], bl: { foot: [-14, 0] } }),
-    // Scratch Work: a quick crouching heel scrape.
-    low_c: R({ hip: [0, 27], lean: 14, fa: { hand: [16, 50] }, ba: { hand: [7, 52] }, fl: [-30, -110], bl: { foot: [-13, 0] } }),
-    low_x: R({ hip: [2, 25], lean: 6, fa: { hand: [14, 50] }, ba: { hand: [6, 52] }, fl: { foot: [44, 4] }, bl: { foot: [-13, 0] } }),
-    // Drop the Decimal: a low spinning sweep.
-    sweep_c: R({ hip: [-2, 22], lean: 26, fa: { hand: [16, 30] }, ba: { hand: [6, 34] }, fl: { foot: [12, 0] }, bl: { foot: [-12, 0] } }),
-    sweep_x: R({ hip: [0, 17], lean: 18, fa: { hand: [10, 6] }, ba: [-170, -160], fl: { foot: [5, 0] }, bl: { foot: [48, 2] } }),
-    // Long Division: a straight-down chop with the edge of the hand.
-    hv_c: R({ hip: [-2, 46], lean: -10, neck: -6, fa: [140, 170], ba: { hand: [6, 66] }, fl: { foot: [11, 0] }, bl: { foot: [-13, 0] } }),
-    hv_x: R({ hip: [8, 40], lean: 28, neck: 8, fa: [10, -40], ba: { hand: [4, 58] }, fl: { foot: [19, 0] }, bl: { foot: [-10, 2] } }),
-    hv_r: R({ hip: [5, 41], lean: 18, fa: { hand: [20, 40] }, ba: { hand: [6, 60] }, fl: { foot: [16, 0] }, bl: { foot: [-12, 0] } }),
-    // Round Up: a rising palm, straight up the middle.
-    up_c: R({ hip: [0, 24], lean: 20, neck: 2, fa: { hand: [12, 26] }, ba: { hand: [7, 48] }, fl: { foot: [12, 0] }, bl: { foot: [-12, 0] } }),
-    up_x: R({ hip: [3, 48], lean: -4, neck: -10, fa: [96, 100], ba: { hand: [8, 62] }, fl: { foot: [10, 4] }, bl: { foot: [-12, 0] } }),
-    up_r: R({ hip: [2, 44], lean: 0, fa: [80, 96], ba: { hand: [7, 64] }, fl: { foot: [11, 0] }, bl: { foot: [-12, 0] } }),
-    // Pop-Up Error: he points, and the box opens where he points.
-    err_c: R({ hip: [0, 44], lean: 2, neck: 4, fa: { hand: [12, 62] }, ba: { hand: [10, 60] }, fl: { foot: [10, 0] }, bl: { foot: [-12, 0] } }),
-    err_x: R({ hip: [2, 44], lean: 4, neck: -2, fa: [-6, 10], ba: { hand: [10, 60] }, fl: { foot: [11, 0] }, bl: { foot: [-12, 0] } }),
-    // Show Your Work: open palm out, catching it.
-    parry: R({ hip: [-2, 42], lean: -4, neck: -2, fa: [-30, 30], ba: { hand: [6, 66] }, fl: { foot: [9, 0] }, bl: { foot: [-14, 0] } }),
-    // Checked: a palm to the chest, then a rising elbow.
-    chk_x: R({ hip: [8, 42], lean: 16, fa: [-6, -6], ba: { hand: [6, 64] }, fl: { foot: [17, 0] }, bl: { foot: [-11, 0] } }),
-    chk_r: R({ hip: [6, 46], lean: -2, neck: -8, fa: [130, 40], ba: { hand: [6, 64] }, fl: { foot: [14, 0] }, bl: { foot: [-12, 0] } }),
+    // Jab (P): flicked up from the low lead hand.
+    jab_c: pose({ hip: [0, 39], lean: 20, neck: -8, fl: { foot: [12, 0] }, bl: { foot: [-13, 0] } }, hands(17, 48, 18, 68)),
+    jab_x: R({ hip: [4, 39], lean: 24, neck: -10, fa: [12, 6], ba: { hand: [21, 67] }, fl: { foot: [15, 0] }, bl: { foot: [-11, 0] } }),
+    // Double Jab (P, P): the second one steps in behind the first.
+    jab2_c: pose({ hip: [3, 39], lean: 22, neck: -8, fl: { foot: [15, 0] }, bl: { foot: [-11, 0] } }, hands(20, 52, 20, 67)),
+    jab2_x: R({ hip: [8, 39], lean: 26, neck: -10, fa: [8, 4], ba: { hand: [25, 66] }, fl: { foot: [20, 0] }, bl: { foot: [-7, 1] } }),
+    // Lead Hook (P, P, P): the lead elbow comes up and the hips snap round.
+    hook_c: pose({ hip: [3, 39], lean: 18, neck: -6, fl: { foot: [16, 0] }, bl: { foot: [-9, 0] } }, hands(16, 54, 19, 67)),
+    hook_x: R({ hip: [4, 39], lean: 28, neck: -8, fa: { hand: [27, 62], bend: 1 }, ba: { hand: [22, 66] }, fl: { foot: [14, 1] }, bl: { foot: [-11, 0] } }),
+    // Body Jab (K): dropping the level, the jab to the stomach.
+    bj_c: pose({ hip: [0, 32], lean: 30, neck: -10, fl: { foot: [14, 0] }, bl: { foot: [-13, 0] } }, hands(18, 40, 20, 58)),
+    bj_x: R({ hip: [6, 30], lean: 36, neck: -12, fa: [-6, -2], ba: { hand: [27, 56] }, fl: { foot: [19, 0] }, bl: { foot: [-11, 0] } }),
+    // Rear Uppercut (D+P): sinking on the rear leg, then up through the middle.
+    upc_c: pose({ hip: [-2, 32], lean: 30, neck: -6, fl: { foot: [12, 0] }, bl: { foot: [-15, 0] } }, hands(13, 44, 7, 40)),
+    upc_x: R({ hip: [4, 41], lean: 6, neck: -10, fa: { hand: [14, 48] }, ba: [40, 95], fl: { foot: [13, 0] }, bl: { foot: [-11, 2] } }),
+    // Shovel Hook (F+P): half hook, half uppercut, into the liver.
+    shv_c: pose({ hip: [0, 34], lean: 30, neck: -8, fl: { foot: [13, 0] }, bl: { foot: [-13, 0] } }, hands(10, 34, 19, 62)),
+    shv_x: R({ hip: [5, 33], lean: 34, neck: -8, fa: { hand: [26, 40], bend: -1 }, ba: { hand: [24, 60] }, fl: { foot: [16, 0] }, bl: { foot: [-11, 0] } }),
+    // Overhand Right (F+H): the rear hand looping over the top, all his weight behind it.
+    ovh_c: R({ hip: [-3, 40], lean: 8, neck: -6, fa: { hand: [14, 48] }, ba: [150, 100], fl: { foot: [12, 0] }, bl: { foot: [-15, 0] } }),
+    ovh_x: R({ hip: [8, 35], lean: 42, neck: 6, fa: { hand: [10, 44] }, ba: [24, -24], fl: { foot: [20, 0] }, bl: { foot: [-9, 2] } }),
+    ovh_r: pose({ hip: [6, 36], lean: 32, neck: -4, fl: { foot: [17, 0] }, bl: { foot: [-11, 0] } }, hands(18, 46, 24, 62)),
+    // Check Hook (B+H): the lead hook as he pivots off the line, away from their rush.
+    chk_c: pose({ hip: [0, 39], lean: 20, neck: -6, fl: { foot: [12, 0] }, bl: { foot: [-13, 0] } }, hands(16, 52, 18, 67)),
+    chk_x: R({ hip: [-6, 40], lean: 16, neck: -6, fa: { hand: [22, 62], bend: 1 }, ba: { hand: [9, 68] }, fl: { foot: [6, 0] }, bl: { foot: [-20, 0] } }),
+    // Bolo Punch (D+H): the arm winds down and round, and comes up under the chin.
+    bolo_c: R({ hip: [-2, 33], lean: 22, neck: -6, fa: { hand: [13, 46] }, ba: [-150, -110], fl: { foot: [12, 0] }, bl: { foot: [-14, 0] } }),
+    bolo_x: R({ hip: [5, 41], lean: 4, neck: -10, fa: { hand: [13, 50] }, ba: [-20, 70], fl: { foot: [15, 0] }, bl: { foot: [-11, 2] } }),
+    bolo_r: pose({ hip: [3, 40], lean: 10, neck: -6, fl: { foot: [13, 0] }, bl: { foot: [-12, 0] } }, hands(13, 48, 18, 70)),
+    // Right Hand (H): the rear straight, the hips through.
+    rh_c: pose({ hip: [-2, 39], lean: 18, neck: -8, fl: { foot: [12, 0] }, bl: { foot: [-14, 0] } }, hands(15, 46, 14, 66)),
+    rh_x: R({ hip: [7, 39], lean: 30, neck: -8, fa: { hand: [12, 48] }, ba: [6, 2], fl: { foot: [17, 0] }, bl: { foot: [-8, 2] } }),
+    // Stomp (D/B+K): his one low, the heel on their lead foot.
+    stomp_c: pose({ hip: [0, 41], lean: 14, neck: -6, fl: [60, -60], bl: { foot: [-13, 0] } }, hands(15, 46, 15, 68)),
+    stomp_x: pose({ hip: [3, 36], lean: 24, neck: -8, fl: { foot: [24, 0] }, bl: { foot: [-13, 0] } }, hands(17, 42, 20, 64)),
+    // Head movement. Slip (F+K): the head off the line and forward, inside their punch.
+    slip: pose({ hip: [6, 34], lean: 36, neck: 6, fl: { foot: [18, 0] }, bl: { foot: [-10, 0] } }, hands(24, 46, 27, 60)),
+    // Duck (D+K): straight down under it.
+    duck: pose({ hip: [0, 22], lean: 36, neck: -6, fl: { foot: [14, 0] }, bl: { foot: [-14, 0] } }, hands(22, 46, 24, 52)),
+    // Weave (B+K): down, under and up the other side, giving a little ground.
+    weave1: pose({ hip: [-3, 30], lean: 30, neck: 4, fl: { foot: [11, 0] }, bl: { foot: [-15, 0] } }, hands(18, 50, 20, 56)),
+    weave2: pose({ hip: [-5, 24], lean: 38, neck: 8, fl: { foot: [10, 0] }, bl: { foot: [-16, 0] } }, hands(20, 44, 22, 50)),
+    weave3: pose({ hip: [-6, 32], lean: 26, neck: -2, fl: { foot: [9, 0] }, bl: { foot: [-17, 0] } }, hands(14, 50, 15, 62)),
+    // Lean Back (B+P+K): the upper body leans away, the weight on the back foot.
+    lean: pose({ hip: [-5, 41], lean: -22, neck: -10, fl: { foot: [10, 0] }, bl: { foot: [-15, 0] } }, hands(12, 52, 6, 62)),
 
-    // Air: Decimal Point (a short punch down), Slope (a straight kick), Divide (an axe chop).
-    air_p: R({ hip: [0, 44], lean: 12, fa: [-20, -40], ba: { hand: [6, 66] }, fl: [-30, -110], bl: [-100, -70] }),
-    air_k: R({ hip: [0, 44], lean: -14, fa: { hand: [14, 66] }, ba: { hand: [4, 68] }, fl: [-10, -10], bl: [-110, -70] }),
-    air_hc: R({ hip: [0, 46], lean: -8, fa: [150, 170], ba: { hand: [6, 64] }, fl: [-30, -110], bl: [-110, -70] }),
-    air_hx: R({ hip: [0, 44], lean: 26, fa: [-10, -50], ba: { hand: [6, 60] }, fl: [-30, -110], bl: [-110, -70] }),
+    air_p: R({ hip: [0, 44], lean: 10, fa: [-10, -30], ba: { hand: [8, 64] }, fl: [-30, -110], bl: [-110, -70] }),
+    air_k: R({ hip: [0, 44], lean: 4, fa: { hand: [14, 50] }, ba: [10, 0], fl: [-30, -110], bl: [-110, -70] }),
+    air_hc: R({ hip: [0, 46], lean: -8, fa: { hand: [14, 52] }, ba: [150, 110], fl: [-30, -110], bl: [-110, -70] }),
+    air_hx: R({ hip: [0, 44], lean: 30, fa: { hand: [12, 48] }, ba: [-10, -60], fl: [-30, -110], bl: [-110, -70] }),
 
-    // Answer Key: a wrist lock, turned over, and down. Wrong Answer: walked past, behind.
-    grab_c: R({ hip: [2, 44], lean: 10, fa: { hand: [22, 64] }, ba: { hand: [12, 66] }, fl: { foot: [12, 0] }, bl: { foot: [-12, 0] } }),
-    grab_x: R({ hip: [4, 44], lean: 12, fa: { hand: [26, 62] }, ba: { hand: [22, 62] }, fl: { foot: [14, 0] }, bl: { foot: [-12, 0] } }),
-    throw_lift: R({ hip: [0, 44], lean: -8, fa: [60, 80], ba: { hand: [14, 70] }, fl: { foot: [10, 0] }, bl: { foot: [-12, 0] } }),
+    // Throw: a clinch, a spin, and down.
+    grab_c: R({ hip: [2, 40], lean: 16, fa: { hand: [22, 58] }, ba: { hand: [14, 60] }, fl: { foot: [12, 0] }, bl: { foot: [-12, 0] } }),
+    grab_x: R({ hip: [4, 40], lean: 18, fa: { hand: [26, 58] }, ba: { hand: [22, 58] }, fl: { foot: [14, 0] }, bl: { foot: [-12, 0] } }),
+    throw_lift: R({ hip: [0, 42], lean: -6, fa: [60, 80], ba: { hand: [14, 66] }, fl: { foot: [10, 0] }, bl: { foot: [-12, 0] } }),
     throw_slam: R({ hip: [6, 32], lean: 34, fa: { hand: [30, 18] }, ba: { hand: [24, 24] }, fl: { foot: [18, 0] }, bl: { foot: [-12, 0] } }),
-    throw_back: R({ hip: [-2, 44], lean: -14, fa: [140, 170], ba: [120, 160], fl: { foot: [8, 0] }, bl: { foot: [-15, 0] } }),
+    throw_back: R({ hip: [-2, 42], lean: -14, fa: [140, 170], ba: [120, 160], fl: { foot: [8, 0] }, bl: { foot: [-15, 0] } }),
     wake_low: R({ hip: [-2, 8], lean: -58, fa: { hand: [-14, 0] }, ba: { hand: [-20, 0] }, fl: { foot: [40, 6] }, bl: { foot: [4, 0] } }),
-    wake_mid: R({ hip: [3, 44], lean: 14, fa: [-10, -10], ba: { hand: [6, 64] }, fl: { foot: [14, 0] }, bl: { foot: [-12, 3] } })
+    wake_mid: R({ hip: [3, 42], lean: 14, fa: [-10, -10], ba: { hand: [6, 64] }, fl: { foot: [14, 0] }, bl: { foot: [-12, 3] } })
   };
   poses.taunt = poses.wait;
+
+  // A dodge: no hitbox; it makes attacks of `levels` miss on frames from..to, and from
+  // frame `from` it can come out of itself into another dodge or any attack.
+  function dodge(name, label, cmd, total, ev, from, anim, extra) {
+    return Object.assign({ name: name, label: label, cmd: cmd, level: 'mid', strength: 'light', motion: 'dodge',
+      startup: total, active: 1, recovery: 1, evade: ev, dodge: { from: from }, anim: anim }, extra || {});
+  }
 
   FG.defineFighter({
     id: 'hudson', order: 14, student: true,
     homeStage: 'lab',
-    glyphs: ['=', 'ERROR', 'QED', '100%', 'ANS'],
-    stringH: 'EQUALS SIGN',
+    glyphs: ['MISS', 'CORRECT', 'QED', '100%', 'ANS'],
+    stringH: 'UPPERCUT',
     cutIn: { a: 0x22262e, b: 0x8ae0b0 }, // calculator gray and LCD green
     finisher: { name: 'EXTRA CREDIT', input: 'B, F, P' },
-    ultimate: { name: 'CALCULATOR OVERFLOW', text: 'he types into a giant calculator, the screen fills with ERROR boxes, and every one of them hits at once', from: 'fP', len: 280,
-      hits: [196, 199, 202, 205, 208, 211, 214, 217, 236], weights: [1, 1, 1, 1, 1, 1, 1, 1, 6], end: { gap: 70, down: true } },
-    name: 'HUDSON', nickname: 'CALCULATOR KID', archetype: 'DEFENSIVE', theme: 'CALCULATORS',
-    style: 'PRECISE COUNTER-FIGHTER', signatureMechanic: 'SHOW YOUR WORK',
-    signatureText: 'B+H is a quick parry for highs and mids (lows and throws beat it): catch a strike and he counters with a launching palm and elbow; catch a projectile and it is knocked away. Calculator Combo (F+P, P, P, H) shows a number on every hit: 1, +2, +3, =6. Graphing Mode (F+K) is a very long poke; Pop-Up Error (B+P) opens a SYNTAX ERROR box in the air in front of them',
+    ultimate: { name: "CAN'T TOUCH THIS", text: 'he slips a whole flurry in slow motion, then counters: body, body, head, and an uppercut that lifts them off the floor', from: 'jab', len: 290,
+      hits: [168, 180, 192, 204, 232], weights: [1, 1, 1, 1, 6], end: { gap: 70, launch: 6, height: 50 } },
+    name: 'HUDSON', nickname: 'CALCULATOR KID', archetype: 'COUNTERPUNCHER', theme: 'CALCULATORS',
+    style: 'BOXING', signatureMechanic: 'COUNTERPUNCHER',
+    signatureText: 'head movement: Slip (F+K), Duck (D+K), Weave (B+K) and Lean Back (B+P+K) make highs (and, leaning back, mids) miss, chain into each other and into any punch. Anything he lands right after a dodge that made them miss is a counter hit. Pull Counter (B+P) leans back and fires the right hand; Check Hook (B+H) pivots away as it lands',
     bio: 'CALM AND PRECISE. ALREADY FINISHED THE HOMEWORK.',
-    signature: ['SHOW YOUR WORK', 'CALCULATOR COMBO', 'GRAPHING MODE', 'POP-UP ERROR'],
-    scale: 0.93, health: 172,
-    walkF: 2.3, walkB: 1.7, dashSpeed: 8.0, dashFrames: 15, backdashSpeed: 8.8,
+    signature: ['COUNTERPUNCHER', 'SLIP', 'PULL COUNTER', 'CHECK HOOK', 'BOLO PUNCH'],
+    counterpuncher: true,
+    scale: 0.93, health: 232,
+    walkF: 2.3, walkB: 1.9, dashSpeed: 8.0, dashFrames: 15, backdashSpeed: 9.0,
     jumpVy: 9.2, weight: 1.0, react: 0.95,
-    walk: { lean: 0, bob: 0.6, rate: 0.2 },
+    walk: { lean: 2, bob: 1.6, rate: 0.24 }, // bobbing as he steps
     look: {
       skin: 0xe6c29e,
       hair: { style: 'straight', color: 0x121214 },
@@ -137,145 +150,144 @@
       legs: 0x2c3444, shoes: 0x2a2a2e,
       build: { torso: 0.9, limb: 0.93 }
     },
-    idleAnim: { breath: 0.6, bob: 0.4, sway: 0.2, rate: 0.07 }, // barely moves
+    idleAnim: { breath: 0.6, bob: 2.4, sway: 1.4, rate: 0.12 }, // bobbing and rolling the shoulder
     poses: poses,
-    // How the CPU plays him: waits at the end of Graphing Mode, parries, punishes.
-    ai: { spacing: 92, pokes: ['F+K', 'K', 'D+K', 'F+K'], close: ['P', 'F+P>P>P>H', 'P>P>H', 'D+K', 'P+K', 'H'], far: ['B+P'], zone: 0.3, zoneDist: 120, aggro: 0.8, parry: 0.35 },
+    // How the CPU plays him: waits in the shell, makes highs and mids miss with his head
+    // and counters (the counter hit is automatic), pokes the body, and punishes.
+    ai: { spacing: 52, pokes: ['P', 'K', 'P', 'F+P', 'P>P'], close: ['P>P>P', 'P>P>H', 'F+K>P', 'D+P', 'F+P', 'B+K>H', 'B+H', 'F+H', 'B+P', 'D+H', 'P+K', 'D+K>D+P', 'D/B+K', 'K', 'F+K>F+P'], aggro: 1.15, dashIn: 0.4, dodge: 0.7 },
 
     moves: FG.kit.moves({
       jab: {
-        name: 'Jab', label: 'CARRY THE ONE', cmd: 'P', level: 'high', strength: 'light', motion: 'jab',
-        startup: 9, active: 2, recovery: 13, damage: 7,
+        name: 'Jab', label: 'JAB', cmd: 'P', level: 'high', strength: 'light', motion: 'jab',
+        startup: 9, active: 2, recovery: 13, damage: 9,
         block: 1, hit: { adv: 8 }, ch: { adv: 10 },
-        hitbox: { x: 18, w: 30, y: 60, h: 18 }, push: 5, juggle: 3.2,
+        hitbox: { x: 18, w: 38, y: 52, h: 24 }, push: 5, juggle: 3.2,
         cancels: [{ btn: 'p', into: 'jab2', from: 9, to: 20, onContact: true }],
         anim: [[1, 'idle'], [6, 'jab_c'], [9, 'jab_x'], [12, 'jab_x'], [22, 'idle']]
       },
       jab2: {
-        name: 'Cross', label: 'DOUBLE CHECK', cmd: 'P,P', level: 'high', strength: 'light', motion: 'cross',
-        startup: 10, active: 2, recovery: 15, damage: 9,
-        block: -2, hit: { adv: 6 }, ch: { adv: 9 },
-        hitbox: { x: 18, w: 34, y: 54, h: 36 }, push: 7, juggle: 3.4,
-        anim: [[1, 'jab_x'], [6, 'cross_c'], [10, 'cross_x'], [13, 'cross_x'], [25, 'idle']]
+        name: 'Double Jab', label: 'DOUBLE JAB', cmd: 'P,P', level: 'high', strength: 'light', motion: 'jab',
+        startup: 9, active: 2, recovery: 15, damage: 8,
+        block: -1, hit: { adv: 6 }, ch: { adv: 9 },
+        hitbox: { x: 18, w: 32, y: 50, h: 44 }, push: 6, juggle: 3.4,
+        cancels: [{ btn: 'p', into: 'jab3', from: 9, to: 20, onContact: true }],
+        anim: [[1, 'jab_x'], [5, 'jab2_c'], [9, 'jab2_x'], [12, 'jab2_x'], [24, 'idle']]
       },
-      // Calculator Combo: every hit shows its number (hitText).
-      fP: {
-        name: 'Palm', label: 'CALCULATOR COMBO', cmd: 'F+P', level: 'mid', strength: 'medium', motion: 'straight', hitText: '1',
-        startup: 12, active: 3, recovery: 16, damage: 9,
-        block: -3, hit: { adv: 5 }, ch: { adv: 8 },
-        hitbox: { x: 18, w: 26, y: 46, h: 26 }, push: 6, juggle: 3.4, shake: 0.002,
-        step: [4, 12, 1.4],
-        cancels: [{ btn: 'p', into: 'calc2', from: 12, to: 24, onContact: true }],
-        anim: [[1, 'idle'], [7, 'c1_c'], [12, 'c1_x'], [15, 'c1_x'], [24, 'c1_c'], [31, 'idle']]
+      jab3: {
+        name: 'Lead Hook', label: 'LEAD HOOK', cmd: 'P,P,P', level: 'high', strength: 'medium', motion: 'hook',
+        startup: 11, active: 3, recovery: 18, damage: 14,
+        block: -5, hit: { knockdown: true }, ch: { knockdown: true },
+        hitbox: { x: 14, w: 30, y: 52, h: 30 }, push: 14, juggle: 3.4, carry: 1.2, shake: 0.004,
+        anim: [[1, 'jab2_x'], [6, 'hook_c'], [11, 'hook_x'], [14, 'hook_x'], [24, 'hook_c'], [31, 'idle']]
       },
-      calc2: {
-        name: 'Backfist', label: 'PLUS TWO', cmd: 'F+P,P', level: 'high', strength: 'light', motion: 'hook', hitText: '+2',
-        startup: 10, active: 2, recovery: 16, damage: 8,
-        block: -4, hit: { adv: 5 }, ch: { adv: 8 },
-        hitbox: { x: 16, w: 30, y: 56, h: 30 }, push: 6, juggle: 3.4,
-        cancels: [{ btn: 'p', into: 'calc3', from: 10, to: 22, onContact: true }],
-        anim: [[1, 'c1_x'], [6, 'c2_c'], [10, 'c2_x'], [12, 'c2_x'], [26, 'idle']]
-      },
-      calc3: {
-        name: 'Knee', label: 'PLUS THREE', cmd: 'F+P,P,P', level: 'mid', strength: 'medium', motion: 'kick', hitText: '+3',
-        startup: 10, active: 3, recovery: 18, damage: 9,
-        block: -6, hit: { adv: 4 }, ch: { adv: 8 },
-        hitbox: { x: 12, w: 30, y: 34, h: 30 }, push: 6, juggle: 3.6, shake: 0.002,
-        cancels: [{ btn: 'h', into: 'calc4', from: 10, to: 22, onContact: true }],
-        anim: [[1, 'c2_x'], [6, 'c3_c'], [10, 'c3_x'], [13, 'c3_x'], [28, 'idle']]
-      },
-      calc4: {
-        name: 'Double Palm', label: 'EQUALS SIX', cmd: 'F+P,P,P,H', level: 'mid', strength: 'heavy', motion: 'straight', hitText: '=6',
-        startup: 12, active: 3, recovery: 22, damage: 15,
-        block: -10, hit: { knockdown: true }, ch: { knockdown: true },
-        hitbox: { x: 16, w: 32, y: 40, h: 34 }, push: 20, juggle: 3.6, carry: 1.8, shake: 0.006,
-        step: [6, 12, 2.2],
-        anim: [[1, 'c3_x'], [7, 'c4_c'], [12, 'c4_x'], [15, 'c4_x'], [26, 'c4_r'], [37, 'idle']]
-      },
+      // Body Jab (K): the level drops, the jab goes to the stomach.
       mid: {
-        name: 'Front Kick', label: 'STRAIGHT EDGE', cmd: 'K', level: 'mid', strength: 'medium', motion: 'kick',
-        startup: 13, active: 3, recovery: 17, damage: 12,
-        block: -4, hit: { adv: 4 }, ch: { adv: 8 },
-        hitbox: { x: 22, w: 30, y: 32, h: 22 }, push: 12, juggle: 3.6, shake: 0.002,
-        anim: [[1, 'idle'], [8, 'kick_c'], [13, 'kick_x'], [16, 'kick_x'], [25, 'kick_c'], [33, 'idle']]
+        name: 'Body Jab', label: 'BODY JAB', cmd: 'K', level: 'mid', strength: 'light', motion: 'jab',
+        startup: 11, active: 2, recovery: 15, damage: 10,
+        block: -2, hit: { adv: 5 }, ch: { adv: 8 },
+        hitbox: { x: 20, w: 36, y: 26, h: 22 }, push: 6, juggle: 3.4,
+        anim: [[1, 'idle'], [6, 'bj_c'], [11, 'bj_x'], [14, 'bj_x'], [26, 'idle']]
       },
-      // Graphing Mode: the longest reach on the student side.
-      fK: {
-        ex: { text: 'LAUNCHES', hit: { launch: true } },
-        name: 'Long Side Kick', label: 'GRAPHING MODE', cmd: 'F+K', level: 'mid', strength: 'medium', motion: 'kick', hitText: 'Y=MX+B',
-        startup: 16, active: 3, recovery: 19, damage: 13,
-        block: -6, hit: { adv: 3 }, ch: { adv: 8 },
-        hitbox: { x: 26, w: 48, y: 36, h: 18 }, push: 14, juggle: 3.6, shake: 0.003,
-        anim: [[1, 'idle'], [9, 'graph_c'], [16, 'graph_x'], [19, 'graph_x'], [28, 'graph_c'], [38, 'idle']]
+      // Rear Uppercut (D+P): up the middle (it hits crouching opponents).
+      dP: {
+        name: 'Rear Uppercut', label: 'REAR UPPERCUT', cmd: 'D+P', level: 'mid', strength: 'medium', motion: 'launcher',
+        startup: 13, active: 3, recovery: 18, damage: 16,
+        block: -6, hit: { adv: 4 }, ch: { launch: 5.4 },
+        hitbox: { x: 12, w: 26, y: 30, h: 50 }, push: 8, juggle: 4, shake: 0.004,
+        anim: [[1, 'idle'], [7, 'upc_c'], [13, 'upc_x'], [16, 'upc_x'], [26, 'upc_c'], [33, 'idle']]
       },
-      low: {
-        name: 'Heel Scrape', label: 'SCRATCH WORK', cmd: 'D+K', level: 'low', strength: 'light', motion: 'low',
-        startup: 14, active: 3, recovery: 19, damage: 9, crouching: true, otg: true,
-        block: -11, hit: { adv: 0 }, ch: { adv: 5 },
-        hitbox: { x: 24, w: 26, y: 0, h: 14 }, push: 9, juggle: 2.5, shake: 0.002,
-        anim: [[1, 'crouch'], [9, 'low_c'], [14, 'low_x'], [17, 'low_x'], [27, 'low_c'], [35, 'crouch']]
+      // Shovel Hook (F+P): to the liver; plus on block.
+      fP: {
+        name: 'Shovel Hook', label: 'SHOVEL HOOK', cmd: 'F+P', level: 'mid', strength: 'medium', motion: 'hook',
+        startup: 13, active: 3, recovery: 15, damage: 14,
+        block: 1, hit: { adv: 5 }, ch: { adv: 9 },
+        hitbox: { x: 16, w: 34, y: 28, h: 26 }, push: 8, juggle: 3.4, shake: 0.004,
+        step: [4, 12, 1.2],
+        anim: [[1, 'idle'], [7, 'shv_c'], [13, 'shv_x'], [16, 'shv_x'], [25, 'shv_c'], [31, 'idle']]
       },
-      sweep: FG.kit.sweep('DROP THE DECIMAL', { startup: 19, damage: 14, motion: 'sweep' }),
-      heavy: {
-        ex: { text: 'TWO HITS, WALL SPLAT', multi: 1, wallSplat: true },
-        name: 'Chop', label: 'LONG DIVISION', cmd: 'H', level: 'mid', strength: 'heavy', motion: 'overhead', wallSplat: true,
-        startup: 18, active: 3, recovery: 20, damage: 19,
-        block: -5, hit: { adv: 4 }, ch: { launch: 5.6 },
-        hitbox: { x: 16, w: 28, y: 36, h: 36 }, push: 20, juggle: 3.4, carry: 1.8, shake: 0.005,
-        step: [9, 18, 1.2],
-        anim: [[1, 'idle'], [11, 'hv_c'], [18, 'hv_x'], [21, 'hv_x'], [29, 'hv_r'], [38, 'idle']]
-      },
-      launcher: {
-        ex: { text: 'ARMORED, LAUNCHES HIGHER', armor: { hits: 1 }, hit: { launch: 8.4 } },
-        name: 'Rising Palm', label: 'ROUND UP', cmd: 'D+H', level: 'mid', strength: 'launch', motion: 'launcher',
-        startup: 15, active: 4, recovery: 22, damage: 15,
-        block: -15, hit: { launch: 7.6 }, ch: { launch: 9 },
-        hitbox: { x: 8, w: 32, y: 26, h: 78 }, push: 6, juggle: 5.5, carry: 0.5, shake: 0.008,
-        step: [9, 15, 1.2],
-        cancels: [{ btn: 'up', into: 'jump', from: 17, to: 28, onHit: true }],
-        anim: [[1, 'crouch'], [9, 'up_c'], [15, 'up_x'], [19, 'up_x'], [28, 'up_r'], [41, 'idle']]
-      },
-      // Pop-Up Error: a SYNTAX ERROR box opens in the air in front of them (up to 150
-      // away, never past them) and hits a moment later. A high: duck it.
+      // Pull Counter (B+P): he leans back out of it (highs and mids), then the right hand.
       bP: {
-        name: 'Projectile', label: 'POP-UP ERROR', cmd: 'B+P', level: 'high', strength: 'medium', motion: 'jab',
-        startup: 16, active: 1, recovery: 22, damage: 11,
-        block: -2, hit: { adv: 6 }, ch: { adv: 9 },
-        projectile: { kind: 'error', x: 24, y: 50, spawn: 150, arm: 10, w: 34, h: 24, life: 40 },
-        push: 8, shake: 0.003,
-        anim: [[1, 'idle'], [8, 'err_c'], [16, 'err_x'], [30, 'err_x'], [39, 'idle']]
+        ex: { text: 'KNOCKDOWN', hit: { knockdown: true } },
+        name: 'Pull Counter', label: 'PULL COUNTER', cmd: 'B+P', level: 'high', strength: 'heavy', motion: 'cross',
+        startup: 17, active: 3, recovery: 16, damage: 15,
+        block: -5, hit: { adv: 4 }, ch: { knockdown: true },
+        evade: { from: 2, to: 11, levels: ['high', 'mid'] },
+        hitbox: { x: 16, w: 32, y: 50, h: 28 }, push: 14, juggle: 3.4, carry: 1.2, shake: 0.006,
+        step: [12, 17, 2.4],
+        anim: [[1, 'idle'], [3, 'lean'], [11, 'lean'], [17, 'rh_x'], [20, 'rh_x'], [29, 'rh_c'], [36, 'idle']]
       },
-      // Show Your Work: a quick parry for highs and mids, then the counter.
+      // Stomp (D/B+K): his one low.
+      sweep: {
+        name: 'Stomp', label: 'STOMP', cmd: 'D/B+K', level: 'low', strength: 'medium', motion: 'low',
+        startup: 13, active: 3, recovery: 18, damage: 10,
+        block: -9, hit: { adv: 2 }, ch: { adv: 6 },
+        hitbox: { x: 16, w: 28, y: 0, h: 14 }, push: 6, juggle: 2.5, shake: 0.004,
+        anim: [[1, 'idle'], [7, 'stomp_c'], [13, 'stomp_x'], [16, 'stomp_x'], [24, 'stomp_c'], [31, 'idle']]
+      },
+      // Right Hand (H): the rear straight.
+      heavy: {
+        name: 'Right Hand', label: 'RIGHT HAND', cmd: 'H', level: 'high', strength: 'heavy', motion: 'straight', wallSplat: true,
+        startup: 15, active: 3, recovery: 19, damage: 21,
+        block: -5, hit: { adv: 5 }, ch: { launch: 5.6 },
+        hitbox: { x: 16, w: 40, y: 48, h: 30 }, push: 20, juggle: 3.4, carry: 1.8, shake: 0.006,
+        step: [6, 15, 1.2],
+        anim: [[1, 'idle'], [8, 'rh_c'], [15, 'rh_x'], [18, 'rh_x'], [27, 'rh_c'], [36, 'idle']]
+      },
+      // Overhand Right (F+H): looping over the top, his whole weight behind it.
+      fH: {
+        ex: { text: 'TWO OVERHANDS', multi: 1 },
+        name: 'Overhand Right', label: 'OVERHAND RIGHT', cmd: 'F+H', level: 'high', strength: 'heavy', motion: 'overhead',
+        startup: 19, active: 3, recovery: 19, damage: 24,
+        block: -6, hit: { knockdown: true }, ch: { knockdown: true },
+        hitbox: { x: 14, w: 32, y: 44, h: 40 }, push: 18, juggle: 3.4, carry: 1.4, shake: 0.008,
+        step: [8, 19, 1.8],
+        anim: [[1, 'idle'], [9, 'ovh_c'], [19, 'ovh_x'], [22, 'ovh_x'], [31, 'ovh_r'], [41, 'idle']]
+      },
+      // Check Hook (B+H): the lead hook as he pivots away: it stops a rush.
       bH: {
-        name: 'Parry', label: 'SHOW YOUR WORK', cmd: 'B+H', level: 'mid', strength: 'light',
-        startup: 26, active: 1, recovery: 1,
-        parry: { from: 3, to: 12, levels: ['high', 'mid'], counter: 'checkWork' }, parryLabel: 'SHOW YOUR WORK!',
-        anim: [[1, 'idle'], [3, 'parry'], [14, 'parry'], [20, 'block'], [27, 'idle']]
+        name: 'Check Hook', label: 'CHECK HOOK', cmd: 'B+H', level: 'high', strength: 'heavy', motion: 'hook',
+        startup: 12, active: 3, recovery: 18, damage: 17,
+        block: -4, hit: { adv: 4 }, ch: { knockdown: true, carry: 1.2 },
+        hitbox: { x: 10, w: 36, y: 50, h: 30 }, push: 16, juggle: 3.4, carry: 1.2, shake: 0.006,
+        step: [13, 24, -1.6], // the pivot away comes as it lands
+        anim: [[1, 'idle'], [6, 'chk_c'], [12, 'chk_x'], [15, 'chk_x'], [24, 'chk_c'], [31, 'idle']]
       },
-      checkWork: {
-        name: 'Palm and Elbow', label: 'CHECKED', cmd: 'SHOW YOUR WORK, CAUGHT', level: 'mid', strength: 'heavy', motion: 'launcher',
-        startup: 5, active: 3, recovery: 20, damage: 17,
-        block: -8, hit: { launch: 6.6 }, ch: { launch: 7 },
-        hitbox: { x: 10, w: 30, y: 40, h: 46 }, push: 8, juggle: 4, carry: 0.6, shake: 0.007,
-        step: [1, 5, 2.2],
-        anim: [[1, 'parry'], [5, 'chk_x'], [8, 'chk_r'], [18, 'chk_r'], [28, 'idle']]
-      }
+      // Bolo Punch (D+H): his launcher.
+      launcher: {
+        ex: { text: 'ARMORED', armor: { hits: 1 }, hit: { launch: true } },
+        name: 'Bolo Punch', label: 'BOLO PUNCH', cmd: 'D+H', level: 'mid', strength: 'launch', motion: 'launcher',
+        startup: 16, active: 4, recovery: 22, damage: 15,
+        block: -15, hit: { launch: 7.6 }, ch: { launch: 8.2 },
+        hitbox: { x: 8, w: 30, y: 28, h: 80 }, push: 6, juggle: 5.5, carry: 0.3, shake: 0.008,
+        step: [9, 16, 1.6],
+        cancels: [{ btn: 'up', into: 'jump', from: 18, to: 29, onHit: true }],
+        anim: [[1, 'crouch'], [8, 'bolo_c'], [16, 'bolo_x'], [20, 'bolo_x'], [30, 'bolo_r'], [42, 'idle']]
+      },
+      // Head movement: dodges (no hitbox). They chain, and come out into any punch.
+      fK: dodge('Slip', 'SLIP', 'F+K', 18, { from: 2, to: 13, levels: ['high'] }, 7,
+        [[1, 'idle'], [4, 'slip'], [13, 'slip'], [19, 'idle']], { step: [2, 10, 1.6] }),
+      low: dodge('Duck', 'DUCK', 'D+K', 20, { from: 1, to: 15, levels: ['high'] }, 8,
+        [[1, 'idle'], [4, 'duck'], [15, 'duck'], [21, 'idle']], { crouching: true }),
+      bK: dodge('Weave', 'WEAVE', 'B+K', 20, { from: 3, to: 15, levels: ['high'] }, 9,
+        [[1, 'idle'], [5, 'weave1'], [10, 'weave2'], [16, 'weave3'], [21, 'idle']], { step: [2, 14, -1] })
     },
-    FG.kit.air(['DECIMAL POINT', 'SLOPE', 'DIVIDE']),
-    FG.kit.throws('ANSWER KEY', 'WRONG ANSWER', { throw: { damage: 30 }, throwB: { damage: 33 } }),
-    FG.kit.wake({ wakeLow: { label: 'RECALCULATE' }, wakeMid: { label: 'CLEAR ENTRY' } }),
+    FG.kit.air(['FLYING JAB', 'DROP HOOK', 'OVERHAND DROP']),
+    FG.kit.throws('CLINCH AND SPIN', 'SPIN OUT', { throw: { damage: 30 } }),
+    // Lean Back (B+P+K) takes the place of a back throw.
+    { throwB: dodge('Lean Back', 'LEAN BACK', 'B+P+K', 22, { from: 2, to: 14, levels: ['high', 'mid'] }, 10,
+      [[1, 'idle'], [3, 'lean'], [14, 'lean'], [23, 'idle']], { step: [1, 10, -1.4] }) },
+    FG.kit.wake({ wakeLow: { label: 'STILL COUNTING' }, wakeMid: { label: 'UP AT EIGHT' } }),
     FG.kit.taunt()),
 
     combos: [
-      { name: 'CALCULATOR COMBO', difficulty: 'easy', notation: 'F+P, P, P, H', plan: { 0: 'F+P', 14: 'P', 28: 'P', 41: 'H' }, hits: ['fP', 'calc2', 'calc3', 'calc4'] },
-      { name: 'DOUBLE CHECK', difficulty: 'easy', notation: 'P, P, H', plan: { 0: 'P', 12: 'P', 25: 'H' }, hits: ['jab', 'jab2', 'jabH'] },
-      { name: 'ROUND UP', difficulty: 'medium', notation: 'D+H, P, P, H', plan: { 0: 'D+H', 41: 'P', 53: 'P', 63: 'H' }, hits: ['launcher', 'jab', 'jab2', 'jabH'] },
-      { name: 'SHOW YOUR WORK', difficulty: 'hard', notation: 'D+H, UP, AIR P, AIR K, AIR H, D+K',
-        plan: { 0: 'D+H', 16: 'UP', 31: 'P', 37: 'K', 44: 'H', 98: 'D+K' }, hits: ['launcher', 'airP', 'airK', 'airH', 'low'] },
-      // Meter routes (combo trials): an enhanced special, and the ultimate.
-      { name: 'ROUNDED UP', difficulty: 'medium', meter: 1, notation: 'D+H, P+K, P, P, H', steps: ['D+H, P+K (1 BAR)', 'P', 'P', 'H'],
-        plan: { 0: 'D+H', 3: 'P+K', 50: 'P', 59: 'P', 68: 'H' }, hits: ['launcherEX', 'jab', 'jab2', 'jabH'] },
-      { name: 'CALCULATOR OVERFLOW', difficulty: 'hard', meter: 3, notation: 'P, D, D/F, F+P+K+H', plan: { 0: 'P', 3: 'D', 4: 'D/F', 5: 'F', 9: 'F+P+K+H' }, hits: ['jab', 'ultimate'] }
+      { name: 'JAB, JAB, HOOK', difficulty: 'easy', notation: 'P, P, P', plan: { 0: 'P', 12: 'P', 24: 'P' }, hits: ['jab', 'jab2', 'jab3'] },
+      { name: 'DOUBLE JAB, UPPERCUT', difficulty: 'easy', notation: 'P, P, H', plan: { 0: 'P', 12: 'P', 24: 'H' }, hits: ['jab', 'jab2', 'jabH'] },
+      { name: 'BOLO', difficulty: 'medium', notation: 'D+H, P, P, H', plan: { 0: 'D+H', 42: 'P', 54: 'P', 64: 'H' }, hits: ['launcher', 'jab', 'jab2', 'jabH'] },
+      { name: 'SHOW YOUR WORK', difficulty: 'hard', notation: 'D+H, UP, AIR P, AIR K, AIR H',
+        plan: { 0: 'D+H', 17: 'UP', 30: 'P', 37: 'K', 44: 'H' }, hits: ['launcher', 'airP', 'airK', 'airH'] },
+      { name: 'ARMORED BOLO', difficulty: 'medium', meter: 1, notation: 'D+H, P+K, P, P, H', steps: ['D+H, P+K (1 BAR)', 'P', 'P', 'H'],
+        plan: { 0: 'D+H', 3: 'P+K', 42: 'P', 54: 'P', 64: 'H' }, hits: ['launcherEX', 'jab', 'jab2', 'jabH'] },
+      { name: "CAN'T TOUCH THIS", difficulty: 'hard', meter: 3, notation: 'P, D, D/F, F+P+K+H', plan: { 0: 'P', 3: 'D', 4: 'D/F', 5: 'F', 9: 'F+P+K+H' }, hits: ['jab', 'ultimate'] }
     ],
 
     intro: [[1, 'stand'], [14, 'check'], [40, 'type1'], [44, 'type2'], [48, 'type1'], [52, 'enter'], [66, 'wait'], [86, 'idle']],
@@ -284,9 +296,9 @@
     gestures: { nod: [[1, 'idle'], [8, 'nod'], [22, 'nod'], [30, 'idle']] },
     bigHit: { gesture: 'nod' },
     talk: {
-      lines: ['Already did the homework.', 'Show your work.', "I'll wait."],
-      quips: ['Checks out.', 'Correct.', 'Show your work.', 'Carry the one.']
+      lines: ['Already did the homework.', "You'll miss.", "I'll wait."],
+      quips: ['Missed.', 'Correct.', 'Show your work.', 'Too slow.']
     },
-    victoryLines: ['Checked my answer. Still right.', "That's a syntax error.", 'Extra credit.']
+    victoryLines: ['Checked my answer. Still right.', "Couldn't touch me.", 'Extra credit.']
   });
 })();

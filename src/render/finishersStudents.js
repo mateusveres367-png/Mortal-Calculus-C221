@@ -188,9 +188,9 @@
     }
   };
 
-  // HUDSON — Extra Credit: he folds his arms and waits. They throw one last desperate
-  // swing; he catches it (SHOW YOUR WORK), counters once, cleanly, and they drop. He
-  // checks his calculator, nods, and a gold star stamps the screen.
+  // HUDSON — Extra Credit: he waits in the shell. They throw one last desperate swing; in
+  // slow motion he leans back and it misses by an inch. One counter hook, clean, and they
+  // drop. He checks his calculator, nods, and a gold star stamps the screen.
   function star(g, cx, cy, r, col, a) {
     var pts = [];
     for (var k = 0; k < 10; k++) { var ang = -Math.PI / 2 + k * Math.PI / 5, rr = k % 2 ? r * 0.45 : r; pts.push({ x: cx + Math.cos(ang) * rr, y: cy + Math.sin(ang) * rr }); }
@@ -206,18 +206,17 @@
     step: function (fx, t) {
       var w = fx.w, l = fx.l, s = fx.s;
       if (t === 1) { fx.anim(w, [[1, 'stand'], [10, 'wait']]); fx.anim(l, FG.dazedAnim, true); }
-      // Their last swing...
+      // Their last swing... and he leans back out of it, in slow motion.
       if (t === 30) { fx.pose(l, movePose(l, 'heavy', false)); sfx(function (S) { S.noise({ dur: 0.2, freq: 700, f1: 1600, q: 1, gain: 0.12 }); }); }
       if (t === 40) {
-        fx.pose(l, movePose(l, 'heavy', true)); fx.pose(w, 'parry'); s.catch = t;
-        FG.Sfx.play({ type: 'parry' }); fx.scene.effects.spawn({ type: 'parry', x: (w.x + l.x) / 2, y: 70, facing: fx.dir });
-        fx.slow(16, 0.4);
+        fx.pose(l, movePose(l, 'heavy', true)); fx.pose(w, 'lean'); s.miss = t;
+        FG.Sfx.play({ type: 'dodge' }); fx.slow(30, 0.3);
       }
-      // ...caught, and one clean counter.
-      if (t === 52) fx.anim(w, [[1, 'chk_x'], [4, 'chk_r'], [30, 'chk_r'], [40, 'stand']]);
-      if (t === 55) { fx.hit(l, 'launch', { ch: true, shake: 0.02, y: 66 }); fx.anim(l, [[1, 'hit_high'], [8, 'juggle'], [32, 'down']]); s.fall = t; }
-      if (s.fall && t > s.fall && t < s.fall + 32) { var v = (t - s.fall) / 32; l.y = Math.sin(v * Math.PI) * 60; l.x -= fx.dir * 1.4; }
-      if (s.fall && t === s.fall + 32) { l.y = 0; FG.Sfx.play({ type: 'land' }); fx.shake(0.008); }
+      // ...and one clean counter hook.
+      if (t === 52) fx.anim(w, [[1, 'hook_c'], [4, 'hook_x'], [30, 'hook_x'], [40, 'stand']]);
+      if (t === 55) { fx.hit(l, 'power', { ch: true, shake: 0.02, y: 72 }); fx.flash(0xffffff, 0.5); fx.anim(l, [[1, 'hit_high'], [8, 'juggle'], [32, 'down']]); s.fall = t; }
+      if (s.fall && t > s.fall && t < s.fall + 32) { var v = (t - s.fall) / 32; l.y = Math.sin(v * Math.PI) * 40; l.x -= fx.dir * 1.4; l._drawRot = fx.dir * v * 1.2; }
+      if (s.fall && t === s.fall + 32) { l.y = 0; l._drawRot = 0; FG.Sfx.play({ type: 'land' }); fx.shake(0.008); }
       // He checks the answer.
       if (t === 100) { fx.anim(w, [[1, 'check'], [26, 'nod'], [36, 'star']]); sfx(function (S) { S.osc({ dur: 0.05, f0: 900, gain: 0.05, type: 'square' }); S.osc({ dur: 0.05, f0: 1200, gain: 0.05, type: 'square', at: 0.08 }); }); }
       if (t === 140) {
@@ -227,7 +226,7 @@
     },
     draw: function (fx, t) {
       var s = fx.s, g = fx.gs;
-      if (s.catch && t - s.catch < 26) bigText(fx, 1, 'SHOW YOUR WORK!', fx.sx(fx.w.x), 130, 0x8ae0b0, 2, -3);
+      if (s.miss && t - s.miss < 26) bigText(fx, 1, 'MISS', fx.sx(fx.w.x), 130, 0x8ae0b0, 2.4, -3);
       else fx.texts[1].setVisible(false);
       if (s.stamp) {
         var sc = stampScale(t, s.stamp), cx = W / 2, cy = 130, r = 70 * sc, spin = (t - s.stamp) * 0.01;

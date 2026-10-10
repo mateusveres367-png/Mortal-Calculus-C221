@@ -515,6 +515,9 @@
       case 'submission':
         thump(0.2, 120, 40, 0.6); burst(0.15, 500, 1, 0.3);
         break;
+      case 'dodge': // a head slipping a punch: a fast, airy whoosh
+        burst(0.1, 1800, 1.2, 0.14, 'bandpass'); sweep(0.12, 900, 400, 0.05, 'sine');
+        break;
       case 'flow': // JACK: a quick rising swish
         sweep(0.14, 600, 1800, 0.08, 'triangle'); burst(0.08, 3000, 2, 0.12, 'bandpass');
         break;

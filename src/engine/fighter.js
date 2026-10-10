@@ -72,6 +72,7 @@
     this.sub = null;           // MAX's submissions: the hold they're in (the match's sub)
     this.flowT = 0;            // JACK's FLOW: frames left to use it...
     this.flowType = null;      // ...and on what ('kick' after a punch landed, 'punch' after a kick)
+    this.counterReady = 0;     // HUDSON's Counterpuncher: frames left in which his next hit is a counter hit
     this.clearComboFlags();
   };
 
@@ -159,6 +160,7 @@
     this.feintPending = 0;
     this.swayed = false;
     this.fromCancel = false;
+    this.evadedThis = false; // an opponent dodged this move (HUDSON's head movement; once per move)
     // How many times in a row this move has cancelled into itself (Recursive Rush).
     this.repeatCount = prev && prev.id === id ? (this.repeatCount || 0) + 1 : 0;
     this.chargeFrames = 0;
@@ -189,6 +191,7 @@
     if (this.legDamage > 0) this.legDamage--;
     if (this.checking > 0) this.checking--;
     if (this.flowT > 0) this.flowT--;
+    if (this.counterReady > 0) this.counterReady--;
     if (this.feintPending > 0) this.feintPending--;
     this.stateFrame++;
     var s = this.state;
@@ -225,6 +228,7 @@
         if (this.tryFeint(buf, frame)) return;
         if (this.tryKickChain(buf, frame)) return;
         if (this.tryDashCancel(buf, frame)) return;
+        if (this.tryDodgeOut(buf, frame)) return;
         if (this.tryCancel(buf, frame, opp)) return;
         if (this.moveFrame <= m.total) return;
         if (!this.contact && m.box) this.whiffed = true;
@@ -388,6 +392,22 @@
     this.move = ex;
     this.lastMove = ex;
     this.enhancedNow = true; // read (and cleared) by the match for the event
+    return true;
+  };
+
+  // Head movement (HUDSON, move.dodge { from }): from frame `from` of a dodge, a new
+  // press comes out at once: another dodge (they chain) or any attack.
+  Fighter.prototype.tryDodgeOut = function (buf, frame) {
+    var m = this.move;
+    if (!m.dodge || this.moveFrame < m.dodge.from) return false;
+    if (throwPressed(buf, frame)) { this.cancelled = 'dodge'; this.startThrow(buf, frame); return true; } // B+P+K: the lean back
+    var btn = buf.latest(['p', 'k', 'h'], frame);
+    if (!btn) return false;
+    var id = this.resolveMove(btn, buf, frame);
+    if (!id) return false;
+    buf.consume(btn);
+    this.cancelled = 'dodge';
+    this.startMove(id);
     return true;
   };
 

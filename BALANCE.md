@@ -179,6 +179,24 @@ footsie battle at 50-60 px (BRINKHUS's long jab won them all). Changes:
 Quick runs (8 per pairing, `--only jack`, seeds 5 / 9): 49.5% / 47.6%, with no never-used
 move.
 
+## HUDSON the counterpuncher
+
+HUDSON was rebuilt as a boxer with head movement (no parry, no projectile, no Calculator
+Combo). He first came in at 20%: the CPU couldn't react to fast jabs with a dodge (its
+reaction delay is about the jab's startup), it only rolled a dodge once per move type (so
+a second jab was never dodged), and his short punches lost the footsies. Changes:
+
+- CPU: a dodge is rolled for every new attack (HUDSON only); style `dodge: 0.7`, and
+  pre-emptive dodges into punches in his close game (`F+K>P`, `B+K>H`, `D+K>D+P`).
+- An attack that was dodged has missed for good (it can't hit on its later active
+  frames); a counterpunch hits 20% harder than a plain counter hit.
+- More reach on the jab, Body Jab, Right Hand, Shovel Hook and Check Hook; health 182 → 232;
+  small damage bumps (jab 9, Body Jab 10, Right Hand 21, Shovel Hook 14, Rear Uppercut 16,
+  Lead Hook 14, Check Hook 17, Overhand 24).
+
+Quick runs (8 per pairing, `--only hudson`, seeds 5 / 9): 40.9% / 43.8%, with no never-used
+move.
+
 ## The student side (14 fighters)
 
 Adding the five students made it 14 fighters and 4368 matches per run (24 per pairing). Judged on

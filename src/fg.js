@@ -96,6 +96,8 @@ FG.C = {
   CHECK_STUN: 22,          // the kicker staggers this long (he recovers in CHECK_RECOVER)
   CHECK_RECOVER: 4,
   FLOW_FRAMES: 60,         // JACK's FLOW: how long after a hit his next punch / kick stays faster
+  COUNTER_FRAMES: 40,      // HUDSON's Counterpuncher: after a dodge, how long his next hit stays a counter hit
+  COUNTERPUNCH_BONUS: 1.2, // ...and how much harder it hits than a plain counter hit
   // Submissions (MAX): H next to a downed opponent starts a hold (submission.js).
   SUB_REACH: 84,           // how close he has to be to them (scaled by his size)
   SUB_SET: 14,             // frames locking it in before the struggle starts
