@@ -117,7 +117,7 @@
     signatureText: 'his straights outrange everyone\'s, and landing one with the very tip hits 25% harder',
     bio: 'NICE, EASYGOING, A GOOD SPORT. BEST FOR NEW PLAYERS.',
     signature: ['SLOPE JAB', 'DISTRIBUTIVE PROPERTY', 'LINEAR RUSH', 'SOLVE FOR X', 'FOIL'],
-    scale: 1.08, health: 170,
+    scale: 1.08, health: 166,
     // Movement: a quick, springy walk and the fastest dash of the straight-line fighters.
     walkF: 2.2, walkB: 1.9, dashSpeed: 9.8, dashFrames: 14, backdashSpeed: 8.4,
     jumpVy: 9.9, weight: 1.0, react: 1.0,

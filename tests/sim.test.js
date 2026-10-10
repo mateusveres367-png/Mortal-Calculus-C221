@@ -1825,6 +1825,48 @@ defs.forEach(function (d) {
   e = evs(m, 60, function (i) { return [i === 0 ? { p: true, down: true } : i === 3 ? { p: true, k: true } : {}]; });
   tp = e.filter(function (x) { return x.type === 'teleport'; })[0];
   check('pop-up+: comes up behind them', tp && tp.behind && m.fighters[0].x > m.fighters[1].x, tp);
+
+  // JACK: the paper airplane curves up, the nose dive skims the floor as a low, and Seat
+  // Swap switches sides.
+  var JA = FG.fighterById('jack');
+  if (JA) {
+    m = setup(JA, P, 300); var ys = [];
+    evs(m, 60, function (i, mm) { if (mm.projectiles[0]) ys.push(mm.projectiles[0].y); return [i === 0 ? { p: true, left: true } : {}]; });
+    check('paper airplane: curves up', ys.length > 20 && ys[ys.length - 1] > ys[0] + 10, [ys[0], ys[ys.length - 1]]);
+    m = setup(JA, P, 330); m.fighters[1].holdGuard = true;
+    e = evs(m, 120, function (i) { return [i === 0 ? { p: true, down: true } : {}, i >= 4 ? { right: true } : {}]; });
+    check('nose dive: on the floor it beats a standing guard', e.some(function (x) { return x.type === 'hit' && x.projectile === 'plane' && x.level === 'low'; }), types(e));
+    m = setup(JA, P, 60);
+    e = evs(m, 40, function (i) { return [i === 0 ? { h: true, left: true } : {}]; });
+    tp = e.filter(function (x) { return x.type === 'teleport'; })[0];
+    check('seat swap: switches sides', tp && tp.behind && m.fighters[0].x > m.fighters[1].x, tp);
+  }
+
+  // HUDSON: Show Your Work catches highs and mids (not lows) and counters; Pop-Up Error
+  // opens in front of them, never past them, and can't hit until it has opened; every
+  // hit of Calculator Combo shows its number.
+  var HU = FG.fighterById('hudson');
+  if (HU) {
+    m = setup(HU, P, 44); e = evs(m, 80, function (i) { return [i === 4 ? { h: true, left: true } : {}, i === 0 ? { p: true } : {}]; });
+    pr = e.filter(function (x) { return x.type === 'parry'; })[0];
+    check('show your work: a strike gets caught and countered', pr && pr.counter === 'checkWork' && e.some(function (x) { return x.type === 'hit' && x.attacker === 0 && x.move.id === 'checkWork' && x.launch; }), types(e));
+    m = setup(HU, P, 44); e = evs(m, 80, function (i) { return [i === 8 ? { h: true, left: true } : {}, i === 0 ? { k: true, down: true } : {}]; });
+    check('show your work: lows go through it', !e.some(function (x) { return x.type === 'parry'; }) && e.some(function (x) { return x.type === 'hit' && x.attacker === 1; }), types(e));
+    m = setup(HU, P, 300); var x0 = m.fighters[0].x, born = null, hitAt = null;
+    e = evs(m, 80, function (i, mm) { mm.events.forEach(function (x) { if (x.type === 'projectile') born = i; if (x.type === 'hit' && x.projectile) hitAt = i; }); return [i === 0 ? { p: true, left: true } : {}]; });
+    var pe = e.filter(function (x) { return x.type === 'projectile'; })[0];
+    check('pop-up error: opens 150 ahead, not flying there', pe && pe.kind === 'error' && Math.abs(pe.x - x0 - 150 * HU.scale) < 2, pe && pe.x - x0);
+    m = setup(HU, P, 70); x0 = m.fighters[0].x;
+    e = evs(m, 80, function (i, mm) { mm.events.forEach(function (x) { if (x.type === 'projectile') born = i; if (x.type === 'hit' && x.projectile) hitAt = i; }); return [i === 0 ? { p: true, left: true } : {}]; });
+    pe = e.filter(function (x) { return x.type === 'projectile'; })[0];
+    check('pop-up error: never opens past them', pe && pe.x <= m.fighters[1].x + 1 && pe.x > x0 + 50, pe && [pe.x - x0, m.fighters[1].x - x0]);
+    check('pop-up error: hits only once it has opened', born != null && hitAt != null && hitAt - born >= HU.moves.bP.projectile.arm, [born, hitAt]);
+    m = setup(HU, P, 70);
+    e = evs(m, 80, function (i) { return [i === 0 ? { p: true, left: true } : {}, i >= 4 ? { down: true } : {}]; });
+    check('pop-up error: a crouch ducks it', !e.some(function (x) { return (x.type === 'hit' || x.type === 'block') && x.projectile; }), types(e));
+    var calc = HU.combos.filter(function (c) { return c.name === 'CALCULATOR COMBO'; })[0], cr = FG.runCombo(HU, P, { plan: calc.plan, hits: calc.hits });
+    check('calculator combo: 1, +2, +3, =6, one number per hit', cr.trueCombo && cr.hits.map(function (id) { return HU.moves[id].hitText; }).join(' ') === '1 +2 +3 =6', cr.hits);
+  }
 })();
 
 console.log(passes + ' passed, ' + failures + ' failed');

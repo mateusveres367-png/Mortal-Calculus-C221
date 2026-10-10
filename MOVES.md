@@ -732,3 +732,60 @@ Creative and sneaky. Always messing around in the back row.
 - **Outside The Lines:** D+H, up, air P, air K, air H, D+K (frames: D+H @0, UP @16, P @23, K @31, H @39, D+K @92)
 - **Armored Flip (1 bar):** D+H, P+K, P, P, H (frames: D+H @0, P+K @3, P @41, P @51, H @58)
 - **Paper Airplane Squadron (3 bars):** P, D, D/F, F+P+K+H (frames: P @0, D @3, D/F @4, F @5, F+P+K+H @9)
+
+## HUDSON "CALCULATOR KID" — Defensive — Calculators
+
+Calm and precise. Already finished the homework.
+
+**Style:** Precise counter-fighter. **Signature:** Show Your Work — B+H is a quick parry for highs and mids (lows and throws beat it): catch a strike and he counters with a launching palm and elbow; catch a projectile and it is knocked away. Calculator Combo (F+P, P, P, H) shows a number on every hit: 1, +2, +3, =6. Graphing Mode (F+K) is a very long poke; Pop-Up Error (B+P) opens a SYNTAX ERROR box in the air in front of them.
+
+**Movement:** walk 2.3 forward / 1.7 back, dash 8 for 15 frames, backdash 8.8, jump 9.2, weight 1 (higher falls faster in juggles).
+
+| Input | Move | Level | i | Active | Recovery | Block | Hit | Counter hit | Damage | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| P | Carry The One | high | 9 | 2 | 13 | +1 | +8 | +10 | 7 |  |
+| P,P | Double Check | high | 10 | 2 | 15 | -2 | +6 | +9 | 9 |  |
+| P,P,H | Equals Sign | mid | 12 | 3 | 20 | -9 | knockdown | knockdown | 13 |  |
+| F+P | Calculator Combo | mid | 12 | 3 | 16 | -3 | +5 | +8 | 9 |  |
+| B+P | Pop-Up Error | high | 16 | projectile | 22 | -2 | +6 | +9 | 11 | projectile: pops up 150 px in front, range 600 |
+| K | Straight Edge | mid | 13 | 3 | 17 | -4 | +4 | +8 | 12 |  |
+| F+K | Graphing Mode | mid | 16 | 3 | 19 | -6 | +3 | +8 | 13 | enhance with P+K |
+| D+K | Scratch Work | low | 14 | 3 | 19 | -11 | 0 | +5 | 9 | hits downed opponents, ducks highs |
+| D/B+K | Drop The Decimal | low | 19 | 3 | 26 | -18 | knockdown | knockdown | 14 | ducks highs |
+| H | Long Division | mid | 18 | 3 | 20 | -5 | +4 | launch | 19 | wall splats, enhance with P+K |
+| B+H | Show Your Work | — | 27 total |  |  |  |  |  |  | parry |
+| D+H | Round Up | mid | 15 | 4 | 22 | -15 | launch | launch | 15 | enhance with P+K, jump cancel on hit (UP) |
+| P+K | Answer Key | throw | 12 | 2 | 26 |  |  |  | 30 | break with P |
+| B+P+K | Wrong Answer | throw | 12 | 2 | 26 |  |  |  | 33 | break with K |
+| AIR P | Decimal Point | mid | 7 | 4 | 10 |  |  |  | 8 | hitstun 16, blockstun 10, landing 4 |
+| AIR K | Slope | mid | 9 | 5 | 12 |  |  |  | 11 | hitstun 18, blockstun 12, landing 6 |
+| AIR H | Divide | mid | 12 | 4 | 16 |  |  |  | 16 | bounds, hitstun 22, blockstun 14, landing 10 |
+| K (DOWN) | Recalculate | low | 14 | 3 | 22 | -14 | -2 | +1 | 10 | ducks highs |
+| P/H (DOWN) | Clear Entry | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
+| T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
+| F+P,P | Plus Two | high | 10 | 2 | 16 | -4 | +5 | +8 | 8 |  |
+| F+P,P,P | Plus Three | mid | 10 | 3 | 18 | -6 | +4 | +8 | 9 |  |
+| F+P,P,P,H | Equals Six | mid | 12 | 3 | 22 | -10 | knockdown | knockdown | 15 |  |
+| SHOW YOUR WORK, CAUGHT | Checked | mid | 5 | 3 | 20 | -8 | launch | launch | 17 |  |
+| D,D/F,F+P+K+H | Calculator Overflow | mid | 12 | 3 | 46 | -33 | +5 | +8 | 9 |  |
+| T (BY AN OBJECT) | Springboard | mid | 16 | 5 | 18 | -6 | knockdown | knockdown | 18 |  |
+| B+T (BY AN OBJECT) | Vault | — | 38 total |  |  |  |  |  |  |  |
+
+**Enhanced specials** (P+K during the startup, 1 bar):
+
+- **Graphing Mode+** (`F+K`, then `P+K`): Launches — 17 damage (from 13), hit: launch.
+- **Long Division+** (`H`, then `P+K`): Two hits, wall splat — 2 hits of 16.
+- **Round Up+** (`D+H`, then `P+K`): Armored, launches higher — 20 damage (from 15), armor on frames 1-15 (1 hit).
+
+**Ultimate:** Calculator Overflow — the ultimate key (`U` / `Numpad 0`) or `D, D/F, F + P+K+H`, with all three bars: he types into a giant calculator, the screen fills with ERROR boxes, and every one of them hits at once. 9 hits, 32% of their health; blocked -33, whiffed 60 frames.
+
+**KO finisher:** Extra Credit — `B, F, P` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).
+
+**Combo routes** (tested in `tests/sim.test.js`):
+
+- **Calculator Combo:** F+P, P, P, H (frames: F+P @0, P @14, P @28, H @41)
+- **Double Check:** P, P, H (frames: P @0, P @12, H @25)
+- **Round Up:** D+H, P, P, H (frames: D+H @0, P @41, P @53, H @63)
+- **Show Your Work:** D+H, up, air P, air K, air H, D+K (frames: D+H @0, UP @16, P @31, K @37, H @44, D+K @98)
+- **Rounded Up (1 bar):** D+H, P+K, P, P, H (frames: D+H @0, P+K @3, P @50, P @59, H @68)
+- **Calculator Overflow (3 bars):** P, D, D/F, F+P+K+H (frames: P @0, D @3, D/F @4, F @5, F+P+K+H @9)

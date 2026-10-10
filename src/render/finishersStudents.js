@@ -201,4 +201,59 @@
       else if (!s.cards) { fx.texts[0].setVisible(false); fx.texts[1].setVisible(false); fx.texts[2].setVisible(false); }
     }
   };
+
+  // HUDSON — Extra Credit: he folds his arms and waits. They throw one last desperate
+  // swing; he catches it (SHOW YOUR WORK), counters once, cleanly, and they drop. He
+  // checks his calculator, nods, and a gold star stamps the screen.
+  function star(g, cx, cy, r, col, a) {
+    var pts = [];
+    for (var k = 0; k < 10; k++) { var ang = -Math.PI / 2 + k * Math.PI / 5, rr = k % 2 ? r * 0.45 : r; pts.push({ x: cx + Math.cos(ang) * rr, y: cy + Math.sin(ang) * rr }); }
+    g.fillStyle(col, a == null ? 1 : a); g.fillPoints(pts, true);
+  }
+  // A pose from one of the loser's own moves: its windup (before startup) or its strike.
+  function movePose(who, id, strike) {
+    var mv = who.def.moves[id], ks = mv.anim.filter(function (k) { return strike ? k[0] >= mv.startup : k[0] < mv.startup; });
+    return (strike ? ks[0] : ks[ks.length - 1])[1];
+  }
+  FG.FINISHERS.hudson = {
+    len: 230,
+    step: function (fx, t) {
+      var w = fx.w, l = fx.l, s = fx.s;
+      if (t === 1) { fx.anim(w, [[1, 'stand'], [10, 'wait']]); fx.anim(l, FG.dazedAnim, true); }
+      // Their last swing...
+      if (t === 30) { fx.pose(l, movePose(l, 'heavy', false)); sfx(function (S) { S.noise({ dur: 0.2, freq: 700, f1: 1600, q: 1, gain: 0.12 }); }); }
+      if (t === 40) {
+        fx.pose(l, movePose(l, 'heavy', true)); fx.pose(w, 'parry'); s.catch = t;
+        FG.Sfx.play({ type: 'parry' }); fx.scene.effects.spawn({ type: 'parry', x: (w.x + l.x) / 2, y: 70, facing: fx.dir });
+        fx.slow(16, 0.4);
+      }
+      // ...caught, and one clean counter.
+      if (t === 52) fx.anim(w, [[1, 'chk_x'], [4, 'chk_r'], [30, 'chk_r'], [40, 'stand']]);
+      if (t === 55) { fx.hit(l, 'launch', { ch: true, shake: 0.02, y: 66 }); fx.anim(l, [[1, 'hit_high'], [8, 'juggle'], [32, 'down']]); s.fall = t; }
+      if (s.fall && t > s.fall && t < s.fall + 32) { var v = (t - s.fall) / 32; l.y = Math.sin(v * Math.PI) * 60; l.x -= fx.dir * 1.4; }
+      if (s.fall && t === s.fall + 32) { l.y = 0; FG.Sfx.play({ type: 'land' }); fx.shake(0.008); }
+      // He checks the answer.
+      if (t === 100) { fx.anim(w, [[1, 'check'], [26, 'nod'], [36, 'star']]); sfx(function (S) { S.osc({ dur: 0.05, f0: 900, gain: 0.05, type: 'square' }); S.osc({ dur: 0.05, f0: 1200, gain: 0.05, type: 'square', at: 0.08 }); }); }
+      if (t === 140) {
+        s.stamp = t; fx.shake(0.015); fx.scene.stage.react('wild');
+        sfx(function (S) { S.osc({ dur: 0.3, f0: 180, f1: 60, gain: 0.5 }); [880, 1110, 1320, 1760].forEach(function (f, k) { S.osc({ dur: 0.18, f0: f, gain: 0.07, type: 'triangle', at: 0.12 + k * 0.07 }); }); });
+      }
+    },
+    draw: function (fx, t) {
+      var s = fx.s, g = fx.gs;
+      if (s.catch && t - s.catch < 26) bigText(fx, 1, 'SHOW YOUR WORK!', fx.sx(fx.w.x), 130, 0x8ae0b0, 2, -3);
+      else fx.texts[1].setVisible(false);
+      if (s.stamp) {
+        var sc = stampScale(t, s.stamp), cx = W / 2, cy = 130, r = 70 * sc, spin = (t - s.stamp) * 0.01;
+        g.fillStyle(0x000000, 0.35); star(g, cx + 6, cy + 6, r, 0x000000, 0.35);
+        star(g, cx, cy, r, 0xc8901a); star(g, cx, cy - 2, r * 0.86, 0xffd23f); star(g, cx - r * 0.12, cy - r * 0.16, r * 0.3, 0xfff2a8, 0.8);
+        for (var k = 0; k < 8; k++) { // sparkles
+          var a = k * Math.PI / 4 + spin, d = r * 1.3 + Math.sin(t / 4 + k) * 6;
+          g.fillStyle(0xfff2a8, 0.8); g.fillRect(cx + Math.cos(a) * d - 2, cy + Math.sin(a) * d - 2, 4, 4);
+        }
+        bigText(fx, 0, 'A+', cx, cy + 4 * sc, 0xa0300a, 3 * sc, -4);
+        bigText(fx, 2, 'EXTRA CREDIT', cx, cy + r + 24, 0xffd23f, 3 * Math.min(1.4, sc), -4);
+      } else { fx.texts[0].setVisible(false); fx.texts[2].setVisible(false); }
+    }
+  };
 })();

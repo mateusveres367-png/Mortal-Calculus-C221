@@ -117,7 +117,7 @@
     signatureText: 'when the opponent whiffs, his next hit does bonus damage and he glows until he lands it; Domain Restriction (B+H) is a step-back kick that retreats while it attacks',
     bio: 'VERY SMART. READS OPPONENTS, KEEPS PERFECT DISTANCE, PUNISHES EVERY MISTAKE.',
     signature: ['DOMAIN CONTROL', 'RANGE CHECK', 'VERTEX KICK', 'QUADRATIC LAUNCHER', 'DISCRIMINANT', 'CALCULATED'],
-    scale: 1.02, health: 178,
+    scale: 1.02, health: 190,
     // Movement: a steady glide, and a strong backdash to reset the distance.
     walkF: 1.9, walkB: 2.0, dashSpeed: 8.0, backdashSpeed: 11.0, backdashFrames: 20, backdashActFrom: 14,
     jumpVy: 9.3, weight: 1.06, react: 0.85,

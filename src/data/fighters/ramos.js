@@ -120,7 +120,7 @@
     signatureText: 'he never slows down: the fastest walk and dash, chained dashes, a guard that recovers twice as fast, and a run he can keep up for as long as he likes (dash, then hold forward), with a tackle, a running knee, a slide, a plancha and a running command grab out of it',
     bio: 'FAST, EXPLOSIVE GRAPPLER WHO CLOSES DISTANCE QUICKLY. CONFIDENT AND FOCUSED.',
     signature: ['MATRIX LOCK', 'DETERMINANT SLAM', 'IDENTITY', 'TRANSPOSE TOSS'],
-    scale: 1.02, health: 197,
+    scale: 1.02, health: 192,
     // Movement: the fastest in the game, in every direction.
     walkF: 2.8, walkB: 1.9, dashSpeed: 10.5, dashFrames: 14, backdashSpeed: 9.0,
     jumpVy: 9.6, weight: 0.96, react: 1.0,

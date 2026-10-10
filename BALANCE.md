@@ -5,12 +5,12 @@ How Mortal Calculus: C221 was balanced, and how to check it again.
 ## The self-playtest
 
 `tools/balance.js` runs the engine headless (no Phaser, no browser): Hard CPU against Hard
-CPU, every pairing of the nine fighters, from both sides. Each match is a best of three with a
+CPU, every pairing of the fighters (teachers and students), from both sides. Each match is a best of three with a
 60-second timer, run like the fight scene runs it (meter carried between rounds, WILSON's 29 YEARS
 set per round). The randomness is seeded, so a run can be repeated exactly.
 
 ```bash
-node tools/balance.js 24          # 24 matches per pairing, each side (1728 matches, about a minute)
+node tools/balance.js 24          # 24 matches per pairing, each side (4368 matches, about two minutes)
 node tools/balance.js 24 777      # the same with seed 777
 node tools/balance.js 8 1 --only lee   # just one fighter's matchups, for quick tuning
 node tools/balance.js 24 --json   # machine-readable
@@ -65,6 +65,70 @@ WILSON      50    56    65    65    63    58    58    52    -
 ```
 
 Rounds average 33 seconds; about 1% end on time.
+
+## The student side (14 fighters)
+
+Adding the five students made it 14 fighters and 4368 matches per run (24 per pairing). Judged on
+two seeds pooled (777 and 4242, 8736 matches), the spread is **42.4% to 59.6%**, and neither run
+lists a never-used move.
+
+| Fighter   | Seed 777 | Seed 4242 | Pooled |
+|-----------|---------:|----------:|-------:|
+| RAMOS     | 60.1 | 59.1 | 59.6 |
+| BRINKHUS  | 57.9 | 56.7 | 57.3 |
+| WILSON    | 53.4 | 58.0 | 55.7 |
+| PEDERSEN  | 53.4 | 57.2 | 55.3 |
+| LEE       | 54.2 | 53.5 | 53.9 |
+| JACK      | 53.0 | 53.7 | 53.4 |
+| NICOLAS   | 49.7 | 50.2 | 50.0 |
+| HUDSON    | 47.8 | 47.4 | 47.6 |
+| LOPEZ     | 48.6 | 45.8 | 47.2 |
+| CHAI      | 47.4 | 46.5 | 47.0 |
+| DALSASS   | 45.8 | 42.3 | 44.0 |
+| MIYASHIRO | 43.6 | 43.4 | 43.5 |
+| MATEUS    | 43.3 | 43.3 | 43.3 |
+| MAX       | 42.0 | 42.8 | 42.4 |
+
+Matchup grid, seed 777 (row wins % against column):
+
+```
+          PEDE  BRIN  CHAI  DALS  LEE  LOPE  MIYA  RAMO  WILS  MATE  NICO  MAX  JACK  HUDS
+PEDERSEN    -     40    38    65    54    38    48    58    50    48    79    79    46    52
+BRINKHUS    60    -     58    58    60    63    48    58    50    69    63    69    31    65
+CHAI        63    42    -     31    48    44    56    42    48    67    46    48    44    40
+DALSASS     35    42    69    -     46    63    33    31    40    58    50    52    35    42
+LEE         46    40    52    54    -     60    38    67    35    75    48    77    65    48
+LOPEZ       63    38    56    38    40    -     58    27    65    46    69    67    27    40
+MIYASHIRO   52    52    44    67    63    42    -     17    46    35    46    50    15    40
+RAMOS       42    42    58    69    33    73    83    -     54    67    40    60    79    81
+WILSON      50    50    52    60    65    35    54    46    -     60    63    79    33    46
+MATEUS      52    31    33    42    25    54    65    33    40    -     31    46    60    50
+NICOLAS     21    38    54    50    52    31    54    60    38    69    -     52    67    60
+MAX         21    31    52    48    23    33    50    40    21    54    48    -     67    58
+JACK        54    69    56    65    35    73    85    21    67    40    33    33    -     58
+HUDSON      48    35    60    58    52    60    60    19    54    50    40    42    42    - 
+```
+
+What changed on the way:
+
+- **The CPU against projectiles** (src/engine/ai.js). JACK swung from 14% to 82% after his
+  zoning tweaks because the CPU dashed straight into paper airplanes. Now it sees incoming
+  projectiles with its reaction delay (`AI.incoming`), blocks them at the right height,
+  sidesteps or jumps low ones, and walks rather than dashes while one is in flight. Students
+  zone with their `far` tokens only past their `zoneDist`.
+- **MAX** (30%: an 11-frame jab loses most exchanges). Health 204 → 228, and a third throw
+  in his close-range mix (he's the grappler). JACK's CPU zoning 0.6 → 0.5.
+- **MATEUS** health 170 → 184.
+- **HUDSON** came in at 47–55% with no changes. The one fix was a mashing loop: his string
+  ender wall-splatted, so a jab at the wall could restart the whole Calculator Combo. Only Long
+  Division (H) splats now.
+- **Teachers**, pushed out of range by the new matchups: BRINKHUS 170 → 166 and PEDERSEN
+  172 → 168 health (both about 61%), MIYASHIRO 178 → 190 (38%), RAMOS 197 → 192 (62%: his
+  grabs eat the smaller students).
+
+RAMOS is at the top edge, mostly from his grab game against MIYASHIRO and the students
+(about 80% against JACK and HUDSON), which is in character for a wrestler against people who
+want to keep him out.
 
 ## What was wrong, and the fixes
 

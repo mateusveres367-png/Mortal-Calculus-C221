@@ -159,6 +159,17 @@ Every fighter's combo routes, and what the combo feel pass changed. The routes l
 | ARMORED FLIP | medium | D+H, P+K, P, P, H | 4 | 1 bar | 47 |
 | OUTSIDE THE LINES | hard | D+H, UP, AIR P, AIR K, AIR H, D+K | 5 | - | 48 |
 | PAPER AIRPLANE SQUADRON | hard | P, D, D/F, F+P+K+H | 2 | 3 bars | 59 |
+
+### HUDSON (defensive, calculators)
+
+| Route | Level | Inputs | Hits | Meter | Damage |
+| --- | --- | --- | --- | --- | --- |
+| CALCULATOR COMBO | easy | F+P, P, P, H | 4 | - | 36 |
+| DOUBLE CHECK | easy | P, P, H | 3 | - | 27 |
+| ROUND UP | medium | D+H, P, P, H | 4 | - | 40 |
+| ROUNDED UP | medium | D+H, P+K, P, P, H | 4 | 1 bar | 45 |
+| SHOW YOUR WORK | hard | D+H, UP, AIR P, AIR K, AIR H, D+K | 5 | - | 48 |
+| CALCULATOR OVERFLOW | hard | P, D, D/F, F+P+K+H | 2 | 3 bars | 58 |
 <!-- /routes -->
 
 ## Easier combos (the second pass)

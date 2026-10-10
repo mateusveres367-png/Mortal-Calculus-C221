@@ -117,7 +117,7 @@
     signatureText: 'B+H freezes him still like a garden gnome (hold H to stay frozen a little longer): attack him while he is frozen and he pops out and counters; throws beat it. Gnome Toss (B+P) lobs a mini gnome that tumbles along the floor as a low; Pop-Up (D+P) sinks into the ground and comes up right next to them',
     bio: 'SNEAKY AND SMUG. POPS UP WHERE YOU DON\'T EXPECT HIM.',
     signature: ['LAWN STATUE', 'GNOME TOSS', 'POP-UP', 'GOT GNOMED'],
-    scale: 0.93, health: 178,
+    scale: 0.93, health: 184,
     walkF: 2.5, walkB: 1.6, dashSpeed: 8.6, dashFrames: 15, backdashSpeed: 8.2,
     jumpVy: 9.3, weight: 0.96, react: 1.1,
     walk: { lean: 2, bob: 1.2, rate: 0.28 },

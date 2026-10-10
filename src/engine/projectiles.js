@@ -7,7 +7,8 @@
 //     w, h (its box), range (distance before it fizzles), life (frames),
 //     ground: 'slide' (tumbles along the floor) | 'burst' (explodes where it lands:
 //     burst { w, h, frames }) | nothing (gone when it lands),
-//     spawn: distance ahead to appear at instead of flying there (a pop-up box),
+//     spawn: distance ahead to appear at instead of flying there (a pop-up box;
+//     never past the opponent),
 //     arm: frames before it can hit (it's still appearing), lowBelow: below this
 //     height it hits low (a plane diving, a gnome tumbling along the floor) }
 // It hits with the move's own level, damage, hit / ch / block results, push and
@@ -33,9 +34,12 @@
 
   Match.prototype.spawnProjectile = function (i, m) {
     var a = this.fighters[i], sp = m.projectile, s = a.def.scale, dir = a.facing;
+    var ahead = (sp.spawn || sp.x || 20) * s;
+    // A pop-up box opens in front of them, never past them.
+    if (sp.spawn) ahead = Math.min(ahead, Math.max((sp.x || 20) * s, Math.abs(this.fighters[1 - i].x - a.x)));
     var p = {
       owner: i, move: m, kind: sp.kind, serial: a.projSerial, dir: dir, z: a.z, age: 0, travelled: 0,
-      x: a.x + dir * (sp.spawn || sp.x || 20) * s, y: a.y + (sp.y || 40) * s, vx: sp.vx || 0, vy: sp.vy || 0,
+      x: a.x + dir * ahead, y: a.y + (sp.y || 40) * s, vx: sp.vx || 0, vy: sp.vy || 0,
       w: sp.w || 14, h: sp.h || 14, burst: 0, dead: false, spin: 0
     };
     if (sp.spawn) p.x = Math.max(C.WALL_L + 8, Math.min(C.WALL_R - 8, p.x));

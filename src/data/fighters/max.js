@@ -103,7 +103,7 @@
     signatureText: 'F+H is a charge attack (hold H to load it up) with armor through its windup: it soaks a hit and keeps coming, and fully loaded it breaks a guard. Study Hall (D+K) stomps the floor, a low that also hits them when they are down; Bookbag Bomb (B+P) lobs his backpack high and it bursts where it lands',
     bio: 'CHILL AND FRIENDLY, BUT STRONG. HIS BACKPACK IS A WEAPON.',
     signature: ['COURSE LOAD', 'TEXTBOOK SWING', 'AP LIFT', 'STUDY HALL', 'BOOKBAG BOMB'],
-    scale: 0.95, health: 214,
+    scale: 0.95, health: 228,
     walkF: 2.0, walkB: 1.5, dashSpeed: 7.6, dashFrames: 17, backdashSpeed: 7, backdashFrames: 24,
     jumpVy: 8.8, weight: 1.06, react: 0.8,
     walk: { lean: 1, bob: 1.4, rate: 0.17 },
@@ -119,7 +119,7 @@
     idleAnim: { breath: 1.3, bob: 0.4, sway: 0.4, rate: 0.07 }, // slow and easy
     poses: poses,
     // How the CPU plays him: walks you down, loads up Course Load, lobs the bag.
-    ai: { spacing: 48, pokes: ['K', 'D+K', 'H', 'F+H'], close: ['P', 'P+K', 'P+K', 'H', 'D+K', 'P>P>H', 'F+H'], far: ['B+P'], zone: 0.3, aggro: 1.05 },
+    ai: { spacing: 48, pokes: ['K', 'D+K', 'H', 'F+H'], close: ['P', 'P+K', 'P+K', 'P+K', 'H', 'D+K', 'P>P>H', 'F+H'], far: ['B+P'], zone: 0.3, aggro: 1.05 },
 
     moves: FG.kit.moves({
       jab: {

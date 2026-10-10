@@ -110,7 +110,7 @@
     signatureText: 'his heavy attacks (Base Hook, the Exponential Haymaker, Order of Magnitude) absorb one hit during their windup and keep going; a fully charged Order of Magnitude absorbs two',
     bio: 'CALM AND FRIENDLY, BUT EVERY HIT IS HEAVY. SLOW, PATIENT, DEVASTATING.',
     signature: ['EXPONENTIAL HAYMAKER', 'ORDER OF MAGNITUDE', 'LOGARITHMIC LAUNCHER', 'RIGHT ANGLE ELBOW', 'LONG DIVISION'],
-    scale: 1.12, health: 172,
+    scale: 1.12, health: 168,
     // Movement: a slow walk, a short dash, a low jump; heavy in juggles, barely flinches.
     walkF: 1.4, walkB: 1.2, dashSpeed: 6.2, dashFrames: 13, backdashSpeed: 6.8,
     jumpVy: 8.6, weight: 1.12, react: 0.6,

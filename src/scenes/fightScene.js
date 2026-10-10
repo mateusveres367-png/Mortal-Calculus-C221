@@ -913,7 +913,9 @@
         this.cutInFor(ev);
         this.bigMoment(ev);
         var bigHit = ev.ch || ev.launch || ev.throw || ev.finisher || (ev.move && ev.move.strength === 'heavy');
-        if (bigHit && !ev.ground) this.spawnGlyph(ev);
+        // A move with hitText (HUDSON's Calculator Combo) shows it on every hit.
+        if (ev.move && ev.move.hitText && !ev.projectile) this.spawnGlyph({ x: ev.x, y: ev.y, attacker: ev.attacker, ch: ev.ch, text: ev.move.hitText });
+        else if (bigHit && !ev.ground) this.spawnGlyph(ev);
       }
       else if (ev.shake) this.effects.shake(ev.shake);
       if (ev.type === 'land' || ev.type === 'bounce') this.effects.shake(ev.type === 'bounce' ? 0.006 : 0.003);
