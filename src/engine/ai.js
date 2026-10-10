@@ -31,7 +31,7 @@
   Object.keys(METER_USE).forEach(function (k) { Object.assign(FG.AI_LEVELS[k], METER_USE[k]); });
   var QCF = { 0: 'D', 1: 'D/F', 2: 'F', 3: 'F+P+K+H' }; // the ultimate's input
   // The move a style token starts (for enhancing it).
-  var TOKEN_MOVE = { 'F+P': 'fP', 'F+K': 'fK', 'F+H': 'fH', 'B+P': 'bP', 'B+K': 'bK', 'B+H': 'bH', 'D/F+K': 'dfK', H: 'heavy', K: 'mid', P: 'jab' };
+  var TOKEN_MOVE = { 'F+P': 'fP', 'F+K': 'fK', 'F+H': 'fH', 'B+P': 'bP', 'B+K': 'bK', 'B+H': 'bH', 'D/F+K': 'dfK', 'D+P': 'dP', 'D+K': 'low', 'D+H': 'launcher', H: 'heavy', K: 'mid', P: 'jab' };
   FG.AI_ORDER = ['easy', 'normal', 'hard', 'professor'];
   var HABIT_MEMORY = 10; // the opponent's last attacks the PROFESSOR remembers
 
@@ -225,6 +225,25 @@
       }
     }
 
+    // --- A projectile coming at it (seen with the reaction delay): guard it at the
+    // right height, sidestep it, or jump a low one. -------------------------------
+    var pj = this.incoming(self, match);
+    if (pj && (self.actionable || self.state === 'blockstun')) {
+      if (!this.projGuard || this.projGuard.p !== pj) {
+        var plow = FG.projectileLevel(pj) === 'low';
+        this.projGuard = { p: pj, block: rnd() < L.block, step: self.state !== 'blockstun' && rnd() < L.sidestep * 1.5,
+          jump: plow && pj.y <= 0 && rnd() < L.sidestep * 2 && self.state !== 'blockstun' };
+      }
+      var pg = this.projGuard;
+      if (pg.step && self.actionable) { pg.step = false; pg.block = false; raw.ssIn = true; return raw; }
+      if (pg.jump && self.actionable) { pg.jump = false; pg.block = false; raw.up = true; raw[fwdKey] = true; return raw; }
+      if (pg.block) {
+        var lv = FG.projectileLevel(pj);
+        raw[backKey] = true; raw.down = lv === 'low' || (lv === 'high' && rnd() < L.lowRead * 0.5); self.holdGuard = true;
+        return raw;
+      }
+    } else if (!pj) this.projGuard = null;
+
     // --- Guarding: an attack is coming (seen with the reaction delay). ---------------
     var threat = seen.attacking && seen.move && seen.frame <= seen.move.startup + seen.move.active - 1 && attacking(opp);
     // A move the PROFESSOR has learned: it sees it coming at once.
@@ -385,6 +404,8 @@
       this.walk = { dir: 'back', until: match.frame + 10 };
       return raw;
     }
+    // Students zone from range: a projectile (one at a time), or a teleport in.
+    if (st.far && dist > 130 && !self.projOut && rnd() < (st.zone || 0.3) * (0.4 + L.combo * 0.6)) return this.styleAttack(pick(st.far), match, self);
     // Runners (RAMOS) sprint in from range.
     if (st.run && self.def.runSpeed && dist > 90 && rnd() < st.run * (0.4 + L.combo * 0.6)) { this.runIn = { t: 1, until: match.frame + 70 }; raw[fwdKey] = true; return raw; }
     // Far: close the distance (dash when feeling aggressive; rushdown styles dash more).
@@ -423,6 +444,21 @@
     }
     this.startRoute(tok, match, self);
     return toRaw(tok, self.facing);
+  };
+
+  // The opponent's projectile heading this way and about to arrive (seen once it's been
+  // out for the reaction delay).
+  AI.prototype.incoming = function (self, match) {
+    var best = null, bt = 1e9, L = this.L;
+    (match.projectiles || []).forEach(function (p) {
+      if (p.dead || p.owner === self.index || p.spent || p.age < Math.min(10, L.react)) return;
+      var dx = self.x - p.x, sp = p.move.projectile;
+      if (sp.spawn) { if (Math.abs(dx) < 50 && p.age <= (sp.arm || 0) + 2) { best = p; bt = 0; } return; }
+      if (Math.sign(dx) !== p.dir && Math.abs(dx) > 20) return;
+      var t = (Math.abs(dx) - 16 * self.def.scale) / Math.max(0.6, Math.abs(p.vx));
+      if (t < 16 && t < bt) { bt = t; best = p; }
+    });
+    return best;
   };
 
   // The ultimate's input as a script (it comes out 3 frames later).

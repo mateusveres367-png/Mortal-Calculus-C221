@@ -1,4 +1,4 @@
-// Arcade ladder: shown before every arcade fight. The tower of all eight fights
+// Arcade ladder: shown before every arcade fight. The tower of every fight in the run
 // (won ones ticked off, the next one lit), the next opponent in their stance with a
 // short rival line for you, and how hard the CPU will fight. Enter (or a few
 // seconds) starts the fight.
@@ -38,16 +38,17 @@
       (run.timed ? '   TIME ' + FG.clock(run.frames / 60) + (FG.progress.timedBest ? '   BEST ' + FG.clock(FG.progress.timedBest / 1000) : '') : ''), 'c').setOrigin(0.5, 0);
 
     // The tower: fight 1 at the bottom, the last fight at the top.
-    var tower = this.add.graphics(), x0 = 40, tw = 170, rowH = 28, top = H - 30 - n * rowH;
+    var tower = this.add.graphics(), x0 = 40, tw = 170, rowH = Math.min(28, Math.floor((H - 84) / n)), top = H - 30 - n * rowH;
     for (var i = 0; i < n; i++) {
       var d = FG.fighterById(run.ladder[i]), yy = top + (n - 1 - i) * rowH;
       var done = i < run.index, cur = i === run.index;
       tower.fillStyle(cur ? 0x3c6fb0 : done ? 0x1f3a24 : 0x16131f, 1); tower.fillRect(x0, yy, tw, rowH - 4);
       tower.lineStyle(cur ? 2 : 1, cur ? 0xffd23f : 0x5a4b2c, 1); tower.strokeRect(x0, yy, tw, rowH - 4);
-      tower.fillStyle(chip(d), 1); tower.fillRect(x0 + 4, yy + 4, 14, rowH - 12);
-      FG.text(this, x0 + 24, yy + 8, (i + 1) + '. ' + d.name + (d.id === run.p1 ? ' (MIRROR)' : ''), done ? 'g' : cur ? 'y' : 'w');
-      if (done) FG.text(this, x0 + tw - 8, yy + 8, 'WIN', 'c').setOrigin(1, 0);
-      else if (d.boss && i === n - 1) FG.text(this, x0 + tw - 8, yy + 8, 'BOSS', 'r').setOrigin(1, 0);
+      tower.fillStyle(chip(d), 1); tower.fillRect(x0 + 4, yy + 3, 14, Math.max(4, rowH - 10));
+      var ty = yy + Math.max(2, Math.round((rowH - 4) / 2) - 4);
+      FG.text(this, x0 + 24, ty, (i + 1) + '. ' + d.name + (d.id === run.p1 ? ' (MIRROR)' : '') + (d.student ? '  10TH' : ''), done ? 'g' : cur ? 'y' : 'w');
+      if (done) FG.text(this, x0 + tw - 8, ty, 'WIN', 'c').setOrigin(1, 0);
+      else if (d.boss && i === n - 1) FG.text(this, x0 + tw - 8, ty, 'BOSS', 'r').setOrigin(1, 0);
     }
 
     // The next opponent, their line, and you.

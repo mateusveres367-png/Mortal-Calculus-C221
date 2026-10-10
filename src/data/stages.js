@@ -15,7 +15,9 @@
     { id: 'office', short: 'OFFICE', name: 'DEPARTMENT OFFICE', place: 'MATH DEPARTMENT OFFICE',
       desc: 'DESKS, FILING CABINETS, BOOKSHELVES AND STACKS OF UNGRADED TESTS.' },
     { id: 'parking', short: 'PARKING', name: 'FACULTY PARKING', place: 'FACULTY LOT B',
-      desc: 'PEDERSEN\'S RESERVED SPOT. HIS RED SPORTS CAR IS PARKED IN THE BACK.', outdoor: true }
+      desc: 'PEDERSEN\'S RESERVED SPOT. HIS RED SPORTS CAR IS PARKED IN THE BACK.', outdoor: true },
+    { id: 'quad', short: 'QUAD', name: 'LUNCH QUAD', place: 'THE LUNCH QUAD, NOON',
+      desc: 'LUNCH TABLES, TRASH CANS, BACKPACKS EVERYWHERE, STUDENTS EATING AND WATCHING.', outdoor: true }
   ];
 
   // Interactive objects near the walls (press T next to one: a springboard attack, or
@@ -32,6 +34,8 @@
       { kind: 'trashcan', x: 958, name: 'TRASH CAN', atk: 'TAKE OUT THE TRASH', esc: 'CAN HOP' }],
     office: [{ kind: 'cabinet', x: 82, name: 'FILING CABINET', atk: 'FILED AWAY', esc: 'OUT OF OFFICE' },
       { kind: 'officeDesk', x: 954, name: 'DESK', atk: 'PAPERWORK', esc: 'OFFICE HOURS OVER' }],
+    quad: [{ kind: 'lunchTable', x: 92, name: 'LUNCH TABLE', atk: 'TABLE TOP', esc: 'OVER THE TABLE' },
+      { kind: 'trashcan', x: 958, name: 'TRASH CAN', atk: 'TAKE OUT THE TRASH', esc: 'CAN HOP' }],
     parking: [{ kind: 'barrier', x: 84, name: 'GATE ARM', atk: 'GATE CRASH', esc: 'NO PARKING' },
       { kind: 'hood', x: 966, name: "PEDERSEN'S CAR", atk: 'HOOD SLIDE', esc: 'OVER THE HOOD' }]
   };

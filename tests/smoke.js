@@ -398,11 +398,15 @@ try { playwright = require('playwright'); } catch (e) {
   cpu.before = levelBefore; cpu.picked = levelPicked;
   var cpuOk = cpu.level === cpu.want && cpu.rounds;
   await page.evaluate(function (before) { FG.settings.difficulty = before; FG.saveSettings(); return true; }, levelBefore);
-  // Arcade: all nine in a row (PEDERSEN, then WILSON last), with the ladder screen before each fight.
+  // Arcade as a teacher: the students, then every teacher (PEDERSEN, then WILSON last);
+  // as a student: the nine teachers, WILSON last. The ladder screen comes before each fight.
   var ladder = await page.evaluate(function () {
+    var srun = FG.arcadeRun('mateus');
     var run = FG.arcadeRun('brinkhus');
     window.FG_SCENE.scene.start('ladder', run);
-    return { n: run.ladder.length, mirror: run.ladder.indexOf('brinkhus') >= 0, last: run.ladder[run.ladder.length - 1], before: run.ladder[run.ladder.length - 2],
+    return { n: run.ladder.length, want: FG.ROSTER.length, studentsFirst: run.ladder.slice(0, FG.rosterSide('student').length).every(function (id) { return FG.fighterById(id).side === 'student'; }),
+      student: srun.ladder.length === 9 && srun.ladder[8] === 'wilson' && srun.ladder.every(function (id) { return FG.fighterById(id).side === 'teacher'; }),
+      mirror: run.ladder.indexOf('brinkhus') >= 0, last: run.ladder[run.ladder.length - 1], before: run.ladder[run.ladder.length - 2],
       levels: run.ladder.map(function (id, i) { return FG.arcadeLevel(i, run.ladder.length); }) };
   });
   await page.waitForFunction(function () { return window.FG_LADDER && window.FG_LADDER.sys.isActive() && window.FG_LADDER.t > 10; }, null, { timeout: 15000 });
@@ -410,18 +414,18 @@ try { playwright = require('playwright'); } catch (e) {
   await page.keyboard.press('Enter');
   await page.waitForFunction(function () { var s = window.FG_SCENE; return s && s.sys.isActive() && s.mode === 'arcade'; }, null, { timeout: 15000 });
   var L4 = await page.evaluate(function () { return FG.AI_ORDER; });
-  var ladderOk = ladder.n === 9 && ladder.mirror && ladder.last === 'wilson' && ladder.before === 'pedersen' &&
+  var ladderOk = ladder.n === ladder.want && ladder.studentsFirst && ladder.student && ladder.mirror && ladder.last === 'wilson' && ladder.before === 'pedersen' &&
     ladder.levels.every(function (l, i) { return i === 0 || L4.indexOf(l) >= L4.indexOf(ladder.levels[i - 1]); }) && ladder.levels[0] === 'easy';
 
   // WILSON is locked as your pick in arcade until arcade has been beaten.
   await page.evaluate(function () { FG.settings.wilsonUnlocked = false; window.FG_TITLE.scene.start('select', { mode: 'arcade' }); });
   await page.waitForFunction(function () { return window.FG_SELECT && window.FG_SELECT.sys.isActive() && window.FG_SELECT.mode === 'arcade' && window.FG_SELECT.t > 5; }, null, { timeout: 15000 });
   var lock = await page.evaluate(function () {
-    var s = window.FG_SELECT; s.cursor[0] = FG.ROSTER.length - 1; s.refresh(); s.confirm(0);
-    return { still: s.sys.isActive() && !s.leaving, name: s.previews[0].name.text, msg: s.lockMsg > 0, cards: s.cards.length };
+    var s = window.FG_SELECT; s.tab[0] = 'teacher'; s.cursor[0] = FG.rosterSide('teacher').length - 1; s.refresh(); s.confirm(0);
+    return { still: s.sys.isActive() && !s.leaving, name: s.previews[0].name.text, msg: s.lockMsg > 0, cards: s.cards.teacher.length, students: s.cards.student.length === FG.rosterSide('student').length && s.cards.student.length > 0 };
   });
   await page.screenshot({ path: path.join(out, '10-select-locked.png') });
-  var lockOk = lock.still && lock.name === '???' && lock.msg && lock.cards === 9;
+  var lockOk = lock.still && lock.name === '???' && lock.msg && lock.cards === 9 && lock.students;
 
   // The arcade ending.
   await page.evaluate(function () { window.FG_TITLE.scene.start('ending', { p1: 'pedersen', ladder: ['a', 'b'], continues: 1, started: Date.now() - 65000 }); });

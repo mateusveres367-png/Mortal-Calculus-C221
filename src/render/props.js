@@ -26,6 +26,15 @@
       }
       rect(g, x - 18, by + bh / 2 + 2, 36, 2, 0x7a7f8a);
     },
+    // A lunch table with its benches: the trays jump when it's used.
+    lunchTable: function (g, p) {
+      var x = p.x, base = GY - 2, hop = -Math.abs(wob(p, 6, 26, 0.6));
+      rect(g, x - 34, base - 14, 68, 4, 0x2a6a8a); line(g, x - 28, base, x - 28, base - 12, 0x4a4f5a, 2); line(g, x + 28, base, x + 28, base - 12, 0x4a4f5a, 2); // the bench
+      rect(g, x - 30, base - 30, 60, 5, 0x3a8aaa); rect(g, x - 30, base - 26, 60, 1, 0x1e4a5a);
+      line(g, x - 22, base, x - 18, base - 26, 0x4a4f5a, 3); line(g, x + 22, base, x + 18, base - 26, 0x4a4f5a, 3);
+      rect(g, x - 20, base - 34 + hop, 18, 3, 0xd8d8d0); rect(g, x - 17, base - 37 + hop, 6, 3, 0xe0a050); rect(g, x - 9, base - 36 + hop, 4, 2, 0x5a9a3a); // a tray: pizza and a salad
+      rect(g, x + 6, base - 38 + hop * 1.4, 5, 8, 0xf4f4f0); rect(g, x + 6, base - 38 + hop * 1.4, 5, 2, 0xc0302a); // a milk carton
+    },
     // A student desk with its chair: it hops.
     desk: function (g, p) {
       var x = p.x, hop = -Math.abs(wob(p, 7, 26, 0.5)), base = GY - 2 + hop;

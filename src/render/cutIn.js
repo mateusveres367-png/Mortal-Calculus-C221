@@ -85,6 +85,46 @@
     g.fillPoints([{ x: x0 + lean, y: y0 }, { x: x1 + lean, y: y0 }, { x: x1 - lean, y: y1 }, { x: x0 - lean, y: y1 }], true);
   }
 
+  // --- Students: notebook paper ------------------------------------------------------
+  // A student's cut-in is a page torn out of a notebook: ruled lines, a red margin,
+  // punched holes and doodles in the margins, in pencil and ballpoint.
+  // xl(y), xr(y): the page's left and right edges at height y.
+  var INK = 0x2a3a8a, LEAD = 0x5a5a66;
+  function notebook(g, xl, xr, y0, y1, holesLeft) {
+    var pts = [{ x: xl(y0), y: y0 }, { x: xr(y0), y: y0 }, { x: xr(y1), y: y1 }, { x: xl(y1), y: y1 }];
+    g.fillStyle(0xf6f2e4, 1); g.fillPoints(pts, true);
+    g.lineStyle(1, 0x8aa8e0, 0.75);
+    for (var y = y0 + 12; y < y1 - 2; y += 11) g.lineBetween(xl(y), y, xr(y), y);
+    var mx = function (y) { return holesLeft ? xl(y) + 30 : xr(y) - 30; };
+    g.lineStyle(2, 0xe06a6a, 0.85); g.lineBetween(mx(y0), y0, mx(y1), y1);
+    g.fillStyle(0x07060c, 0.85);
+    for (var h = 0; h < 3; h++) { var hy = y0 + (y1 - y0) * (0.2 + h * 0.3), hx = holesLeft ? xl(hy) + 12 : xr(hy) - 12; g.fillCircle(hx, hy, 4); }
+  }
+  // Doodles: little pencil drawings. kind: 0 star, 1 spiral, 2 heart, 3 smiley, 4 arrow,
+  // 5 cube, 6 lightning, 7 stick figure, 8 paper airplane, 9 A+.
+  function doodle(g, kind, x, y, s, col) {
+    g.lineStyle(Math.max(1, Math.round(s * 1.2)), col, 0.9);
+    var L = function (a, b, c, d) { g.lineBetween(x + a * s, y + b * s, x + c * s, y + d * s); };
+    var i;
+    switch (kind) {
+      case 0: for (i = 0; i < 5; i++) { var a1 = -Math.PI / 2 + i * 4 * Math.PI / 5, a2 = a1 + 4 * Math.PI / 5; L(Math.cos(a1) * 8, Math.sin(a1) * 8, Math.cos(a2) * 8, Math.sin(a2) * 8); } break;
+      case 1: { var px = 0, py = 0; for (i = 1; i < 30; i++) { var a = i * 0.5, r = i * 0.32, nx = Math.cos(a) * r, ny = Math.sin(a) * r; L(px, py, nx, ny); px = nx; py = ny; } break; }
+      case 2: L(0, 6, -7, -1); L(-7, -1, -6, -5); L(-6, -5, -2, -6); L(-2, -6, 0, -3); L(0, -3, 2, -6); L(2, -6, 6, -5); L(6, -5, 7, -1); L(7, -1, 0, 6); break;
+      case 3: g.strokeCircle(x, y, 8 * s); L(-3, -2, -3, -1); L(3, -2, 3, -1); L(-4, 3, -1, 5); L(-1, 5, 2, 5); L(2, 5, 4, 3); break;
+      case 4: L(-9, 0, 8, 0); L(8, 0, 3, -4); L(8, 0, 3, 4); break;
+      case 5: L(-6, -2, 2, -2); L(2, -2, 2, 6); L(2, 6, -6, 6); L(-6, 6, -6, -2); L(-6, -2, -2, -6); L(2, -2, 6, -6); L(2, 6, 6, 2); L(-2, -6, 6, -6); L(6, -6, 6, 2); break;
+      case 6: L(2, -9, -4, 1); L(-4, 1, 1, 1); L(1, 1, -3, 10); break;
+      case 7: g.strokeCircle(x, y - 7 * s, 3 * s); L(0, -4, 0, 4); L(-5, -1, 5, -1); L(0, 4, -4, 10); L(0, 4, 4, 10); break;
+      case 8: L(-9, 0, 9, -3); L(9, -3, -6, 4); L(-6, 4, -9, 0); L(-6, 4, -3, 0); break;
+      case 9: L(-8, 6, -4, -6); L(-4, -6, 0, 6); L(-6, 1, -2, 1); L(5, -3, 5, 5); L(1, 1, 9, 1); break;
+    }
+  }
+  // A scatter of doodles down a margin (stable per fighter).
+  function doodles(g, def, xs, ys, n, s) {
+    var seed = def.id.length * 7 + def.order * 3;
+    for (var k = 0; k < n; k++) doodle(g, (seed + k * 3) % 10, xs(k), ys(k), s, k % 3 ? INK : LEAD);
+  }
+
   // Halftone: a screen of white dots that grow toward one side, baked into a texture.
   function halftoneTexture(scene, key, grow) {
     if (scene.textures.exists(key)) return;
@@ -139,11 +179,18 @@
     var y0 = 96, y1 = 258, lean = 26 * dir;
     // Accent slash, main band, a thin second accent.
     band(g, -60 + slide, W + 60 + slide, y0 - 12, y0 - 2, lean, col.b, 1);
-    band(g, -60 + slide, W + 60 + slide, y0, y1, lean, col.a, 1);
+    if (def.student) {
+      // A notebook page, slapped down, with doodles all over its margins.
+      notebook(g, function (y) { return -60 + slide + lean - 2 * lean * (y - y0) / (y1 - y0); }, function (y) { return W + 60 + slide + lean - 2 * lean * (y - y0) / (y1 - y0); }, y0, y1, dir > 0);
+      var dx0 = a.side === 0 ? W * 0.5 : 40;
+      doodles(g, def, function (k) { return dx0 + slide + (k % 5) * 56 + (k > 4 ? 26 : 0); }, function (k) { return k < 5 ? y0 + 24 + (k % 2) * 6 : y1 - 24 - (k % 2) * 6; }, 10, 1.2);
+    } else {
+      band(g, -60 + slide, W + 60 + slide, y0, y1, lean, col.a, 1);
+      this.halftone(0, dir, col.b, 0.22, slide, y0 + 4, y1 - 4, false);
+    }
     band(g, -60 + slide * 1.3, W + 60 + slide * 1.3, y1 + 2, y1 + 8, lean, col.b, 1);
-    this.halftone(0, dir, col.b, 0.22, slide, y0 + 4, y1 - 4, false);
-    // Speed streaks across the band.
-    g.fillStyle(col.b, 0.5);
+    // Speed streaks across the band (pencil scribbles on paper).
+    g.fillStyle(def.student ? LEAD : col.b, def.student ? 0.25 : 0.5);
     for (var k = 0; k < 6; k++) {
       var sy = y0 + 14 + k * 25, len = 60 + ((k * 53 + t * 37) % 140), sx = ((k * 97 + t * 23 * dir) % (W + 200)) - 100;
       g.fillRect(Math.round(sx + slide), sy, len, 2);
@@ -160,8 +207,9 @@
     // The move name, huge and tilted, sliding in a beat later.
     var tu = ease((t - 3) / 6), tx = (a.side === 0 ? W * 0.68 : W * 0.32) + (1 - tu) * -dir * 200 + slide;
     var scale = a.text.length > 14 ? 3 : a.text.length > 9 ? 4 : 5;
-    this.shadow.setText(a.text).setScale(scale).setAngle(-8).setPosition(tx + 4, 178 + 4).setTint(col.b === 0xffffff || col.b === 0xf6ecd0 ? 0x000000 : col.b).setVisible(t >= 3);
-    this.title.setText(a.text).setScale(scale).setAngle(-8).setPosition(tx, 178).setTint(contrast(col.a)).setVisible(t >= 3);
+    var paper = def.student; // ballpoint on paper: dark ink, a highlighter shadow
+    this.shadow.setText(a.text).setScale(scale).setAngle(-8).setPosition(tx + 4, 178 + 4).setTint(paper ? col.b : col.b === 0xffffff || col.b === 0xf6ecd0 ? 0x000000 : col.b).setVisible(t >= 3);
+    this.title.setText(a.text).setScale(scale).setAngle(-8).setPosition(tx, 178).setTint(paper ? INK : contrast(col.a)).setVisible(t >= 3);
     this.names[0].setText(def.name).setScale(2).setAngle(-8).setPosition(tx - dir * 40, 128).setTint(col.b).setVisible(t >= 5);
   };
 
@@ -183,19 +231,27 @@
       var pts = side === 0
         ? [{ x: 0 + slide, y: 0 }, { x: mid + lean + slide, y: 0 }, { x: mid - lean + slide, y: H }, { x: 0 + slide, y: H }]
         : [{ x: mid + lean + slide, y: 0 }, { x: W + slide, y: 0 }, { x: W + slide, y: H }, { x: mid - lean + slide, y: H }];
-      g.fillStyle(col.a, 1); g.fillPoints(pts, true);
       var fc = this.faces[side];
       fc.shape.fillStyle(0xffffff, 1); fc.shape.fillPoints(pts, true);
-      this.halftone(side, dir, col.b, 0.18, slide, 0, H, true);
+      if (def.student) { // a notebook page: the slash is its torn edge
+        var edge = function (y) { return mid + lean - 2 * lean * y / H + slide; };
+        if (side === 0) notebook(g, function () { return slide; }, edge, 0, H, true);
+        else notebook(g, edge, function () { return W + slide; }, 0, H, false);
+        var bx = side === 0 ? 50 : W - 50;
+        doodles(g, def, function (k) { return bx + slide + (side ? -1 : 1) * (k % 2) * 34; }, function (k) { return 40 + k * 30; }, 7, 1.3);
+      } else {
+        g.fillStyle(col.a, 1); g.fillPoints(pts, true);
+        this.halftone(side, dir, col.b, 0.18, slide, 0, H, true);
+      }
       drawFace(fc, (side === 0 ? W * 0.25 : W * 0.75) + slide + Math.sin(t * 0.05) * 3, 150, 7, this.scene.tickCount || t);
       // Name and line on a strip along the bottom of each half.
       var nx = (side === 0 ? W * 0.25 : W * 0.75) + slide;
       this.top.fillStyle(col.b, 1); this.top.fillRect(Math.round(nx - 150), 254, 300, 4);
-      this.names[side].setText(def.name).setScale(3).setAngle(-6).setPosition(nx, 236).setTint(contrast(col.a)).setVisible(true);
+      this.names[side].setText(def.name).setScale(3).setAngle(-6).setPosition(nx, 236).setTint(def.student ? INK : contrast(col.a)).setVisible(true);
       var wrapped = a.lines[side] ? FG.wrapText('"' + a.lines[side] + '"', 34) : [];
       for (var k = 0; k < 2; k++) {
         var lt = this.lines[side * 2 + k];
-        lt.setText(wrapped[k] || '').setScale(1).setAngle(0).setPosition(nx, 272 + k * 12).setTint(contrast(col.a)).setVisible(t > 20 && !!wrapped[k]);
+        lt.setText(wrapped[k] || '').setScale(1).setAngle(0).setPosition(nx, 272 + k * 12).setTint(def.student ? INK : contrast(col.a)).setVisible(t > 20 && !!wrapped[k]);
       }
     }
     // The slash between them, and VS.

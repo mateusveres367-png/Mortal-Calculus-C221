@@ -1244,6 +1244,8 @@
       }
       if (fi._hidden) continue;
       if (!fi._pose) FG.updatePose(fi, this.tickCount);
+      // Gone (MATEUS underground, JACK mid-swap): a mound of dirt, or nothing at all.
+      if (!this.ult && fi.state === 'attack' && fi.move && fi.move.teleport && fi.vaulting()) { this.drawVanished(g, fi); continue; }
       // Springboard dives and vaults go up and over (on screen; the sim keeps them grounded).
       if (!this.ult && fi.state === 'attack' && fi.move && fi.move.prop) {
         var arc = fi.move.vault ? 32 : 24, h = fi.move.vault ? 74 : 40;
@@ -1251,12 +1253,13 @@
       }
       this.drawFigure(g, fi, opts);
     }
+    FG.drawProjectiles(g, m, this.tickCount);
     this.effects.draw(g);
     var sf = this.effects.screen, fl = this.screenFlash;
     fl.clear();
     if (sf) { fl.fillStyle(sf.color, sf.alpha * sf.life / sf.max); fl.fillRect(0, 0, C.VIEW_W, C.VIEW_H); }
     var t = this.training;
-    if (t.showBoxes) { FG.drawBoxes(g, f[0]); FG.drawBoxes(g, f[1]); }
+    if (t.showBoxes) { FG.drawBoxes(g, f[0]); FG.drawBoxes(g, f[1]); FG.drawProjectileBoxes(g, m); }
 
     // Floating labels: alternate stance.
     for (var k = 0; k < 2; k++) {
@@ -1322,6 +1325,20 @@
     g.save(); g.translateCanvas(px, py); g.rotateCanvas(fi._drawRot); g.translateCanvas(-px, -py);
     FG.drawFighter(g, fi, opts);
     g.restore();
+  };
+
+  // A fighter who has vanished mid-teleport: MATEUS tunnels (a mound of dirt rushing
+  // along underground), JACK's seat swap is a flurry of loose paper.
+  FightScene.prototype.drawVanished = function (g, fi) {
+    var tp = fi.move.teleport, u = (fi.moveFrame - tp.hide[0]) / Math.max(1, tp.hide[1] - tp.hide[0]), gy = C.GROUND_Y;
+    if (tp.fx === 'paper') {
+      for (var k = 0; k < 6; k++) { var a = this.tickCount * 0.3 + k; g.fillStyle(k % 2 ? 0xf4f4ec : 0xd8d8d0, 1); g.fillRect(fi.x + Math.cos(a) * 14 - 2, gy - 40 + Math.sin(a * 1.3) * 22, 5, 4); }
+      return;
+    }
+    var o = this.match.fighters[1 - fi.index], x = fi.x + (o.x - fi.x) * Math.min(1, u) * 0.85, h = 6 + Math.sin(this.tickCount * 0.6) * 1.5;
+    g.fillStyle(0x4a3220, 1); g.fillEllipse(x, gy - h / 2 + 1, 26, h + 2);
+    g.fillStyle(0x6a4a2a, 1); g.fillEllipse(x, gy - h / 2, 20, h);
+    g.fillStyle(0x3a7a3a, 1); g.fillRect(x - 6, gy - h - 1, 3, 2); g.fillRect(x + 3, gy - h, 3, 2);
   };
 
   // --- Ultimates ------------------------------------------------------------------

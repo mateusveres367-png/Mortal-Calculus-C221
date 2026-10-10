@@ -9,7 +9,13 @@
     { a: 'miyashiro', b: 'brinkhus', lines: [['miyashiro', 'I calculated your reach.'], ['brinkhus', 'Did you calculate my height?']] },
     { a: 'brinkhus', b: 'wilson', lines: [['brinkhus', 'Go easy on me?'], ['wilson', 'No.']] },
     { a: 'pedersen', b: 'wilson', lines: [['pedersen', 'You can lead a horse to water...'], ['wilson', "I'm not the horse."]] },
-    { a: 'lee', b: 'wilson', lines: [['lee', 'Wow, intense. You ever smile?'], ['wilson', 'Once. 2003.']] }
+    { a: 'lee', b: 'wilson', lines: [['lee', 'Wow, intense. You ever smile?'], ['wilson', 'Once. 2003.']] },
+    // Students vs teachers.
+    { a: 'pedersen', b: 'mateus', lines: [['pedersen', 'You can lead a horse to water...'], ['mateus', 'Already drank it.']] },
+    { a: 'wilson', b: 'nicolas', lines: [['wilson', "You're late."], ['nicolas', '...Yeah.']] },
+    { a: 'miyashiro', b: 'hudson', lines: [['miyashiro', 'I calculated this.'], ['hudson', 'Me too.']] },
+    { a: 'lopez', b: 'jack', lines: [['lopez', 'I see you in the back row.'], ['jack', "Didn't think anyone noticed."]] },
+    { a: 'dalsass', b: 'max', lines: [['dalsass', 'Pop quiz, sweetie.'], ['max', 'Oh no.']] }
   ];
   // PEDERSEN vs anyone without a rivalry exchange.
   var PEDERSEN_VS_ANYONE = "You're not Vicky, but you'll do.";

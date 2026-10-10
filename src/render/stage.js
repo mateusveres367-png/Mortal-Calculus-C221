@@ -349,6 +349,82 @@
     asphalt(this, scene, horizon, rnd, true);
   };
 
+  // The Lunch Quad at noon: the student side's home. A bright sky, the school behind a
+  // covered walkway, lunch tables full of students eating (and watching), trash cans,
+  // backpacks dumped everywhere, pigeons, and a paper airplane now and then.
+  BUILD.quad = function (scene) {
+    var horizon = this.horizon;
+    var sk = this.layer(scene, 0.1, -32);
+    sk.fillGradientStyle(0x5aa8e8, 0x5aa8e8, 0xc8e8ff, 0xc8e8ff, 1);
+    sk.fillRect(-40, 0, W, horizon);
+    sk.fillStyle(0xfff6c0, 1); sk.fillCircle(150, 40, 16); sk.fillStyle(0xfff6c0, 0.25); sk.fillCircle(150, 40, 26);
+    this.anim(scene, 0.1, -31, function (c, t) { // clouds, slow
+      for (var i = 0; i < 4; i++) {
+        var cx = ((i * 260 + t * 0.06 * (1 + i % 2)) % (W + 240)) - 120, cy = 26 + i * 22;
+        c.fillStyle(0xffffff, 0.85); c.fillRect(Math.round(cx), cy, 64, 8); c.fillRect(Math.round(cx) + 10, cy - 6, 38, 6); c.fillRect(Math.round(cx) + 40, cy - 3, 20, 3);
+      }
+    });
+    // The school: tan walls, rows of windows, a covered walkway with a flat roof.
+    var bld = this.layer(scene, 0.35, -30), rnd = mulberry(311);
+    [[-30, 260, 120], [240, 200, 150], [450, 330, 110], [790, 260, 135]].forEach(function (bk) {
+      var bx = bk[0], bw = bk[1], bh = bk[2], top = horizon - bh;
+      bld.fillStyle(0xd8c49a, 1); bld.fillRect(bx, top, bw, bh);
+      bld.fillStyle(0xb8a47a, 1); bld.fillRect(bx, top, bw, 5);
+      for (var wy = top + 14; wy < horizon - 40; wy += 26) for (var wx = bx + 10; wx < bx + bw - 16; wx += 24) {
+        bld.fillStyle(0x3a5a7a, 1); bld.fillRect(wx, wy, 14, 14);
+        bld.fillStyle(0x8ab8d8, 0.6); bld.fillRect(wx + 1, wy + 1, 5, 12);
+      }
+    });
+    bld.fillStyle(0x7a2a2a, 1); bld.fillRect(-40, horizon - 46, W + 40, 6);           // the walkway roof
+    for (var px = -20; px < W; px += 70) { bld.fillStyle(0x9a9a9a, 1); bld.fillRect(px, horizon - 40, 4, 40); }
+    bld.fillStyle(0x2a2a30, 1); bld.fillRect(520, horizon - 32, 22, 32); bld.fillStyle(0x4a5a6a, 1); bld.fillRect(523, horizon - 29, 16, 26); // a door
+    bld.fillStyle(0x1e5a3a, 1); bld.fillRect(290, horizon - 146, 100, 14); bld.fillStyle(0xd8c49a, 1); bld.fillRect(292, horizon - 133, 3, 6); bld.fillRect(385, horizon - 133, 3, 6); // a banner
+    this.label(scene, 340, horizon - 143, 'LUNCH QUAD', 'w', 0.35, -30);
+    // Trees, swaying, and a few pigeons pecking under them.
+    this.anim(scene, 0.55, -26, function (g, t) {
+      for (var tx = 60; tx < W; tx += 210) {
+        var th = 58 + (tx % 3) * 10, sway = Math.round(Math.sin(t * 0.03 + tx) * 2);
+        g.fillStyle(0x5a3a22, 1); g.fillRect(tx + 18, horizon - th + 20, 6, th - 20);
+        g.fillStyle(0x3a8a3a, 1); g.fillCircle(tx + 21 + sway, horizon - th + 10, 25);
+        g.fillStyle(0x5aaa4a, 1); g.fillCircle(tx + 12 + sway, horizon - th + 2, 14);
+      }
+      for (var b = 0; b < 4; b++) {
+        var bx2 = 120 + b * 230 + Math.sin(t * 0.01 + b) * 20, peck = (Math.floor(t / 12) + b) % 5 === 0 ? 2 : 0;
+        g.fillStyle(0x6a6a78, 1); g.fillRect(Math.round(bx2), horizon - 6, 6, 4); g.fillRect(Math.round(bx2) + 5, horizon - 8 + peck, 3, 3);
+      }
+      // Now and then a paper airplane drifts across.
+      var pt = t % 900;
+      if (pt < 260) { var ax = pt * 4 - 40, ay = horizon - 120 + Math.sin(pt * 0.05) * 12; g.fillStyle(0xffffff, 1); g.fillTriangle(ax + 8, ay, ax - 6, ay - 4, ax - 4, ay + 3); }
+    });
+    // Lunch tables with students eating at them, and backpacks on the ground.
+    var people = this.crowd(scene, 0.7, -21);
+    var mid = this.layer(scene, 0.7, -20), packs = [0xc0392b, 0x2a5fb8, 0x2a2a2a, 0x3a8a3a, 0x8a3ab0, 0xd8a020];
+    for (var tbx = 20; tbx < W; tbx += 150) {
+      mid.fillStyle(0x2a6a8a, 1); mid.fillRect(tbx, horizon - 14, 70, 4);
+      mid.fillStyle(0x3a8aaa, 1); mid.fillRect(tbx + 4, horizon - 22, 62, 4);
+      mid.fillStyle(0x4a4f5a, 1); mid.fillRect(tbx + 10, horizon - 18, 3, 18); mid.fillRect(tbx + 57, horizon - 18, 3, 18);
+      mid.fillStyle(0xd8d8d0, 1); mid.fillRect(tbx + 14, horizon - 24, 10, 2); mid.fillRect(tbx + 42, horizon - 24, 10, 2); // trays
+      if (rnd() < 0.9) people.push(person(rnd, tbx + 20, horizon - 14, 'lunch', 0.8, [0xc0392b, 0x2a5fb8, 0xe8e8e8, 0x3a8a3a, 0x8a3ab0]));
+      if (rnd() < 0.8) people.push(person(rnd, tbx + 48, horizon - 14, 'lunch', 0.8, [0xd8a020, 0x1d2c5e, 0x9a9a9a, 0xc05a2a]));
+      var bp = packs[Math.floor(rnd() * packs.length)];
+      mid.fillStyle(bp, 1); mid.fillRect(tbx + 78, horizon - 9, 10, 9); mid.fillStyle(FG.shade(bp, 0.7), 1); mid.fillRect(tbx + 78, horizon - 9, 10, 3);
+    }
+    // Trash cans by the walkway.
+    for (var tc = 130; tc < W; tc += 300) {
+      mid.fillStyle(0x3a5a3a, 1); mid.fillRect(tc, horizon - 20, 14, 20); mid.fillStyle(0x2a4a2a, 1); mid.fillRect(tc - 1, horizon - 22, 16, 3);
+    }
+    // The floor: sun-bleached concrete with expansion joints, and a few dropped things.
+    var floor = this.layer(scene, 1, -10);
+    floor.fillGradientStyle(0xc8c0b0, 0xc8c0b0, 0xa8a090, 0xa8a090, 1);
+    floor.fillRect(0, horizon, W, H - horizon);
+    floor.lineStyle(1, 0x9a9282, 1);
+    for (var row = 1; row < 6; row++) { var yy = horizon + Math.round(Math.pow(row / 5, 1.6) * (H - horizon)); floor.lineBetween(0, yy, W, yy); }
+    for (var col = -30; col <= 30; col++) floor.lineBetween(W / 2 + col * 40, horizon, W / 2 + col * 110, H);
+    floor.fillStyle(0xf4f4ec, 1); floor.fillRect(300, horizon + 40, 6, 4); floor.fillRect(712, horizon + 30, 5, 3); // a napkin, a wrapper
+    floor.fillStyle(0xe0a050, 1); floor.fillRect(560, horizon + 48, 6, 3);
+    this.walls(floor, 0xd8c49a, 0x8a7a5a, 'bricks');
+  };
+
   function sky(stage, scene, horizon) {
     var g = stage.layer(scene, 0.1, -32);
     g.fillGradientStyle(0x2b2350, 0x2b2350, 0xe0884a, 0xe0884a, 1);
@@ -584,6 +660,16 @@
     if (st.type === 'standing') {
       g.fillStyle(0x23232a, 1); g.fillRect(x - s(5), y - s(16), s(4), s(16)); g.fillRect(x + s(1), y - s(16), s(4), s(16));
       y -= s(16);
+    }
+    if (st.type === 'lunch' && !mood.watching) { // eating: a sandwich up to the mouth now and then
+      var bite = Math.max(0, Math.sin(t * 0.05 + st.phase * 3));
+      g.fillStyle(st.shirt, 1); g.fillRect(x - s(8) + lean, y - s(18), s(16), s(18));
+      var hx0 = x + lean, hy0 = y - s(23);
+      g.fillStyle(st.skin, 1); g.fillCircle(hx0, hy0, s(5));
+      g.fillStyle(st.hair, 1); g.fillRect(hx0 - s(5), hy0 - s(6), s(10), s(3));
+      g.fillStyle(st.skin, 1); g.fillRect(x + s(5) + lean, y - s(10) - Math.round(bite * s(8)), s(3), s(6));
+      g.fillStyle(0xe0b060, 1); g.fillRect(x + s(4) + lean, y - s(13) - Math.round(bite * s(8)), s(5), s(3));
+      return;
     }
     if (st.type === 'chair') { // office chair back
       g.fillStyle(0x1e1e24, 1); g.fillRect(x - s(9), y - s(16), s(18), s(16));

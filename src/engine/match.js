@@ -33,6 +33,7 @@
     this.winner = null;
     this.over = false;
     this.cinematic = null; // an ultimate playing: { a, d, t, len, hits, done, total }
+    this.projectiles = []; // thrown things in flight (projectiles.js)
     (this.props || []).forEach(function (p) { p.cool = 0; p.t = 999; p.use = null; });
   };
 
@@ -105,6 +106,10 @@
     }
 
     this.updateThrow();
+    for (i = 0; i < 2; i++) {
+      if (f[i].teleportNow) { this.teleport(i, f[i].teleportNow); f[i].teleportNow = null; }
+      if (f[i].throwNow) { this.spawnProjectile(i, f[i].throwNow); f[i].throwNow = null; }
+    }
 
     f[0].physics(f[1]);
     f[1].physics(f[0]);
@@ -113,6 +118,7 @@
     for (i = 0; i < 2; i++) this.checkWallSplat(i);
 
     this.resolveHits();
+    this.updateProjectiles();
     this.updateGuard();
     this.updateMeasure();
 
@@ -174,6 +180,7 @@
     this.throwState = null;
     this.measure = null;
     this.hitstop = 0;
+    this.clearProjectiles();
     this.cinematic = { a: ai, d: di, t: 0, len: u.len, hits: u.hits, parts: parts, total: total, x0: a.x, y0: d.y, dx0: d.x, dir: a.facing };
     this.lastResult[ai] = { move: a.lastMove, kind: 'ULTIMATE', adv: null };
     this.events.push({ type: 'ultimate', attacker: ai, defender: di, name: u.name, x: d.x, y: 60 });

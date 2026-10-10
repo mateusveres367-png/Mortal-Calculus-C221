@@ -4,7 +4,7 @@ A retro, Tekken-inspired 2D/2.5D fighting game themed around the El Camino Real 
 
 ## Status
 
-**Phase 7 — modes and screens (playable).** All nine fighters from [`ROSTER.md`](ROSTER.md): **PEDERSEN** (power, math analysis; the cover fighter), **BRINKHUS** (balanced, Algebra 1), **CHAI** (technical, geometry), **DALSASS** (tricky, triangles and proofs), **LEE** (rushdown, sequences), **LOPEZ** (defensive, calculus), **MIYASHIRO** (spacing, Algebra 2), **RAMOS** (grappler, matrices) and **WILSON** (veteran master, every subject; the arcade boss). No two fight alike: each has their own style, stance, movement, weight, hit reactions and signature mechanic.
+**Phase 7 — modes and screens (playable).** All nine fighters from [`ROSTER.md`](ROSTER.md): **PEDERSEN** (power, math analysis; the cover fighter), **BRINKHUS** (balanced, Algebra 1), **CHAI** (technical, geometry), **DALSASS** (tricky, triangles and proofs), **LEE** (rushdown, sequences), **LOPEZ** (defensive, calculus), **MIYASHIRO** (spacing, Algebra 2), **RAMOS** (grappler, matrices) and **WILSON** (veteran master, every subject; the arcade boss). And on the **student side**, 10th graders: **MATEUS** "Gnome" (balanced; the student side's cover fighter) and **NICOLAS** "The Late Pass" (rushdown), with MAX, JACK and HUDSON on the way (see [`ROSTER.md`](ROSTER.md)). No two fight alike: each has their own style, stance, movement, weight, hit reactions and signature mechanic.
 
 What's in the game so far:
 
@@ -25,17 +25,19 @@ What's in the game so far:
   - feet stay planted and take real steps when the body moves; knees and elbows are solved so limbs keep their length; nobody slides or floats
   - hit reactions by blow: heads snap back from jabs, bodies fold over body shots, roundhouses spin them, overheads crumple them
   - impact effects and sounds by attack type: quick jabs, heavy body shots, powerful roundhouses, explosive launchers, and dramatic counter hits with a screen flash and a shockwave
-- **Stages (phase 6):** six stages with parallax depth and small animations, and students in the background who cheer on big combos, flinch at big hits, gasp at counter hits, jump up for a K.O. and go wild for a finisher:
+- **Stages (phase 6):** seven stages with parallax depth and small animations, and students in the background who cheer on big combos, flinch at big hits, gasp at counter hits, jump up for a K.O. and go wild for a finisher:
   - **Classroom C221:** whiteboards full of math, desks with calculators, a ticking clock, a flickering tube light
   - **Math Hallway:** lockers, classroom doors, bulletin boards, a humming vending machine, students walking past
   - **Computer Lab:** a bench of CRT monitors plotting sine waves, bar charts and spirals; students spin round to watch
   - **Outdoor Campus:** buildings at dusk, a clock tower, swaying trees, a waving flag, drifting clouds and birds
   - **Department Office:** bookshelves, filing cabinets, a turning ceiling fan, a printer that never stops, screensavers
   - **Faculty Parking:** PEDERSEN's stage; his red sports car sits in his reserved spot, cars pass on the road behind
+  - **Lunch Quad:** the students' stage at noon: lunch tables full of students eating (they stop to watch the big moments), trash cans, backpacks dumped everywhere, pigeons, and a paper airplane drifting past now and then
   - each fighter has a home stage (player 2's is used); PEDERSEN drives in only on outdoor stages and walks in indoors
 - **Modes and screens (phase 7):**
   - a late-90s arcade title screen: the faculty lot at sunset, PEDERSEN in sunglasses leaning on his red sports car with a smoking cigar, the other seven in silhouette behind him catching rim light in their colours, a chrome MORTAL CALCULUS logo that slams in with a red C221 stamp, PRESS START, CRT scanlines and a synth-rock loop (Web Audio). The menu: **Arcade**, **Detention**, **Timed Test**, **VS CPU**, **Versus**, **Training**, **Records**, **Options**. Leave it for 15 seconds and the attract demo plays three short CPU vs CPU clips with cut-ins, then comes back; any key ends it
-  - character select with pixel portraits (both players pick at the same time in versus), then stage select with a live, panning preview of each stage (or RANDOM)
+  - character select with pixel portraits on two tabs, **TEACHERS | STUDENTS** (`Q`/`E` or tap a tab; player 2 in versus `[`/`]`); both players pick at the same time in versus; then stage select with a live, panning preview of each stage (or RANDOM)
+  - **The student side:** 10th graders, a little smaller than the teachers, who fight scrappier with whatever school stuff is at hand. Only students have **projectiles** (a garden gnome, a backpack...): one of their own on screen at a time; sidestep them, block them at the right height, cancel them with your own, or knock them away with a parry. Students and teachers fight each other in every mode. Their cut-ins are pages of notebook paper with doodles in the margins
   - **Arcade:** fight the whole department, one CPU opponent at a time on their home stage, PEDERSEN last; win to see who's next, lose and you get a 10-second CONTINUE?; beat everyone for the ending
   - **Versus:** player 1 against player 2 on one keyboard
   - **Detention** (survival): one opponent after another at random, one round each, on a single health bar that only refills 30% after each win; the CPU gets tougher as you go, and the win screen keeps count of how many you've beaten (your best is in Records)
@@ -43,7 +45,7 @@ What's in the game so far:
   - **Quick rematch:** `R` on any win screen runs the same fight again at once (in arcade it counts as a continue if you lost; in Detention it starts a fresh run)
   - best of three rounds with ROUND 1 / READY / FIGHT, a round timer (time out goes to whoever has more health left), round markers, K.O., TIME, PERFECT (a round won without taking damage), CLOSE CALL (won with under 10% health left) and FINAL ROUND, and a victory screen with the score
   - fight music (synthesized) that picks up in the final round and again when either fighter is low
-  - **Rewards** (saved in your browser): winning with a fighter unlocks their alternate outfits (NIGHT SCHOOL at 1 win, GOLD STAR at 3, CHALK DUST at 6, RED PEN at 10; `Q`/`E` on character select, player 2 `Num4`/`Num5`); milestones earn titles shown under your fighter's name (FRESHMAN, HONOR ROLL for 10 wins, VALEDICTORIAN for beating arcade, DETENTION SURVIVOR, PERFECT ATTENDANCE, GOLD STAR for a finisher, LONG DIVISION for a 15-hit combo, SPEED READER, DEAN'S LIST, FACULTY LOUNGE, TENURED); **Records** on the title menu shows wins per fighter, your longest combo, most-used fighter, finishers landed and more, and picks which title you show
+  - **Rewards** (saved in your browser): winning with a fighter unlocks their alternate outfits (NIGHT SCHOOL at 1 win, GOLD STAR at 3, CHALK DUST at 6, RED PEN at 10; `Z`/`X` on character select, player 2 `Num4`/`Num5`); milestones earn titles shown under your fighter's name (FRESHMAN, HONOR ROLL for 10 wins, VALEDICTORIAN for beating arcade, DETENTION SURVIVOR, PERFECT ATTENDANCE, GOLD STAR for a finisher, LONG DIVISION for a 15-hit combo, SPEED READER, DEAN'S LIST, FACULTY LOUNGE, TENURED); **Records** on the title menu shows wins per fighter, your longest combo, most-used fighter, finishers landed and more, and picks which title you show
   - CPU opponents at three levels (Options: Easy, Normal, Hard): they react with a delay, guard and read lows, punish whiffs and blocked moves, run real combo routes, tech, break throws and pick wake-up options; harder levels do each of these more often and faster
   - Options also set the round time (30, 60, 99 or none) and sound, and are remembered in your browser
 - **Easier combos:** a 10-frame input buffer, wider windows between string hits, gentler early juggle gravity, and a universal P, P, H string ender so launcher > P > P > H works for every fighter; **Easy Combos** (Options, off by default) lets you mash P to keep a string going; combo trials show a timing bar. Details in [`COMBOS.md`](COMBOS.md).
@@ -65,7 +67,7 @@ Open `index.html` directly in a modern browser (double-click it, or drag it into
 
 On the title screen, press `Enter` (or click) for the menu, then up/down and `Enter`:
 
-- **Arcade:** pick your fighter (arrows or WASD, `Enter` or `J`), then fight all nine in a row (your own mirror match included, then PEDERSEN, then WILSON, the final boss). Beat arcade once to unlock WILSON for arcade and VS CPU (he's always playable in training and versus). The CPU gets harder with every fight; a ladder screen before each one shows the tower and the next opponent's line for you. Lose and CONTINUE? counts down; win them all for the ending and your fighter's victory line.
+- **Arcade:** pick your fighter (arrows or WASD, `Enter` or `J`). As a teacher, fight the students first, then the rest of the department (your own mirror match included, then PEDERSEN, then WILSON, the final boss); as a student, fight all nine teachers, ending with WILSON. Beat arcade once to unlock WILSON for arcade and VS CPU (he's always playable in training and versus). The CPU gets harder with every fight; a ladder screen before each one shows the tower and the next opponent's line for you. Lose and CONTINUE? counts down; win them all for the ending and your fighter's victory line.
 - **VS CPU:** pick your fighter, then the CPU's, then a stage; up/down on stage select sets the CPU's level.
 - **Versus:** both players pick at once: player 1 with `WASD` and `J` (`K` to undo), player 2 with the arrows and `Numpad 1` or `,` (`Numpad 2` or `.` to undo). Then pick a stage.
 - **Training:** pick your fighter, then the opponent, then a stage. In the training menu, PLAYER 2 can be the dummy, a second human, or the CPU at any level.
@@ -267,7 +269,7 @@ index.html              loads every script in order (no modules, no build)
 lib/phaser.min.js       Phaser 3.90, vendored
 src/fg.js               global namespace and tuning constants
 src/engine/             pure simulation, no Phaser: input buffer, fighter state machine, match loop and walls,
-                        combat (hits, juggles, bounds, wall hits, throws, guard meter), training dummy,
+                        combat (hits, juggles, bounds, wall hits, throws, guard meter), projectiles and teleports, training dummy,
                         CPU opponent (ai.js) and round rules (rounds.js)
 src/data/               poses, the fighter kit (kit.js), the stage list (stages.js) and one file per fighter in fighters/
 src/render/             fighter drawing, procedural motion (motion.js), stage, effects and sound,
@@ -300,7 +302,7 @@ node tools/balance.js 24 # self-playtest: every pairing, 24 matches each side, H
 ## Project docs
 
 - [`GAME_DESIGN.md`](GAME_DESIGN.md) — full game vision and design
-- [`ROSTER.md`](ROSTER.md) — the nine fighters: archetypes, looks, personalities, moves and victory lines
+- [`ROSTER.md`](ROSTER.md) — the fourteen fighters (nine teachers, five students): archetypes, looks, personalities, moves and victory lines
 - [`MOVES.md`](MOVES.md) — generated move lists with frame data and combo routes
 - [`COMBOS.md`](COMBOS.md) — every fighter's combo routes by difficulty, and what the combo feel pass changed
 - [`BALANCE.md`](BALANCE.md) — Hard CPU vs Hard CPU win rates before and after tuning, and what changed

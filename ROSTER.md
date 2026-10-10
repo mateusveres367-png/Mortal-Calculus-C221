@@ -1,6 +1,6 @@
 # Mortal Calculus: C221 — Roster
 
-The nine fighters of the El Camino Real Math Department: eight teachers, and WILSON, the boss. Later phases build on this file; keep it as the source of truth for each fighter's identity, look, moves and lines.
+Fourteen fighters on two sides. **TEACHERS:** the nine fighters of the El Camino Real Math Department, eight teachers and WILSON, the boss. **STUDENTS:** five 10th graders. Later phases build on this file; keep it as the source of truth for each fighter's identity, look, moves and lines.
 
 **PEDERSEN is the cover fighter.** He is front and center on the title screen next to his red mid-engine sports car (styled after a red C8 Corvette, no real badges or logos), and first on character select.
 
@@ -17,6 +17,14 @@ Each fighter's moves come from what they actually teach.
 | MIYASHIRO | Spacing / Footsies | Algebra 2 |
 | RAMOS | Grappler | Algebra 2 (matrices) |
 | WILSON | Veteran Master (boss) | Every subject |
+
+| Student | Archetype | Nickname |
+| --- | --- | --- |
+| MATEUS | Balanced | "GNOME" (the student side's cover fighter) |
+| NICOLAS | Rushdown | "The Late Pass" |
+| MAX | Power / Grappler | "Heavy Course Load" |
+| JACK | Tricky / Zoner | "Back of the Classroom" |
+| HUDSON | Defensive / Technical | "Calculator Kid" |
 
 Every fighter needs unique normals, launcher, throw, combo routes, stance, idle animation, and victory and defeat animations.
 
@@ -256,6 +264,133 @@ He teaches all the math classes and has been at El Camino for 29 years. **The bo
 - "Again. Tomorrow. Better."
 - "That will be on the final."
 
+
+---
+
+# Students
+
+Five 10th graders. Character select has two tabs, **TEACHERS | STUDENTS** (Q/E, or tap a tab), and students and teachers fight each other in every mode. Students are slightly smaller than the teachers and fight scrappier: more improvised, with whatever school stuff is at hand (backpacks, pencils, paper airplanes, calculators). **Only students have projectiles** (one of their own on screen at a time). Their cut-ins are notebook paper with doodles in the margins, and their home stage is the **Lunch Quad** (tables, trash cans, backpacks, students eating in the background). **MATEUS is the cover fighter for the student side.**
+
+**Arcade as a student:** fight all the teachers, ending with WILSON. **Arcade as a teacher:** fight the students first, then the remaining teachers.
+
+## MATEUS "GNOME" — Balanced
+
+**Moves:** Gnome Headbutt (fast mid), Garden Sweep (low), Got Gnomed (launcher: a tiny uppercut, and on a counter hit it pops them way up), Gnome Toss (projectile: a mini garden gnome, lobbed; it tumbles along the floor as a low once it lands), Pop-Up (vanishes into the ground and reappears next to them), Yard Work (throw).
+
+**Style:** Scrappy trickster. Short, quick strikes from a little hunched, up-to-something stance; a headbutt, a front kick, a shovel-swing overhand; he's never quite where you left him.
+
+**Signature — Lawn Statue (B+H):** he freezes perfectly still, like a garden gnome. If the opponent attacks him while he's frozen, he pops out and counters (Gnomed, a launching headbutt). Hold H to stay frozen a little longer. Throws beat it.
+
+**Ultimate — Gnome Army:** cut to a front lawn at dusk. Dozens of garden gnomes pop out of the ground. Whenever the opponent looks at them they freeze; when they turn away, the gnomes creep closer. Then they swarm, and the last one bonks them with a watering can. MATEUS was one of the gnomes the whole time.
+
+**KO finisher — You've Been Gnomed:** he sinks into the ground, pops up right behind them and taps their shoulder. They turn round: one hit. As they fall, a tiny garden gnome pops up next to them. "GNOMED" stamps the screen.
+
+**Look:** Medium-length wavy dark brown hair with curtain bangs, navy t-shirt. No hat.
+
+**Personality:** Sneaky and smug. Pops up where you don't expect him, and loves the moment you realize you got gnomed.
+
+**Intro / taunt lines:**
+- "You've been gnomed."
+- "Don't look away."
+- "I was here the whole time."
+
+**Victory lines:**
+- "Gnomed."
+- "Should've checked the garden."
+- "Small but deadly."
+
+## NICOLAS "The Late Pass" — Rushdown
+
+**Moves:** Bell Sprint (the fastest dash in the game; F, F, P is a flying shoulder out of it), Tardy Rush (string: P, P, K, K), Hall Pass (launcher), Skip Day (sidestep attack: P out of a sidestep), Backpack Toss (projectile: his backpack, thrown straight), Locker Slam (throw).
+
+**Style:** Hallway sprinter. Up on his toes, bouncing, always leaning in: flicking jabs, knees, a lunging straight, a baseball slide for his low.
+
+**Signature — Bell Sprint:** his dash covers more ground than anyone's, he can chain one dash straight into the next (forward, forward again while dashing) and attack out of it almost at once.
+
+**Ultimate — Five-Minute Passing Period:** the bell rings and a huge LED clock slams up: 5:00. It counts down at hyperspeed while he blitzes the opponent from one end of the stage to the other, hitting from both sides at once, the hallway crowd rushing past. At 0:00 the bell rings again and a flying shoulder sends them into the far wall.
+
+**KO finisher — Tardy:** the bell rings, he sprints past them, the opponent spins and drops, and a TARDY SLIP stamps the screen.
+
+**Look:** Short dark hair with a fringe, red t-shirt, slight grin.
+
+**Personality:** Always in a hurry, talks fast, never stops moving.
+
+**Intro / taunt lines:**
+- "Can we make this quick? I'm late."
+- "Catch me if you can."
+- "I already left."
+
+**Victory lines:**
+- "Too slow."
+- "Gotta go, bell's ringing."
+- "Made it on time."
+
+## MAX "Heavy Course Load" — Power / Grappler
+
+**Moves:** Textbook Swing (heavy), Backpack Slam (throw), Course Load (charge attack with armor), AP Lift (launcher), Study Hall (ground stomp), Bookbag Bomb (projectile: lobs a backpack).
+
+**Personality:** Chill and friendly, but strong. Carries a huge backpack and uses it as a weapon.
+
+**Ultimate — Finals Week:** a mountain of textbooks rains down on the opponent, then he body-slams them on top of the pile.
+
+**KO finisher — All-Nighter:** a suplex, then he falls asleep on top of them, snoring.
+
+**Look:** Short wavy brown hair, black t-shirt, big smile, a huge backpack.
+
+**Intro / taunt lines:**
+- "Hope you did the reading."
+- "This backpack weighs more than you."
+- "Let's get this over with."
+
+**Victory lines:**
+- "Heavy course load."
+- "Should've studied."
+- "Nap time."
+
+## JACK "Back of the Classroom" — Tricky / Zoner
+
+**Moves:** Paper Airplane (projectile that curves up or down), Eraser Flick (fast small projectile), Ruler Snap (poke), Doodle (stance where he sketches, then his next attack comes from a weird angle), Pass the Note (feint), Seat Swap (teleport: switches sides).
+
+**Personality:** Creative and sneaky, always messing around in the back row.
+
+**Ultimate — Paper Airplane Squadron:** dozens of paper airplanes fill the screen in formation and dive-bomb the opponent.
+
+**KO finisher — Back Row:** he folds a giant paper airplane, rides it across the stage into the opponent, and lands it perfectly.
+
+**Look:** Shaggy medium brown hair with bangs, glasses, gray raglan t-shirt with dark sleeves.
+
+**Intro / taunt lines:**
+- "Wasn't paying attention. Doesn't matter."
+- "Back row's got range."
+- "Incoming."
+
+**Victory lines:**
+- "Didn't even look up."
+- "Ten out of ten landing."
+- "Pass it to the back."
+
+## HUDSON "Calculator Kid" — Defensive / Technical
+
+**Moves:** Show Your Work (parry into counter), Graphing Mode (long-range poke), Calculator Combo (string where each hit shows a number), Round Up (launcher), Answer Key (throw), Pop-Up Error (projectile: a "SYNTAX ERROR" box).
+
+**Personality:** Calm and precise. Already finished the homework. Lets you make mistakes.
+
+**Ultimate — Calculator Overflow:** he types into a giant calculator, the screen fills with "ERROR", and every error box hits the opponent at once.
+
+**KO finisher — Extra Credit:** one clean counter, then a gold star stamps the screen.
+
+**Look:** Straight black hair with bangs, white t-shirt, calm expression.
+
+**Intro / taunt lines:**
+- "Already did the homework."
+- "Show your work."
+- "I'll wait."
+
+**Victory lines:**
+- "Checked my answer. Still right."
+- "That's a syntax error."
+- "Extra credit."
+
 ---
 
 ## Win screen
@@ -283,6 +418,14 @@ Pre-fight intro lines for these matchups. The first fighter listed speaks first.
 - **LEE vs WILSON** — LEE: "Wow, intense. You ever smile?" / WILSON: "Once. 2003."
 - **PEDERSEN vs anyone else** — PEDERSEN: "You're not Vicky, but you'll do."
 
+Student vs teacher:
+
+- **MATEUS vs PEDERSEN** — PEDERSEN: "You can lead a horse to water..." / MATEUS: "Already drank it."
+- **NICOLAS vs WILSON** — WILSON: "You're late." / NICOLAS: "...Yeah."
+- **HUDSON vs MIYASHIRO** — MIYASHIRO: "I calculated this." / HUDSON: "Me too."
+- **JACK vs LOPEZ** — LOPEZ: "I see you in the back row." / JACK: "Didn't think anyone noticed."
+- **MAX vs DALSASS** — DALSASS: "Pop quiz, sweetie." / MAX: "Oh no."
+
 ## Build order
 
 Two fighters at a time, committed and pushed after each pair:
@@ -292,3 +435,6 @@ Two fighters at a time, committed and pushed after each pair:
 3. LOPEZ + MIYASHIRO
 4. PEDERSEN + RAMOS
 5. WILSON (the boss)
+6. The student side (tabs, projectiles, the Lunch Quad), MATEUS + NICOLAS
+7. MAX + JACK
+8. HUDSON

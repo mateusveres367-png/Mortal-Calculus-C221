@@ -201,6 +201,40 @@
         R(-7, -8, 13, 2, col); R(-8, -6, 3, 4, col); R(-7, -6, 1, 1, shade(col, 1.3)); R(5, -7, 1, 1, col);
         break;
       case 'bowl': break; // a helmet of its own: drawBowl, after the face
+      // --- The students ---
+      case 'curtain': { // MATEUS: medium-length and wavy, curtain bangs parted in the middle
+        var lt = shade(col, 1.45);
+        R(-7, -9, 14, 3, col); R(-8, -7, 5, 4, col); R(-3, -7, 3, 2, col); R(4, -8, 4, 2, col); R(7, -7, 1, 1, col);
+        R(2, -7, 4, 2, col); R(1, -6, 3, 2, col); R(0, -5, 3, 2, col); R(0, -3, 2, 2, col); // the curtain bang, swept back to the temple
+        R(-9, -6, 4, 9, col); R(-10, -2, 3, 6, col); R(-5, -5, 3, 6, col); // covering the ear, down to the jaw
+        R(-9, 3, 3, 2, col); R(-6, 3, 2, 2, col); R(-11, 3, 2, 2, col); // wavy ends
+        R(-6, -8, 2, 1, lt); R(-1, -8, 2, 1, lt); R(3, -7, 2, 1, lt); R(1, -5, 1, 1, lt); R(-9, 0, 1, 2, lt); R(-7, -4, 1, 2, lt);
+        break;
+      }
+      case 'fringe': // NICOLAS: short, a straight fringe across the forehead
+        R(-7, -9, 14, 3, col); R(-8, -7, 4, 5, col); R(-9, -5, 2, 3, col); R(1, -7, 7, 2, col);
+        R(2, -5, 2, 1, col); R(5, -5, 2, 1, col); R(7, -5, 1, 1, col); R(-3, -8, 4, 1, shade(col, 1.6));
+        break;
+      case 'wavyShort': { // MAX: short and wavy, a bumpy top
+        var lw2 = shade(col, 1.35);
+        R(-7, -8, 13, 3, col); R(-6, -10, 3, 2, col); R(-2, -10, 3, 2, col); R(2, -10, 3, 2, col); R(5, -9, 2, 2, col);
+        R(-8, -6, 3, 5, col); R(4, -7, 3, 2, col);
+        R(-5, -9, 1, 1, lw2); R(-1, -9, 1, 1, lw2); R(3, -9, 1, 1, lw2); R(-7, -4, 1, 1, lw2);
+        break;
+      }
+      case 'shaggy': { // JACK: shaggy, medium length, bangs down to the glasses
+        var sd = shade(col, 0.75);
+        R(-7, -9, 14, 3, col); R(-5, -10, 2, 1, col); R(0, -10, 2, 1, col); R(3, -10, 2, 1, col);
+        R(1, -7, 7, 3, col); R(2, -4, 1, 1, col); R(4, -4, 2, 1, col); R(7, -4, 1, 2, col); // ragged bangs
+        R(-9, -7, 5, 10, col); R(-4, -6, 3, 6, col); R(-10, 1, 2, 3, col); R(-8, 3, 2, 2, col); R(-5, 1, 2, 2, col); // over the ears
+        R(-8, -2, 1, 3, sd); R(-6, 0, 1, 2, sd); R(-2, -8, 3, 1, shade(col, 1.4));
+        break;
+      }
+      case 'straight': // HUDSON: straight black hair, bangs cut even across
+        R(-7, -9, 14, 3, col); R(-8, -7, 5, 8, col); R(-9, -4, 2, 5, col); R(-4, -6, 2, 5, col);
+        R(1, -7, 7, 3, col); R(7, -6, 1, 2, col);
+        R(-4, -8, 6, 1, shade(col, 2.6)); R(2, -6, 4, 1, shade(col, 1.8));
+        break;
       case 'longBouncy': // the cap; the long part is simulated in drawLongHair
         R(-7, -8, 13, 4, col); R(-8, -6, 4, 7, col); R(-9, -3, 3, 6, col); R(4, -7, 3, 2, col); R(-2, -9, 5, 1, shade(col, 1.6));
         break;
@@ -439,7 +473,7 @@
     var top = look.top, blazer = look.blazer && f._blazer;
     var skin = look.skin, skinBack = shade(skin, 0.8);
     var topCol = top.color, topBack = shade(top.color, 0.72);
-    var sleeve = blazer ? look.blazer : topCol, sleeveBack = shade(sleeve, 0.72);
+    var sleeve = blazer ? look.blazer : top.sleeveColor != null ? top.sleeveColor : topCol, sleeveBack = shade(sleeve, 0.72);
     var lw = build.limb;
 
     function limb(a, b, w, color) {
@@ -485,6 +519,20 @@
     var hx = X(0), hy = Y(0), cx = X(1), cy = Y(1);
     var vx = cx - hx, vy = cy - hy, len = Math.sqrt(vx * vx + vy * vy) || 1;
     var nx = -vy / len, ny = vx / len, ux = vx / len, uy = vy / len;
+    // A huge backpack on their back (MAX), behind the torso.
+    if (look.backpack && !opts.noPack) {
+      var bp = look.backpack, bk = -dir, pd = 10 * s * build.torso, pl = len * 0.5, pw2 = 9 * s;
+      var bc = { x: hx + vx * 0.52 + nx * bk * (pd + pw2 * 0.6), y: hy + vy * 0.52 + ny * bk * (pd + pw2 * 0.6) };
+      var corner = function (a, b) { return { x: bc.x + ux * a * pl + nx * bk * b * pw2, y: bc.y + uy * a * pl + ny * bk * b * pw2 }; };
+      g.fillStyle(c(shade(bp.color, 0.8)), 1);
+      g.fillPoints([corner(-0.95, -1), corner(1.05, -1), corner(1.15, 1.1), corner(-0.9, 1.1)], true);
+      g.fillStyle(c(bp.color), 1);
+      g.fillPoints([corner(-0.9, -0.8), corner(0.98, -0.8), corner(1.05, 0.95), corner(-0.85, 0.95)], true);
+      g.fillStyle(c(shade(bp.color, 1.3)), 1); // the top flap and a pocket
+      g.fillPoints([corner(0.6, -0.8), corner(1.0, -0.8), corner(1.05, 0.95), corner(0.65, 0.95)], true);
+      g.fillPoints([corner(-0.7, 0.3), corner(-0.1, 0.3), corner(-0.1, 1.2), corner(-0.7, 1.2)], true);
+      if (bp.zip && flash == null) { var z0 = corner(0.62, -0.6), z1 = corner(0.62, 0.8); g.lineStyle(1, bp.zip, 1); g.lineBetween(z0.x, z0.y, z1.x, z1.y); }
+    }
     // A torso turned toward or away from the camera looks narrower.
     var turn = 1 - 0.18 * Math.min(1, Math.abs(tw));
     var wc = 9 * s * build.torso * turn, wh = 7 * s * build.torso * (1 - 0.1 * Math.min(1, Math.abs(tw)));
@@ -561,6 +609,18 @@
         g.fillRect(Math.round(pd.x - s), Math.round(pd.y), Math.round(2 * s), Math.round(2 * s));
         g.fillRect(Math.round(pd.x - 0.5 * s), Math.round(pd.y + 1.5 * s), Math.max(1, Math.round(s)), Math.max(1, Math.round(s)));
       }
+    }
+    // A raglan tee: the sleeve colour runs up to the collar in a slant.
+    if (top.style === 'raglan' && flash == null) {
+      var rs = top.sleeveColor != null ? top.sleeveColor : shade(topCol, 0.6), rk = function (a, d) { return { x: cx + nx * wc * a - ux * d * s, y: cy + ny * wc * a - uy * d * s }; };
+      g.fillStyle(rs, 1);
+      g.fillPoints([rk(-1, 0), rk(-0.2, 0), rk(-1, 9)], true);
+      g.fillPoints([rk(1, 0), rk(0.2, 0), rk(1, 9)], true);
+      g.fillStyle(rs, 1); g.fillPoints([rk(-0.45, -0.5), rk(0.45, -0.5), rk(0.35, 1.5), rk(-0.35, 1.5)], true); // collar trim
+    }
+    if (look.backpack && !opts.noPack) { // the strap over the front shoulder
+      var st0 = { x: cx + nx * wc * 0.1 * dir, y: cy + ny * wc * 0.1 * dir }, st1 = { x: hx + vx * 0.35 + nx * wh * 0.55 * dir, y: hy + vy * 0.35 + ny * wh * 0.55 * dir };
+      g.lineStyle(Math.max(2, Math.round(2.5 * s)), c(shade(look.backpack.color, 0.7)), 1); g.lineBetween(st0.x, st0.y, st1.x, st1.y);
     }
     // Belt line.
     g.fillStyle(c(shade(look.legs, 0.55)), 1);

@@ -61,6 +61,10 @@
     this.seenUsed = false;     // ...and whether he has countered one yet
     this.feintPending = 0;     // DALSASS feinted a move: frames in which the next one counts as out of a feint
     this.swayed = false;       // DALSASS's sway made an attack miss (opens the sway counter)
+    this.projOut = 0;          // their projectiles on screen (the match counts them; one at a time)
+    this.projSerial = 0;       // which throw of a projectile move this is (the match matches them up)
+    this.throwNow = null;      // a projectile to release this frame (read and cleared by the match)
+    this.teleportNow = null;   // a teleport to make this frame (read and cleared by the match)
     this.clearComboFlags();
   };
 
@@ -134,6 +138,7 @@
 
   Fighter.prototype.startMove = function (id) {
     var m = this.def.moves[id];
+    if (m.projectile) this.projSerial++;
     var prev = this.state === 'attack' ? this.move : null;
     this.fromFeint = !!(prev && prev.feint) || this.feintPending > 0;
     // Kick Chain: the kicks used so far in this chain (a fresh attack starts a new one).
@@ -190,6 +195,10 @@
         }
         this.moveFrame++;
         if (!m.air) this.vx = (m.step && this.moveFrame >= m.step[0] && this.moveFrame <= m.step[1]) ? m.step[2] * this.facing : 0;
+        // Projectiles (students): released on their frame. Teleports (MATEUS's Pop-Up,
+        // JACK's Seat Swap): the match moves them next to the opponent on theirs.
+        if (m.projectile && this.moveFrame === (m.projectile.at || m.startup)) this.throwNow = m;
+        if (m.teleport && this.moveFrame === m.teleport.at) this.teleportNow = m.teleport;
         // A multi-hit move gets another hit in a few frames after each contact.
         if (m.multi && this.contact && this.multiHits < m.multi && this.moveFrame - this.contactAt >= C.MULTI_GAP && this.isActiveFrame()) {
           this.contact = null;
@@ -440,6 +449,12 @@
   // Which move a button press means right now, from the directions held and the
   // fighter's state. Missing directional moves fall back to the plain one.
   Fighter.prototype.resolveMove = function (btn, buf, frame) {
+    var id = this.resolveMoveRaw(btn, buf, frame), m = id && this.def.moves[id];
+    // One projectile on screen at a time: with one out, the button is the plain move.
+    if (m && m.projectile && this.projOut > 0) return this.pick([PLAIN[btn]]);
+    return id;
+  };
+  Fighter.prototype.resolveMoveRaw = function (btn, buf, frame) {
     // Directions as they were when the button was pressed (it may have been buffered).
     var dirs = buf.dirsFor(btn, frame);
     var down = dirs.down, back = buf.back(this.facing, dirs), fwd = buf.forward(this.facing, dirs);
@@ -512,7 +527,10 @@
 
   // Vaulting over the opponent: no body collision.
   Fighter.prototype.vaulting = function () {
-    return this.state === 'attack' && !!this.move.vault && this.moveFrame >= this.move.step[0] && this.moveFrame <= this.move.step[1];
+    if (this.state !== 'attack') return false;
+    var tp = this.move.teleport;
+    if (tp) return this.moveFrame >= tp.hide[0] && this.moveFrame <= tp.hide[1]; // gone (underground, or mid-swap)
+    return !!this.move.vault && this.moveFrame >= this.move.step[0] && this.moveFrame <= this.move.step[1];
   };
 
   Fighter.prototype.tryAttack = function (buf, frame) {

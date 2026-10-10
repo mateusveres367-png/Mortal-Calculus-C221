@@ -1,16 +1,20 @@
-// Character select, with pixel portraits of every fighter in roster order.
-//   arcade:   player 1 picks; the CPU ladder is all nine (PEDERSEN, then WILSON, the boss)
+// Character select, with pixel portraits of every fighter, on two tabs: TEACHERS and
+// STUDENTS (Q/E switch tabs, or tap one; player 2 in versus: [ and ]). Students and
+// teachers can fight each other in every mode.
+//   arcade:   player 1 picks; the CPU ladder follows (see FG.arcadeRun)
 //   cpu:      VS CPU: pick your fighter, then the CPU's
 //   versus:   both players pick at the same time, each with their own cursor
 //             (P1: WASD + J, K to undo; P2: arrows + NUM1 or ',', NUM2 or '.' to undo)
 //   training: pick your fighter, then the opponent
+// Z/X (player 2: NUM4/NUM5 or ; and ') pick an unlocked outfit.
 // Then stage select (versus, training) or the first arcade fight.
 (function () {
   var C = FG.C;
-  var CARD_W = 66, CARD_H = 70, GAP = 6, COLS = 4; // COLS: set for the roster size in create()
-  var P1KEYS = { KeyA: 'left', KeyD: 'right', KeyW: 'up', KeyS: 'down', KeyJ: 'ok', KeyK: 'back', Space: 'ok', KeyQ: 'prevOutfit', KeyE: 'nextOutfit' };
+  var CARD_W = 66, CARD_H = 70, GAP = 6, COLS = 5;
+  var P1KEYS = { KeyA: 'left', KeyD: 'right', KeyW: 'up', KeyS: 'down', KeyJ: 'ok', KeyK: 'back', Space: 'ok', KeyQ: 'prevTab', KeyE: 'nextTab', KeyZ: 'prevOutfit', KeyX: 'nextOutfit' };
   var P2KEYS = { ArrowLeft: 'left', ArrowRight: 'right', ArrowUp: 'up', ArrowDown: 'down', Numpad1: 'ok', Comma: 'ok', Numpad2: 'back', Period: 'back', NumpadEnter: 'ok',
-    Numpad4: 'prevOutfit', Numpad5: 'nextOutfit', Semicolon: 'prevOutfit', Quote: 'nextOutfit' };
+    Numpad4: 'prevOutfit', Numpad5: 'nextOutfit', Semicolon: 'prevOutfit', Quote: 'nextOutfit', BracketLeft: 'prevTab', BracketRight: 'nextTab', Numpad7: 'prevTab', Numpad9: 'nextTab' };
+  var TAB_NAME = { teacher: 'TEACHERS', student: 'STUDENTS' };
 
   var SelectScene = function () { Phaser.Scene.call(this, { key: 'select' }); };
   SelectScene.prototype = Object.create(Phaser.Scene.prototype);
@@ -23,13 +27,18 @@
 
   SelectScene.prototype.create = function () {
     FG.makeFonts(this);
-    var self = this, roster = FG.ROSTER;
-    COLS = Math.ceil(roster.length / 2); // two rows
+    var self = this;
     this.t = 0;
     this.step = 0; // training: 0 choosing P1, 1 choosing the opponent
-    this.cursor = [0, Math.min(1, roster.length - 1)];
-    if (this.prev.p1) this.cursor[0] = Math.max(0, roster.indexOf(FG.fighterById(this.prev.p1)));
-    if (this.prev.p2) this.cursor[1] = Math.max(0, roster.indexOf(FG.fighterById(this.prev.p2)));
+    // Each side's tab and cursor (an index into that tab's fighters).
+    this.tab = ['teacher', 'teacher'];
+    this.cursor = [0, 1];
+    var self2 = this;
+    ['p1', 'p2'].forEach(function (key, side) {
+      var d = self2.prev[key] && FG.fighterById(self2.prev[key]);
+      if (d) { self2.tab[side] = d.side; self2.cursor[side] = Math.max(0, FG.rosterSide(d.side).indexOf(d)); }
+    });
+    this.view = this.tab[0]; // the tab the grid shows
     this.chosen = [null, null];
     this.outfit = [0, 0]; // the outfit each side wears (unlocked by winning with that fighter)
     this.leaving = false;
@@ -47,33 +56,47 @@
     this.stepText = FG.text(this, C.VIEW_W / 2, 36, '', 'c').setOrigin(0.5, 0);
     this.footer = FG.text(this, C.VIEW_W / 2, C.VIEW_H - 12, '', 'g').setOrigin(0.5, 0);
 
-    // Cards: a pixel portrait (head and shoulders) of each fighter.
-    var rows = Math.ceil(roster.length / COLS);
-    this.gridY = rows > 1 ? 162 : 200;
-    this.cards = [];
-    for (var i = 0; i < roster.length; i++) {
-      var col = i % COLS, row = Math.floor(i / COLS);
-      var inRow = Math.min(COLS, roster.length - row * COLS);
-      var rowX = Math.round((C.VIEW_W - (inRow * CARD_W + (inRow - 1) * GAP)) / 2);
-      var cx = rowX + col * (CARD_W + GAP), cy = this.gridY + row * (CARD_H + GAP);
-      var g = this.add.graphics();
-      var maskShape = this.make.graphics({ add: false });
-      maskShape.fillStyle(0xffffff, 1); maskShape.fillRect(cx + 2, cy + 2, CARD_W - 4, CARD_H - 14);
-      g.setMask(maskShape.createGeometryMask());
-      var puppet = FG.puppet(roster[i], cx + CARD_W / 2 - 2, 1);
-      puppet.index = i; puppet.outfit = 0;
-      var name = FG.text(this, cx + CARD_W / 2, cy + CARD_H - 11, roster[i].name, 'w').setOrigin(0.5, 0).setDepth(5);
-      if (roster[i].name.length > 9) name.setScale(0.8);
-      var zone = this.add.zone(cx + CARD_W / 2, cy + CARD_H / 2, CARD_W, CARD_H).setInteractive({ useHandCursor: true });
-      (function (idx) {
+    // The tabs: TEACHERS | STUDENTS, over the grid. Tap one to switch.
+    this.tabG = this.add.graphics().setDepth(4);
+    this.tabs = FG.SIDES.map(function (side, k) {
+      var x = C.VIEW_W / 2 + (k ? 44 : -44);
+      var t = FG.text(self, x, 145, TAB_NAME[side], 'w').setOrigin(0.5, 0).setDepth(5);
+      var zone = self.add.zone(x, 150, 84, 18).setInteractive({ useHandCursor: true });
+      zone.on('pointerdown', function () { FG.Sfx.unlock(); self.setTab(self.activeSide(), side); });
+      return { side: side, x: x, text: t };
+    });
+    this.tabMarks = [FG.text(this, 0, 0, 'P1', 'c').setDepth(5), FG.text(this, 0, 0, 'P2', 'r').setDepth(5)];
+
+    // Cards: a pixel portrait (head and shoulders) of each fighter, one grid per tab.
+    this.gridY = 162;
+    this.cards = {};
+    FG.SIDES.forEach(function (side) {
+      var list = FG.rosterSide(side), rowsN = Math.ceil(list.length / COLS);
+      var gy = rowsN > 1 ? 162 : 200;
+      self.cards[side] = list.map(function (def, i) {
+        var col = i % COLS, row = Math.floor(i / COLS);
+        var inRow = Math.min(COLS, list.length - row * COLS);
+        var rowX = Math.round((C.VIEW_W - (inRow * CARD_W + (inRow - 1) * GAP)) / 2);
+        var cx = rowX + col * (CARD_W + GAP), cy = gy + row * (CARD_H + GAP);
+        var g = self.add.graphics();
+        var maskShape = self.make.graphics({ add: false });
+        maskShape.fillStyle(0xffffff, 1); maskShape.fillRect(cx + 2, cy + 2, CARD_W - 4, CARD_H - 14);
+        g.setMask(maskShape.createGeometryMask());
+        var puppet = FG.puppet(def, cx + CARD_W / 2 - 2, 1);
+        puppet.index = i; puppet.outfit = 0;
+        var name = FG.text(self, cx + CARD_W / 2, cy + CARD_H - 11, def.name, 'w').setOrigin(0.5, 0).setDepth(5);
+        if (def.name.length > 9) name.setScale(0.8);
+        var zone = self.add.zone(cx + CARD_W / 2, cy + CARD_H / 2, CARD_W, CARD_H).setInteractive({ useHandCursor: true });
         zone.on('pointerdown', function () {
+          if (self.view !== side) return;
           FG.Sfx.unlock();
-          var side = self.twoStep() ? self.step : 0;
-          if (self.cursor[side] === idx) self.confirm(side); else { self.cursor[side] = idx; FG.Sfx.ui('move'); self.refresh(); }
+          var sd = self.activeSide();
+          if (self.tab[sd] === side && self.cursor[sd] === i) self.confirm(sd);
+          else { self.tab[sd] = side; self.cursor[sd] = i; FG.Sfx.ui('move'); self.refresh(); }
         });
-      })(i);
-      this.cards.push({ x: cx, y: cy, g: g, puppet: puppet, name: name, tint: roster[i].look.top.color });
-    }
+        return { x: cx, y: cy, g: g, puppet: puppet, name: name, zone: zone, def: def, tint: def.look.top.color };
+      });
+    });
     this.frameG = this.add.graphics().setDepth(6);
 
     // Previews: big idle fighters with their details.
@@ -87,10 +110,11 @@
         sub: FG.text(self, side === 0 ? 10 : C.VIEW_W - 10, 74, '', 'y'),
         moves: [0, 1, 2, 3, 4].map(function (k) { return FG.text(self, side === 0 ? 10 : C.VIEW_W - 10, 88 + k * 10, '', 'w'); }),
         tag: FG.text(self, x, 300, '', side === 0 ? 'c' : 'r').setOrigin(0.5, 0),
-        outfit: FG.text(self, side === 0 ? 10 : C.VIEW_W - 10, 142, '', 'g'),
+        outfit: FG.text(self, side === 0 ? 10 : C.VIEW_W - 10, 140, '', 'g'),
+        outfit2: FG.text(self, side === 0 ? 10 : C.VIEW_W - 10, 150, '', 'g'),
         ready: FG.text(self, x, 312, '', 'y').setOrigin(0.5, 0)
       };
-      if (side === 1) { p.name.setOrigin(1, 0); p.sub.setOrigin(1, 0); p.outfit.setOrigin(1, 0); p.moves.forEach(function (m) { m.setOrigin(1, 0); }); }
+      if (side === 1) { p.name.setOrigin(1, 0); p.sub.setOrigin(1, 0); p.outfit.setOrigin(1, 0); p.outfit2.setOrigin(1, 0); p.moves.forEach(function (m) { m.setOrigin(1, 0); }); }
       return p;
     });
 
@@ -98,6 +122,22 @@
     kb.addCapture([Phaser.Input.Keyboard.KeyCodes.ENTER, Phaser.Input.Keyboard.KeyCodes.SPACE, Phaser.Input.Keyboard.KeyCodes.ESC]);
     kb.on('keydown', function (e) { FG.Sfx.unlock(); self.key(e.code); });
     window.FG_SELECT = this;
+    this.refresh();
+  };
+
+  // The side the single-player controls (and taps) act for right now.
+  SelectScene.prototype.activeSide = function () {
+    if (this.mode === 'versus') return this.chosen[0] && !this.chosen[1] ? 1 : 0;
+    return this.twoStep() ? this.step : 0;
+  };
+  SelectScene.prototype.list = function (side) { return FG.rosterSide(this.tab[side]); };
+  SelectScene.prototype.def = function (side) { var l = this.list(side); return l[Math.min(this.cursor[side], l.length - 1)]; };
+
+  // Switch a side's tab (TEACHERS / STUDENTS); the grid follows.
+  SelectScene.prototype.setTab = function (side, tab) {
+    if (this.chosen[side] && this.mode === 'versus') return;
+    if (this.tab[side] !== tab) { this.tab[side] = tab; this.cursor[side] = 0; FG.Sfx.ui('move'); }
+    this.view = tab;
     this.refresh();
   };
 
@@ -116,11 +156,13 @@
       act = P1KEYS[code] || P2KEYS[code] || (code === 'Enter' ? 'ok' : null);
       if (!act) return;
     }
+    if (act === 'prevTab' || act === 'nextTab') { this.setTab(side, this.tab[side] === 'teacher' ? 'student' : 'teacher'); return; }
+    this.view = this.tab[side];
     if (act === 'ok') { this.confirm(side); return; }
     if (act === 'back') { this.back(side); return; }
     if (act === 'prevOutfit' || act === 'nextOutfit') { this.cycleOutfit(side, act === 'nextOutfit' ? 1 : -1); return; }
     if (this.chosen[side] && this.mode === 'versus') return; // locked in
-    var n = FG.ROSTER.length, c = this.cursor[side];
+    var n = this.list(side).length, c = this.cursor[side];
     if (act === 'left') c = (c + n - 1) % n;
     if (act === 'right') c = (c + 1) % n;
     if (act === 'up') c = c - COLS >= 0 ? c - COLS : c;
@@ -130,10 +172,10 @@
     this.refresh();
   };
 
-  // Q / E (player 2: NUM4 / NUM5 or ; / '): the next unlocked outfit.
+  // Z / X (player 2: NUM4 / NUM5 or ; / '): the next unlocked outfit.
   SelectScene.prototype.cycleOutfit = function (side, d) {
     if (this.chosen[side] && this.mode === 'versus') return;
-    var def = FG.ROSTER[this.cursor[side]], n = FG.outfitsUnlocked(def.id);
+    var def = this.def(side), n = FG.outfitsUnlocked(def.id);
     if (n <= 1 || this.locked(side)) { FG.Sfx.ui('move'); return; }
     this.outfit[side] = (this.outfit[side] + d + n) % n;
     FG.Progress.setOutfit(def.id, this.outfit[side]);
@@ -143,8 +185,8 @@
 
   // WILSON, the arcade boss: player 1 can't pick him in arcade or VS CPU until arcade
   // has been beaten once (he's always open in training and versus, and as the CPU).
-  SelectScene.prototype.locked = function (side, idx) {
-    var def = FG.ROSTER[idx == null ? this.cursor[side] : idx];
+  SelectScene.prototype.locked = function (side, def) {
+    def = def || this.def(side);
     var mine = side === 0 && (this.solo() || (this.mode === 'cpu' && this.step === 0));
     return !!(def.boss && mine && !FG.settings.wilsonUnlocked);
   };
@@ -153,10 +195,10 @@
     if (this.chosen[side] && this.mode === 'versus') return;
     if (this.locked(side)) { FG.Sfx.ui('move'); this.lockMsg = 90; this.refresh(); return; }
     FG.Sfx.ui('confirm');
-    this.chosen[side] = FG.ROSTER[this.cursor[side]].id;
+    this.chosen[side] = this.def(side).id;
     FG.outfitPick[side] = { id: this.chosen[side], k: this.outfit[side] };
-    if (this.twoStep() && side === 0) { this.step = 1; this.refresh(); return; }
-    if (this.mode === 'versus' && !(this.chosen[0] && this.chosen[1])) { this.refresh(); return; }
+    if (this.twoStep() && side === 0) { this.step = 1; this.view = this.tab[1]; this.refresh(); return; }
+    if (this.mode === 'versus' && !(this.chosen[0] && this.chosen[1])) { this.view = this.tab[this.chosen[0] ? 1 : 0]; this.refresh(); return; }
     this.refresh();
     this.leaving = true;
     var self = this;
@@ -178,21 +220,26 @@
   // side: which player backs out (null: Esc in versus).
   SelectScene.prototype.back = function (side) {
     FG.Sfx.ui('move');
-    if (this.twoStep() && this.step === 1) { this.step = 0; this.chosen[0] = null; this.refresh(); return; }
+    if (this.twoStep() && this.step === 1) { this.step = 0; this.chosen[0] = null; this.view = this.tab[0]; this.refresh(); return; }
     if (this.mode === 'versus' && side !== null && this.chosen[side]) { this.chosen[side] = null; this.refresh(); return; }
     this.leaving = true;
     this.scene.start('title', { menu: true });
   };
 
   SelectScene.prototype.refresh = function () {
-    var m = this.mode, txt, col = 'pf_c';
+    var m = this.mode, txt, col = 'pf_c', self = this;
     if (this.solo()) txt = 'PLAYER 1: CHOOSE YOUR FIGHTER';
     else if (m === 'versus') txt = (this.chosen[0] ? 'P1 READY' : 'P1 CHOOSING') + '      ' + (this.chosen[1] ? 'P2 READY' : 'P2 CHOOSING');
     else { txt = this.step === 0 ? 'PLAYER 1: CHOOSE YOUR FIGHTER' : m === 'cpu' ? "CHOOSE THE CPU'S FIGHTER" : 'CHOOSE YOUR OPPONENT'; col = this.step === 0 ? 'pf_c' : 'pf_r'; }
     this.stepText.setText(txt).setFont(col);
-    this.footer.setText(m === 'versus' ? 'P1: WASD + J (K UNDO)    P2: ARROWS + NUM1 OR , (NUM2 OR . UNDO)    ESC BACK' : 'ARROWS MOVE   Q/E OUTFIT   ENTER CONFIRM   ESC BACK');
+    this.footer.setText(m === 'versus' ? 'P1: WASD+J (K UNDO) Q/E TAB   P2: ARROWS+NUM1 (NUM2 UNDO) [ ] TAB   ESC BACK' : 'ARROWS MOVE   Q/E TEACHERS/STUDENTS   Z/X OUTFIT   ENTER CONFIRM   ESC BACK');
+    // Only the shown tab's cards.
+    FG.SIDES.forEach(function (side) {
+      self.cards[side].forEach(function (cd) { var on = side === self.view; cd.g.setVisible(on); cd.name.setVisible(on); if (cd.zone.input) cd.zone.input.enabled = on; });
+    });
+    this.tabs.forEach(function (tb) { tb.text.setFont(tb.side === self.view ? 'pf_y' : 'pf_g'); });
     for (var side = 0; side < 2; side++) {
-      var def = FG.ROSTER[this.cursor[side]], p = this.previews[side];
+      var def = this.def(side), p = this.previews[side];
       if (!p.puppet || p.puppet.def !== def) {
         p.puppet = FG.puppet(def, p.x, side === 0 ? 1 : -1);
         p.puppet.index = side;
@@ -203,14 +250,13 @@
       var nOut = FG.outfitsUnlocked(def.id), next = FG.OUTFITS[nOut];
       var showing = this.showing(side), lock = this.locked(side);
       p.name.setText(showing ? (lock ? '???' : def.name) : '');
-      p.sub.setText(showing ? (lock ? 'BEAT ARCADE TO UNLOCK' : def.archetype + '  ' + def.theme) : '');
-      if (lock) { for (var k0 = 0; k0 < p.moves.length; k0++) p.moves[k0].setText(''); }
+      p.sub.setText(showing ? (lock ? 'BEAT ARCADE TO UNLOCK' : def.archetype + '  ' + (def.nickname ? '"' + def.nickname + '"' : def.theme)) : '');
       for (var k = 0; k < p.moves.length; k++) p.moves[k].setText(showing && !lock && def.signature[k] ? def.signature[k] : '');
       p.tag.setText(!showing ? '' : side === 0 ? 'P1' : m === 'versus' ? 'P2' : m === 'cpu' ? 'CPU' : 'OPPONENT').setVisible(showing);
       p.ready.setText(showing && this.chosen[side] && !this.twoStep() ? 'READY!' : '');
-      var keys = side === 0 || this.twoStep() ? 'Q/E' : 'NUM4/5';
-      p.outfit.setText(!showing || this.locked(side) ? '' : 'OUTFIT ' + (this.outfit[side] + 1) + '/' + nOut + ': ' + FG.OUTFITS[this.outfit[side]].name +
-        (nOut > 1 ? '  ' + keys : '') + (next ? '   NEXT: WIN ' + next.wins : ''));
+      var keys = side === 0 || this.twoStep() ? 'Z/X' : 'NUM4/5';
+      p.outfit.setText(!showing || lock ? '' : 'OUTFIT ' + (this.outfit[side] + 1) + '/' + nOut + ': ' + FG.OUTFITS[this.outfit[side]].name);
+      p.outfit2.setText(!showing || lock ? '' : (next ? 'NEXT AT ' + next.wins + (next.wins > 1 ? ' WINS' : ' WIN') : 'ALL UNLOCKED') + (nOut > 1 ? '  ' + keys : ''));
     }
   };
 
@@ -227,31 +273,48 @@
 
   SelectScene.prototype.update = function () {
     this.t++;
-    var t = this.t;
+    var t = this.t, self = this, view = this.view, cards = this.cards[view];
     // Card portraits: head and shoulders, on the fighter's colour.
-    for (var i = 0; i < this.cards.length; i++) {
-      var card = this.cards[i];
+    for (var i = 0; i < cards.length; i++) {
+      var card = cards[i];
       card.g.clear();
       card.g.fillStyle(0x2a2440, 1); card.g.fillRect(card.x, card.y, CARD_W, CARD_H);
       card.g.fillStyle(FG.shade(card.tint, 0.45), 1); card.g.fillRect(card.x + 2, card.y + 2, CARD_W - 4, CARD_H - 14);
-      card.g.fillStyle(0xffffff, 0.06); for (var sl = 0; sl < CARD_H - 14; sl += 4) card.g.fillRect(card.x + 2, card.y + 2 + sl, CARD_W - 4, 1);
+      if (card.def.student) { // notebook paper behind the students
+        card.g.fillStyle(0xf4f1e6, 0.18); card.g.fillRect(card.x + 2, card.y + 2, CARD_W - 4, CARD_H - 14);
+        card.g.fillStyle(0x5a7ad8, 0.35); for (var nl = 8; nl < CARD_H - 14; nl += 7) card.g.fillRect(card.x + 2, card.y + 2 + nl, CARD_W - 4, 1);
+        card.g.fillStyle(0xd84a4a, 0.5); card.g.fillRect(card.x + 10, card.y + 2, 1, CARD_H - 14);
+      } else {
+        card.g.fillStyle(0xffffff, 0.06); for (var sl = 0; sl < CARD_H - 14; sl += 4) card.g.fillRect(card.x + 2, card.y + 2 + sl, CARD_W - 4, 1);
+      }
       FG.updatePose(card.puppet, t);
-      var def = card.puppet.def, sc = 2.3 * def.scale, base = FG.getPose(def, 'idle');
+      var def = card.def, sc = 2.3 * def.scale, base = FG.getPose(def, 'idle');
       card.puppet.x = card.x + CARD_W / 2 - base[4] * sc;
-      var cardLocked = this.locked(this.twoStep() ? this.step : 0, i) || (this.solo() && def.boss && !FG.settings.wilsonUnlocked);
-      FG.drawFighter(card.g, card.puppet, { scale: 2.3, groundY: card.y + 34 + base[5] * sc, noShadow: true, flash: cardLocked ? 0x07060c : null });
+      var cardLocked = this.locked(this.activeSide(), def) || (this.solo() && def.boss && !FG.settings.wilsonUnlocked);
+      FG.drawFighter(card.g, card.puppet, { scale: 2.3, groundY: card.y + 34 + base[5] * sc, noShadow: true, noPack: true, flash: cardLocked ? 0x07060c : null });
       card.name.setText(cardLocked ? '???' : def.name);
+    }
+    // The tab bar: the shown tab underlined, a P1 / P2 tag over each player's tab.
+    var tg = this.tabG;
+    tg.clear();
+    tg.lineStyle(1, 0x5a4b2c, 1); tg.lineBetween(C.VIEW_W / 2 - 88, 158, C.VIEW_W / 2 + 88, 158);
+    this.tabs.forEach(function (tb) {
+      if (tb.side === view) { tg.fillStyle(0xffd23f, 1); tg.fillRect(tb.x - 38, 156, 76, 3); }
+    });
+    for (var sd = 0; sd < 2; sd++) {
+      var mark = this.tabMarks[sd], show = this.showing(sd), tb2 = this.tabs[this.tab[sd] === 'teacher' ? 0 : 1];
+      mark.setVisible(show).setPosition(tb2.x + (sd ? 8 : -22), 133);
     }
     // Cursor frames.
     var fg = this.frameG;
     fg.clear();
-    for (i = 0; i < this.cards.length; i++) {
-      var cd = this.cards[i];
+    for (i = 0; i < cards.length; i++) {
+      var cd = cards[i];
       fg.lineStyle(1, 0x5a4b2c, 1); fg.strokeRect(cd.x, cd.y, CARD_W, CARD_H);
     }
     for (var side = 0; side < 2; side++) {
-      if (!this.showing(side)) continue;
-      var c2 = this.cards[this.cursor[side]];
+      if (!this.showing(side) || this.tab[side] !== view) continue;
+      var c2 = cards[Math.min(this.cursor[side], cards.length - 1)];
       var col = side === 0 ? 0x5fd7ff : 0xff4a3d;
       var active = this.mode === 'versus' ? !this.chosen[side] : side === this.step;
       var blink = active && (t % 30 < 15);
@@ -273,16 +336,27 @@
     else if (this.lockMsg === 0) { this.lockMsg = null; this.refresh(); }
   };
 
-  // Arcade: all nine fighters in a row. Everyone else in a shuffled order, then your
-  // own mirror match, then PEDERSEN, the cover fighter, and last WILSON, the boss
-  // (if you are one of them, your mirror match takes their place).
+  // Arcade. As a teacher: the students first (in a shuffled order), then the other
+  // teachers (shuffled), your own mirror match, PEDERSEN, the cover fighter, and last
+  // WILSON, the boss (if you are one of them, your mirror match takes their place).
+  // As a student: every teacher, shuffled, ending with WILSON.
   var BOSSES = ['pedersen', 'wilson'];
+  function shuffled(list) {
+    for (var i = list.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), x = list[i]; list[i] = list[j]; list[j] = x; }
+    return list;
+  }
   FG.arcadeRun = function (p1, timed) {
-    var others = FG.ROSTER.filter(function (d) { return d.id !== p1 && BOSSES.indexOf(d.id) < 0; }).map(function (d) { return d.id; });
-    for (var i = others.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), x = others[i]; others[i] = others[j]; others[j] = x; }
-    if (BOSSES.indexOf(p1) < 0) others.push(p1);
-    BOSSES.forEach(function (b) { if (FG.fighterById(b)) others.push(b); });
-    return { p1: p1, ladder: others, index: 0, continues: 0, started: Date.now(), timed: !!timed, frames: 0 };
+    var me = FG.fighterById(p1), ids = function (l) { return l.map(function (d) { return d.id; }); }, ladder;
+    if (me && me.side === 'student') {
+      ladder = shuffled(ids(FG.rosterSide('teacher').filter(function (d) { return d.id !== 'wilson'; })));
+      if (FG.fighterById('wilson')) ladder.push('wilson');
+    } else {
+      var others = shuffled(ids(FG.rosterSide('teacher').filter(function (d) { return d.id !== p1 && BOSSES.indexOf(d.id) < 0; })));
+      ladder = shuffled(ids(FG.rosterSide('student'))).concat(others);
+      if (BOSSES.indexOf(p1) < 0) ladder.push(p1);
+      BOSSES.forEach(function (b) { if (FG.fighterById(b)) ladder.push(b); });
+    }
+    return { p1: p1, ladder: ladder, index: 0, continues: 0, started: Date.now(), timed: !!timed, frames: 0 };
   };
 
   // Detention: survival. One opponent after another at random (never the same twice

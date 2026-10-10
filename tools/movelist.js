@@ -24,10 +24,14 @@ out.push('Generated from the fighter data by `node tools/movelist.js`; don\'t ed
 out.push('');
 out.push('**Grade meter:** three bars, C, B and A, under your health bar. They fill as you land hits, block and take damage, a little faster while you\'re behind, and carry over between rounds. **Enhanced specials** cost one bar: press P+K during the startup of a special that has one (listed under each fighter) and it powers up, the fighter flashing in their colour. **Ultimates** cost all three: press the ultimate key (player 1 U, player 2 Numpad 0 or [, remappable in OPTIONS; ★ on a touch screen), or down, down-forward, forward + P+K+H (either also straight out of a move that hits). If it connects, the fighter\'s own cinematic plays (each one listed under the fighter) and takes about a third of their health; blocked or whiffed, it leaves you wide open. **Extra Credit:** once a match, under 25% health, P+K+H (no motion) refills the meter and adds 20% damage for 7 seconds. **Stage objects:** next to one, T is a springboard dive (Springboard below) and back + T a vault over the opponent out of the corner (Vault); each object then needs 6 seconds.');
 out.push('');
+out.push('**Two sides:** the nine teachers, then the five students (10th graders, on the STUDENTS tab of character select). Students are a little smaller and fight scrappier, and only students have **projectiles**: one of their own on screen at a time, dodged by a sidestep, cancelled by another projectile, knocked away by a parry and soaked by armor. A projectile\'s frame data is for point-blank range; further out, the hit or block stun never drops below ' + FG.C.PROJ_MIN_HIT + ' / ' + FG.C.PROJ_MIN_BLOCK + ' frames. Some students also **teleport** (vanish, no hurtbox, then reappear next to the opponent).');
+out.push('');
 out.push('Frame data: **i** is startup (the frame the move hits, counting the press as frame 1), then active and recovery frames. Block / hit / counter hit are frame advantage for the attacker. Inputs assume you face right: F = toward the opponent, B = away, D = down.');
 out.push('');
+var lastSide = null;
 FG.ROSTER.forEach(function (d) {
-  out.push('## ' + d.name + ' — ' + title(d.archetype) + ' — ' + title(d.theme));
+  if (d.side !== lastSide) { out.push('# ' + (d.side === 'student' ? 'Students' : 'Teachers')); out.push(''); lastSide = d.side; }
+  out.push('## ' + d.name + (d.nickname ? ' "' + d.nickname + '"' : '') + ' — ' + title(d.archetype) + ' — ' + title(d.theme));
   out.push('');
   out.push(sentence(d.bio));
   out.push('');
@@ -80,10 +84,17 @@ FG.ROSTER.forEach(function (d) {
     if (m.throw) notes.push(m.breakBtn ? 'break with ' + m.breakBtn.toUpperCase() : 'unbreakable');
     if (m.cancels) m.cancels.forEach(function (c) { if (c.into === 'jump') notes.push('jump cancel on hit (UP)'); });
     if (m.air) notes.push('hitstun ' + m.stunHit + ', blockstun ' + m.stunBlock + ', landing ' + m.landLag);
-    var noHit = !m.box;
+    var pj = m.projectile;
+    if (pj) {
+      var how = pj.spawn ? 'pops up ' + pj.spawn + ' px in front' : pj.ground === 'burst' ? 'lobbed; bursts where it lands' : pj.ground === 'slide' ? 'lobbed; rolls along the floor (a low once it lands)' : pj.curve ? 'curves ' + (pj.curve > 0 ? 'up' : 'down') : 'flies straight';
+      notes.unshift('projectile: ' + how + (pj.lowBelow != null && pj.ground !== 'slide' ? ', a low when it dips under ' + pj.lowBelow + ' px' : '') + ', range ' + (pj.range || 600));
+    }
+    if (m.teleport) notes.unshift('teleport: gone frames ' + m.teleport.hide[0] + '-' + m.teleport.hide[1] + ', reappears ' + (m.teleport.to === 'behind' ? 'behind them' : 'in front of them') + ' on frame ' + m.teleport.at);
+    var noHit = !m.box && !pj;
     var level = m.throw ? 'throw' : noHit ? '—' : m.level;
     var frameCols = noHit ? [m.total + ' total', '', ''] : [m.startup, m.active, m.recovery];
     var adv = m.throw || m.air || noHit ? ['', '', ''] : [fmt(m.block), result(m.hit), result(m.ch)];
+    if (pj) frameCols = [m.startup, 'projectile', m.recovery];
     out.push('| ' + [m.cmd, title(m.label), level].concat(frameCols, adv, [noHit ? '' : m.damage, notes.join(', ')]).join(' | ') + ' |');
   });
   out.push('');
@@ -94,6 +105,8 @@ FG.ROSTER.forEach(function (d) {
     exIds.forEach(function (id) {
       var b = d.moves[id], x = d.moves[id + FG.EX_SUFFIX];
       var dmg = x.multi ? (x.multi + 1) + ' hits of ' + x.damage : x.damage + ' damage (from ' + b.damage + ')';
+      if (x.projectile && b.projectile && x.projectile !== b.projectile) dmg += ', a bigger or faster projectile';
+      if (x.teleport && b.teleport && x.teleport.to !== b.teleport.to) dmg += ', reappears ' + (x.teleport.to === 'behind' ? 'behind them' : 'in front');
       var res = result(x.hit) !== result(b.hit) ? ', hit: ' + result(x.hit) : '';
       out.push('- **' + title(x.label) + '** (`' + b.cmd + '`, then `P+K`): ' + sentence(x.exText) + ' — ' + dmg + res +
         (x.armor ? ', armor on frames ' + x.armor.from + '-' + x.armor.to + ' (' + x.armor.hits + (x.armor.hits > 1 ? ' hits' : ' hit') + ')' : '') +

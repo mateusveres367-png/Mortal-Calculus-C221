@@ -22,13 +22,14 @@
     FG.text(this, W / 2, 7, 'RECORDS', 'y', 2).setOrigin(0.5, 0);
     FG.text(this, W / 2, H - 12, 'LEFT/RIGHT: YOUR TITLE    ESC BACK', 'g').setOrigin(0.5, 0);
 
-    // Fighters: wins, matches, outfits.
-    var x0 = 20, y0 = 40;
+    // Fighters: wins, matches, outfits (teachers, then the students).
+    var x0 = 20, y0 = 40, rowH = FG.ROSTER.length > 10 ? 9 : 11;
     FG.text(this, x0, y0, 'FIGHTER       WINS  PLAYED  OUTFITS', 'c');
     FG.ROSTER.forEach(function (d, k) {
       var wins = P.wins[d.id] || 0, played = P.played[d.id] || 0;
       var row = (d.name + '            ').slice(0, 13) + ' ' + ('   ' + wins).slice(-4) + '  ' + ('    ' + played).slice(-6) + '   ' + FG.outfitsUnlocked(d.id) + '/' + FG.OUTFITS.length;
-      FG.text(self, x0, y0 + 12 + k * 11, row, played ? 'w' : 'g');
+      var t = FG.text(self, x0, y0 + 12 + k * rowH, row, played ? 'w' : 'g');
+      if (rowH < 11) t.setScale(0.85);
     });
 
     // The numbers.
@@ -50,10 +51,10 @@
     });
 
     // Titles: earned ones bright, the rest with what it takes.
-    var ty = 156;
+    var ty = Math.max(156, y0 + 18 + FG.ROSTER.length * rowH);
     FG.text(this, x0, ty, 'TITLES', 'y');
     this.titleRows = FG.TITLES.map(function (t, k) {
-      var col = k % 2, row = Math.floor(k / 2), tx = x0 + col * 310, yy = ty + 14 + row * 22;
+      var col = k % 2, row = Math.floor(k / 2), tx = x0 + col * 310, yy = ty + 14 + row * (ty > 160 ? 20 : 22);
       var earned = t.test();
       var name = FG.text(self, tx, yy, t.name, earned ? 'w' : 'g');
       FG.text(self, tx, yy + 9, earned ? 'EARNED' : t.how, earned ? 'c' : 'g').setScale(0.75);

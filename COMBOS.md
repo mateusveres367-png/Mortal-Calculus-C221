@@ -31,7 +31,7 @@ Every fighter's combo routes, and what the combo feel pass changed. The routes l
 | LONG ARMS | easy | F+P, P, H | 3 | - | 29 |
 | SOLVE FOR X JUGGLE | medium | D+H, P, P, H | 4 | - | 42 |
 | ISOLATE THE VARIABLE | medium | AT THE WALL: H, P, P, D+H | 4 | - | 40 |
-| EXPANDED FORM | medium | H, P+K, P, P, H | 4 | 1 bar | 54 |
+| EXPANDED FORM | medium | H, P+K, P, P, H | 4 | 1 bar | 52 |
 | POINT-SLOPE SPIKE | hard | D+H, UP, AIR P, AIR K, AIR H, K | 5 | - | 52 |
 | ORDER OF OPERATIONS | hard | P, D, D/F, F+P+K+H | 2 | 3 bars | 58 |
 
@@ -115,6 +115,28 @@ Every fighter's combo routes, and what the combo feel pass changed. The routes l
 | DISTANCE SQUARED | medium | F+P, P+K | 2 | 1 bar | 14 |
 | VERTICAL ASYMPTOTE | hard | D+H, UP, AIR P, AIR K, AIR H, K | 5 | - | 48 |
 | TENURE | hard | P, D, D/F, F+P+K+H | 2 | 3 bars | 57 |
+
+### MATEUS (balanced, gnomes)
+
+| Route | Level | Inputs | Hits | Meter | Damage |
+| --- | --- | --- | --- | --- | --- |
+| TWO-STEP | easy | P, P, H | 3 | - | 28 |
+| HEADS UP | easy | F+P, P, H | 3 | - | 34 |
+| GOT GNOMED | medium | D+H, P, P, H | 4 | - | 41 |
+| WHEELBARROW PLUS | medium | F+P, P+K, P, P, H | 5 | 1 bar | 46 |
+| GARDEN PARTY | hard | D+H, UP, AIR P, AIR K, AIR H, D+K | 5 | - | 49 |
+| GNOME ARMY | hard | P, D, D/F, F+P+K+H | 2 | 3 bars | 59 |
+
+### NICOLAS (rushdown, passing period)
+
+| Route | Level | Inputs | Hits | Meter | Damage |
+| --- | --- | --- | --- | --- | --- |
+| TARDY RUSH | easy | P, P, K, K | 4 | - | 38 |
+| RUNNING LATE | easy | P, P, H | 3 | - | 27 |
+| HALL PASS | medium | D+H, P, P, H | 4 | - | 40 |
+| SPEED BUMP PLUS | medium | H, P+K, P, P, H | 4 | 1 bar | 50 |
+| NEVER STOPS | hard | D+H, UP, AIR P, AIR K, AIR H, D+K | 5 | - | 52 |
+| PASSING PERIOD | hard | P, D, D/F, F+P+K+H | 2 | 3 bars | 58 |
 <!-- /routes -->
 
 ## Easier combos (the second pass)

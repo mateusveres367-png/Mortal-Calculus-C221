@@ -42,6 +42,7 @@
     def.poses = def.poses || {};
     def.idleAnim = Object.assign({ breath: 1.2, bob: 0, sway: 0, rate: 0.09 }, def.idleAnim);
     def.combos = def.combos || [];
+    def.side = def.student ? 'student' : 'teacher';
     if (def.stringH) addStringHeavy(def);
     for (var key in def.moves) prepareMove(def, key, def.moves[key]);
     for (key in def.moves) if (def.moves[key].ex) addEnhanced(def, key, def.moves[key]);
@@ -51,6 +52,11 @@
     FG.ROSTER.sort(function (a, b) { return a.order - b.order; });
     return def;
   };
+
+  // The two sides of character select: TEACHERS (orders 1-9) and STUDENTS (10th
+  // graders: smaller, scrappier, and the only ones with projectiles).
+  FG.SIDES = ['teacher', 'student'];
+  FG.rosterSide = function (side) { return FG.ROSTER.filter(function (d) { return d.side === side; }); };
 
   FG.fighterById = function (id) {
     for (var i = 0; i < FG.ROSTER.length; i++) if (FG.ROSTER[i].id === id) return FG.ROSTER[i];
@@ -108,6 +114,9 @@
     }
     m.ch = x.ch || (x.hit ? (m.hit.launch ? { launch: m.hit.launch } : m.hit.knockdown ? { knockdown: true } : { adv: m.hit.adv + 3 }) : base.ch);
     if (x.wallSplat) m.wallSplat = true;
+    if (x.projectile) m.projectile = Object.assign({}, base.projectile, x.projectile); // a bigger, faster throw
+    if (x.teleport) m.teleport = Object.assign({}, base.teleport, x.teleport);
+    if (x.invuln) m.invuln = x.invuln;
     // The animation: the strike re-fires for each extra hit, then the recovery plays late.
     if (extra) {
       var end = base.startup + base.active - 1, a = base.anim, strike = null, wind = null, out = [];

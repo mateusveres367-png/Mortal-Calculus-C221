@@ -4,7 +4,11 @@ Generated from the fighter data by `node tools/movelist.js`; don't edit by hand.
 
 **Grade meter:** three bars, C, B and A, under your health bar. They fill as you land hits, block and take damage, a little faster while you're behind, and carry over between rounds. **Enhanced specials** cost one bar: press P+K during the startup of a special that has one (listed under each fighter) and it powers up, the fighter flashing in their colour. **Ultimates** cost all three: press the ultimate key (player 1 U, player 2 Numpad 0 or [, remappable in OPTIONS; ★ on a touch screen), or down, down-forward, forward + P+K+H (either also straight out of a move that hits). If it connects, the fighter's own cinematic plays (each one listed under the fighter) and takes about a third of their health; blocked or whiffed, it leaves you wide open. **Extra Credit:** once a match, under 25% health, P+K+H (no motion) refills the meter and adds 20% damage for 7 seconds. **Stage objects:** next to one, T is a springboard dive (Springboard below) and back + T a vault over the opponent out of the corner (Vault); each object then needs 6 seconds.
 
+**Two sides:** the nine teachers, then the five students (10th graders, on the STUDENTS tab of character select). Students are a little smaller and fight scrappier, and only students have **projectiles**: one of their own on screen at a time, dodged by a sidestep, cancelled by another projectile, knocked away by a parry and soaked by armor. A projectile's frame data is for point-blank range; further out, the hit or block stun never drops below 16 / 10 frames. Some students also **teleport** (vanish, no hurtbox, then reappear next to the opponent).
+
 Frame data: **i** is startup (the frame the move hits, counting the press as frame 1), then active and recovery frames. Block / hit / counter hit are frame advantage for the attacker. Inputs assume you face right: F = toward the opponent, B = away, D = down.
+
+# Teachers
 
 ## PEDERSEN — Power — Math Analysis
 
@@ -509,3 +513,113 @@ Twenty-nine years at el camino. Teaches every math class. Never smiles. Never wa
 - **Vertical Asymptote:** D+H, up, air P, air K, air H, K (frames: D+H @0, UP @17, P @31, K @38, H @47, K @79)
 - **Distance Squared (1 bar):** F+P, P+K (frames: F+P @0, P+K @3)
 - **Tenure (3 bars):** P, D, D/F, F+P+K+H (frames: P @0, D @3, D/F @4, F @5, F+P+K+H @9)
+
+# Students
+
+## MATEUS "GNOME" — Balanced — Gnomes
+
+Sneaky and smug. Pops up where you don't expect him.
+
+**Style:** Scrappy trickster. **Signature:** Lawn Statue — B+H freezes him still like a garden gnome (hold H to stay frozen a little longer): attack him while he is frozen and he pops out and counters; throws beat it. Gnome Toss (B+P) lobs a mini gnome that tumbles along the floor as a low; Pop-Up (D+P) sinks into the ground and comes up right next to them.
+
+**Movement:** walk 2.5 forward / 1.6 back, dash 8.6 for 15 frames, backdash 8.2, jump 9.3, weight 0.96 (higher falls faster in juggles).
+
+| Input | Move | Level | i | Active | Recovery | Block | Hit | Counter hit | Damage | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| P | Garden Jab | high | 10 | 2 | 13 | +1 | +8 | +10 | 8 |  |
+| P,P | Rake It In | high | 10 | 2 | 16 | -3 | +6 | +9 | 9 |  |
+| P,P,H | Wheelbarrow | mid | 12 | 3 | 20 | -9 | knockdown | knockdown | 13 |  |
+| F+P | Gnome Headbutt | mid | 12 | 3 | 17 | -3 | +5 | +9 | 14 | enhance with P+K |
+| B+P | Gnome Toss | mid | 14 | projectile | 22 | -4 | +3 | +7 | 12 | projectile: lobbed; rolls along the floor (a low once it lands), range 360, enhance with P+K |
+| D+P | Pop-Up | mid | 25 | 3 | 22 | -12 | knockdown | launch | 15 | teleport: gone frames 7-18, reappears in front of them on frame 19, enhance with P+K |
+| K | Lawn Kick | mid | 13 | 3 | 18 | -5 | +4 | +8 | 13 |  |
+| D+K | Weed Whacker | low | 15 | 3 | 19 | -11 | 0 | +5 | 10 | hits downed opponents, ducks highs |
+| D/B+K | Garden Sweep | low | 18 | 3 | 26 | -18 | knockdown | knockdown | 15 | ducks highs |
+| H | Shovel Swing | mid | 18 | 3 | 21 | -6 | +4 | launch | 20 | wall splats |
+| B+H (HOLD) | Lawn Statue | — | 31 total |  |  |  |  |  |  | parry, hold H to keep it up |
+| D+H | Got Gnomed | mid | 15 | 4 | 22 | -15 | launch | launch | 15 | jump cancel on hit (UP) |
+| P+K | Yard Work | throw | 12 | 2 | 26 |  |  |  | 31 | break with P |
+| B+P+K | Compost | throw | 12 | 2 | 26 |  |  |  | 34 | break with K |
+| AIR P | Acorn Drop | mid | 7 | 4 | 10 |  |  |  | 8 | hitstun 16, blockstun 10, landing 4 |
+| AIR K | Pinwheel Kick | mid | 9 | 5 | 12 |  |  |  | 11 | hitstun 18, blockstun 12, landing 6 |
+| AIR H | Watering Can | mid | 12 | 4 | 16 |  |  |  | 16 | bounds, hitstun 22, blockstun 14, landing 10 |
+| K (DOWN) | Sprinkler | low | 14 | 3 | 22 | -14 | -2 | +1 | 10 | ducks highs |
+| P/H (DOWN) | Spring Bulb | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
+| T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
+| LAWN STATUE, ATTACKED | Gnomed | mid | 6 | 3 | 20 | -8 | launch | launch | 18 |  |
+| D,D/F,F+P+K+H | Gnome Army | mid | 12 | 3 | 47 | -33 | +5 | +9 | 14 |  |
+| T (BY AN OBJECT) | Springboard | mid | 16 | 5 | 18 | -6 | knockdown | knockdown | 18 |  |
+| B+T (BY AN OBJECT) | Vault | — | 38 total |  |  |  |  |  |  |  |
+
+**Enhanced specials** (P+K during the startup, 1 bar):
+
+- **Gnome Headbutt+** (`F+P`, then `P+K`): Two hits, launches — 2 hits of 12, hit: launch.
+- **Gnome Toss+** (`B+P`, then `P+K`): A bigger gnome, knockdown — 16 damage (from 12), a bigger or faster projectile, hit: knockdown.
+- **Pop-Up+** (`D+P`, then `P+K`): Pops up behind them — 20 damage (from 15), reappears behind them, hit: launch.
+
+**Ultimate:** Gnome Army — the ultimate key (`U` / `Numpad 0`) or `D, D/F, F + P+K+H`, with all three bars: dozens of garden gnomes pop out of the ground; whenever the opponent looks at them they freeze, when they turn away the gnomes swarm, and the last one bonks them with a watering can. 9 hits, 32% of their health; blocked -33, whiffed 61 frames.
+
+**KO finisher:** You've Been Gnomed — `D, U, P` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).
+
+**Combo routes** (tested in `tests/sim.test.js`):
+
+- **Two-Step:** P, P, H (frames: P @0, P @12, H @25)
+- **Heads Up:** F+P, P, H (frames: F+P @0, P @14, H @27)
+- **Got Gnomed:** D+H, P, P, H (frames: D+H @0, P @42, P @55, H @64)
+- **Garden Party:** D+H, up, air P, air K, air H, D+K (frames: D+H @0, UP @16, P @22, K @28, H @34, D+K @66)
+- **Wheelbarrow Plus (1 bar):** F+P, P+K, P, P, H (frames: F+P @0, P+K @3, P @38, P @51, H @60)
+- **Gnome Army (3 bars):** P, D, D/F, F+P+K+H (frames: P @0, D @3, D/F @4, F @5, F+P+K+H @9)
+
+## NICOLAS "THE LATE PASS" — Rushdown — Passing Period
+
+Always in a hurry. Talks fast. Never stops moving.
+
+**Style:** Hallway sprinter. **Signature:** Bell Sprint — the fastest dash in the game: forward, forward again during a dash chains another one, he can attack out of it almost at once, and F, F, P is Bell Sprint, a flying shoulder. Tardy Rush (P, P, K, K) is his string; Skip Day (P out of a sidestep) slips past your attack; Backpack Toss (B+P) throws his bag.
+
+**Movement:** walk 2.7 forward / 1.7 back, dash 12.5 for 12 frames, backdash 9.4, jump 9.7, weight 0.94 (higher falls faster in juggles).
+
+| Input | Move | Level | i | Active | Recovery | Block | Hit | Counter hit | Damage | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| P | Late Start | high | 9 | 2 | 13 | +1 | +8 | +10 | 7 |  |
+| P,P | Running Late | high | 9 | 2 | 15 | -2 | +6 | +9 | 9 |  |
+| P,P,K | Tardy Rush | mid | 9 | 3 | 18 | -6 | +4 | +8 | 11 |  |
+| P,P,H | Detention | mid | 12 | 3 | 20 | -9 | knockdown | knockdown | 13 |  |
+| P,P,K,K | Late Bell | mid | 10 | 3 | 22 | -12 | knockdown | knockdown | 16 |  |
+| B+P | Backpack Toss | mid | 15 | projectile | 21 | -5 | +3 | +7 | 12 | projectile: flies straight, range 420, enhance with P+K |
+| F,F,P | Bell Sprint | mid | 11 | 4 | 20 | -8 | knockdown | knockdown | 16 | enhance with P+K |
+| SIDESTEP, P | Skip Day | mid | 12 | 3 | 17 | -4 | +6 | knockdown | 14 | stays off the line until it hits |
+| K | Shortcut | mid | 12 | 3 | 17 | -4 | +4 | +8 | 12 |  |
+| D+K | Slide In | low | 15 | 4 | 20 | -12 | +1 | +6 | 11 | hits downed opponents, ducks highs |
+| D/B+K | Trip Hazard | low | 19 | 3 | 26 | -18 | knockdown | knockdown | 14 | ducks highs |
+| H | Speed Bump | mid | 17 | 3 | 19 | -4 | +5 | launch | 19 | enhance with P+K |
+| D+H | Hall Pass | mid | 14 | 4 | 22 | -14 | launch | launch | 15 | jump cancel on hit (UP) |
+| P+K | Locker Slam | throw | 12 | 2 | 26 |  |  |  | 30 | break with P |
+| B+P+K | Wrong Room | throw | 12 | 2 | 26 |  |  |  | 33 | break with K |
+| AIR P | Hallway Hop | mid | 7 | 4 | 10 |  |  |  | 8 | hitstun 16, blockstun 10, landing 4 |
+| AIR K | Door Kick | mid | 9 | 5 | 12 |  |  |  | 11 | hitstun 18, blockstun 12, landing 6 |
+| AIR H | Slam Dunk | mid | 12 | 4 | 16 |  |  |  | 16 | bounds, hitstun 22, blockstun 14, landing 10 |
+| K (DOWN) | Snooze Button | low | 14 | 3 | 22 | -14 | -2 | +1 | 10 | ducks highs |
+| P/H (DOWN) | First Bell | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
+| T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
+| D,D/F,F+P+K+H | Five-Minute Passing Period | mid | 17 | 3 | 49 | -34 | +5 | launch | 19 |  |
+| T (BY AN OBJECT) | Springboard | mid | 16 | 5 | 18 | -6 | knockdown | knockdown | 18 |  |
+| B+T (BY AN OBJECT) | Vault | — | 38 total |  |  |  |  |  |  |  |
+
+**Enhanced specials** (P+K during the startup, 1 bar):
+
+- **Backpack Toss+** (`B+P`, then `P+K`): Faster, knockdown — 16 damage (from 12), a bigger or faster projectile, hit: knockdown.
+- **Bell Sprint+** (`F,F,P`, then `P+K`): Two hits, wall splat — 2 hits of 14, wall splats.
+- **Speed Bump+** (`H`, then `P+K`): Armored, launches — 25 damage (from 19), hit: launch, armor on frames 1-17 (1 hit).
+
+**Ultimate:** Five-Minute Passing Period — the ultimate key (`U` / `Numpad 0`) or `D, D/F, F + P+K+H`, with all three bars: a 5:00 timer counts down at hyperspeed while he blitzes them from one end of the stage to the other before it hits 0:00. 14 hits, 32% of their health; blocked -34, whiffed 68 frames.
+
+**KO finisher:** Tardy — `F, F, F, K` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).
+
+**Combo routes** (tested in `tests/sim.test.js`):
+
+- **Tardy Rush:** P, P, K, K (frames: P @0, P @12, K @24, K @37)
+- **Running Late:** P, P, H (frames: P @0, P @12, H @24)
+- **Hall Pass:** D+H, P, P, H (frames: D+H @0, P @42, P @52, H @59)
+- **Never Stops:** D+H, up, air P, air K, air H, D+K (frames: D+H @0, UP @16, P @22, K @28, H @34, D+K @66)
+- **Speed Bump Plus (1 bar):** H, P+K, P, P, H (frames: H @0, P+K @3, P @45, P @55, H @62)
+- **Passing Period (3 bars):** P, D, D/F, F+P+K+H (frames: P @0, D @3, D/F @4, F @5, F+P+K+H @9)

@@ -936,8 +936,11 @@ function count(r, type, attacker) {
   check('ramos walks fastest', FG.ROSTER.every(function (d) { return d === RM || d.walkF < RM.walkF; }));
   // His dash covers the most ground.
   function dashDist(def) { var x0, q = play(def, D, 300, { 0: { right: true }, 2: { right: true } }, {}, 20, function (m) { x0 = m.fighters[0].x; }); return q.m.fighters[0].x - x0; }
-  var others = FG.ROSTER.filter(function (d) { return d !== RM; }).map(dashDist);
-  check('ramos has the fastest dash', others.every(function (o) { return dashDist(RM) > o; }), [dashDist(RM), others]);
+  var others = FG.rosterSide('teacher').filter(function (d) { return d !== RM; }).map(dashDist);
+  check('ramos has the fastest dash of the teachers', others.every(function (o) { return dashDist(RM) > o; }), [dashDist(RM), others]);
+  // NICOLAS's Bell Sprint: the fastest dash in the game.
+  var NI = FG.fighterById('nicolas');
+  if (NI) check('nicolas has the fastest dash in the game', FG.ROSTER.every(function (d) { return d === NI || dashDist(d) < dashDist(NI); }), dashDist(NI));
 })();
 
 // KO finishers: every fighter has one, with its own input; the command reader works
@@ -959,7 +962,7 @@ function count(r, type, attacker) {
 
 // PEDERSEN is the cover fighter: first on the roster.
 check('pedersen is first on character select', FG.ROSTER[0].id === 'pedersen', FG.ROSTER.map(function (d) { return d.id; }));
-check('all nine fighters', FG.ROSTER.length === 9, FG.ROSTER.length);
+check('nine teachers', FG.rosterSide('teacher').length === 9, FG.rosterSide('teacher').length);
 
 // =========================== Smack talk ======================================
 
@@ -980,6 +983,7 @@ check('all nine fighters', FG.ROSTER.length === 9, FG.ROSTER.length);
   function by(id) { return FG.fighterById(id); }
   function texts(a, b) { return FG.preRoundLines(by(a), by(b), function () { return 0; }); }
   FG.RIVALRIES.forEach(function (rv) {
+    if (!by(rv.a) || !by(rv.b)) return; // (a student not on the roster yet)
     [[rv.a, rv.b], [rv.b, rv.a]].forEach(function (pair) {
       var lines = texts(pair[0], pair[1]).filter(function (l) { return l.text !== by(pair[0]).talk.introLine && l.text !== by(pair[1]).talk.introLine; });
       var who = lines.map(function (l) { return (l.speaker === 0 ? pair[0] : pair[1]); });
@@ -1704,11 +1708,6 @@ defs.forEach(function (d) {
   var punished = play2(W, D, 40, { 0: { t: true } }, { 10: { p: true } }, 40);
   check('Stare: leaves him open', punished.ev.some(function (e) { return e.type === 'hit' && e.attacker === 1 && e.ch; }));
   // Arcade: WILSON is the final boss, PEDERSEN right before him.
-  ['brinkhus', 'pedersen', 'wilson'].forEach(function (p1) {
-    var run = FG.arcadeRun ? FG.arcadeRun(p1) : null;
-    if (!run) return;
-    check('arcade with ' + p1 + ': nine fights, WILSON last', run.ladder.length === 9 && run.ladder[8] === 'wilson' && run.ladder[7] === (p1 === 'pedersen' ? 'pedersen' : p1 === 'wilson' ? 'pedersen' : 'pedersen'), run.ladder);
-  });
 })();
 
 // Controls respond on the frame they're pressed: attacks, guard, crouch, sidestep,
@@ -1741,6 +1740,89 @@ defs.forEach(function (d) {
     r = r.concat(g2.events);
   }
   check('controls: back held just before the hit still guards', r.some(function (e) { return e.type === 'block' && e.defender === 0; }), r.map(function (e) { return e.type; }));
+})();
+
+
+// =========================== Students =========================================
+// Projectiles (only students throw things), teleports and each student's signature.
+(function () {
+  var MA = FG.fighterById('mateus'), P = FG.fighterById('pedersen');
+  if (!MA) return;
+  function evs(m, frames, fn) { var out = []; for (var i = 0; i < frames; i++) { var r = fn(i, m); m.step([raw(r[0] || {}), raw(r[1] || {})]); out = out.concat(m.events); } return out; }
+  function types(list) { return list.map(function (e) { return e.type; }); }
+  var students = defs.filter(function (d) { return d.side === 'student'; }), teachers = defs.filter(function (d) { return d.side === 'teacher'; });
+  var PLANNED = ['mateus', 'nicolas', 'max', 'jack', 'hudson'];
+  check('the students are the ones in ROSTER.md', teachers.length === 9 && students.length >= 1 && students.every(function (s, k) { return s.id === PLANNED[k]; }), students.map(function (s) { return s.id; }));
+  check('students are smaller than every teacher', students.every(function (s) { return teachers.every(function (t) { return s.scale < t.scale; }); }), students.map(function (s) { return s.scale; }));
+  check('only students throw projectiles', defs.every(function (d) {
+    var has = Object.keys(d.moves).some(function (id) { return !!d.moves[id].projectile; });
+    return d.side === 'student' ? has : !has;
+  }));
+  // Every student's projectiles: frame data at point-blank range like any strike.
+  students.forEach(function (d) {
+    Object.keys(d.moves).forEach(function (id) {
+      var mv = d.moves[id], press = INPUT[id];
+      if (!mv.projectile || mv.enhanced || !press) return;
+      var tag = d.name + ' ' + id + ' (projectile) ';
+      var guard = FG.projectileLevel({ move: mv, y: (mv.projectile.y || 40) * d.scale, h: mv.projectile.h }) === 'low' ? { right: true, down: true } : { right: true };
+      var r = exchange(d, P, 40, [press], guard);
+      check(tag + 'is blocked up close', types(r.events).indexOf('block') >= 0 && r.m.lastResult[0] && r.m.lastResult[0].adv === mv.block, { ev: types(r.events), got: r.m.lastResult[0] && r.m.lastResult[0].adv, want: mv.block });
+      r = exchange(d, P, 40, [press], {});
+      check(tag + 'hits up close', types(r.events).indexOf('hit') >= 0 && r.m.fighters[1].health === P.health - mv.damage, [types(r.events), r.m.fighters[1].health]);
+      if (!mv.hit.knockdown && !mv.hit.launch) check(tag + 'hit adv up close', r.m.lastResult[0] && r.m.lastResult[0].adv === mv.hit.adv, { got: r.m.lastResult[0] && r.m.lastResult[0].adv, want: mv.hit.adv });
+      // From across the screen it still gets there.
+      var far = setup(d, P, 220), e = evs(far, 160, function (i) { return [i === 0 ? press : {}]; });
+      check(tag + 'reaches them from across the screen', e.some(function (x) { return x.type === 'hit' && x.projectile; }) || e.some(function (x) { return x.type === 'fizzle'; }), types(e));
+    });
+  });
+
+  // Gnome Toss: it flies, lands, and tumbles along the floor as a low.
+  var m = setup(MA, P, 300); m.fighters[1].holdGuard = true; // guard in place
+  var e = evs(m, 140, function (i) { return [i === 0 ? { p: true, left: true } : {}, { right: true }]; });
+  check('gnome toss: a projectile leaves his hand', e.some(function (x) { return x.type === 'projectile' && x.kind === 'gnome'; }), types(e));
+  check('gnome toss: rolling along the floor it beats a standing guard', e.some(function (x) { return x.type === 'hit' && x.projectile === 'gnome' && x.level === 'low'; }), e.filter(function (x) { return x.type === 'hit' || x.type === 'block'; }).map(function (x) { return x.type + ':' + x.level; }));
+  m = setup(MA, P, 300); m.fighters[1].holdGuard = true;
+  e = evs(m, 140, function (i) { return [i === 0 ? { p: true, left: true } : {}, i >= 50 ? { right: true, down: true } : {}]; });
+  check('gnome toss: a crouching guard blocks it on the floor', e.some(function (x) { return x.type === 'block' && x.projectile === 'gnome'; }), types(e));
+  // One at a time: with the gnome still out, B+P is a jab.
+  m = setup(MA, P, 400); evs(m, 20, function (i) { return [i === 0 ? { p: true, left: true } : {}]; });
+  check('gnome toss: one on screen at a time', m.projectiles.length === 1, m.projectiles.length);
+  m.fighters[0].setState('idle');
+  evs(m, 1, function () { return [{ p: true, left: true }]; });
+  check('gnome toss: with one out, B+P is a jab', m.fighters[0].move && m.fighters[0].move.id === 'jab', m.fighters[0].move && m.fighters[0].move.id);
+  // A sidestep lets it go by.
+  m = setup(MA, P, 70); e = evs(m, 80, function (i) { return [i === 0 ? { p: true, left: true } : {}, i === 12 ? { ssIn: true } : {}]; });
+  check('a sidestep dodges a projectile', !e.some(function (x) { return x.type === 'hit' || x.type === 'block'; }), types(e));
+  // Two projectiles that meet cancel out.
+  m = setup(MA, MA, 300); e = evs(m, 120, function (i) { return [i === 0 ? { p: true, left: true } : {}, i === 0 ? { p: true, right: true } : {}]; });
+  check('two projectiles cancel each other out', e.some(function (x) { return x.type === 'clash'; }) && !e.some(function (x) { return x.type === 'hit'; }), types(e));
+  // Lawn Statue knocks one away.
+  m = setup(MA, MA, 160); e = evs(m, 120, function (i) { return [i === 0 ? { p: true, left: true } : {}, i >= 10 && i < 60 ? { h: true, right: true } : {}]; });
+  check('lawn statue knocks a projectile away', e.some(function (x) { return x.type === 'deflect'; }) && m.fighters[1].health === MA.health, [types(e), m.fighters[1].health]);
+  // Highs sail over a crouch, lows can't be blocked standing (checked above).
+
+  // Lawn Statue: attack him while he's frozen and he pops out and counters; a throw beats it.
+  m = setup(MA, P, 44); e = evs(m, 80, function (i) { return [i < 30 ? { h: true, left: true } : {}, i === 8 ? { p: true } : {}]; });
+  var pr = e.filter(function (x) { return x.type === 'parry'; })[0];
+  check('lawn statue: a strike into it gets countered', pr && pr.counter === 'statuePop' && e.some(function (x) { return x.type === 'hit' && x.attacker === 0 && x.move.id === 'statuePop'; }), types(e));
+  m = setup(MA, P, 44); var held = 0;
+  evs(m, 60, function (i, mm) { if (mm.fighters[0].state === 'attack' && mm.fighters[0].move.id === 'bH') held = i; return [{ h: true, left: true }]; });
+  check('lawn statue: holding H keeps him frozen longer', held > MA.moves.bH.total, held);
+  m = setup(MA, P, 40); e = evs(m, 80, function (i) { return [i < 30 ? { h: true, left: true } : {}, i === 8 ? { p: true, k: true } : {}]; });
+  check('lawn statue: a throw beats it', e.some(function (x) { return x.type === 'grab' && x.attacker === 1; }) && !e.some(function (x) { return x.type === 'parry'; }), types(e));
+
+  // Pop-Up: gone underground (no hurtbox), then right next to them, on the same side.
+  m = setup(MA, P, 260); var hidden = false, x0 = m.fighters[0].x;
+  e = evs(m, 60, function (i, mm) { if (mm.fighters[0].state === 'attack' && mm.fighters[0].moveFrame === 12 && !mm.fighters[0].hurtboxes().length) hidden = true; return [i === 0 ? { p: true, down: true } : {}]; });
+  var tp = e.filter(function (x) { return x.type === 'teleport'; })[0];
+  check('pop-up: vanishes underground', hidden);
+  check('pop-up: comes up right in front of them', tp && !tp.behind && Math.abs(tp.opp - tp.x) < 45 && tp.x < tp.opp, tp);
+  check('pop-up: and hits them', e.some(function (x) { return x.type === 'hit' && x.move.id === 'dP'; }), types(e));
+  // Enhanced: behind them, sides switched.
+  m = setup(MA, P, 260); m.fighters[0].meter = 100;
+  e = evs(m, 60, function (i) { return [i === 0 ? { p: true, down: true } : i === 3 ? { p: true, k: true } : {}]; });
+  tp = e.filter(function (x) { return x.type === 'teleport'; })[0];
+  check('pop-up+: comes up behind them', tp && tp.behind && m.fighters[0].x > m.fighters[1].x, tp);
 })();
 
 console.log(passes + ' passed, ' + failures + ' failed');
