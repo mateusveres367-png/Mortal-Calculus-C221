@@ -31,9 +31,10 @@
       var c = { a: i, d: 1 - i, guard: d.guardStance(this.buffers[1 - i]), ch: d.inCounterHitWindow(), punish: d.inRecovery(),
         // The attacker's move as it is now: in a trade, the other hit lands first and changes their state.
         move: m, moveFrame: a.moveFrame, hb: hb, charge: a.chargeLevel() };
-      // A parry catches strikes of the levels it covers (never throws).
-      var pr = !m.throw && d.parryWindow();
-      if (pr && pr.levels.indexOf(m.level) >= 0) { parries.push(c); continue; }
+      // A parry catches strikes of the levels it covers (never throws). A sprawl
+      // (MAX, `takedowns`) also catches takedowns and throws.
+      var pr = d.parryWindow();
+      if (pr && (m.throw ? pr.takedowns : pr.levels.indexOf(m.level) >= 0 || (m.takedown && pr.takedowns))) { parries.push(c); continue; }
       (m.throw ? grabs : strikes).push(c);
     }
     for (var q = 0; q < parries.length; q++) this.applyParry(parries[q]);

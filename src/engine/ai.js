@@ -165,6 +165,22 @@
     this.clinchPlan = null;
     this.breakRoll = null;
 
+    // --- Submissions (MAX). Held: mash out. Holding it: mash it tighter. ------------
+    var sb = match.sub;
+    if (sb) {
+      var held = sb.d === self.index, rate = held ? 0.4 + 0.5 * L.breakThrow : 0.5 + 0.4 * L.combo;
+      if (!sb.end && sb.t > C.SUB_SET - 4 && match.frame % 5 === 0 && rnd() < rate) raw['pkh'[(match.frame / 5) % 3]] = true;
+      return raw;
+    }
+    // MAX with them on the floor: H next to them (a direction picks the hold), walking in
+    // if they're just out of reach.
+    if (self.def.submissions && opp.state === 'down' && !opp.ko && !opp.subUsed) {
+      var sReach = C.SUB_REACH * self.def.scale - 4, toward = opp.x >= self.x ? 1 : -1;
+      if (this.subRoll == null) this.subRoll = rnd() < ((self.def.ai || {}).submit || 0.5) * (0.5 + 0.5 * L.combo);
+      if (this.subRoll && dist < sReach && match.frame % 2 === 0) return toRaw(['H', 'D+H', 'F+H', 'B+H'][Math.floor(rnd() * 4)], toward);
+      if (this.subRoll && dist < sReach + 50 && self.actionable) { raw[toward > 0 ? 'right' : 'left'] = true; return raw; }
+    } else if (opp.state !== 'down') this.subRoll = null;
+
     // --- Juggled: maybe tech the landing. ------------------------------------------
     if (self.state === 'juggle') {
       if (this.techRoll === null) this.techRoll = rnd() < L.tech;
@@ -286,7 +302,9 @@
           low: low ? rnd() < L.lowRead : (m.level === 'high' && rnd() < L.lowRead * 0.3),
           step: !m.tracks && m.startup >= (st.sidestep ? 12 : 16) && rnd() < L.sidestep * (st.sidestep || 1),
           // Style: MATEUS checks low kicks with his shin (back, pressed as it lands).
-          check: low && self.def.check && /^(low|sweep|kick|roundhouse)$/.test(m.motion) && rnd() < (st.check || 0) * L.lowRead
+          check: low && self.def.check && /^(low|sweep|kick|roundhouse)$/.test(m.motion) && rnd() < (st.check || 0) * L.lowRead,
+          // Style: MAX sprawls on lows and takedowns.
+          sprawl: (low || m.takedown) && self.def.moves.bK && self.def.moves.bK.parry && self.def.moves.bK.parry.takedowns && rnd() < (st.sprawl || 0) * L.lowRead
         };
       }
       var gd = this.guard, st = self.def.ai || {};
@@ -318,6 +336,11 @@
         // CHAI follows her sidestep with an attack out of it.
         if (st.ssFollow) { this.startScript({ 0: 'SI', 6: st.ssFollow }, match, self); this.script.keep = true; }
         raw.ssIn = true;
+        return raw;
+      }
+      if (gd.sprawl && self.actionable) {
+        // Late, just before it lands (the sprawl catches from its 3rd frame).
+        if (opp.move.startup - opp.moveFrame <= 6) { gd.sprawl = false; gd.block = false; return toRaw('B+K', self.facing); }
         return raw;
       }
       if (gd.check && self.actionable) {

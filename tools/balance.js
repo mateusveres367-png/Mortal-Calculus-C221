@@ -56,7 +56,11 @@ function playMatch(a, b, seed) {
         if (ca && ca.t === 1 && !(prev[k] && prev[k].ca === ca)) stats[f[k].def.id].moves[ca.move.id] = (stats[f[k].def.id].moves[ca.move.id] || 0) + 1;
         prev[k] = { move: f[k].move, mf: f[k].state === 'attack' ? f[k].moveFrame : 0, ca: ca && ca.t >= 1 ? ca : null };
       }
-      m.events.forEach(function (e) { if (e.type === 'ultimate') stats[f[e.attacker].def.id].ults++; });
+      m.events.forEach(function (e) {
+        if (e.type === 'ultimate') stats[f[e.attacker].def.id].ults++;
+        // MAX's submissions: each hold started ('sub:armbar'), and the taps.
+        if (e.type === 'submission' || e.type === 'tap') { var sk = (e.type === 'tap' ? 'tap:' : 'sub:') + e.id, sm = stats[f[e.attacker].def.id].moves; sm[sk] = (sm[sk] || 0) + 1; }
+      });
       if (m.cinematic) continue;
       if (m.winner !== null) rounds.end(m.winner, 'ko', m);
       else rounds.tick(m);

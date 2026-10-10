@@ -86,6 +86,15 @@
       case 'blazer': // LOPEZ tosses his blazer off behind him
         this.props.push({ x: x, y: y, vx: -ev.facing * 2.6, vy: -3.2, rot: 0, vr: -ev.facing * 0.18, life: 70, w: 14, h: 18, color: ev.color });
         return;
+      case 'submission': // MAX takes them to the mat
+        this.dust(x, 14, 2);
+        return;
+      case 'tap': // the hold fills: a gold ring and dust off the mat
+        this.dust(x, 18, 3);
+        this.flashes.push({ x: x, y: y, r: 30, life: 14, max: 14, color: 0xffd23f, ring: true, thick: 3 });
+        this.flashes.push({ x: x, y: y, r: 22, life: 8, max: 8, color: 0xffffff, star: true });
+        this.shake(0.012);
+        return;
       case 'check': // MATEUS's shin meets the kick: a red-white snap and splinters
         this.flashes.push({ x: x, y: y, r: 18, life: 9, max: 9, color: 0xffffff, star: true });
         this.flashes.push({ x: x, y: y, r: 14, life: 12, max: 12, color: 0xc8102e, ring: true });
@@ -500,6 +509,18 @@
       }
       case 'check': // shin on shin: a hard crack
         burst(0.03, 3000, 3, 0.6, 'bandpass'); thump(0.1, 260, 120, 0.5); burst(0.08, 900, 1, 0.3);
+        break;
+      // MAX's submissions: bodies hitting the mat as it locks in; the tap (three hard slaps on
+      // the mat, a boom); getting out (a scramble).
+      case 'submission':
+        thump(0.2, 120, 40, 0.6); burst(0.15, 500, 1, 0.3);
+        break;
+      case 'tap':
+        thump(0.5, 80, 24, 0.9); burst(0.3, 800, 0.7, 0.4);
+        [0, 0.13, 0.26].forEach(function (at) { setTimeout(function () { burst(0.04, 2200, 2, 0.6, 'bandpass'); thump(0.06, 300, 150, 0.4); }, at * 1000); });
+        break;
+      case 'subend':
+        if (ev.how !== 'tap') { burst(0.2, 900, 0.8, 0.3); thump(0.12, 160, 60, 0.35); }
         break;
       case 'land':
       case 'tech':

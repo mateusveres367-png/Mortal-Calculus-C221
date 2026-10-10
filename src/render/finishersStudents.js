@@ -95,27 +95,43 @@
     }
   };
 
-  // MAX — All-Nighter: a suplex, then he rolls over onto them and falls asleep right
-  // there, snoring. The lights go down.
+  // MAX — All-Nighter: a slow-motion body lock suplex, and as they land he rolls straight
+  // into an armbar. They tap. He lets go, lies back on the mat... and falls asleep right
+  // there, snoring. The lights go down: 3:00 AM.
   FG.FINISHERS.max = {
-    len: 240,
+    len: 260,
     step: function (fx, t) {
-      var w = fx.w, l = fx.l, s = fx.s;
+      var w = fx.w, l = fx.l, s = fx.s, gap = FG.C.SUB_GAP * w.def.scale;
       if (t === 1) { fx.anim(w, [[1, 'grab_c'], [8, 'grab_x'], [16, 'throw_lift']]); fx.anim(l, FG.dazedAnim, true); s.x0 = w.x; }
-      if (t === 8) { FG.Sfx.play({ type: 'grab' }); fx.pose(l, 'hit_mid'); }
+      if (t === 8) { FG.Sfx.play({ type: 'grab' }); fx.pose(l, 'hit_mid'); fx.slow(60, 0.35); }
       // Up...
       if (t >= 16 && t < 30) { var u = (t - 16) / 14; l.x = w.x + fx.dir * 26 * (1 - u * 0.6); l.y = 40 + 30 * u; fx.pose(l, 'juggle'); }
-      // ...and over: a suplex.
-      if (t === 30) { fx.anim(w, [[1, 'throw_lift'], [10, 'suplex'], [40, 'suplex'], [52, 'crouch']]); sfx(function (S) { S.noise({ dur: 0.3, freq: 500, f1: 1400, q: 1, gain: 0.15 }); }); }
+      // ...and over, in slow motion: the bridge.
+      if (t === 30) { fx.anim(w, [[1, 'throw_lift'], [10, 'throw_back'], [30, 'throw_back']]); sfx(function (S) { S.noise({ dur: 0.3, freq: 500, f1: 1400, q: 1, gain: 0.15 }); }); }
       if (t > 30 && t < 44) { var v = (t - 30) / 14; l.x = w.x + fx.dir * (10 - 46 * v); l.y = 70 * Math.sin((1 - v) * Math.PI / 2) + 10 * (1 - v); l._drawRot = -fx.dir * Math.PI * v; }
       if (t === 44) {
         l._drawRot = 0; l.y = 0; l.x = w.x - fx.dir * 36; fx.pose(l, 'down');
-        fx.hit(l, 'overhead', { ch: true, shake: 0.03, y: 12 }); fx.slow(22, 0.4); fx.scene.effects.dust(l.x, 16, 3);
+        fx.hit(l, 'overhead', { ch: true, shake: 0.03, y: 12 }); fx.scene.effects.dust(l.x, 16, 3);
       }
-      // He rolls over onto them... and falls asleep.
-      if (t === 80) { fx.pose(w, 'sleep'); w.x = l.x + fx.dir * 4; w.y = 8; s.sleep = t; s.night = t; }
+      // Straight into the armbar (their head toward him, his legs across their chest).
+      if (t === 58) {
+        s.fd = -fx.dir; w._drawFacing = s.fd; l._drawFacing = s.fd;
+        w.x = l.x - s.fd * gap; w.y = 0;
+        fx.pose(w, 'sub_armbar'); fx.pose(l, 'v_armbar'); s.hold = t;
+        sfx(function (S) { S.osc({ dur: 0.2, f0: 120, f1: 50, gain: 0.5 }); S.noise({ dur: 0.15, freq: 500, q: 1, gain: 0.2 }); });
+      }
+      if (s.hold && t > 58 && t < 96) { fx.pose(w, t % 10 < 5 ? 'sub_armbar2' : 'sub_armbar'); fx.pose(l, t % 6 < 3 ? 'v_armbar' : 'v_armbar2'); }
+      // They tap.
+      if (t === 96) { s.tap = t; fx.pose(w, 'sub_armbar2'); fx.flash(0xffd23f, 0.5); fx.scene.effects.shake(0.01); }
+      if (s.tap && t > 96 && t < 132) {
+        fx.pose(l, ((t - 96) >> 2) % 2 ? 'v_armbar2' : 'v_armbar_tap');
+        if ((t - 96) % 8 === 1) sfx(function (S) { S.noise({ dur: 0.05, freq: 2200, q: 2, gain: 0.5, type: 'bandpass' }); S.osc({ dur: 0.06, f0: 300, f1: 150, gain: 0.3 }); });
+      }
+      // He lets go, lies back on the mat... and he's out.
+      if (t === 132) { fx.pose(l, 'down'); fx.anim(w, [[1, 'sub_armbar'], [16, 'lieback']]); }
+      if (t === 160) { fx.anim(w, [[1, 'lieback'], [20, 'sleep']]); s.sleep = t; s.night = t; }
       if (s.sleep && (t - s.sleep) % 60 === 10) sfx(function (S) { S.osc({ dur: 0.9, f0: 70, f1: 60, gain: 0.25, type: 'sawtooth', vib: [6, 8], attack: 0.3 }); S.noise({ dur: 0.6, freq: 300, q: 1, gain: 0.08, at: 0.2 }); });
-      if (t === 120) { s.stamp = t; fx.scene.stage.react('wild'); }
+      if (t === 176) { s.stamp = t; fx.scene.stage.react('wild'); }
     },
     draw: function (fx, t) {
       var s = fx.s, g = fx.gs;
@@ -125,6 +141,8 @@
         g.fillStyle(0xf4f0d0, d * 1.6); g.fillCircle(W - 90, 70, 18); g.fillStyle(0x0a0a28, d * 1.6); g.fillCircle(W - 82, 64, 16);
         bigText(fx, 2, '3:00 AM', W - 90, 110, 0xff5a3a, 2, 0);
       } else fx.texts[2].setVisible(false);
+      if (s.tap && t - s.tap < 36) bigText(fx, 3, 'TAP!', fx.sx(fx.l.x), GY - 96, 0xff4a3d, 3.4 * stampScale(t, s.tap), -6);
+      else fx.texts[3].setVisible(false);
       if (s.sleep) { // the Zzz's drift up
         for (var k = 0; k < 3; k++) {
           var a = ((t - s.sleep) + k * 20) % 60, zx = fx.sx(fx.w.x) + 10 + a * 0.6 + k * 4, zy = GY - 40 - a * 1.4;
@@ -135,6 +153,7 @@
       if (s.stamp) bigText(fx, 0, 'ALL-NIGHTER', W / 2, 140, 0xffa83a, 4 * stampScale(t, s.stamp), -5);
     }
   };
+
 
   // JACK — Back Row: he folds a giant paper airplane, climbs on and rides it across the
   // stage straight into them, then glides down and lands it perfectly. The judges agree.

@@ -876,12 +876,10 @@ function count(r, type, attacker) {
   // A full charge on Order of Magnitude absorbs two.
   r = play(PD, S, 40, function (i) { return i === 0 ? FG.parseInput('B+H') : i <= 60 ? { h: true } : {}; }, { 30: { p: true }, 46: { p: true } }, 100);
   check('full charge absorbs two hits', count(r, 'armor') === 2 && hits(r, 0).length === 1, types(r));
-  // No other teacher has armor (MAX's Course Load is the one student exception).
-  var MX = FG.fighterById('max');
-  defs.filter(function (d) { return d !== PD && d !== MX; }).forEach(function (d) {
+  // No one else has armor (outside enhanced specials).
+  defs.filter(function (d) { return d !== PD; }).forEach(function (d) {
     check(d.name + ' has no armor', Object.keys(d.moves).every(function (id) { return !d.moves[id].armor || d.moves[id].enhanced; }));
   });
-  if (MX) check('MAX: Course Load is a charge move with armor', MX.moves.fH.charge && MX.moves.fH.armor && Object.keys(MX.moves).every(function (id) { return id === 'fH' || !MX.moves[id].armor || MX.moves[id].enhanced; }));
 })();
 
 // RAMOS: Matrix Lock's short break window; Identity can't be broken and grabs crouchers.
@@ -1184,6 +1182,9 @@ defs.forEach(function (d) {
       m.fighters[0].meter = 0; // without meter (enhanced specials add hits by design)
       m.step([tok ? FG.parseInput(tok) : raw({}), raw({})]);
       m.events.forEach(function (e) { if (e.type === 'hit' && e.attacker === 0) { best = Math.max(best, e.hits); if (e.hits === 1) since = i; } });
+      // A submission (MAX) is a hold, not a combo: it always ends (a tap or the clock), and
+      // its frames don't count.
+      if (since !== null && m.fighters[1].state === 'submitted') since++;
       if (m.fighters[1].actionable) since = null; else if (since !== null) longest = Math.max(longest, i - since);
       var a = m.fighters[0], o = m.fighters[1];
       if (!wall && o.actionable && Math.abs(a.x - o.x) > 120) a.x = o.x - 40 * a.facing; // keep them close
@@ -1906,6 +1907,50 @@ defs.forEach(function (d) {
     e = evs(m, 60, function (i) { return [i === 0 || i === 2 ? { right: true } : i === 6 ? { k: true } : {}]; });
     check('nicolas: F, F, K is a hopping side kick across the screen', e.some(function (x) { return x.type === 'hit' && x.move.id === 'dashK'; }), [types(e), m.fighters[0].x - nx0]);
     check('nicolas: no projectile', Object.keys(NC.moves).every(function (id) { return !NC.moves[id].projectile; }));
+  }
+
+  // MAX (wrestling): H next to a downed opponent starts a submission picked by direction;
+  // a struggle meter they mash out of and he mashes tighter; one per knockdown. The
+  // Double-Leg ducks highs and takes them down; the Sprawl catches lows and throws.
+  var MXD = FG.fighterById('max');
+  if (MXD) {
+    var down = function (dir, mashA, mashD) {
+      var mm = setup(MXD, BR, 50); mm.fighters[1].setState('down');
+      var ee = evs(mm, 400, function (i) {
+        var a = i === 1 ? Object.assign({ h: true }, dir) : mashA && i > 20 && i % 4 === 0 && mm.sub ? { p: true } : {};
+        return [a, mashD && i > 4 && i % 4 === 0 ? { k: true } : {}];
+      });
+      return { m: mm, e: ee, sub: ee.filter(function (x) { return x.type === 'submission'; })[0], tap: ee.filter(function (x) { return x.type === 'tap'; })[0], end: ee.filter(function (x) { return x.type === 'subend'; })[0] };
+    };
+    [[{}, 'armbar'], [{ down: true }, 'rnc'], [{ right: true }, 'kimura'], [{ left: true }, 'triangle']].forEach(function (t) {
+      var r = down(t[0], true, false);
+      check('max: ' + JSON.stringify(t[0]) + ' H by a downed opponent is the ' + t[1], r.sub && r.sub.id === t[1], r.sub && r.sub.id);
+      check('max: ' + t[1] + ': mash it and they tap', r.tap && r.end && r.end.how === 'tap' && r.tap.damage === MXD.submissions[t[1]].damage, [types(r.e), r.tap && r.tap.damage]);
+    });
+    var esc = down({}, false, true);
+    check('max: they mash out of it', esc.sub && !esc.tap && esc.end && esc.end.how === 'escape' && esc.m.fighters[1].health === BR.health, esc.end);
+    check('max: one submission per knockdown', esc.e.filter(function (x) { return x.type === 'submission'; }).length === 1);
+    var both = down({}, false, false);
+    check('max: left alone, it tightens on its own', both.tap, types(both.e));
+    m = setup(MXD, BR, 50); e = evs(m, 40, function (i) { return [i === 0 ? { h: true } : {}]; });
+    check('max: H by a standing opponent is just his heavy', !e.some(function (x) { return x.type === 'submission'; }) && e.some(function (x) { return x.type === 'hit' && x.move.id === 'heavy'; }), types(e));
+    // Out of his throw: the suplex, then H as they land.
+    m = setup(MXD, BR, 36);
+    e = evs(m, 200, function (i, mm) { return [i === 0 ? { p: true, k: true } : i > 30 && i < 70 && i % 2 === 0 ? { h: true } : mm.sub && i % 4 === 0 ? { p: true } : {}]; });
+    check('max: body lock suplex, then a submission as they land', e.some(function (x) { return x.type === 'grab'; }) && e.some(function (x) { return x.type === 'submission'; }), types(e));
+    // Double-Leg: under their jab, and they're on the mat.
+    m = setup(MXD, BR, 50); e = evs(m, 70, function (i) { return [i === 0 ? { h: true, right: true } : {}, i === 4 ? { p: true } : {}]; });
+    check('max: the double-leg ducks a high and takes them down', !e.some(function (x) { return x.type === 'hit' && x.attacker === 1; }) && e.some(function (x) { return x.type === 'hit' && x.attacker === 0 && x.move.id === 'fH' && x.knockdown; }), types(e));
+    // Sprawl: a low kick, and a throw, both caught and turned into the front headlock.
+    m = setup(MXD, BR, 44); e = evs(m, 70, function (i) { return [i === 6 ? { k: true, left: true } : {}, i === 0 ? { k: true, down: true } : {}]; });
+    check('max: the sprawl catches a low', e.some(function (x) { return x.type === 'parry' && x.counter === 'sprawlX'; }) && e.some(function (x) { return x.type === 'hit' && x.attacker === 0 && x.move.id === 'sprawlX' && x.knockdown; }), types(e));
+    m = setup(MXD, BR, 34); e = evs(m, 70, function (i) { return [i === 2 ? { k: true, left: true } : {}, i === 4 ? { p: true, k: true } : {}]; });
+    check('max: the sprawl catches a throw', e.some(function (x) { return x.type === 'parry'; }) && !e.some(function (x) { return x.type === 'grab'; }), types(e));
+    m = setup(MXD, BR, 44); e = evs(m, 70, function (i) { return [i === 6 ? { k: true, left: true } : {}, i === 0 ? { p: true } : {}]; });
+    check('max: the sprawl lets highs through', !e.some(function (x) { return x.type === 'parry'; }), types(e));
+    var sd = FG.runCombo(MXD, BR, { plan: { 0: 'F+P' } });
+    check('max: snap down staggers (plus enough to combo a palm)', MXD.moves.fP.hit.adv > MXD.moves.jab.startup, MXD.moves.fP.hit.adv);
+    check('max: no projectile, no backpack', Object.keys(MXD.moves).every(function (id) { return !MXD.moves[id].projectile; }) && !MXD.look.backpack);
   }
 
   // JACK: the paper airplane curves up, the nose dive skims the floor as a low, and Seat

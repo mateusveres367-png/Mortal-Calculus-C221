@@ -67,7 +67,9 @@ FG.ROSTER.forEach(function (d) {
     if (m.keepZ) notes.push('stays off the line until it hits');
     if (m.feint) notes.push('feint: cancel with P, K, H or P+K during frames 6-18');
     if (m.stanceSwitch) notes.push('switches stance');
-    if (m.parry) notes.push('parry' + (m.parry.counters ? ' (' + m.parry.levels.map(function (l) { return l + ' → ' + title(d.moves[m.parry.counters[l]].label); }).join(', ') + ')' : ''));
+    if (m.takedown) notes.push('a takedown (a sprawl catches it)');
+    if (m.parry && m.parry.takedowns) notes.push('catches ' + m.parry.levels.map(function (l) { return l + 's'; }).join(', ') + ', takedowns and throws on frames ' + m.parry.from + '-' + m.parry.to + ' → ' + title(d.moves[m.parry.counter].label));
+    else     if (m.parry) notes.push('parry' + (m.parry.counters ? ' (' + m.parry.levels.map(function (l) { return l + ' → ' + title(d.moves[m.parry.counters[l]].label); }).join(', ') + ')' : ''));
     if (m.hold) notes.push('hold ' + m.hold.btn.toUpperCase() + ' to keep it up');
     if (m.step && m.step[2] < 0) notes.push('steps back as it attacks');
     if (m.armor) notes.push('armor: absorbs ' + m.armor.hits + ' hit on frames ' + m.armor.from + '-' + m.armor.to + (m.charge ? ' (2 at full charge)' : ''));
@@ -113,6 +115,19 @@ FG.ROSTER.forEach(function (d) {
       out.push('- **' + title(x.label) + '** (`' + b.cmd + '`, then `P+K`): ' + sentence(x.exText) + ' — ' + dmg + res +
         (x.armor ? ', armor on frames ' + x.armor.from + '-' + x.armor.to + ' (' + x.armor.hits + (x.armor.hits > 1 ? ' hits' : ' hit') + ')' : '') +
         (x.wallSplat && !b.wallSplat ? ', wall splats' : '') + '.');
+    });
+    out.push('');
+  }
+  if (d.submissions) {
+    var subDirs = { n: 'H', down: 'D+H', fwd: 'F+H', back: 'B+H' };
+    out.push('**Submissions:** after any knockdown or takedown, ' + 'H within ' + Math.round(FG.C.SUB_REACH * d.scale) + ' px of the downed opponent starts a hold (from neutral, the recovery of the move that put them down, or a throw once they land; one per knockdown). ' +
+      'A struggle meter: it starts where the hold says, each of his presses (P, K or H) tightens it, each of theirs loosens it by ' + FG.C.SUB_ESCAPE + ', and it creeps tighter on its own. Full: they tap. Empty: they escape. After ' + FG.C.SUB_TIME + ' frames it comes apart (half the damage times how tight it got).');
+    out.push('');
+    out.push('| Input | Hold | Meter starts | Each press | Creep a second | Damage (tap) |');
+    out.push('| --- | --- | --- | --- | --- | --- |');
+    Object.keys(d.submissions).forEach(function (id) {
+      var h = d.submissions[id];
+      out.push('| ' + subDirs[h.dir] + ' | ' + title(h.name) + ' | ' + h.start + ' | +' + h.tighten + ' | +' + Math.round(h.drift * 60) + ' | ' + h.damage + ' |');
     });
     out.push('');
   }

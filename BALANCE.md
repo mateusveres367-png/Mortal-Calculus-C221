@@ -148,6 +148,21 @@ without a projectile to keep them out. Changes:
 Quick runs (8 per pairing, `--only nicolas`, seeds 5 / 9 / 21): 52.9% / 40.9% / 51.0%, about
 48% pooled, with no never-used move.
 
+## MAX the wrestler
+
+MAX was rebuilt as a wrestler with submissions (no backpack, no armor, no projectile). The
+first runs had him at 63%: the CPU took every hold to the tap (6 of 6 against BRINKHUS),
+and a throw into a hold took close to a third of a teacher's health. Changes:
+
+- Hold damage about 20% lower (armbar 24, rear naked choke 29, kimura 20, triangle 26).
+- The one held escapes faster (each press 7, his 6).
+- Body Lock Suplex 32 → 28; health 214 → 198.
+- The CPU mashes in a hold at its level (the one held: more with better throw breaks; the one
+  holding: more with better combos), sprawls on lows and takedowns, and walks in to start a
+  hold when they're just out of reach.
+
+Quick runs (8 per pairing, `--only max`, seeds 5 / 9): 53.8% / 54.3%, with no never-used move.
+
 ## The student side (14 fighters)
 
 Adding the five students made it 14 fighters and 4368 matches per run (24 per pairing). Judged on

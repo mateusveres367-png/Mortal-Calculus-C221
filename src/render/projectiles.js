@@ -1,7 +1,7 @@
 // Drawing the students' projectiles (match.projectiles, see src/engine/projectiles.js),
 // each kind its own little pixel prop, plus their effects and sounds:
-//   backpack  NICOLAS: a backpack, spinning flat out
-//   bomb      MAX: a stuffed bookbag lobbed high; it bursts into books where it lands
+//   backpack  a backpack, spinning flat out (the engine's tests throw one)
+//   bomb      a stuffed bookbag lobbed high; it bursts into books where it lands
 //   plane     JACK: a paper airplane, nosing along its flight path
 //   eraser    JACK: a pink eraser, flicked
 //   error     HUDSON: a "SYNTAX ERROR" box that pops up in the air

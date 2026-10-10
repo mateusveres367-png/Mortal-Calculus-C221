@@ -85,13 +85,17 @@
     this.trials = new FG.ComboTrials(this);
     // Math that flies off big hits (each fighter's `glyphs`): a small pool of world texts.
     this.glyphs = [0, 1, 2, 3, 4, 5].map(function () { return { text: FG.text(this, 0, 0, '', 'y').setScrollFactor(1).setOrigin(0.5, 0.5).setDepth(21), t: 0 }; }, this);
+    // MAX's submissions: the struggle meter over them, MASH!, and the TAP! stamp.
+    this.subG = this.add.graphics().setDepth(21);
+    this.subTexts = ['w', 'y', 'r'].map(function (col) { return FG.text(this, 0, 0, '', col).setScrollFactor(1).setOrigin(0.5, 0.5).setDepth(21.5).setVisible(false); }, this);
+    this.tapFx = null;
     // Full-screen cut-ins for big moments and the round-start VS panel.
     this.cutin = new FG.CutIn(this);
     // KO finishers: overlays behind and in front of the fighters, on screen, and big text.
     this.finBack = this.add.graphics().setDepth(-0.3);
     this.finFront = this.add.graphics().setDepth(0.6);
     this.finScreen = this.add.graphics().setScrollFactor(0).setDepth(44);
-    this.finTexts = [0, 1, 2].map(function () { return FG.text(this, 0, 0, '', 'w', 3).setOrigin(0.5, 0.5).setDepth(46).setVisible(false); }, this);
+    this.finTexts = [0, 1, 2, 3].map(function () { return FG.text(this, 0, 0, '', 'w', 3).setOrigin(0.5, 0.5).setDepth(46).setVisible(false); }, this);
     // Ultimates: a layer over everything on screen, and text.
     this.ultTop = this.add.graphics().setScrollFactor(0).setDepth(45.5);
     this.ultGhost = this.add.graphics().setDepth(-0.2).setAlpha(0.4); // afterimages on an ultimate's set
@@ -904,6 +908,12 @@
       if (ev.type === 'check') { this.spawnGlyph({ x: ev.x, y: 50, attacker: ev.attacker, text: 'CHECKED!', ch: true }); this.quip(ev.attacker, 0.5); }
       if (ev.type === 'legdamage') this.spawnGlyph({ x: ev.x, y: 40, attacker: ev.attacker, text: 'LEG DAMAGE', ch: true });
       if (ev.type === 'grab' && ev.clinch) this.spawnGlyph({ x: ev.x, y: 70, attacker: ev.attacker, text: 'CLINCH' });
+      // MAX: the tap, or they got out (the hold's name is on its struggle meter).
+      if (ev.type === 'tap') {
+        this.tapFx = { start: this.tickCount, x: ev.x };
+        this.impact = { who: ev.defender, frames: 4, color: 0xffffff };
+      }
+      if (ev.type === 'subend' && ev.how !== 'tap') this.spawnGlyph({ x: ev.x, y: 60, attacker: ev.attacker, text: ev.how === 'escape' ? 'ESCAPED' : 'BROKE FREE', ch: true });
       if (ev.type === 'ulthit') this.impact = { who: ev.defender, frames: 2, color: 0xffffff };
       if (ev.type === 'ultend') this.endUltimate(ev);
       FG.Sfx.play(ev);
@@ -987,6 +997,7 @@
     }
     this.effects.update();
     this.updateGlyphs();
+    this.drawStruggle();
     this.stage.update();
     this.hud.tick(m);
     if (this.impact && --this.impact.frames < 0) this.impact = null;
@@ -1016,6 +1027,36 @@
   };
 
   // A piece of the attacker's math pops off a big hit and floats up.
+  // MAX's submissions: the struggle meter over the hold (his colour, red as they're about
+  // to tap), the hold's name, MASH! for both of them, and the TAP! stamp when it fills.
+  FightScene.prototype.drawStruggle = function () {
+    var g = this.subG, sb = this.match.sub, T = this.subTexts, f = this.match.fighters;
+    g.clear();
+    if (sb && !this.ult) {
+      var a = f[sb.a], d = f[sb.d], x = Math.round(d.x - a.facing * 14), y = C.GROUND_Y - 78, w = 112, h = 9;
+      var fill = sb.meter > 80 ? 0xff4a3d : sb.meter > 55 ? 0xff8a1f : 0xffd23f, u = Math.max(0, Math.min(1, sb.meter / 100));
+      g.fillStyle(0x0a0a10, 0.8); g.fillRect(x - w / 2 - 3, y - 3, w + 6, h + 6);
+      g.fillStyle(0x34343e, 1); g.fillRect(x - w / 2, y, w, h);
+      g.fillStyle(fill, 1); g.fillRect(x - w / 2, y, Math.round(w * u), h);
+      g.fillStyle(0xffffff, 0.35); g.fillRect(x - w / 2, y, Math.round(w * u), 2);
+      g.lineStyle(1, 0xf4f1e6, 0.8); for (var q = 1; q < 4; q++) g.lineBetween(x - w / 2 + w * q / 4, y, x - w / 2 + w * q / 4, y + h);
+      T[0].setText(sb.def.name).setScale(1).setPosition(x, y - 9).setVisible(true);
+      var blink = (this.tickCount >> 3) % 2 === 0;
+      T[1].setText('MASH!').setScale(1.5).setPosition(x, y + h + 12).setVisible(!sb.end && sb.t > C.SUB_SET && blink);
+    } else { T[0].setVisible(false); T[1].setVisible(false); }
+    var tf = this.tapFx, age = tf ? this.tickCount - tf.start : 0;
+    if (tf && age <= 64) {
+      // TAP!: slammed onto the screen, with slap lines round it.
+      var sc = age < 6 ? 6 - age * 0.5 : 3, ty = C.GROUND_Y - 128, al = age > 48 ? (64 - age) / 16 : 1;
+      T[2].setText('TAP!').setScale(sc).setPosition(tf.x, ty).setAngle(-6).setAlpha(al).setVisible(true);
+      g.lineStyle(3, 0xffd23f, al);
+      for (var k = 0; k < 8; k++) {
+        var an = k * Math.PI / 4 + 0.2, r0 = 34 + (age % 8) * 2, r1 = r0 + 12;
+        g.lineBetween(tf.x + Math.cos(an) * r0 * 1.4, ty + Math.sin(an) * r0, tf.x + Math.cos(an) * r1 * 1.4, ty + Math.sin(an) * r1);
+      }
+    } else { this.tapFx = null; T[2].setVisible(false); }
+  };
+
   FightScene.prototype.spawnGlyph = function (ev) {
     var def = this.match.fighters[ev.attacker].def, list = def.glyphs;
     if (!list || !list.length) return;
@@ -1242,6 +1283,7 @@
     // Draw the fighter further into the background first.
     var order = f[0].z > f[1].z ? [0, 1] : f[1].z > f[0].z ? [1, 0] : (f[0].state === 'attack' ? [1, 0] : [0, 1]);
     if (f[0].state === 'clinch') order = [1, 0]; else if (f[1].state === 'clinch') order = [0, 1]; // the clinch: his knees in front
+    if (f[0].state === 'submit') order = [1, 0]; else if (f[1].state === 'submit') order = [0, 1]; // a submission: his legs over them
     if (f[0]._drawBehind) order = [0, 1]; else if (f[1]._drawBehind) order = [1, 0];
     for (var i = 0; i < 2; i++) {
       var idx = order[i], fi = f[idx];

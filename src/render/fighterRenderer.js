@@ -103,7 +103,6 @@
       }
       case 'crouch': return P('crouch');
       case 'prejump':
-      case 'land': return P('squat');
       case 'air': return f.vy > 2 ? lerp(P('squat'), P('jump'), 0.7) : P('jump');
       case 'run': { // RAMOS: a sprint cycle
         var rc = (f.stateFrame % 12) / 12, ru = rc < 0.5 ? rc * 2 : 2 - rc * 2;
@@ -151,6 +150,34 @@
       }
       case 'down':
       case 'ko': return P('down');
+      // A submission (MAX): his hold, tighter as the struggle meter fills, rocking with
+      // his presses; theirs struggling with every press, and the free hand tapping.
+      case 'submit': {
+        var sb = f.sub;
+        if (!sb) return P('crouch');
+        var hk = 'sub_' + sb.id, pushing = sb.lastA && sb.t - sb.lastA < 8;
+        var tight = sb.end ? 1 : Math.max(0, Math.min(1, sb.meter / 100 + (pushing ? 0.12 : 0.04) * Math.sin(sb.t * 0.5)));
+        var hp2 = lerp(P(hk), P(hk + '2'), tight);
+        return sb.t < C.SUB_SET ? lerp(P('crouch'), hp2, ease(sb.t / C.SUB_SET)) : hp2;
+      }
+      case 'submitted': {
+        var sv = f.sub;
+        if (!sv) return P('down');
+        var vk = 'v_' + sv.id, fight = sv.lastD && sv.t - sv.lastD < 8;
+        var vp = lerp(P(vk), P(vk + '2'), sv.end ? 0.3 : 0.5 + 0.5 * Math.sin(sv.t * (fight ? 0.7 : 0.18)));
+        if (sv.t < C.SUB_SET) vp = lerp(P('down'), vp, ease(sv.t / C.SUB_SET));
+        // The tap: the free hand slapping the mat, again and again.
+        if (sv.end === 'tap') {
+          vp = vp.slice();
+          var up = (sv.endT >> 2) % 2 === 0;
+          vp[13] = up ? 13 : 1; vp[11] = (vp[3] + vp[13]) / 2 + 3; vp[10] = (vp[2] + vp[12]) / 2;
+        }
+        return vp;
+      }
+      // Getting back up after a submission: from the hold to his feet.
+      case 'land':
+        if (f.riseFrom) return lerp(P(f.riseFrom), P('idle'), ease(Math.min(1, f.stateFrame / Math.max(1, f.landLag))));
+        return P('squat');
       case 'getup': {
         var gu = f.stateFrame / C.GETUP_FRAMES;
         return gu < 0.5 ? lerp(P('down'), P('crouch'), ease(gu * 2)) : lerp(P('crouch'), P('idle'), ease((gu - 0.5) * 2));
@@ -544,20 +571,6 @@
     var hx = X(0), hy = Y(0), cx = X(1), cy = Y(1);
     var vx = cx - hx, vy = cy - hy, len = Math.sqrt(vx * vx + vy * vy) || 1;
     var nx = -vy / len, ny = vx / len, ux = vx / len, uy = vy / len;
-    // A huge backpack on their back (MAX), behind the torso.
-    if (look.backpack && !opts.noPack) {
-      var bp = look.backpack, bk = -dir, pd = 10 * s * build.torso, pl = len * 0.5, pw2 = 9 * s;
-      var bc = { x: hx + vx * 0.52 + nx * bk * (pd + pw2 * 0.6), y: hy + vy * 0.52 + ny * bk * (pd + pw2 * 0.6) };
-      var corner = function (a, b) { return { x: bc.x + ux * a * pl + nx * bk * b * pw2, y: bc.y + uy * a * pl + ny * bk * b * pw2 }; };
-      g.fillStyle(c(shade(bp.color, 0.8)), 1);
-      g.fillPoints([corner(-0.95, -1), corner(1.05, -1), corner(1.15, 1.1), corner(-0.9, 1.1)], true);
-      g.fillStyle(c(bp.color), 1);
-      g.fillPoints([corner(-0.9, -0.8), corner(0.98, -0.8), corner(1.05, 0.95), corner(-0.85, 0.95)], true);
-      g.fillStyle(c(shade(bp.color, 1.3)), 1); // the top flap and a pocket
-      g.fillPoints([corner(0.6, -0.8), corner(1.0, -0.8), corner(1.05, 0.95), corner(0.65, 0.95)], true);
-      g.fillPoints([corner(-0.7, 0.3), corner(-0.1, 0.3), corner(-0.1, 1.2), corner(-0.7, 1.2)], true);
-      if (bp.zip && flash == null) { var z0 = corner(0.62, -0.6), z1 = corner(0.62, 0.8); g.lineStyle(1, bp.zip, 1); g.lineBetween(z0.x, z0.y, z1.x, z1.y); }
-    }
     // A torso turned toward or away from the camera looks narrower.
     var turn = 1 - 0.18 * Math.min(1, Math.abs(tw));
     var wc = 9 * s * build.torso * turn, wh = 7 * s * build.torso * (1 - 0.1 * Math.min(1, Math.abs(tw)));
@@ -642,10 +655,6 @@
       g.fillPoints([rk(-1, 0), rk(-0.2, 0), rk(-1, 9)], true);
       g.fillPoints([rk(1, 0), rk(0.2, 0), rk(1, 9)], true);
       g.fillStyle(rs, 1); g.fillPoints([rk(-0.45, -0.5), rk(0.45, -0.5), rk(0.35, 1.5), rk(-0.35, 1.5)], true); // collar trim
-    }
-    if (look.backpack && !opts.noPack) { // the strap over the front shoulder
-      var st0 = { x: cx + nx * wc * 0.1 * dir, y: cy + ny * wc * 0.1 * dir }, st1 = { x: hx + vx * 0.35 + nx * wh * 0.55 * dir, y: hy + vy * 0.35 + ny * wh * 0.55 * dir };
-      g.lineStyle(Math.max(2, Math.round(2.5 * s)), c(shade(look.backpack.color, 0.7)), 1); g.lineBetween(st0.x, st0.y, st1.x, st1.y);
     }
     // Belt line.
     g.fillStyle(c(shade(look.legs, 0.55)), 1);

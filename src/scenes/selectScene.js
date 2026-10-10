@@ -291,7 +291,7 @@
       var def = card.def, sc = 2.3 * def.scale, base = FG.getPose(def, 'idle');
       card.puppet.x = card.x + CARD_W / 2 - base[4] * sc;
       var cardLocked = this.locked(this.activeSide(), def) || (this.solo() && def.boss && !FG.settings.wilsonUnlocked);
-      FG.drawFighter(card.g, card.puppet, { scale: 2.3, groundY: card.y + 34 + base[5] * sc, noShadow: true, noPack: true, flash: cardLocked ? 0x07060c : null });
+      FG.drawFighter(card.g, card.puppet, { scale: 2.3, groundY: card.y + 34 + base[5] * sc, noShadow: true, flash: cardLocked ? 0x07060c : null });
       card.name.setText(cardLocked ? '???' : def.name);
     }
     // The tab bar: the shown tab underlined, a P1 / P2 tag over each player's tab.

@@ -30,6 +30,7 @@
     this.lastResult = [null, null]; // per attacker: { move, kind, adv }
     this.throwState = null;
     this.clinch = null;    // MATEUS's clinch: { a, d, start, knees, act, mash, ex } (clinch.js)
+    this.sub = null;       // MAX's submissions: { a, d, id, meter, t, end } (submission.js)
     this.koTimer = 0;
     this.winner = null;
     this.over = false;
@@ -71,6 +72,8 @@
     b[1].update(raws[1], this.frame);
     (this.props || []).forEach(function (p) { if (p.cool > 0) p.cool--; p.t++; });
 
+    // MAX: H next to a downed opponent starts a submission (before either one acts).
+    this.trySubmissions();
     f[0].think(b[0], f[1], this.frame);
     f[1].think(b[1], f[0], this.frame);
     // A fighter who is free this frame is out of any combo: a hit landing now
@@ -108,6 +111,7 @@
 
     this.updateThrow();
     this.updateClinch();
+    this.updateSubmission();
     for (i = 0; i < 2; i++) {
       if (f[i].teleportNow) { this.teleport(i, f[i].teleportNow); f[i].teleportNow = null; }
       if (f[i].throwNow) { this.spawnProjectile(i, f[i].throwNow); f[i].throwNow = null; }
@@ -260,7 +264,7 @@
 
   // --- Body collision, walls, camera limit ------------------------------------
 
-  var NO_PUSH = { down: 1, ko: 1, thrown: 1, throwing: 1, clinch: 1, clinched: 1 };
+  var NO_PUSH = { down: 1, ko: 1, thrown: 1, throwing: 1, clinch: 1, clinched: 1, submit: 1, submitted: 1 };
 
   Match.prototype.collide = function () {
     var a = this.fighters[0], b = this.fighters[1];

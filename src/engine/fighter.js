@@ -69,6 +69,7 @@
     this.legDamage = 0;        // ...and frames left of the slowed walk
     this.clinchAct = null;     // MATEUS in the clinch: the follow-up playing { move, t }
     this.checking = 0;         // MATEUS's Check: frames left of the shin-check pose
+    this.sub = null;           // MAX's submissions: the hold they're in (the match's sub)
     this.clearComboFlags();
   };
 
@@ -85,11 +86,13 @@
     this.groundHits = 0;
     this.noTech = false;
     this.tripped = false;   // knocked down and falling: only ground hits reach them
+    this.subUsed = false;   // held in a submission since they were last free (one per knockdown)
   };
 
   Fighter.prototype.setState = function (s) {
     this.state = s;
     this.stateFrame = 0;
+    this.riseFrom = null;
     if (s !== 'attack') { this.move = null; this.moveFrame = 0; }
   };
 
@@ -294,6 +297,8 @@
       case 'thrown':
       case 'clinch':    // the clinch (the match drives it)
       case 'clinched':
+      case 'submit':    // a submission (the match drives it)
+      case 'submitted':
       case 'cinematic': // an ultimate is playing (the match drives it)
         return;
       case 'land':
@@ -810,7 +815,7 @@
 
   Fighter.prototype.isInvulnerable = function () {
     switch (this.state) {
-      case 'getup': case 'ko': case 'thrown': case 'throwing': case 'clinch': case 'clinched': return true;
+      case 'getup': case 'ko': case 'thrown': case 'throwing': case 'clinch': case 'clinched': case 'submit': case 'submitted': return true;
       case 'roll': return this.stateFrame <= C.ROLL_INVULN;
       case 'techroll': return this.stateFrame <= C.TECH_INVULN;
       case 'throwbreak': return this.stateFrame <= 6;

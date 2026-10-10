@@ -95,6 +95,14 @@ FG.C = {
   CHECK_WINDOW: 8,
   CHECK_STUN: 22,          // the kicker staggers this long (he recovers in CHECK_RECOVER)
   CHECK_RECOVER: 4,
+  // Submissions (MAX): H next to a downed opponent starts a hold (submission.js).
+  SUB_REACH: 84,           // how close he has to be to them (scaled by his size)
+  SUB_SET: 14,             // frames locking it in before the struggle starts
+  SUB_ESCAPE: 7,           // each press by the one held loosens the struggle meter this much
+  SUB_TIME: 300,           // frames before it comes apart on its own
+  SUB_TAP_FRAMES: 40,      // the tap: frames held before he lets go
+  SUB_RECOVER: 20,         // frames for him to get back up afterwards
+  SUB_GAP: 36,             // how far behind them he is placed (his poses reach the rest of the way)
 
   // MIYASHIRO's Calculated: after an opponent whiffs, his next hit within this
   // many frames does extra damage.

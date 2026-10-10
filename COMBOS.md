@@ -141,15 +141,16 @@ Every fighter's combo routes, and what the combo feel pass changed. The routes l
 | FLYING KICKS | hard | D+H, UP, AIR P, AIR K, AIR H | 4 | - | 45 |
 | PASSING PERIOD | hard | P, D, D/F, F+P+K+H | 2 | 3 bars | 58 |
 
-### MAX (power, heavy course load)
+### MAX (grappler, heavy course load)
 
 | Route | Level | Inputs | Hits | Meter | Damage |
 | --- | --- | --- | --- | --- | --- |
-| REQUIRED READING | easy | P, P, H | 3 | - | 33 |
-| OPEN BOOK | easy | P, P | 2 | - | 22 |
-| AP LIFT | medium | D+H, P, P, H | 4 | - | 50 |
-| DOUBLE MAJOR | medium | D+H, P+K, P, P, H | 4 | 1 bar | 56 |
-| CRAM SESSION | hard | D+H, UP, AIR P, AIR K, AIR H, D+K | 5 | - | 59 |
+| PALM, PALM, SHOVE | easy | P, P, H | 3 | - | 33 |
+| TWO PALMS | easy | P, P | 2 | - | 22 |
+| SINGLE-LEG | medium | D+H, P, P, H | 4 | - | 48 |
+| SNAP DOWN | medium | F+P, P, P, H | 4 | - | 41 |
+| DOUBLE MAJOR | medium | D+H, P+K, P, P, H | 4 | 1 bar | 53 |
+| CRAM SESSION | hard | D+H, UP, AIR P, AIR K, AIR H | 4 | - | 52 |
 | FINALS WEEK | hard | P, D, D/F, F+P+K+H | 2 | 3 bars | 61 |
 
 ### JACK (tricky, back row)

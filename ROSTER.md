@@ -359,26 +359,48 @@ Five 10th graders. Character select has two tabs, **TEACHERS | STUDENTS** (Q/E, 
 - "Gotta go, bell's ringing."
 - "Made it on time."
 
-## MAX "Heavy Course Load" — Power / Grappler
+## MAX "Heavy Course Load" — Grappler / Submissions
 
-**Moves:** Textbook Swing (heavy), Backpack Slam (throw), Course Load (charge attack with armor), AP Lift (launcher), Study Hall (ground stomp), Bookbag Bomb (projectile: lobs a backpack).
+**Moves:** palm strikes and knees to get in, then takedowns. Everything ends on the mat.
+- Palm Strike, Rear Palm (P, P): heel of the hand, hips turning through.
+- Knee (K): hands snatch the neck, the rear knee up the middle. Collar-Tie Knee (F+K): a step in, the knee to the chin.
+- Snap Down (F+P): both hands on the back of their head, yanked down. Staggers them (a palm combos after it).
+- Double-Leg Takedown (F+H): a level change and a shot through their legs. It ducks under highs and puts them on the mat.
+- Single-Leg (D+H): his launcher. Catches a leg and stands up with it.
+- Double Palm (H): both palms into the chest; at the wall it pins them there.
+- Ankle Pick (D+K): a low snatch at the ankle. Foot Sweep (D/B+K).
+- Sprawl (B+K): his hips thrown back and his legs kicked out. Catches lows, takedowns and throws, and turns them into a front headlock that spins them flat.
+- Body Lock Suplex (P+K): arms locked round the waist, up and over the top. Arm Drag (B+P+K): drags them past him, face first into the mat.
+- Air: Flying Palm, Jumping Knee, Body Drop.
 
-**Personality:** Chill and friendly, but strong. Carries a huge backpack and uses it as a weapon.
+**Style:** Wrestling. Low and wide, chest over his knees, hands out in front fighting for grips. Nothing like RAMOS, a luchador who runs and slams: MAX shuffles in, shoots, and finishes on the ground.
 
-**Ultimate — Finals Week:** a mountain of textbooks rains down on the opponent, then he body-slams them on top of the pile.
+**Signature — Submissions:** after any knockdown or takedown, H next to the downed opponent starts a hold, picked by the direction held:
+- H: Armbar (their arm pulled straight up, his legs across their chest).
+- D+H: Rear Naked Choke (sat behind them, the slowest to set and the most damage).
+- F+H: Kimura (on his knees past their head, the arm cranked back; quick, less damage).
+- B+H: Triangle (on his back, legs locked round their head and arm).
 
-**KO finisher — All-Nighter:** a suplex, then he falls asleep on top of them, snoring.
+A struggle meter appears over them: they mash to escape, he mashes to tighten, and it creeps tighter on its own. When it fills they TAP (big damage); if they empty it, they're out. One per knockdown.
 
-**Look:** Short wavy brown hair, black t-shirt, big smile, a huge backpack.
+**Enhanced (1 bar):** Double Palm hits twice and wall splats; the Double-Leg lifts and slams them for more damage; the Single-Leg is armored.
+
+**Ultimate — Finals Week:** a double-leg straight through them and down onto the mat. He takes the mount and a calendar page slams up, MON to FRI, an exam a day: every ground strike crosses one off. They turn away; he takes the back and sinks a rear naked choke, the struggle meter fills on its own, and they TAP. "Pencils down."
+
+**KO finisher — All-Nighter:** a slow-motion body lock suplex straight into an armbar. They tap. He lets go, lies back on the mat, and falls asleep right there, snoring.
+
+**Personality:** Chill and friendly, but strong.
+
+**Look:** Short wavy brown hair, black t-shirt, big smile. No backpack: his hands are free.
 
 **Intro / taunt lines:**
 - "Hope you did the reading."
-- "This backpack weighs more than you."
+- "Let's take this to the mat."
 - "Let's get this over with."
 
 **Victory lines:**
 - "Heavy course load."
-- "Should've studied."
+- "Should've tapped sooner."
 - "Nap time."
 
 ## JACK "Back of the Classroom" — Tricky / Zoner

@@ -636,55 +636,68 @@ Always in a hurry. Flashy, fast, and all kicks.
 - **Tornado Plus (1 bar):** D+H, P+K, P, P, H (frames: D+H @0, P+K @3, P @41, P @52, H @60)
 - **Passing Period (3 bars):** P, D, D/F, F+P+K+H (frames: P @0, D @3, D/F @4, F @5, F+P+K+H @9)
 
-## MAX "HEAVY COURSE LOAD" — Power — Heavy Course Load
+## MAX "HEAVY COURSE LOAD" — Grappler — Heavy Course Load
 
-Chill and friendly, but strong. His backpack is a weapon.
+Chill and friendly, but strong. Every fight ends on the mat.
 
-**Style:** Backpack brawler. **Signature:** Course Load — F+H is a charge attack (hold H to load it up) with armor through its windup: it soaks a hit and keeps coming, and fully loaded it breaks a guard. Study Hall (D+K) stomps the floor, a low that also hits them when they are down; Bookbag Bomb (B+P) lobs his backpack high and it bursts where it lands.
+**Style:** Wrestling. **Signature:** Submissions — after any knockdown or takedown, H next to the downed opponent starts a submission: H armbar, D+H rear naked choke, F+H kimura, B+H triangle. A struggle meter: they mash to escape, he mashes to tighten, and when it fills they tap. Double-Leg Takedown (F+H) ducks highs and puts them down; Sprawl (B+K) catches lows, takedowns and throws.
 
-**Movement:** walk 2 forward / 1.5 back, dash 7.6 for 17 frames, backdash 7, jump 8.8, weight 1.06 (higher falls faster in juggles).
+**Movement:** walk 2 forward / 1.6 back, dash 8 for 16 frames, backdash 7, jump 8.8, weight 1.06 (higher falls faster in juggles).
 
 | Input | Move | Level | i | Active | Recovery | Block | Hit | Counter hit | Damage | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| P | Syllabus | high | 11 | 2 | 14 | 0 | +7 | +10 | 10 |  |
-| P,P | Prereq | high | 11 | 3 | 17 | -4 | +5 | +9 | 12 |  |
-| P,P,H | Closed Book | mid | 12 | 3 | 20 | -9 | knockdown | knockdown | 13 |  |
-| B+P | Bookbag Bomb | mid | 18 | projectile | 22 | -4 | knockdown | knockdown | 16 | projectile: lobbed; bursts where it lands, range 400, enhance with P+K |
-| K | Doorstop | mid | 14 | 3 | 19 | -5 | +4 | +9 | 15 |  |
-| D+K | Study Hall | low | 18 | 4 | 20 | -11 | +2 | knockdown | 14 | tracks, hits downed opponents |
-| D/B+K | Drop Class | low | 21 | 3 | 26 | -18 | knockdown | knockdown | 18 | ducks highs |
-| H | Textbook Swing | mid | 19 | 4 | 22 | -6 | +4 | launch | 25 | wall splats, enhance with P+K |
-| F+H (HOLD) | Course Load | mid | 22 | 4 | 22 | -8 | +3 | knockdown | 23 | armor: absorbs 1 hit on frames 6-21 (2 at full charge), hold to charge |
-| D+H | Ap Lift | mid | 17 | 4 | 23 | -16 | launch | launch | 19 | enhance with P+K, jump cancel on hit (UP) |
-| P+K | Backpack Slam | throw | 12 | 2 | 26 |  |  |  | 38 | break with P |
-| B+P+K | Group Project | throw | 12 | 2 | 26 |  |  |  | 36 | break with K |
-| AIR P | Notebook Drop | mid | 8 | 4 | 10 |  |  |  | 10 | hitstun 16, blockstun 10, landing 5 |
-| AIR K | Locker Kick | mid | 10 | 5 | 12 |  |  |  | 13 | hitstun 18, blockstun 12, landing 7 |
-| AIR H | Dog Pile | mid | 13 | 4 | 16 |  |  |  | 19 | bounds, hitstun 22, blockstun 14, landing 11 |
-| K (DOWN) | Five More Minutes | low | 14 | 3 | 22 | -14 | -2 | +1 | 10 | ducks highs |
-| P/H (DOWN) | Alarm Clock | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
+| P | Palm Strike | high | 11 | 2 | 14 | 0 | +7 | +10 | 10 |  |
+| P,P | Rear Palm | high | 11 | 3 | 17 | -4 | +5 | +9 | 12 |  |
+| P,P,H | Palm Shove | mid | 12 | 3 | 20 | -9 | knockdown | knockdown | 13 |  |
+| F+P | Snap Down | high | 13 | 3 | 18 | -3 | +15 | knockdown | 10 |  |
+| K | Knee | mid | 13 | 3 | 17 | -4 | +4 | +9 | 14 |  |
+| F+K | Collar-Tie Knee | mid | 17 | 3 | 19 | -6 | +3 | knockdown | 18 |  |
+| B+K | Sprawl | — | 34 total |  |  |  |  |  |  | catches lows, takedowns and throws on frames 3-16 → Front Headlock |
+| D+K | Ankle Pick | low | 15 | 3 | 19 | -9 | +2 | knockdown | 10 | ducks highs |
+| D/B+K | Foot Sweep | low | 21 | 3 | 26 | -18 | knockdown | knockdown | 16 | ducks highs |
+| H | Double Palm | mid | 18 | 4 | 21 | -6 | +4 | launch | 22 | wall splats, enhance with P+K |
+| F+H | Double-Leg | mid | 18 | 4 | 22 | -10 | knockdown | knockdown | 18 | ducks highs, a takedown (a sprawl catches it), enhance with P+K |
+| D+H | Single-Leg | mid | 17 | 4 | 23 | -15 | launch | launch | 17 | a takedown (a sprawl catches it), enhance with P+K, jump cancel on hit (UP) |
+| P+K | Body Lock Suplex | throw | 12 | 2 | 26 |  |  |  | 28 | break with P |
+| B+P+K | Arm Drag | throw | 12 | 2 | 26 |  |  |  | 26 | break with K |
+| AIR P | Flying Palm | mid | 8 | 4 | 10 |  |  |  | 10 | hitstun 16, blockstun 10, landing 5 |
+| AIR K | Jumping Knee | mid | 10 | 5 | 12 |  |  |  | 13 | hitstun 18, blockstun 12, landing 7 |
+| AIR H | Body Drop | mid | 13 | 4 | 16 |  |  |  | 19 | bounds, hitstun 22, blockstun 14, landing 11 |
+| K (DOWN) | Stand-Up | low | 14 | 3 | 22 | -14 | -2 | +1 | 10 | ducks highs |
+| P/H (DOWN) | Switch | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
 | T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
-| D,D/F,F+P+K+H | Finals Week | mid | 19 | 4 | 52 | -36 | +4 | launch | 25 | wall splats |
+| (SPRAWL) | Front Headlock | mid | 6 | 3 | 18 | -4 | knockdown | knockdown | 12 |  |
+| D,D/F,F+P+K+H | Finals Week | mid | 18 | 4 | 52 | -40 | knockdown | knockdown | 18 | ducks highs, a takedown (a sprawl catches it) |
 | T (BY AN OBJECT) | Springboard | mid | 16 | 5 | 18 | -6 | knockdown | knockdown | 18 |  |
 | B+T (BY AN OBJECT) | Vault | — | 38 total |  |  |  |  |  |  |  |
 
 **Enhanced specials** (P+K during the startup, 1 bar):
 
-- **Bookbag Bomb+** (`B+P`, then `P+K`): A bigger blast — 21 damage (from 16), a bigger or faster projectile.
-- **Textbook Swing+** (`H`, then `P+K`): Two hits, wall splat — 2 hits of 22.
-- **Ap Lift+** (`D+H`, then `P+K`): Armored, higher — 25 damage (from 19), armor on frames 1-17 (1 hit).
+- **Double Palm+** (`H`, then `P+K`): Two hits, wall splat — 2 hits of 19.
+- **Double-Leg+** (`F+H`, then `P+K`): Lift and slam — 29 damage (from 18).
+- **Single-Leg+** (`D+H`, then `P+K`): Armored — 22 damage (from 17), armor on frames 1-17 (1 hit).
 
-**Ultimate:** Finals Week — the ultimate key (`U` / `Numpad 0`) or `D, D/F, F + P+K+H`, with all three bars: a mountain of textbooks rains down on them, then he body-slams them on top of the pile. 8 hits, 32% of their health; blocked -36, whiffed 74 frames.
+**Submissions:** after any knockdown or takedown, H within 80 px of the downed opponent starts a hold (from neutral, the recovery of the move that put them down, or a throw once they land; one per knockdown). A struggle meter: it starts where the hold says, each of his presses (P, K or H) tightens it, each of theirs loosens it by 7, and it creeps tighter on its own. Full: they tap. Empty: they escape. After 300 frames it comes apart (half the damage times how tight it got).
+
+| Input | Hold | Meter starts | Each press | Creep a second | Damage (tap) |
+| --- | --- | --- | --- | --- | --- |
+| H | Armbar | 35 | +6 | +18 | 24 |
+| D+H | Rear Naked Choke | 25 | +6 | +18 | 29 |
+| F+H | Kimura | 45 | +6 | +15 | 20 |
+| B+H | Triangle | 35 | +8 | +6 | 26 |
+
+**Ultimate:** Finals Week — the ultimate key (`U` / `Numpad 0`) or `D, D/F, F + P+K+H`, with all three bars: a double-leg to the mat, the mount and a flurry of ground strikes, then a rear naked choke until they tap. 7 hits, 32% of their health; blocked -40, whiffed 73 frames.
 
 **KO finisher:** All-Nighter — `D, D, H` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).
 
 **Combo routes** (tested in `tests/sim.test.js`):
 
-- **Required Reading:** P, P, H (frames: P @0, P @13, H @26)
-- **Open Book:** P, P (frames: P @0, P @13)
-- **Ap Lift:** D+H, P, P, H (frames: D+H @0, P @42, P @54, H @63)
-- **Cram Session:** D+H, up, air P, air K, air H, D+K (frames: D+H @0, UP @20, P @25, K @32, H @38, D+K @71)
-- **Double Major (1 bar):** D+H, P+K, P, P, H (frames: D+H @0, P+K @3, P @49, P @59, H @68)
+- **Palm, Palm, Shove:** P, P, H (frames: P @0, P @13, H @26)
+- **Two Palms:** P, P (frames: P @0, P @13)
+- **Single-Leg:** D+H, P, P, H (frames: D+H @0, P @43, P @56, H @66)
+- **Snap Down:** F+P, P, P, H (frames: F+P @0, P @30, P @45, H @59)
+- **Cram Session:** D+H, up, air P, air K, air H (frames: D+H @0, UP @20, P @25, K @32, H @40)
+- **Double Major (1 bar):** D+H, P+K, P, P, H (frames: D+H @0, P+K @3, P @43, P @56, H @66)
 - **Finals Week (3 bars):** P, D, D/F, F+P+K+H (frames: P @0, D @3, D/F @4, F @5, F+P+K+H @9)
 
 ## JACK "BACK OF THE CLASSROOM" — Tricky — Back Row

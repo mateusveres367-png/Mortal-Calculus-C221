@@ -168,3 +168,25 @@
   FG.POSES.desk_sweat = R({ hip: [0, 27], lean: 24, neck: 16, fa: { hand: [12, 70] }, ba: { hand: [6, 72] }, fl: [0, -90], bl: [6, -86] });
   FG.POSES.desk_panic = R({ hip: [0, 28], lean: -12, neck: -10, fa: [70, 110], ba: [60, 100], fl: [10, -80], bl: [4, -86] });
 })();
+
+// Shared poses for whoever MAX has in a submission (any fighter; src/engine/submission.js).
+// Two each, loose and struggling (the scene blends them); the back arm is the free one,
+// and it's the one that taps.
+(function () {
+  var R = FG.rigger({});
+  // Armbar: on their back, head toward him, the trapped arm pulled straight up.
+  FG.POSES.v_armbar = R({ hip: [0, 6], lean: -86, neck: 2, fa: [90, 90], ba: { hand: [-8, 2] }, fl: { foot: [44, 0] }, bl: { foot: [46, 4] } });
+  FG.POSES.v_armbar2 = R({ hip: [1, 8], lean: -80, neck: -8, fa: [104, 106], ba: { hand: [-22, 22] }, fl: { foot: [36, 12] }, bl: { foot: [46, 0] } });
+  FG.POSES.v_armbar_tap = R({ hip: [1, 8], lean: -80, neck: -8, fa: [104, 106], ba: { hand: [-14, 1] }, fl: { foot: [36, 12] }, bl: { foot: [46, 0] } });
+  // Rear naked choke: sat up, legs out, back against him, both hands prying at his arm.
+  FG.POSES.v_rnc = R({ hip: [0, 8], lean: -14, neck: -2, fa: { hand: [-2, 40] }, ba: { hand: [2, 36] }, fl: { foot: [42, 2] }, bl: { foot: [46, 0] } });
+  FG.POSES.v_rnc2 = R({ hip: [-2, 8], lean: -26, neck: -16, fa: { hand: [-6, 44] }, ba: { hand: [4, 28] }, fl: { foot: [40, 12] }, bl: { foot: [48, 2] } });
+  FG.POSES.v_rnc_tap = R({ hip: [-2, 8], lean: -26, neck: -16, fa: { hand: [-6, 44] }, ba: { hand: [16, 1] }, fl: { foot: [40, 12] }, bl: { foot: [48, 2] } });
+  // Kimura: on their back, head toward him, the arm bent up and cranked back.
+  FG.POSES.v_kimura = R({ hip: [0, 6], lean: -86, neck: 4, fa: { hand: [-30, 30] }, ba: { hand: [-6, 2] }, fl: { foot: [42, 0] }, bl: { foot: [40, 8] } });
+  FG.POSES.v_kimura2 = R({ hip: [0, 8], lean: -80, neck: -6, fa: { hand: [-40, 24] }, ba: { hand: [-12, 14] }, fl: { foot: [38, 12] }, bl: { foot: [44, 2] } });
+  // Triangle: on their knees, bent over him, head and one arm (across his chest) trapped
+  // between his legs.
+  FG.POSES.v_triangle = R({ hip: [0, 22], lean: 70, neck: 20, fa: [-50, -10], ba: { hand: [18, 0] }, fl: { foot: [-22, 0] }, bl: { foot: [-26, 0] } });
+  FG.POSES.v_triangle2 = R({ hip: [-2, 24], lean: 62, neck: 30, fa: [-40, 0], ba: { hand: [14, 6] }, fl: { foot: [-24, 0] }, bl: { foot: [-30, 4] } });
+})();
