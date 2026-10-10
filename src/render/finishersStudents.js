@@ -102,4 +102,103 @@
       } else fx.texts[2].setVisible(false);
     }
   };
+
+  // MAX — All-Nighter: a suplex, then he rolls over onto them and falls asleep right
+  // there, snoring. The lights go down.
+  FG.FINISHERS.max = {
+    len: 240,
+    step: function (fx, t) {
+      var w = fx.w, l = fx.l, s = fx.s;
+      if (t === 1) { fx.anim(w, [[1, 'grab_c'], [8, 'grab_x'], [16, 'throw_lift']]); fx.anim(l, FG.dazedAnim, true); s.x0 = w.x; }
+      if (t === 8) { FG.Sfx.play({ type: 'grab' }); fx.pose(l, 'hit_mid'); }
+      // Up...
+      if (t >= 16 && t < 30) { var u = (t - 16) / 14; l.x = w.x + fx.dir * 26 * (1 - u * 0.6); l.y = 40 + 30 * u; fx.pose(l, 'juggle'); }
+      // ...and over: a suplex.
+      if (t === 30) { fx.anim(w, [[1, 'throw_lift'], [10, 'suplex'], [40, 'suplex'], [52, 'crouch']]); sfx(function (S) { S.noise({ dur: 0.3, freq: 500, f1: 1400, q: 1, gain: 0.15 }); }); }
+      if (t > 30 && t < 44) { var v = (t - 30) / 14; l.x = w.x + fx.dir * (10 - 46 * v); l.y = 70 * Math.sin((1 - v) * Math.PI / 2) + 10 * (1 - v); l._drawRot = -fx.dir * Math.PI * v; }
+      if (t === 44) {
+        l._drawRot = 0; l.y = 0; l.x = w.x - fx.dir * 36; fx.pose(l, 'down');
+        fx.hit(l, 'overhead', { ch: true, shake: 0.03, y: 12 }); fx.slow(22, 0.4); fx.scene.effects.dust(l.x, 16, 3);
+      }
+      // He rolls over onto them... and falls asleep.
+      if (t === 80) { fx.pose(w, 'sleep'); w.x = l.x + fx.dir * 4; w.y = 8; s.sleep = t; s.night = t; }
+      if (s.sleep && (t - s.sleep) % 60 === 10) sfx(function (S) { S.osc({ dur: 0.9, f0: 70, f1: 60, gain: 0.25, type: 'sawtooth', vib: [6, 8], attack: 0.3 }); S.noise({ dur: 0.6, freq: 300, q: 1, gain: 0.08, at: 0.2 }); });
+      if (t === 120) { s.stamp = t; fx.scene.stage.react('wild'); }
+    },
+    draw: function (fx, t) {
+      var s = fx.s, g = fx.gs;
+      if (s.night) { // the lights go down: an all-nighter
+        var d = Math.min(0.55, (t - s.night) / 40);
+        g.fillStyle(0x0a0a28, d); g.fillRect(0, 0, W, H);
+        g.fillStyle(0xf4f0d0, d * 1.6); g.fillCircle(W - 90, 70, 18); g.fillStyle(0x0a0a28, d * 1.6); g.fillCircle(W - 82, 64, 16);
+        bigText(fx, 2, '3:00 AM', W - 90, 110, 0xff5a3a, 2, 0);
+      } else fx.texts[2].setVisible(false);
+      if (s.sleep) { // the Zzz's drift up
+        for (var k = 0; k < 3; k++) {
+          var a = ((t - s.sleep) + k * 20) % 60, zx = fx.sx(fx.w.x) + 10 + a * 0.6 + k * 4, zy = GY - 40 - a * 1.4;
+          if (k === 0) bigText(fx, 1, 'Z', zx, zy, 0xffffff, 2.4 - a / 40, 0, 1 - a / 60);
+          else { g.lineStyle(2, 0xffffff, 1 - a / 60); g.lineBetween(zx, zy, zx + 8, zy); g.lineBetween(zx + 8, zy, zx, zy + 8); g.lineBetween(zx, zy + 8, zx + 8, zy + 8); }
+        }
+      } else fx.texts[1].setVisible(false);
+      if (s.stamp) bigText(fx, 0, 'ALL-NIGHTER', W / 2, 140, 0xffa83a, 4 * stampScale(t, s.stamp), -5);
+    }
+  };
+
+  // JACK — Back Row: he folds a giant paper airplane, climbs on and rides it across the
+  // stage straight into them, then glides down and lands it perfectly. The judges agree.
+  function bigPlane(g, x, y, dir, k, fold) {
+    var P = function (u, v) { return { x: x + u * dir * k, y: y + v * k }; };
+    if (fold < 1) { // still a sheet of paper, folding
+      var f = fold;
+      g.fillStyle(0xf6f6f0, 1); g.fillPoints([P(-30 + 20 * f, -14 + 10 * f), P(30, -14 + 14 * f), P(30, 14 - 14 * f), P(-30 + 20 * f, 14 - 10 * f)], true);
+      g.lineStyle(1, 0x8aa8e0, 0.8); for (var r = -10; r <= 10; r += 5) { var a = P(-28 + 20 * f, r * (1 - f)), b = P(28, r * (1 - f)); g.lineBetween(a.x, a.y, b.x, b.y); }
+      return;
+    }
+    g.fillStyle(0xf6f6f0, 1); g.fillPoints([P(32, 0), P(-30, -12), P(-20, 0)], true);
+    g.fillStyle(0xd8d8d0, 1); g.fillPoints([P(32, 0), P(-30, 10), P(-20, 0)], true);
+    g.lineStyle(2, 0x8a94a8, 1); var c = P(32, 0), e = P(-26, 0); g.lineBetween(c.x, c.y, e.x, e.y);
+    g.lineStyle(2, 0x2a3a8a, 1); g.strokeCircle(P(-8, -5).x, P(-8, -5).y, 3 * k); // a doodle on the wing
+  }
+  FG.FINISHERS.jack = {
+    len: 220,
+    step: function (fx, t) {
+      var w = fx.w, l = fx.l, s = fx.s;
+      if (t === 1) { fx.anim(w, [[1, 'stand'], [8, 'fold'], [40, 'fold']]); fx.anim(l, FG.dazedAnim, true); s.px = w.x + fx.dir * 10; }
+      if (t > 1 && t < 40 && t % 4 === 0) sfx(function (S) { S.noise({ dur: 0.05, freq: 5200, q: 3, gain: 0.06, type: 'highpass' }); });
+      if (t === 44) { fx.pose(w, 'ride'); s.ride = t; sfx(function (S) { S.noise({ dur: 0.6, freq: 900, f1: 2600, q: 1, gain: 0.2 }); }); }
+      if (s.ride && !s.landed) {
+        var u = t - s.ride;
+        w.x += fx.dir * (u < 6 ? 2 : 9);
+        w.y = 30 + Math.sin(u * 0.2) * 4;
+        s.px = w.x; s.py = w.y;
+        if (!s.hit && (l.x - w.x) * fx.dir < 20) { s.hit = t; fx.hit(l, 'power', { ch: true, shake: 0.025, y: 50 }); fx.anim(l, [[1, 'juggle'], [30, 'down']]); fx.slow(18, 0.4); }
+        // Glide down and land it.
+        if (s.hit && t - s.hit > 10) { w.y = Math.max(0, 30 - (t - s.hit - 10) * 1.2); s.py = w.y; if (w.y === 0) { s.landed = t; fx.anim(w, [[1, 'ride'], [8, 'stand'], [24, 'lounge']]); sfx(function (S) { S.noise({ dur: 0.2, freq: 1400, q: 1, gain: 0.08 }); }); } }
+        if (w.x < C.WALL_L + 30 || w.x > C.WALL_R - 30) { s.landed = t; w.y = 0; fx.anim(w, [[1, 'stand'], [16, 'lounge']]); }
+      }
+      if (s.hit && t > s.hit && t < s.hit + 30) { l.y = Math.sin((t - s.hit) / 30 * Math.PI) * 60; l.x += fx.dir * 3; }
+      if (s.hit && t === s.hit + 30) { l.y = 0; FG.Sfx.play({ type: 'land' }); fx.shake(0.008); }
+      if (s.landed && t === s.landed + 20) { s.cards = t; sfx(function (S) { [0, 0.12, 0.24].forEach(function (d) { S.osc({ dur: 0.08, f0: 1100, gain: 0.05, type: 'square', at: d }); }); }); fx.scene.stage.react('wild'); }
+    },
+    draw: function (fx, t) {
+      var s = fx.s, g = fx.gf;
+      if (t > 4) {
+        var fold = Math.min(1, (t - 4) / 34), x = s.ride ? s.px : fx.w.x + fx.dir * 30, y = GY - (s.ride ? s.py - 6 : 10);
+        bigPlane(s.ride ? fx.gb : g, x, y, fx.dir, s.ride ? 1.8 : 1.2, fold);
+      }
+      if (s.cards) { // the judges: 10, 10, 10
+        var gs = fx.gs;
+        for (var k = 0; k < 3; k++) {
+          var up = Math.min(1, (t - s.cards - k * 6) / 8);
+          if (up <= 0) continue;
+          var cx = W / 2 - 110 + k * 110, cy = 120 + (1 - up) * 60;
+          gs.fillStyle(0x000000, 0.4); gs.fillRect(cx - 34, cy - 24, 72, 52);
+          gs.fillStyle(0xf8f8f0, 1); gs.fillRect(cx - 38, cy - 28, 72, 52);
+          gs.fillStyle(0x6a4a2a, 1); gs.fillRect(cx - 4, cy + 24, 6, 40);
+          bigText(fx, k, '10', cx - 2, cy - 2, 0x2a3a8a, 4, 0);
+        }
+      } else if (s.landed && t - s.landed < 20) bigText(fx, 0, 'BACK ROW', W / 2, 100, 0x5fd7ff, 4, -5);
+      else if (!s.cards) { fx.texts[0].setVisible(false); fx.texts[1].setVisible(false); fx.texts[2].setVisible(false); }
+    }
+  };
 })();

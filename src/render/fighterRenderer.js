@@ -217,9 +217,9 @@
         break;
       case 'wavyShort': { // MAX: short and wavy, a bumpy top
         var lw2 = shade(col, 1.35);
-        R(-7, -8, 13, 3, col); R(-6, -10, 3, 2, col); R(-2, -10, 3, 2, col); R(2, -10, 3, 2, col); R(5, -9, 2, 2, col);
-        R(-8, -6, 3, 5, col); R(4, -7, 3, 2, col);
-        R(-5, -9, 1, 1, lw2); R(-1, -9, 1, 1, lw2); R(3, -9, 1, 1, lw2); R(-7, -4, 1, 1, lw2);
+        R(-7, -8, 13, 3, col); R(-8, -6, 3, 5, col); R(4, -7, 3, 2, col); R(6, -6, 1, 1, col);
+        R(-6, -9, 4, 1, col); R(-2, -10, 4, 2, col); R(3, -9, 3, 1, col); R(-8, -8, 2, 2, col); // soft waves on top
+        R(-5, -8, 2, 1, lw2); R(0, -9, 2, 1, lw2); R(4, -8, 1, 1, lw2); R(-7, -5, 1, 2, lw2); R(-3, -7, 1, 1, lw2);
         break;
       }
       case 'shaggy': { // JACK: shaggy, medium length, bangs down to the glasses

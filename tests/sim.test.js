@@ -876,10 +876,12 @@ function count(r, type, attacker) {
   // A full charge on Order of Magnitude absorbs two.
   r = play(PD, S, 40, function (i) { return i === 0 ? FG.parseInput('B+H') : i <= 60 ? { h: true } : {}; }, { 30: { p: true }, 46: { p: true } }, 100);
   check('full charge absorbs two hits', count(r, 'armor') === 2 && hits(r, 0).length === 1, types(r));
-  // Nobody else has armor.
-  defs.filter(function (d) { return d !== PD; }).forEach(function (d) {
+  // No other teacher has armor (MAX's Course Load is the one student exception).
+  var MX = FG.fighterById('max');
+  defs.filter(function (d) { return d !== PD && d !== MX; }).forEach(function (d) {
     check(d.name + ' has no armor', Object.keys(d.moves).every(function (id) { return !d.moves[id].armor || d.moves[id].enhanced; }));
   });
+  if (MX) check('MAX: Course Load is a charge move with armor', MX.moves.fH.charge && MX.moves.fH.armor && Object.keys(MX.moves).every(function (id) { return id === 'fH' || !MX.moves[id].armor || MX.moves[id].enhanced; }));
 })();
 
 // RAMOS: Matrix Lock's short break window; Identity can't be broken and grabs crouchers.

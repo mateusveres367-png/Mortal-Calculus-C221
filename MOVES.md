@@ -623,3 +623,112 @@ Always in a hurry. Talks fast. Never stops moving.
 - **Never Stops:** D+H, up, air P, air K, air H, D+K (frames: D+H @0, UP @16, P @22, K @28, H @34, D+K @66)
 - **Speed Bump Plus (1 bar):** H, P+K, P, P, H (frames: H @0, P+K @3, P @45, P @55, H @62)
 - **Passing Period (3 bars):** P, D, D/F, F+P+K+H (frames: P @0, D @3, D/F @4, F @5, F+P+K+H @9)
+
+## MAX "HEAVY COURSE LOAD" — Power — Heavy Course Load
+
+Chill and friendly, but strong. His backpack is a weapon.
+
+**Style:** Backpack brawler. **Signature:** Course Load — F+H is a charge attack (hold H to load it up) with armor through its windup: it soaks a hit and keeps coming, and fully loaded it breaks a guard. Study Hall (D+K) stomps the floor, a low that also hits them when they are down; Bookbag Bomb (B+P) lobs his backpack high and it bursts where it lands.
+
+**Movement:** walk 2 forward / 1.5 back, dash 7.6 for 17 frames, backdash 7, jump 8.8, weight 1.06 (higher falls faster in juggles).
+
+| Input | Move | Level | i | Active | Recovery | Block | Hit | Counter hit | Damage | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| P | Syllabus | high | 11 | 2 | 14 | 0 | +7 | +10 | 10 |  |
+| P,P | Prereq | high | 11 | 3 | 17 | -4 | +5 | +9 | 12 |  |
+| P,P,H | Closed Book | mid | 12 | 3 | 20 | -9 | knockdown | knockdown | 13 |  |
+| B+P | Bookbag Bomb | mid | 18 | projectile | 22 | -4 | knockdown | knockdown | 16 | projectile: lobbed; bursts where it lands, range 400, enhance with P+K |
+| K | Doorstop | mid | 14 | 3 | 19 | -5 | +4 | +9 | 15 |  |
+| D+K | Study Hall | low | 18 | 4 | 20 | -11 | +2 | knockdown | 14 | tracks, hits downed opponents |
+| D/B+K | Drop Class | low | 21 | 3 | 26 | -18 | knockdown | knockdown | 18 | ducks highs |
+| H | Textbook Swing | mid | 19 | 4 | 22 | -6 | +4 | launch | 25 | wall splats, enhance with P+K |
+| F+H (HOLD) | Course Load | mid | 22 | 4 | 22 | -8 | +3 | knockdown | 23 | armor: absorbs 1 hit on frames 6-21 (2 at full charge), hold to charge |
+| D+H | Ap Lift | mid | 17 | 4 | 23 | -16 | launch | launch | 19 | enhance with P+K, jump cancel on hit (UP) |
+| P+K | Backpack Slam | throw | 12 | 2 | 26 |  |  |  | 38 | break with P |
+| B+P+K | Group Project | throw | 12 | 2 | 26 |  |  |  | 36 | break with K |
+| AIR P | Notebook Drop | mid | 8 | 4 | 10 |  |  |  | 10 | hitstun 16, blockstun 10, landing 5 |
+| AIR K | Locker Kick | mid | 10 | 5 | 12 |  |  |  | 13 | hitstun 18, blockstun 12, landing 7 |
+| AIR H | Dog Pile | mid | 13 | 4 | 16 |  |  |  | 19 | bounds, hitstun 22, blockstun 14, landing 11 |
+| K (DOWN) | Five More Minutes | low | 14 | 3 | 22 | -14 | -2 | +1 | 10 | ducks highs |
+| P/H (DOWN) | Alarm Clock | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
+| T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
+| D,D/F,F+P+K+H | Finals Week | mid | 19 | 4 | 52 | -36 | +4 | launch | 25 | wall splats |
+| T (BY AN OBJECT) | Springboard | mid | 16 | 5 | 18 | -6 | knockdown | knockdown | 18 |  |
+| B+T (BY AN OBJECT) | Vault | — | 38 total |  |  |  |  |  |  |  |
+
+**Enhanced specials** (P+K during the startup, 1 bar):
+
+- **Bookbag Bomb+** (`B+P`, then `P+K`): A bigger blast — 21 damage (from 16), a bigger or faster projectile.
+- **Textbook Swing+** (`H`, then `P+K`): Two hits, wall splat — 2 hits of 22.
+- **Ap Lift+** (`D+H`, then `P+K`): Armored, higher — 25 damage (from 19), armor on frames 1-17 (1 hit).
+
+**Ultimate:** Finals Week — the ultimate key (`U` / `Numpad 0`) or `D, D/F, F + P+K+H`, with all three bars: a mountain of textbooks rains down on them, then he body-slams them on top of the pile. 8 hits, 32% of their health; blocked -36, whiffed 74 frames.
+
+**KO finisher:** All-Nighter — `D, D, H` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).
+
+**Combo routes** (tested in `tests/sim.test.js`):
+
+- **Required Reading:** P, P, H (frames: P @0, P @13, H @26)
+- **Open Book:** P, P (frames: P @0, P @13)
+- **Ap Lift:** D+H, P, P, H (frames: D+H @0, P @42, P @54, H @63)
+- **Cram Session:** D+H, up, air P, air K, air H, D+K (frames: D+H @0, UP @20, P @25, K @32, H @38, D+K @71)
+- **Double Major (1 bar):** D+H, P+K, P, P, H (frames: D+H @0, P+K @3, P @49, P @59, H @68)
+- **Finals Week (3 bars):** P, D, D/F, F+P+K+H (frames: P @0, D @3, D/F @4, F @5, F+P+K+H @9)
+
+## JACK "BACK OF THE CLASSROOM" — Tricky — Back Row
+
+Creative and sneaky. Always messing around in the back row.
+
+**Style:** School-supply zoner. **Signature:** Doodle — B+K drops him into his sketchbook stance (DOODLING): his next attack comes from a weird angle (P a hopping overhead from above, K a skidding low, H a cartwheel kick that launches). Paper Airplane flies out and curves, up (B+P) or diving (D+P, a low once it skims the floor); Eraser Flick (F+P) is a fast little high; Pass the Note (F+H) is a feint; Seat Swap (B+H) switches sides.
+
+**Movement:** walk 2.2 forward / 1.6 back, dash 8.2 for 15 frames, backdash 9.6, jump 9.4, weight 0.93 (higher falls faster in juggles).
+
+| Input | Move | Level | i | Active | Recovery | Block | Hit | Counter hit | Damage | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| P | Spitball | high | 10 | 2 | 13 | +1 | +8 | +10 | 8 |  |
+| P,P | Pencil Poke | high | 10 | 2 | 16 | -3 | +6 | +9 | 10 |  |
+| P,P,H | Book Report | mid | 12 | 3 | 20 | -9 | knockdown | knockdown | 13 |  |
+| F+P | Eraser Flick | high | 11 | projectile | 13 | +1 | +7 | +10 | 9 | projectile: flies straight, range 340, enhance with P+K |
+| B+P | Paper Airplane | mid | 14 | projectile | 16 | -1 | +6 | +9 | 13 | projectile: curves up, range 520, enhance with P+K |
+| STANCE P | Margin Note | mid | 18 | 3 | 20 | -6 | +4 | knockdown | 17 | bounds |
+| STANCE K | Scribble | low | 14 | 4 | 20 | -12 | +2 | knockdown | 13 | ducks highs |
+| STANCE H | Outside The Lines | mid | 16 | 4 | 22 | -13 | launch | launch | 16 |  |
+| D+P | Nose Dive | mid | 15 | projectile | 16 | -1 | +6 | +9 | 13 | projectile: lobbed; rolls along the floor (a low once it lands), range 520 |
+| K | Ruler Snap | mid | 14 | 3 | 17 | -5 | +4 | +8 | 14 |  |
+| B+K | Doodle | — | 13 total |  |  |  |  |  |  | switches stance |
+| D+K | Under The Desk | low | 14 | 3 | 18 | -11 | 0 | +5 | 9 | hits downed opponents, ducks highs |
+| D/B+K | Trip The Aisle | low | 19 | 3 | 26 | -18 | knockdown | knockdown | 14 | ducks highs |
+| H | Binder Slap | mid | 17 | 3 | 20 | -5 | +5 | launch | 21 | wall splats |
+| F+H | Pass The Note | — | 23 total |  |  |  |  |  |  | feint: cancel with P, K, H or P+K during frames 6-18 |
+| B+H | Seat Swap | — | 27 total |  |  |  |  |  |  | teleport: gone frames 5-14, reappears behind them on frame 15 |
+| D+H | Pencil Flip | mid | 15 | 4 | 22 | -15 | launch | launch | 15 | enhance with P+K, jump cancel on hit (UP) |
+| P+K | Fold In Half | throw | 12 | 2 | 26 |  |  |  | 28 | break with P |
+| B+P+K | Switcheroo | throw | 12 | 2 | 26 |  |  |  | 32 | break with K |
+| AIR P | Notebook Swat | mid | 7 | 4 | 10 |  |  |  | 8 | hitstun 16, blockstun 10, landing 4 |
+| AIR K | Desk Hop | mid | 9 | 5 | 12 |  |  |  | 11 | hitstun 18, blockstun 12, landing 6 |
+| AIR H | Pencil Drop | mid | 12 | 4 | 16 |  |  |  | 16 | bounds, hitstun 22, blockstun 14, landing 10 |
+| K (DOWN) | Not Asleep | low | 14 | 3 | 22 | -14 | -2 | +1 | 10 | ducks highs |
+| P/H (DOWN) | I Was Listening | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
+| T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
+| D,D/F,F+P+K+H | Paper Airplane Squadron | mid | 14 | 3 | 47 | -35 | +4 | +8 | 14 |  |
+| T (BY AN OBJECT) | Springboard | mid | 16 | 5 | 18 | -6 | knockdown | knockdown | 18 |  |
+| B+T (BY AN OBJECT) | Vault | — | 38 total |  |  |  |  |  |  |  |
+
+**Enhanced specials** (P+K during the startup, 1 bar):
+
+- **Eraser Flick+** (`F+P`, then `P+K`): A bigger eraser, knockdown — 12 damage (from 9), a bigger or faster projectile, hit: knockdown.
+- **Paper Airplane+** (`B+P`, then `P+K`): Faster, knockdown — 17 damage (from 13), a bigger or faster projectile, hit: knockdown.
+- **Pencil Flip+** (`D+H`, then `P+K`): Armored — 20 damage (from 15), armor on frames 1-15 (1 hit).
+
+**Ultimate:** Paper Airplane Squadron — the ultimate key (`U` / `Numpad 0`) or `D, D/F, F + P+K+H`, with all three bars: dozens of paper airplanes fill the screen in formation and dive-bomb them. 11 hits, 32% of their health; blocked -35, whiffed 63 frames.
+
+**KO finisher:** Back Row — `B, D, F, K` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).
+
+**Combo routes** (tested in `tests/sim.test.js`):
+
+- **Spitballs:** P, P, H (frames: P @0, P @12, H @25)
+- **Pass It Back:** P, P (frames: P @0, P @12)
+- **Pencil Flip:** D+H, P, P, H (frames: D+H @0, P @41, P @51, H @58)
+- **Outside The Lines:** D+H, up, air P, air K, air H, D+K (frames: D+H @0, UP @16, P @23, K @31, H @39, D+K @92)
+- **Armored Flip (1 bar):** D+H, P+K, P, P, H (frames: D+H @0, P+K @3, P @41, P @51, H @58)
+- **Paper Airplane Squadron (3 bars):** P, D, D/F, F+P+K+H (frames: P @0, D @3, D/F @4, F @5, F+P+K+H @9)

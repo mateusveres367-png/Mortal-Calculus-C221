@@ -137,6 +137,28 @@ Every fighter's combo routes, and what the combo feel pass changed. The routes l
 | SPEED BUMP PLUS | medium | H, P+K, P, P, H | 4 | 1 bar | 50 |
 | NEVER STOPS | hard | D+H, UP, AIR P, AIR K, AIR H, D+K | 5 | - | 52 |
 | PASSING PERIOD | hard | P, D, D/F, F+P+K+H | 2 | 3 bars | 58 |
+
+### MAX (power, heavy course load)
+
+| Route | Level | Inputs | Hits | Meter | Damage |
+| --- | --- | --- | --- | --- | --- |
+| REQUIRED READING | easy | P, P, H | 3 | - | 33 |
+| OPEN BOOK | easy | P, P | 2 | - | 22 |
+| AP LIFT | medium | D+H, P, P, H | 4 | - | 50 |
+| DOUBLE MAJOR | medium | D+H, P+K, P, P, H | 4 | 1 bar | 56 |
+| CRAM SESSION | hard | D+H, UP, AIR P, AIR K, AIR H, D+K | 5 | - | 59 |
+| FINALS WEEK | hard | P, D, D/F, F+P+K+H | 2 | 3 bars | 61 |
+
+### JACK (tricky, back row)
+
+| Route | Level | Inputs | Hits | Meter | Damage |
+| --- | --- | --- | --- | --- | --- |
+| SPITBALLS | easy | P, P, H | 3 | - | 29 |
+| PASS IT BACK | easy | P, P | 2 | - | 18 |
+| PENCIL FLIP | medium | D+H, P, P, H | 4 | - | 42 |
+| ARMORED FLIP | medium | D+H, P+K, P, P, H | 4 | 1 bar | 47 |
+| OUTSIDE THE LINES | hard | D+H, UP, AIR P, AIR K, AIR H, D+K | 5 | - | 48 |
+| PAPER AIRPLANE SQUADRON | hard | P, D, D/F, F+P+K+H | 2 | 3 bars | 59 |
 <!-- /routes -->
 
 ## Easier combos (the second pass)

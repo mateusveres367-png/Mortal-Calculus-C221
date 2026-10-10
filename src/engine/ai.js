@@ -405,9 +405,16 @@
       return raw;
     }
     // Students zone from range: a projectile (one at a time), or a teleport in.
-    if (st.far && dist > 130 && !self.projOut && rnd() < (st.zone || 0.3) * (0.4 + L.combo * 0.6)) return this.styleAttack(pick(st.far), match, self);
+    if (st.far && dist > (st.zoneDist || 130) && !self.projOut && rnd() < (st.zone || 0.3) * (0.4 + L.combo * 0.6)) return this.styleAttack(pick(st.far), match, self);
     // Runners (RAMOS) sprint in from range.
     if (st.run && self.def.runSpeed && dist > 90 && rnd() < st.run * (0.4 + L.combo * 0.6)) { this.runIn = { t: 1, until: match.frame + 70 }; raw[fwdKey] = true; return raw; }
+    // A projectile out there: don't dash into it. Walk in behind it, or jump it.
+    var their = (match.projectiles || []).filter(function (p) { return !p.dead && p.owner !== self.index; })[0];
+    if (their) {
+      if (FG.projectileLevel(their) === 'low' && Math.abs(their.x - self.x) < 110 && rnd() < L.sidestep * 2) { raw.up = true; raw[fwdKey] = true; return raw; }
+      this.walk = { dir: Math.abs(their.x - self.x) < 70 ? 'back' : 'fwd', until: match.frame + 8 };
+      return raw;
+    }
     // Far: close the distance (dash when feeling aggressive; rushdown styles dash more).
     if (roll < a * 0.5 + (st.dashIn || 0) * 0.4) {
       var dp = {}; dp[0] = 'F'; dp[2] = 'F';
@@ -456,7 +463,7 @@
       if (sp.spawn) { if (Math.abs(dx) < 50 && p.age <= (sp.arm || 0) + 2) { best = p; bt = 0; } return; }
       if (Math.sign(dx) !== p.dir && Math.abs(dx) > 20) return;
       var t = (Math.abs(dx) - 16 * self.def.scale) / Math.max(0.6, Math.abs(p.vx));
-      if (t < 16 && t < bt) { bt = t; best = p; }
+      if (t < 12 + L.block * 10 && t < bt) { bt = t; best = p; }
     });
     return best;
   };
