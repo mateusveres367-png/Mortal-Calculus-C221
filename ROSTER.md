@@ -240,7 +240,7 @@ He teaches all the math classes and has been at El Camino for 29 years. **The bo
 
 **Style:** Long-limbed, efficient and smooth. No wasted motion: long jabs, whip-like kicks and perfectly timed counters, with a move from every subject.
 
-**Signature — 29 Years:** he gets better as the match goes on: faster in round 2, stronger in round 3. Once per round, **Seen It All** auto-counters whatever move the opponent has used most (once they've used it three times).
+**Signature — 29 Years:** he gets better as the match goes on: faster in round 2, stronger in round 3. Once per round, **Seen It All** auto-counters whatever move the opponent has used most (once they've used it four times).
 
 **Taunt:** WILSON doesn't taunt. His taunt button is **Stare**: he stands still and stares for a second, gaining a little meter. It leaves him open, same as a taunt.
 

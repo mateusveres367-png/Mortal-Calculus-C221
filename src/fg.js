@@ -151,7 +151,7 @@ FG.C = {
   BOOST_DAMAGE: 1.2,    // Extra Credit: damage multiplier while boosted
   YEARS_SPEED: 1.1,     // WILSON's 29 YEARS: movement from round 2
   YEARS_DAMAGE: 1.1,    // WILSON's 29 YEARS: damage from round 3
-  SEEN_IT_ALL: 3,       // WILSON's Seen It All: uses of a move before he counters it on sight
+  SEEN_IT_ALL: 4,       // WILSON's Seen It All: uses of a move before he counters it on sight
   STARE_METER: 25,      // WILSON's Stare: meter for standing there a second
   PROP_REACH: 60,       // stage objects: how close to one you must be to use it
   PROP_COOLDOWN: 360,   // stage objects: frames before one can be used again (6 seconds)

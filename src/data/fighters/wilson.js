@@ -126,7 +126,7 @@
     passive: '29years', seenItAll: true,
     bio: 'TWENTY-NINE YEARS AT EL CAMINO. TEACHES EVERY MATH CLASS. NEVER SMILES. NEVER WASTES A WORD.',
     signature: ['29 YEARS', 'SEEN IT ALL', 'CHAIN RULE', 'SINE WAVE', 'ABSOLUTE VALUE'],
-    scale: 1.06, health: 160,
+    scale: 1.06, health: 158,
     // Movement: smooth and unhurried, with a long reach to cover the gaps.
     walkF: 1.9, walkB: 1.8, dashSpeed: 7.6, dashFrames: 15, dashAttackFrom: 6, backdashSpeed: 9,
     jumpVy: 9.6, weight: 1, react: 0.7,

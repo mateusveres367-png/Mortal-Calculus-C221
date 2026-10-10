@@ -66,6 +66,54 @@ WILSON      50    56    65    65    63    58    58    52    -
 
 Rounds average 33 seconds; about 1% end on time.
 
+## The student reworks: the final pass
+
+After the five student reworks (MATEUS, NICOLAS, MAX, JACK, HUDSON), two seeds pooled (777
+and 4242, 8736 matches): the spread is **41.2% to 60.0%**, and neither run lists a
+never-used move.
+
+| Fighter   | Seed 777 | Seed 4242 | Pooled |
+|-----------|---------:|----------:|-------:|
+| BRINKHUS  | 59.1 | 60.9 | 60.0 |
+| WILSON    | 59.6 | 59.8 | 59.7 |
+| LEE       | 55.9 | 53.5 | 54.7 |
+| PEDERSEN  | 53.4 | 55.8 | 54.6 |
+| DALSASS   | 50.6 | 57.9 | 54.2 |
+| MAX       | 54.3 | 53.8 | 54.0 |
+| RAMOS     | 50.8 | 49.7 | 50.2 |
+| CHAI      | 50.0 | 49.4 | 49.7 |
+| LOPEZ     | 46.3 | 48.1 | 47.2 |
+| JACK      | 47.3 | 46.5 | 46.9 |
+| MIYASHIRO | 43.9 | 43.1 | 43.5 |
+| HUDSON    | 42.3 | 43.1 | 42.7 |
+| NICOLAS   | 42.8 | 39.7 | 41.2 |
+| MATEUS    | 43.6 | 38.8 | 41.2 |
+
+Matchup grid, seed 777 (row wins % against column):
+
+```
+          PEDE  BRIN  CHAI  DALS  LEE  LOPE  MIYA  RAMO  WILS  MATE  NICO  MAX  JACK  HUDS
+PEDERSEN    -     52    50    46    48    25    29    52    42    67    85    58    77    63
+BRINKHUS    48    -     65    58    69    63    21    75    33    77    73    42    67    79
+CHAI        50    35    -     38    50    42    44    67    50    71    56    65    38    46
+DALSASS     54    42    63    -     48    44    50    40    35    48    58    35    58    83
+LEE         52    31    50    52    -     67    60    58    33    71    67    50    69    67
+LOPEZ       75    38    58    56    33    -     40    19    50    50    38    46    56    44
+MIYASHIRO   71    79    56    50    40    60    -     21    52    17    19    44    21    42
+RAMOS       48    25    33    60    42    81    79    -     46    52    50    56    40    48
+WILSON      58    67    50    65    67    50    48    54    -     71    44    63    71    69
+MATEUS      33    23    29    52    29    50    83    48    29    -     52    29    50    58
+NICOLAS     15    27    44    42    33    63    81    50    56    48    -     38    27    33
+MAX         42    58    35    65    50    54    56    44    38    71    63    -     56    75
+JACK        23    33    63    42    31    44    79    60    29    50    73    44    -     44
+HUDSON      38    21    54    17    33    56    58    52    31    42    67    25    56    - 
+```
+
+The last changes: WILSON had crept up to 62.7% (the students he beats are weaker than the
+old ones were against him). His health can't go lower (158 is the floor where no route
+takes more than 40% of it), so his Seen It All now needs a move used **4** times (from 3)
+before he counters it on sight; he lands at 59.7%.
+
 ## MATEUS the Muay Thai fighter, and the CPU's dash-in fix
 
 MATEUS was rebuilt as a Muay Thai striker (the clinch, leg damage, the check; no projectile).
