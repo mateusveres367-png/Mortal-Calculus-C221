@@ -1,4 +1,4 @@
-// LEE — Rushdown — Sequences. Muay Thai and boxing: fast jabs, hooks, elbows and
+// LEE — Rushdown — Sequences. A peekaboo boxer: fast jabs, hooks, elbows and
 // knees, and constant forward pressure from a low, hunched, aggressive stance.
 // Short range, but fast.
 //
@@ -60,7 +60,7 @@
     // Nth Term: a slicing elbow, point first.
     elbow_c: R({ hip: [3, 38], lean: 14, fa: GF, ba: [-150, 120], fl: { foot: [16, 0] }, bl: { foot: [-12, 0] } }),
     elbow_x: R({ hip: [11, 38], lean: 30, fa: { hand: [16, 70] }, ba: [20, 160], fl: { foot: [22, 0] }, bl: { foot: [-8, 1] } }),
-    // Divergent Low: a Muay Thai low kick to the thigh.
+    // Divergent Low: a low kick to the thigh.
     lowk_c: R({ hip: [2, 38], lean: 14, fa: GF, ba: GB, fl: { foot: [12, 0] }, bl: [-30, -60] }),
     lowk_x: R({ hip: [4, 38], lean: 4, fa: { hand: [18, 66] }, ba: [-150, -110], fl: { foot: [10, 0] }, bl: { foot: [44, 14] } }),
     // Recursive Rush: lunging in behind a straight, the back leg trailing.
@@ -117,7 +117,7 @@
     ultimate: { name: 'GRADING AT 11 PM', text: 'cut to his desk at night (a lamp, cold coffee, a mountain of papers): he grades faster and faster and every red check mark is a hit; done, he sighs, adjusts his glasses and flicks the red pen at them', from: 'fP', len: 290,
       hits: [56, 80, 100, 116, 128, 138, 146, 153, 159, 164, 168, 172, 175, 178, 236], weights: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 8], end: { gap: 100, launch: 6, height: 40 } },
     name: 'LEE', archetype: 'RUSHDOWN', theme: 'SEQUENCES',
-    style: 'MUAY THAI BOXER', signatureMechanic: 'ARITHMETIC SEQUENCE',
+    style: 'PEEKABOO BOXER', signatureMechanic: 'ARITHMETIC SEQUENCE',
     signatureText: 'his strings get faster with every hit, and once an attack connects (hit or block) forward, forward dash-cancels its recovery to keep the pressure on (once per string)',
     bio: 'SARCASTIC AND FUNNY. TAUNTS MID-COMBO. RELENTLESS PRESSURE.',
     signature: ['ARITHMETIC SEQUENCE', 'RECURSIVE RUSH', 'FIBONACCI UPPERCUT', 'SERIES EXPANSION'],

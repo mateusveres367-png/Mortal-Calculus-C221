@@ -10,7 +10,7 @@
 //     spawn: distance ahead to appear at instead of flying there (a pop-up box;
 //     never past the opponent),
 //     arm: frames before it can hit (it's still appearing), lowBelow: below this
-//     height it hits low (a plane diving, a gnome tumbling along the floor) }
+//     height it hits low (a plane diving and skimming the floor) }
 // It hits with the move's own level, damage, hit / ch / block results, push and
 // strength. Frame advantage is declared as for a strike at point-blank range; further
 // out, the hit or block stun never drops below PROJ_MIN_HIT / PROJ_MIN_BLOCK.
@@ -53,7 +53,7 @@
   function pbox(p) { return FG.rect(p.x - p.w / 2, p.x + p.w / 2, p.y, p.y + p.h); }
   Match.prototype.projectileBox = pbox;
 
-  // The level it hits at right now (a plane diving low, a gnome rolling on the floor).
+  // The level it hits at right now (a plane diving low, skimming the floor).
   function plevel(p) {
     var sp = p.move.projectile;
     if (sp.lowBelow != null && p.y + p.h / 2 < sp.lowBelow) return 'low';
@@ -246,6 +246,6 @@
     a.x = a.prevX = Math.max(C.WALL_L + w, Math.min(C.WALL_R - w, x));
     a.facing = o.x > a.x ? 1 : -1;
     a.slide = 0; a.vx = 0;
-    this.events.push({ type: 'teleport', fighter: i, from: from, x: a.x, y: 0, behind: to !== side, opp: o.x });
+    this.events.push({ type: 'teleport', fighter: i, from: from, x: a.x, y: 0, behind: to !== side, opp: o.x, fx: tp.fx });
   };
 })();

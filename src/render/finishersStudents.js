@@ -9,58 +9,52 @@
   function stampScale(t, at) { var u = Math.min(1, Math.max(0, (t - at) / 6)); return 1 + (1 - u) * (1 - u) * 2.5; }
   function sfx(fn) { FG.Sfx.synth(fn); }
 
-  // A little garden gnome on screen space g at (x, y = feet), scale k, facing dir.
-  function tinyGnome(g, x, y, k, dir) {
-    var R = function (dx, dy, w, h, col) { g.fillStyle(col, 1); g.fillRect(Math.round(x + (dir > 0 ? dx : -dx - w) * k), Math.round(y + dy * k), Math.max(1, Math.round(w * k)), Math.max(1, Math.round(h * k))); };
-    R(-3, -3, 3, 3, 0x5a3a1e); R(1, -3, 3, 3, 0x5a3a1e); R(-4, -11, 9, 8, 0x2a5fb8);
-    R(-3, -16, 7, 5, 0xf0c8a0); R(-4, -13, 8, 5, 0xf4f4f0); R(-4, -18, 9, 2, 0xc0302a); R(-3, -21, 7, 3, 0xc0302a); R(-1, -24, 4, 3, 0xc0302a);
-    R(2, -15, 1, 1, 0x111111); R(3, -13, 2, 1, 0xe08a7a);
-  }
-
-  // MATEUS — You've Been Gnomed: he sinks into the ground, pops up right behind them and
-  // taps their shoulder. They turn round: one hit. As they fall, a tiny garden gnome
-  // pops up out of the ground next to them. GNOMED stamps the screen.
+  // MATEUS — Lights Out: he steps back. The crowd goes silent. Then a flying knee, in
+  // slow motion. As they drop he's already turned round and walking away, and GNOMED.
+  // stamps the screen in red before they hit the floor.
   FG.FINISHERS.mateus = {
-    len: 220,
+    len: 230,
     step: function (fx, t) {
       var w = fx.w, l = fx.l, s = fx.s;
-      if (t === 1) { fx.anim(w, [[1, 'idle'], [8, 'dig']]); fx.anim(l, FG.dazedAnim, true); s.x0 = w.x; }
-      if (t === 12) { w._hidden = true; s.dig = t; sfx(function (S) { S.noise({ dur: 0.25, freq: 500, q: 0.8, gain: 0.2, type: 'lowpass' }); }); fx.scene.effects.dust(w.x, 8, 2); }
-      // The mound tunnels round behind them.
-      if (s.dig && !s.up) { var u = Math.min(1, (t - s.dig) / 30); s.mx = s.x0 + (l.x + fx.dir * 34 - s.x0) * u; }
-      if (t === 46) {
-        s.up = t; w._hidden = false; w.x = l.x + fx.dir * 34; w.facing = -fx.dir;
-        fx.anim(w, [[1, 'dig'], [6, 'pop_c'], [12, 'stand'], [20, 'tap'], [34, 'tap'], [40, 'idle']]);
-        fx.scene.effects.dust(w.x, 10, 2);
-        sfx(function (S) { S.osc({ dur: 0.12, f0: 300, f1: 900, gain: 0.06, type: 'triangle' }); });
+      if (t === 1) { fx.anim(w, [[1, 'idle'], [6, 'backdash'], [16, 'idle']]); fx.anim(l, FG.dazedAnim, true); }
+      if (t > 1 && t < 14) w.x -= fx.dir * 1.6; // a step back
+      // The hush: the lights dim, a heartbeat.
+      if (t === 18) s.hush = t;
+      if (s.hush && t < 60 && (t - 18) % 22 === 0) sfx(function (S) { S.osc({ dur: 0.12, f0: 60, gain: 0.5 }); S.osc({ dur: 0.1, f0: 55, gain: 0.35, at: 0.16 }); });
+      // Two quick steps in...
+      if (t === 46) { fx.anim(w, [[1, 'dash'], [6, 'jknee_c']]); s.x0 = w.x; s.goal = l.x - fx.dir * 34 * w.def.scale; }
+      if (t > 46 && t < 56) w.x = s.x0 + (s.goal - fx.dir * 14 - s.x0) * (t - 46) / 10;
+      // ...and the flying knee, in slow motion.
+      if (t === 56) { fx.anim(w, [[1, 'jknee_c'], [4, 'jknee_x'], [30, 'jknee_x']]); fx.slow(70, 0.3); sfx(function (S) { S.noise({ dur: 0.5, freq: 500, f1: 2400, q: 0.8, gain: 0.25 }); }); }
+      if (t > 56 && t < 72) { var u = (t - 56) / 16; w.y = Math.sin(u * Math.PI) * 34; w.x = s.goal - fx.dir * 14 * (1 - u); }
+      if (t === 64) {
+        s.hit = t; fx.hit(l, 'launch', { ch: true, shake: 0.03, y: 80 });
+        fx.anim(l, [[1, 'hit_high'], [24, 'juggle'], [60, 'juggle']]); fx.flash(0xffffff, 0.5);
       }
-      if (t === 64) sfx(function (S) { S.osc({ dur: 0.05, f0: 1400, gain: 0.05, type: 'triangle' }); S.osc({ dur: 0.05, f0: 1400, gain: 0.05, type: 'triangle', at: 0.12 }); }); // tap tap
-      if (t === 78) { l.facing = fx.dir; fx.pose(l, 'idle'); s.turn = t; } // they turn round...
-      if (t === 92) { fx.anim(w, [[1, 'up_c'], [5, 'up_x'], [26, 'up_x'], [36, 'smug']]); }
-      if (t === 96) { fx.hit(l, 'launch', { ch: true, shake: 0.02, y: 70 }); fx.anim(l, [[1, 'hit_high'], [10, 'juggle'], [30, 'down']]); fx.slow(22, 0.4); s.fall = t; }
-      if (s.fall && t > s.fall && t < s.fall + 30) { var v = (t - s.fall) / 30; l.y = Math.sin(v * Math.PI) * 50; l.x -= fx.dir * 1.6; }
-      if (s.fall && t === s.fall + 30) { l.y = 0; FG.Sfx.play({ type: 'land' }); fx.shake(0.008); }
-      // The tiny gnome pops up beside them.
-      if (t === 110) { s.gnome = t; s.gx = l.x - fx.dir * 30; fx.scene.effects.dust(s.gx, 6, 1.5); sfx(function (S) { S.osc({ dur: 0.1, f0: 700, f1: 1100, gain: 0.07, type: 'triangle' }); }); }
-      if (t === 132) { s.stamp = t; sfx(function (S) { S.osc({ dur: 0.3, f0: 180, f1: 60, gain: 0.5 }); S.noise({ dur: 0.2, freq: 1200, q: 0.6, gain: 0.25 }); }); fx.shake(0.015); fx.scene.stage.react('wild'); }
+      // They topple, slowly...
+      if (s.hit && t > s.hit && t < s.hit + 60) { var v = (t - s.hit) / 60; l.y = Math.sin(Math.min(1, v * 1.6) * Math.PI * 0.5) * 30 * (1 - v); l.x += fx.dir * 0.8; }
+      // ...and he's already turned round, walking away.
+      if (t === 76) { w.y = 0; w.facing = -fx.dir; fx.anim(w, [[1, 'stand'], [8, 'away1'], [16, 'away2'], [24, 'away1']], true); }
+      if (t > 76 && t < 190) w.x -= fx.dir * 0.9;
+      if (t === 104) { s.stamp = t; fx.shake(0.012); sfx(function (S) { S.osc({ dur: 0.35, f0: 160, f1: 50, gain: 0.6 }); S.noise({ dur: 0.2, freq: 1400, q: 0.6, gain: 0.3 }); }); }
+      if (s.hit && t === s.hit + 60) { l.y = 0; fx.pose(l, 'down'); FG.Sfx.play({ type: 'land' }); fx.shake(0.01); fx.scene.stage.react('wild'); }
     },
     draw: function (fx, t) {
       var s = fx.s, g = fx.gs;
-      if (s.dig && !s.up) { // the mound, on screen
-        var mx = fx.sx(s.mx), my = GY;
-        g.fillStyle(0x4a3220, 1); g.fillEllipse(mx, my - 3, 30, 10); g.fillStyle(0x6a4a2a, 1); g.fillEllipse(mx, my - 4, 22, 7);
+      if (s.hush) { // the lights go down, and stay down
+        var d = Math.min(0.45, (t - s.hush) / 30);
+        g.fillStyle(0x000000, d); g.fillRect(0, 0, W, H);
       }
-      if (s.up && t - s.up > 18 && t - s.up < 40) bigText(fx, 1, 'TAP TAP', fx.sx(fx.w.x), 150, 0xffffff, 2, -4);
-      else if (s.turn && t - s.turn < 14) bigText(fx, 1, '?!', fx.sx(fx.l.x), 140, 0xffd23f, 3, 0);
+      if (s.hush && t - s.hush < 40) bigText(fx, 1, '...', W / 2, 90, 0xffffff, 3, 0, Math.min(1, (t - s.hush) / 10));
       else fx.texts[1].setVisible(false);
-      if (s.gnome) { var up = Math.min(1, (t - s.gnome) / 8); tinyGnome(g, fx.sx(s.gx), GY + 2 - up * 2, 1.4 * up, fx.dir); }
       if (s.stamp) {
-        var sc = stampScale(t, s.stamp);
-        bigText(fx, 0, 'GNOMED', W / 2, 120, 0xc0302a, 6 * sc, -6);
-        // A gnome hat on the O.
-        var hx = W / 2 - 18 * sc, hy = 120 - 30 * sc;
-        g.fillStyle(0xc0302a, 1); g.fillTriangle(hx - 10 * sc, hy + 10 * sc, hx + 10 * sc, hy + 10 * sc, hx + 2 * sc, hy - 14 * sc);
-      }
+        var sc = stampScale(t, s.stamp), a = -0.12, cx = W / 2, cy = 140;
+        // A red brushstroke behind the word.
+        g.fillStyle(0x6a0a18, 0.9);
+        g.fillPoints([{ x: cx - 200 * sc, y: cy - 30 * sc }, { x: cx + 190 * sc, y: cy - 50 * sc }, { x: cx + 210 * sc, y: cy + 22 * sc }, { x: cx - 180 * sc, y: cy + 36 * sc }], true);
+        bigText(fx, 0, 'GNOMED.', cx + 4, cy + 4, 0x000000, 6 * sc, a * 57);
+        bigText(fx, 2, 'GNOMED.', cx, cy, 0xe8182e, 6 * sc, a * 57);
+      } else { fx.texts[0].setVisible(false); fx.texts[2].setVisible(false); }
     }
   };
 

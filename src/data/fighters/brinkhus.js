@@ -117,7 +117,7 @@
     signatureText: 'his straights outrange everyone\'s, and landing one with the very tip hits 25% harder',
     bio: 'NICE, EASYGOING, A GOOD SPORT. BEST FOR NEW PLAYERS.',
     signature: ['SLOPE JAB', 'DISTRIBUTIVE PROPERTY', 'LINEAR RUSH', 'SOLVE FOR X', 'FOIL'],
-    scale: 1.08, health: 166,
+    scale: 1.08, health: 158,
     // Movement: a quick, springy walk and the fastest dash of the straight-line fighters.
     walkF: 2.2, walkB: 1.9, dashSpeed: 9.8, dashFrames: 14, backdashSpeed: 8.4,
     jumpVy: 9.9, weight: 1.0, react: 1.0,
@@ -139,7 +139,7 @@
     moves: FG.kit.moves({
       jab: {
         name: 'Jab', label: 'SLOPE JAB', cmd: 'P', level: 'high', strength: 'light', motion: 'jab', tip: 52,
-        startup: 10, active: 2, recovery: 13, damage: 7,
+        startup: 10, active: 2, recovery: 13, damage: 6,
         block: 1, hit: { adv: 8 }, ch: { adv: 10 },
         hitbox: { x: 22, w: 34, y: 68, h: 16 }, push: 6, juggle: 3.2,
         cancels: [{ btn: 'p', into: 'jab2', from: 10, to: 22 }, { btn: 'k', into: 'eps', from: 10, to: 22, onContact: true }],

@@ -51,7 +51,10 @@ function playMatch(a, b, seed) {
         // A move starting (once: hitstop can hold it on its first frame).
         var started = f[k].state === 'attack' && f[k].moveFrame === 1 && f[k].move && !(prev[k] && prev[k].move === f[k].move && prev[k].mf === 1);
         if (started) { var id = f[k].move.id; stats[f[k].def.id].moves[id] = (stats[f[k].def.id].moves[id] || 0) + 1; }
-        prev[k] = { move: f[k].move, mf: f[k].state === 'attack' ? f[k].moveFrame : 0 };
+        // A clinch follow-up starting (MATEUS: the clinch plays them, not the attack state).
+        var ca = f[k].clinchAct;
+        if (ca && ca.t === 1 && !(prev[k] && prev[k].ca === ca)) stats[f[k].def.id].moves[ca.move.id] = (stats[f[k].def.id].moves[ca.move.id] || 0) + 1;
+        prev[k] = { move: f[k].move, mf: f[k].state === 'attack' ? f[k].moveFrame : 0, ca: ca && ca.t >= 1 ? ca : null };
       }
       m.events.forEach(function (e) { if (e.type === 'ultimate') stats[f[e.attacker].def.id].ults++; });
       if (m.cinematic) continue;

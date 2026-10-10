@@ -123,6 +123,8 @@
 
     // An ultimate that connects plays its cinematic.
     if (m.ultimate && !blocked) { this.startCinematic(c.a, c.d); return; }
+    // Check (MATEUS): back pressed just as a low kick lands takes it on the shin.
+    if (!blocked && grounded && this.tryCheck(c, a, d, m)) return;
     // Exponential Armor: the defender soaks the hit and keeps going (not a lethal one).
     if (!blocked && d.armorUp(m) && d.health > Math.round(m.damage * C.ARMOR_DAMAGE)) { this.absorb(c, a, d, m); return; }
 
@@ -155,7 +157,8 @@
     if (m.multi && a.multiHits < m.multi) { result = { adv: 0 }; ev.multi = true; }
     if (m.enhanced) ev.enhanced = true;
     var state = d.state;
-    var mult = (ch ? 1.2 : 1) * (state === 'down' ? 0.6 : 1) * (state === 'wallsplat' ? 0.85 : 1);
+    // A move's own counter-hit multiplier (MATEUS's Spinning Elbow hits much harder).
+    var mult = (ch ? (m.chDamage || 1.2) : 1) * (state === 'down' ? 0.6 : 1) * (state === 'wallsplat' ? 0.85 : 1);
     if (a.calculated > 0) { mult *= C.CALCULATED_BONUS; a.calculated = 0; ev.calculated = true; }
     // Long Arms (BRINKHUS): landing with the very tip of a straight hits harder.
     if (m.tip && Math.abs(a.x - d.x) >= m.tip * a.def.scale) { mult *= C.TIP_BONUS; ev.tip = true; }
@@ -193,12 +196,19 @@
       ev.launch = true;
       ev.shake += 0.002;
       this.lastResult[c.a] = { move: m, kind: 'LAUNCH', adv: null };
-    } else if (m.wallSplat && this.wallDistance(d, a.facing) < 40) {
+    } else if ((m.wallSplat || result.wallSplat) && this.wallDistance(d, a.facing) < 40) {
       // A heavy blow next to the wall splats the opponent against it.
       d.y = 0;
       this.wallSplat(d, c.d);
       ev.finisher = true;
       this.lastResult[c.a] = { move: m, kind: 'WALL SPLAT', adv: null };
+    } else if (result.knockdown && result.carry) {
+      // Knocked flying (MATEUS's Head Kick on a counter hit): carried back, and into
+      // the wall if it's near enough (checkWallSplat).
+      this.toJuggle(d, a, 3.6, m);
+      d.vx = a.facing * result.carry;
+      ev.knockdown = true; ev.finisher = true;
+      this.lastResult[c.a] = { move: m, kind: 'KNOCKDOWN', adv: null };
     } else if (result.knockdown) {
       this.toJuggle(d, a, 2.4, m);
       d.vx = a.facing * 0.8;
@@ -220,11 +230,43 @@
       this.startMeasure(c.a, c.d, m, ch ? 'COUNTER' : 'HIT', ch);
     }
 
+    // Low Kick (MATEUS): every LEG_HITS kicks that land slow their walk for a while.
+    if (m.legKick && !d.ko) {
+      d.legHits++;
+      ev.legHits = d.legHits;
+      if (d.legHits >= C.LEG_HITS) {
+        d.legHits = 0; d.legDamage = C.LEG_FRAMES; ev.legDamage = true;
+        this.events.push({ type: 'legdamage', attacker: c.a, fighter: c.d, x: d.x, y: 30 });
+      }
+    }
+
     // Combo enders (knockdowns, splats, bounds, wall blasts) hang the longest.
     if (ev.finisher && !d.ko) hitstop = Math.max(hitstop, C.HITSTOP_FINISHER + (ch ? C.HITSTOP_CH : 0));
     this.hitstop = Math.max(this.hitstop, hitstop);
     ev.ko = d.ko;
     this.events.push(ev);
+  };
+
+  // Check (MATEUS, def.check): a low kick that lands just as he presses back (not
+  // holding it, pressing it: within CHECK_WINDOW frames, standing) meets his raised
+  // shin. No damage; the kicker staggers and he's free almost at once.
+  var CHECKABLE = { low: 1, sweep: 1, kick: 1, roundhouse: 1 };
+  var CHECK_FROM = { idle: 1, walkF: 1, walkB: 1, blockstun: 1 };
+  Match.prototype.tryCheck = function (c, a, d, m) {
+    if (!d.def.check || m.level !== 'low' || !CHECKABLE[m.motion] || m.air || m.throw || !CHECK_FROM[d.state]) return false;
+    var buf = this.buffers[c.d], taps = d.facing > 0 ? buf.leftTaps : buf.rightTaps;
+    if (!buf.back(d.facing) || buf.held.down || this.frame - taps[1] > C.CHECK_WINDOW) return false;
+    a.contact = 'block'; a.contactAt = c.moveFrame;
+    a.setState('hitstun'); a.stun = C.CHECK_STUN; a.reaction = 'low'; a.vx = 0;
+    a.slide = -a.facing * 1.6;
+    d.setState('blockstun'); d.stun = C.CHECK_RECOVER; d.guardCrouch = false; d.vx = 0;
+    d.checking = 16;
+    this.combo[c.d] = { hits: 0, damage: 0 };
+    this.hitstop = Math.max(this.hitstop, 10);
+    this.measure = null;
+    this.lastResult[c.d] = { move: m, kind: 'CHECK', adv: C.CHECK_STUN - C.CHECK_RECOVER };
+    this.events.push({ type: 'check', attacker: c.d, defender: c.a, move: m, x: d.x + d.facing * 12 * d.def.scale, y: 24, facing: d.facing, shake: 0.006 });
+    return true;
   };
 
   // An armored hit: damage (reduced), no hitstun, a short freeze, and the attacker's
@@ -286,7 +328,8 @@
     d.wallHits++;
     var heavy = m.strength === 'heavy' || m.strength === 'launch' || result.launch;
     if (heavy || d.wallHits >= C.WALL_HITS_MAX) {
-      this.toJuggle(d, a, result.launch ? result.launch * 0.75 * C.LAUNCH_SNAP : 4.5, m);
+      // m.wallPop: how high a move blows them off the wall (MATEUS's Head Kick, for his air combo).
+      this.toJuggle(d, a, result.launch ? result.launch * 0.75 * C.LAUNCH_SNAP : (m.wallPop || 4.5), m);
       d.vx = a.facing * 0.6;
       ev.finisher = true; ev.wallBlast = true;
       this.lastResult[c.a] = { move: m, kind: 'WALL BLAST', adv: null };
@@ -352,7 +395,8 @@
 
   Match.prototype.startGrab = function (c) {
     var a = this.fighters[c.a], d = this.fighters[c.d], m = c.move || a.move;
-    if (m.ultimate) { this.startCinematic(c.a, c.d); return; } // a grab ultimate (RAMOS)
+    if (m.ultimate) { this.startCinematic(c.a, c.d); return; } // a grab ultimate (RAMOS, MATEUS)
+    if (m.clinch) { this.startClinch(c, m); return; }         // MATEUS's clinch (clinch.js)
     a.actionable = false; d.actionable = false;
     a.contact = 'hit';
     a.setState('throwing');

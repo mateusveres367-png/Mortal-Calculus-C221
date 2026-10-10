@@ -28,11 +28,11 @@ Calm and friendly, but every hit is heavy. Slow, patient, devastating.
 | K | Exponent Kick | mid | 16 | 3 | 20 | -7 | +5 | +10 | 17 |  |
 | D+K | Negative Exponent | low | 18 | 3 | 22 | -13 | 0 | +6 | 12 | hits downed opponents, ducks highs |
 | D/B+K | Zero Power Sweep | low | 22 | 3 | 26 | -18 | knockdown | knockdown | 18 | ducks highs |
-| H | Base Hook | mid | 21 | 4 | 20 | +1 | +8 | launch | 22 | wall splats, armor: absorbs 1 hit on frames 6-20 |
-| F+H | Exponential Haymaker | mid | 26 | 4 | 22 | -6 | knockdown | launch | 26 | wall splats, armor: absorbs 1 hit on frames 8-25, enhance with P+K |
-| B+H (HOLD) | Order Of Magnitude | mid | 20 | 4 | 22 | -8 | +4 | knockdown | 18 | wall splats, armor: absorbs 1 hit on frames 6-19 (2 at full charge), hold to charge |
+| H | Base Hook | mid | 21 | 4 | 20 | +1 | +8 | launch | 20 | wall splats, armor: absorbs 1 hit on frames 6-20 |
+| F+H | Exponential Haymaker | mid | 26 | 4 | 22 | -6 | knockdown | launch | 24 | wall splats, armor: absorbs 1 hit on frames 8-25, enhance with P+K |
+| B+H (HOLD) | Order Of Magnitude | mid | 20 | 4 | 22 | -8 | +4 | knockdown | 16 | wall splats, armor: absorbs 1 hit on frames 6-19 (2 at full charge), hold to charge |
 | D+H | Logarithmic Launcher | mid | 17 | 4 | 24 | -17 | launch | launch | 20 | jump cancel on hit (UP) |
-| P+K | Long Division | throw | 12 | 2 | 28 |  |  |  | 36 | break with P |
+| P+K | Long Division | throw | 12 | 2 | 28 |  |  |  | 33 | break with P |
 | B+P+K | Synthetic Division | throw | 12 | 2 | 28 |  |  |  | 34 | break with K |
 | AIR P | Exponent Drop | mid | 9 | 4 | 10 |  |  |  | 12 | hitstun 16, blockstun 10, landing 6 |
 | AIR K | Power Kick | mid | 11 | 5 | 12 |  |  |  | 15 | hitstun 18, blockstun 12, landing 8 |
@@ -40,7 +40,7 @@ Calm and friendly, but every hit is heavy. Slow, patient, devastating.
 | K (DOWN) | Rolling Zero | low | 14 | 3 | 22 | -14 | -2 | +1 | 10 | ducks highs |
 | P/H (DOWN) | Spring Theorem | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
 | T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
-| D,D/F,F+P+K+H | Horsepower | mid | 21 | 4 | 50 | -29 | +8 | launch | 22 | wall splats, armor: absorbs 1 hit on frames 6-20 |
+| D,D/F,F+P+K+H | Horsepower | mid | 21 | 4 | 50 | -29 | +8 | launch | 20 | wall splats, armor: absorbs 1 hit on frames 6-20 |
 | T (BY AN OBJECT) | Springboard | mid | 16 | 5 | 18 | -6 | knockdown | knockdown | 18 |  |
 | B+T (BY AN OBJECT) | Vault | — | 38 total |  |  |  |  |  |  |  |
 
@@ -48,7 +48,7 @@ Calm and friendly, but every hit is heavy. Slow, patient, devastating.
 
 - **Right Angle Elbow+** (`F+P`, then `P+K`): Two elbows, knockdown — 2 hits of 14, hit: knockdown.
 - **Common Log+** (`F,F+P`, then `P+K`): Armored, wall splat — 23 damage (from 18), armor on frames 1-14 (1 hit), wall splats.
-- **Exponential Haymaker+** (`F+H`, then `P+K`): Absorbs two hits, launches — 34 damage (from 26), hit: launch, armor on frames 1-26 (2 hits).
+- **Exponential Haymaker+** (`F+H`, then `P+K`): Absorbs two hits, launches — 31 damage (from 24), hit: launch, armor on frames 1-26 (2 hits).
 
 **Ultimate:** Horsepower — the ultimate key (`U` / `Numpad 0`) or `D, D/F, F + P+K+H`, with all three bars: on go the sunglasses; he gets into his red sports car, revs it, and drives straight across the stage into them; they bounce off the hood, the car skids to a stop, and he leans out of the window with his line. 2 hits, 32% of their health; blocked -29, whiffed 74 frames.
 
@@ -73,7 +73,7 @@ Nice, easygoing, a good sport. Best for new players.
 
 | Input | Move | Level | i | Active | Recovery | Block | Hit | Counter hit | Damage | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| P | Slope Jab | high | 10 | 2 | 13 | +1 | +8 | +10 | 7 | Long Arms: +25% damage at the tip |
+| P | Slope Jab | high | 10 | 2 | 13 | +1 | +8 | +10 | 6 | Long Arms: +25% damage at the tip |
 | P,P | Rise Over Run | high | 9 | 2 | 16 | -3 | +6 | +9 | 8 | Long Arms: +25% damage at the tip |
 | P,K | Distribute | mid | 11 | 3 | 18 | -7 | +4 | +8 | 10 |  |
 | P,K,K | Distributive Property | mid | 13 | 3 | 22 | -13 | knockdown | knockdown | 14 | wall splats, enhance with P+K |
@@ -237,7 +237,7 @@ Happy, sassy, everyone's favorite. Fakes you out with a grin.
 
 Sarcastic and funny. Taunts mid-combo. Relentless pressure.
 
-**Style:** Muay thai boxer. **Signature:** Arithmetic Sequence — his strings get faster with every hit, and once an attack connects (hit or block) forward, forward dash-cancels its recovery to keep the pressure on (once per string).
+**Style:** Peekaboo boxer. **Signature:** Arithmetic Sequence — his strings get faster with every hit, and once an attack connects (hit or block) forward, forward dash-cancels its recovery to keep the pressure on (once per string).
 
 **Movement:** walk 2.6 forward / 1.5 back, dash 9.4 for 15 frames, backdash 7.6, jump 9, weight 0.97 (higher falls faster in juggles).
 
@@ -516,59 +516,68 @@ Twenty-nine years at el camino. Teaches every math class. Never smiles. Never wa
 
 # Students
 
-## MATEUS "GNOME" — Balanced — Gnomes
+## MATEUS "GNOME" — Balanced — Eight Limbs
 
-Sneaky and smug. Pops up where you don't expect him.
+Calm, focused, a little cocky. Lets his shins do the talking.
 
-**Style:** Scrappy trickster. **Signature:** Lawn Statue — B+H freezes him still like a garden gnome (hold H to stay frozen a little longer): attack him while he is frozen and he pops out and counters; throws beat it. Gnome Toss (B+P) lobs a mini gnome that tumbles along the floor as a low; Pop-Up (D+P) sinks into the ground and comes up right next to them.
+**Style:** Muay thai. **Signature:** The Clinch — P+K up close locks a Thai clinch, hands behind their head: P drives a knee into the body (up to three, each one stronger), K dumps them on the floor, H is a jumping knee that launches, back breaks off with a short elbow. They get out with P right as it locks, or by mashing. Low Kick (D+K) stacks leg damage: land three and their walk slows. Check: press back just as a low kick lands to take it on the shin; the kicker staggers.
 
-**Movement:** walk 2.5 forward / 1.6 back, dash 8.6 for 15 frames, backdash 8.2, jump 9.3, weight 0.96 (higher falls faster in juggles).
+**Movement:** walk 2.3 forward / 1.7 back, dash 8 for 14 frames, backdash 8.6, jump 9.4, weight 1 (higher falls faster in juggles).
 
 | Input | Move | Level | i | Active | Recovery | Block | Hit | Counter hit | Damage | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| P | Garden Jab | high | 10 | 2 | 13 | +1 | +8 | +10 | 8 |  |
-| P,P | Rake It In | high | 10 | 2 | 16 | -3 | +6 | +9 | 9 |  |
-| P,P,H | Wheelbarrow | mid | 12 | 3 | 20 | -9 | knockdown | knockdown | 13 |  |
-| F+P | Gnome Headbutt | mid | 12 | 3 | 17 | -3 | +5 | +9 | 14 | enhance with P+K |
-| B+P | Gnome Toss | mid | 14 | projectile | 22 | -4 | +3 | +7 | 12 | projectile: lobbed; rolls along the floor (a low once it lands), range 360, enhance with P+K |
-| D+P | Pop-Up | mid | 25 | 3 | 22 | -12 | knockdown | launch | 15 | teleport: gone frames 7-18, reappears in front of them on frame 19, enhance with P+K |
-| K | Lawn Kick | mid | 13 | 3 | 18 | -5 | +4 | +8 | 13 |  |
-| D+K | Weed Whacker | low | 15 | 3 | 19 | -11 | 0 | +5 | 10 | hits downed opponents, ducks highs |
-| D/B+K | Garden Sweep | low | 18 | 3 | 26 | -18 | knockdown | knockdown | 15 | ducks highs |
-| H | Shovel Swing | mid | 18 | 3 | 21 | -6 | +4 | launch | 20 | wall splats |
-| B+H (HOLD) | Lawn Statue | — | 31 total |  |  |  |  |  |  | parry, hold H to keep it up |
-| D+H | Got Gnomed | mid | 15 | 4 | 22 | -15 | launch | launch | 15 | jump cancel on hit (UP) |
-| P+K | Yard Work | throw | 12 | 2 | 26 |  |  |  | 31 | break with P |
-| B+P+K | Compost | throw | 12 | 2 | 26 |  |  |  | 34 | break with K |
-| AIR P | Acorn Drop | mid | 7 | 4 | 10 |  |  |  | 8 | hitstun 16, blockstun 10, landing 4 |
-| AIR K | Pinwheel Kick | mid | 9 | 5 | 12 |  |  |  | 11 | hitstun 18, blockstun 12, landing 6 |
-| AIR H | Watering Can | mid | 12 | 4 | 16 |  |  |  | 16 | bounds, hitstun 22, blockstun 14, landing 10 |
-| K (DOWN) | Sprinkler | low | 14 | 3 | 22 | -14 | -2 | +1 | 10 | ducks highs |
-| P/H (DOWN) | Spring Bulb | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
-| T | Taunt | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
-| LAWN STATUE, ATTACKED | Gnomed | mid | 6 | 3 | 20 | -8 | launch | launch | 18 |  |
-| D,D/F,F+P+K+H | Gnome Army | mid | 12 | 3 | 47 | -33 | +5 | +9 | 14 |  |
+| P | Jab | high | 9 | 2 | 13 | +1 | +8 | +10 | 8 |  |
+| P,P | Cross | high | 10 | 2 | 15 | -2 | +6 | +9 | 10 |  |
+| P,P,H | Rising Knee | mid | 12 | 3 | 20 | -9 | knockdown | knockdown | 13 |  |
+| F+P | Slashing Elbow | high | 13 | 2 | 13 | +2 | +6 | +10 | 14 |  |
+| D+P | Rear Uppercut | mid | 11 | 2 | 17 | -9 | +5 | launch | 15 |  |
+| F,F,P | Superman Punch | mid | 13 | 3 | 19 | -5 | +5 | knockdown | 16 |  |
+| K | Teep | mid | 13 | 3 | 17 | -3 | +2 | +6 | 12 | wall splats |
+| F+K | Body Kick | mid | 15 | 3 | 18 | -6 | +3 | knockdown | 16 | enhance with P+K |
+| D+K | Low Kick | low | 14 | 3 | 17 | -10 | +3 | +7 | 12 |  |
+| D/B+K | Sweep The Leg | low | 19 | 3 | 26 | -18 | knockdown | knockdown | 14 | ducks highs |
+| H | Knee | mid | 17 | 3 | 20 | -5 | +4 | launch | 19 | wall splats |
+| F+H | Head Kick | high | 20 | 3 | 22 | -10 | knockdown | knockdown | 24 | jump cancel on hit (UP) |
+| B+H | Spinning Elbow | mid | 14 | 2 | 20 | -8 | +3 | knockdown | 16 | enhance with P+K |
+| D+H | Jumping Knee | mid | 15 | 4 | 22 | -14 | launch | launch | 15 | jump cancel on hit (UP) |
+| P+K (CLOSE) | The Clinch | throw | 12 | 2 | 26 |  |  |  | 0 | enhance with P+K, break with P |
+| B+P+K | Turn And Dump | throw | 12 | 2 | 26 |  |  |  | 33 | break with K |
+| AIR P | Elbow Drop | mid | 7 | 4 | 10 |  |  |  | 8 | hitstun 16, blockstun 10, landing 4 |
+| AIR K | Flying Knee | mid | 9 | 5 | 12 |  |  |  | 11 | hitstun 18, blockstun 12, landing 6 |
+| AIR H | Axe Kick | mid | 12 | 4 | 16 |  |  |  | 16 | bounds, hitstun 22, blockstun 14, landing 10 |
+| K (DOWN) | Shin From The Floor | low | 14 | 3 | 22 | -14 | -2 | +1 | 10 | ducks highs |
+| P/H (DOWN) | Rising Teep | mid | 18 | 3 | 22 | -12 | +2 | +5 | 14 |  |
+| T | Again | — | 61 total |  |  |  |  |  |  | says a taunt line; counter-hittable the whole time |
+| CLINCH, P | Knee | mid | 9 | 1 | 11 |  | holds the clinch |  | 9 | lands from the clinch (can't be blocked) |
+| CLINCH, P, P | Knee 2 | mid | 9 | 1 | 11 |  | holds the clinch |  | 11 | lands from the clinch (can't be blocked) |
+| CLINCH, P, P, P | Knee 3 | mid | 10 | 1 | 12 |  | holds the clinch |  | 14 | lands from the clinch (can't be blocked) |
+| CLINCH, K | Off-Balance | mid | 12 | 1 | 18 |  | knockdown |  | 14 | lands from the clinch (can't be blocked) |
+| CLINCH, H | Jumping Knee To The Head | mid | 12 | 1 | 22 |  | launch |  | 15 | lands from the clinch (can't be blocked), jump cancel on hit (UP) |
+| CLINCH, B | Break-Off Elbow | high | 7 | 1 | 14 |  | +4 |  | 10 | lands from the clinch (can't be blocked) |
+| D,D/F,F+P+K+H | Eight Limbs | throw | 12 | 2 | 56 |  |  |  | 0 | break with P |
 | T (BY AN OBJECT) | Springboard | mid | 16 | 5 | 18 | -6 | knockdown | knockdown | 18 |  |
 | B+T (BY AN OBJECT) | Vault | — | 38 total |  |  |  |  |  |  |  |
 
 **Enhanced specials** (P+K during the startup, 1 bar):
 
-- **Gnome Headbutt+** (`F+P`, then `P+K`): Two hits, launches — 2 hits of 12, hit: launch.
-- **Gnome Toss+** (`B+P`, then `P+K`): A bigger gnome, knockdown — 16 damage (from 12), a bigger or faster projectile, hit: knockdown.
-- **Pop-Up+** (`D+P`, then `P+K`): Pops up behind them — 20 damage (from 15), reappears behind them, hit: launch.
+- **Body Kick+** (`F+K`, then `P+K`): Three kicks — 3 hits of 10, hit: knockdown.
+- **Spinning Elbow+** (`B+H`, then `P+K`): Armored — 21 damage (from 16), armor on frames 1-14 (1 hit).
+- **The Clinch+** (`P+K (CLOSE)`, then `P+K`): The knees always reach 3 — P+K in the clinch also works; the opponent can't escape until the third knee lands.
 
-**Ultimate:** Gnome Army — the ultimate key (`U` / `Numpad 0`) or `D, D/F, F + P+K+H`, with all three bars: dozens of garden gnomes pop out of the ground; whenever the opponent looks at them they freeze, when they turn away the gnomes swarm, and the last one bonks them with a watering can. 9 hits, 32% of their health; blocked -33, whiffed 61 frames.
+**Ultimate:** Eight Limbs — the ultimate key (`U` / `Numpad 0`) or `D, D/F, F + P+K+H`, with all three bars: he catches them in the clinch, the screen goes black and red, and eight strikes land, each one named: LEFT FIST, RIGHT FIST, LEFT ELBOW, RIGHT ELBOW, LEFT KNEE, RIGHT KNEE, LEFT SHIN, and a RIGHT SHIN head kick. 8 hits, 32% of their health; a grab, so it can't be blocked.
 
-**KO finisher:** You've Been Gnomed — `D, U, P` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).
+**KO finisher:** Lights Out — `B, B, K` within 2 seconds of the K.O. that wins the match (training: menu, FINISHER).
 
 **Combo routes** (tested in `tests/sim.test.js`):
 
-- **Two-Step:** P, P, H (frames: P @0, P @12, H @25)
-- **Heads Up:** F+P, P, H (frames: F+P @0, P @14, H @27)
-- **Got Gnomed:** D+H, P, P, H (frames: D+H @0, P @42, P @55, H @64)
-- **Garden Party:** D+H, up, air P, air K, air H, D+K (frames: D+H @0, UP @16, P @22, K @28, H @34, D+K @66)
-- **Wheelbarrow Plus (1 bar):** F+P, P+K, P, P, H (frames: F+P @0, P+K @3, P @38, P @51, H @60)
-- **Gnome Army (3 bars):** P, D, D/F, F+P+K+H (frames: P @0, D @3, D/F @4, F @5, F+P+K+H @9)
+- **Jab, Cross, Body Kick:** P, P, F+K (frames: P @0, P @12, F+K @25)
+- **Two And A Knee:** P, P, H (frames: P @0, P @12, H @25)
+- **Jumping Knee:** D+H, P, P, H (frames: D+H @0, P @42, P @55, H @64)
+- **Clinch Knees:** up close: P+K, P, P, H (frames: P+K @0, P @14, P @34, H @54)
+- **Teep, Head Kick, Air:** at the wall: K, F+H, up, air K, air H (frames: K @0, F+H @25, UP @47, K @53, H @65)
+- **Three Kicks (1 bar):** F+K, P+K (frames: F+K @0, P+K @3)
+- **Knees To Three (1 bar):** up close: P+K, P+K, H (frames: P+K @0, P+K @14, H @80)
+- **Eight Limbs (3 bars):** up close: D, D/F, F+P+K+H (frames: D @0, D/F @1, F @2, F+P+K+H @3)
 
 ## NICOLAS "THE LATE PASS" — Rushdown — Passing Period
 

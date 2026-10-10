@@ -29,6 +29,7 @@
     this.measure = null;
     this.lastResult = [null, null]; // per attacker: { move, kind, adv }
     this.throwState = null;
+    this.clinch = null;    // MATEUS's clinch: { a, d, start, knees, act, mash, ex } (clinch.js)
     this.koTimer = 0;
     this.winner = null;
     this.over = false;
@@ -106,6 +107,7 @@
     }
 
     this.updateThrow();
+    this.updateClinch();
     for (i = 0; i < 2; i++) {
       if (f[i].teleportNow) { this.teleport(i, f[i].teleportNow); f[i].teleportNow = null; }
       if (f[i].throwNow) { this.spawnProjectile(i, f[i].throwNow); f[i].throwNow = null; }
@@ -178,6 +180,8 @@
     a.vx = d.vx = a.vy = d.vy = 0; a.slide = d.slide = 0;
     d.stance = 'A';
     this.throwState = null;
+    this.clinch = null;
+    a.clinchAct = null;
     this.measure = null;
     this.hitstop = 0;
     this.clearProjectiles();
@@ -256,7 +260,7 @@
 
   // --- Body collision, walls, camera limit ------------------------------------
 
-  var NO_PUSH = { down: 1, ko: 1, thrown: 1, throwing: 1 };
+  var NO_PUSH = { down: 1, ko: 1, thrown: 1, throwing: 1, clinch: 1, clinched: 1 };
 
   Match.prototype.collide = function () {
     var a = this.fighters[0], b = this.fighters[1];

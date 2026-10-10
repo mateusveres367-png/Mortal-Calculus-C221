@@ -110,7 +110,7 @@
     signatureText: 'his heavy attacks (Base Hook, the Exponential Haymaker, Order of Magnitude) absorb one hit during their windup and keep going; a fully charged Order of Magnitude absorbs two',
     bio: 'CALM AND FRIENDLY, BUT EVERY HIT IS HEAVY. SLOW, PATIENT, DEVASTATING.',
     signature: ['EXPONENTIAL HAYMAKER', 'ORDER OF MAGNITUDE', 'LOGARITHMIC LAUNCHER', 'RIGHT ANGLE ELBOW', 'LONG DIVISION'],
-    scale: 1.12, health: 168,
+    scale: 1.12, health: 158,
     // Movement: a slow walk, a short dash, a low jump; heavy in juggles, barely flinches.
     walkF: 1.4, walkB: 1.2, dashSpeed: 6.2, dashFrames: 13, backdashSpeed: 6.8,
     jumpVy: 8.6, weight: 1.12, react: 0.6,
@@ -183,7 +183,7 @@
         anim: [[1, 'crouch'], [12, 'pound_c'], [22, 'pound_x'], [25, 'pound_x'], [38, 'crouch'], [49, 'crouch']] }),
       heavy: {
         name: 'Big Hook', label: 'BASE HOOK', cmd: 'H', level: 'mid', strength: 'heavy', motion: 'hook', wallSplat: true,
-        startup: 21, active: 4, recovery: 20, damage: 22, armor: { from: 6, to: 20, hits: 1 },
+        startup: 21, active: 4, recovery: 20, damage: 20, armor: { from: 6, to: 20, hits: 1 },
         block: 1, hit: { adv: 8 }, ch: { launch: 6.2 },
         hitbox: { x: 24, w: 28, y: 52, h: 22 }, push: 30, juggle: 3.6, carry: 2.2, shake: 0.008,
         step: [12, 21, 1.5],
@@ -203,7 +203,7 @@
       fH: {
         ex: { text: 'ABSORBS TWO HITS, LAUNCHES', armor: { hits: 2 }, hit: { launch: true } }, // enhanced (P+K during startup, 1 bar)
         name: 'Haymaker', label: 'EXPONENTIAL HAYMAKER', cmd: 'F+H', level: 'mid', strength: 'heavy', motion: 'straight', wallSplat: true, guardDmg: 34,
-        startup: 26, active: 4, recovery: 22, damage: 26, armor: { from: 8, to: 25, hits: 1 },
+        startup: 26, active: 4, recovery: 22, damage: 24, armor: { from: 8, to: 25, hits: 1 },
         block: -6, hit: { knockdown: true }, ch: { launch: 6.6 },
         hitbox: { x: 28, w: 32, y: 54, h: 24 }, push: 34, juggle: 3.6, carry: 2.6, shake: 0.011,
         step: [14, 26, 1.8],
@@ -212,7 +212,7 @@
       // Order of Magnitude: hold H to charge. Half charge knocks down; full charge breaks the guard.
       bH: {
         name: 'Charge Punch', label: 'ORDER OF MAGNITUDE', cmd: 'B+H (HOLD)', level: 'mid', strength: 'heavy', motion: 'straight', wallSplat: true,
-        startup: 20, active: 4, recovery: 22, damage: 18, armor: { from: 6, to: 19, hits: 1 },
+        startup: 20, active: 4, recovery: 22, damage: 16, armor: { from: 6, to: 19, hits: 1 },
         block: -8, hit: { adv: 4 }, ch: { knockdown: true },
         charge: { at: 12, btn: 'h', mid: 16, max: 40, damage: [1, 1.5, 2.1] },
         hitbox: { x: 28, w: 32, y: 48, h: 24 }, push: 30, juggle: 3.6, carry: 2.4, shake: 0.009,
@@ -231,7 +231,7 @@
     },
     FG.kit.air(['EXPONENT DROP', 'POWER KICK', 'TOWER OF POWERS'], { slow: 2, chain: { airP: ['h'], airK: ['h'] } }),
     // Long Division: a slam throw.
-    FG.kit.throws('LONG DIVISION', 'SYNTHETIC DIVISION', { throw: { damage: 36, shake: 0.013, recovery: 28 }, throwB: { damage: 34, recovery: 28 } }),
+    FG.kit.throws('LONG DIVISION', 'SYNTHETIC DIVISION', { throw: { damage: 33, shake: 0.013, recovery: 28 }, throwB: { damage: 34, recovery: 28 } }),
     FG.kit.wake(),
     FG.kit.taunt()),
 

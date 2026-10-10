@@ -1,5 +1,6 @@
 // Cut-ins: quick, full-screen graphic flashes for big moments, in each fighter's
-// colours (def.cutIn: { a: main, b: accent }). Pixel art all the way: slashed,
+// colours (def.cutIn: { a: main, b: accent, style }; style 'brush' is red ink brushstrokes
+// on black, MATEUS's; other students get a notebook page). Pixel art all the way: slashed,
 // angled bands slide in, halftone dots, a huge close-up of the fighter's face and
 // eyes, and the move's name in big tilted letters.
 //
@@ -125,6 +126,40 @@
     for (var k = 0; k < n; k++) doodle(g, (seed + k * 3) % 10, xs(k), ys(k), s, k % 3 ? INK : LEAD);
   }
 
+  // --- Brushstrokes (cutIn.style 'brush': MATEUS) -------------------------------------
+  // Black, slashed with ragged strokes of red ink from a dry brush, with spatter. Stable
+  // per stroke (seeded), so nothing shimmers.
+  function hash(a, b) { var x = Math.sin(a * 12.9898 + b * 78.233) * 43758.5453; return x - Math.floor(x); }
+  function brushStroke(g, x0, x1, y, thick, rise, color, seed) {
+    var n = 28, top = [], bot = [], i;
+    for (i = 0; i <= n; i++) {
+      var u = i / n, x = x0 + (x1 - x0) * u, cy = y - rise * u;
+      var w = thick * (u < 0.12 ? 0.35 + u / 0.12 * 0.65 : u > 0.7 ? Math.max(0.05, (1 - u) / 0.3) : 1);
+      top.push({ x: x, y: cy - w / 2 + (hash(seed, i) - 0.5) * thick * 0.3 });
+      bot.push({ x: x, y: cy + w / 2 + (hash(seed + 7, i) - 0.5) * thick * 0.3 });
+    }
+    g.fillStyle(color, 1); g.fillPoints(top.concat(bot.reverse()), true);
+    // Dry-brush streaks: thin gaps running along the stroke.
+    g.fillStyle(0x0c0c0e, 0.85);
+    for (i = 0; i < 4; i++) {
+      var s0 = 0.15 + hash(seed, i + 40) * 0.4, s1 = s0 + 0.2 + hash(seed, i + 50) * 0.35, off = (0.25 + i * 0.17 - 0.5) * thick;
+      for (var k = 0; k < 6; k++) { var uu = s0 + (s1 - s0) * k / 6; g.fillRect(x0 + (x1 - x0) * uu, y - rise * uu + off, (x1 - x0) * (s1 - s0) / 6 + 1, 1); }
+    }
+    // Spatter flicked off the end.
+    g.fillStyle(color, 1);
+    for (i = 0; i < 9; i++) {
+      var sx = x1 + (hash(seed, i + 60) - 0.3) * 60 * Math.sign(x1 - x0), sy = y - rise + (hash(seed, i + 70) - 0.5) * thick * 1.6;
+      g.fillCircle(sx, sy, 1 + hash(seed, i + 80) * 2.5);
+    }
+  }
+  function brushField(g, pts, xa, xb, y0, y1, red, seed) {
+    g.fillStyle(0x0c0c0e, 1); g.fillPoints(pts, true);
+    var h = y1 - y0;
+    brushStroke(g, xa, xb, y0 + h * 0.34, h * 0.3, h * 0.12, red, seed);
+    brushStroke(g, xb - (xb - xa) * 0.15, xa + (xb - xa) * 0.25, y0 + h * 0.72, h * 0.16, -h * 0.06, red, seed + 3);
+    brushStroke(g, xa + (xb - xa) * 0.3, xb, y0 + h * 0.9, h * 0.05, h * 0.02, 0x6a0a18, seed + 5);
+  }
+
   // Halftone: a screen of white dots that grow toward one side, baked into a texture.
   function halftoneTexture(scene, key, grow) {
     if (scene.textures.exists(key)) return;
@@ -179,7 +214,11 @@
     var y0 = 96, y1 = 258, lean = 26 * dir;
     // Accent slash, main band, a thin second accent.
     band(g, -60 + slide, W + 60 + slide, y0 - 12, y0 - 2, lean, col.b, 1);
-    if (def.student) {
+    var brush = col.style === 'brush';
+    if (brush) {
+      brushField(g, [{ x: -60 + slide + lean, y: y0 }, { x: W + 60 + slide + lean, y: y0 }, { x: W + 60 + slide - lean, y: y1 }, { x: -60 + slide - lean, y: y1 }],
+        (a.side === 0 ? 40 : W - 40) + slide, (a.side === 0 ? W - 20 : 20) + slide, y0, y1, col.b, def.order * 13);
+    } else if (def.student) {
       // A notebook page, slapped down, with doodles all over its margins.
       notebook(g, function (y) { return -60 + slide + lean - 2 * lean * (y - y0) / (y1 - y0); }, function (y) { return W + 60 + slide + lean - 2 * lean * (y - y0) / (y1 - y0); }, y0, y1, dir > 0);
       var dx0 = a.side === 0 ? W * 0.5 : 40;
@@ -190,7 +229,7 @@
     }
     band(g, -60 + slide * 1.3, W + 60 + slide * 1.3, y1 + 2, y1 + 8, lean, col.b, 1);
     // Speed streaks across the band (pencil scribbles on paper).
-    g.fillStyle(def.student ? LEAD : col.b, def.student ? 0.25 : 0.5);
+    g.fillStyle(def.student && !brush ? LEAD : col.b, def.student && !brush ? 0.25 : 0.5);
     for (var k = 0; k < 6; k++) {
       var sy = y0 + 14 + k * 25, len = 60 + ((k * 53 + t * 37) % 140), sx = ((k * 97 + t * 23 * dir) % (W + 200)) - 100;
       g.fillRect(Math.round(sx + slide), sy, len, 2);
@@ -207,10 +246,10 @@
     // The move name, huge and tilted, sliding in a beat later.
     var tu = ease((t - 3) / 6), tx = (a.side === 0 ? W * 0.68 : W * 0.32) + (1 - tu) * -dir * 200 + slide;
     var scale = a.text.length > 14 ? 3 : a.text.length > 9 ? 4 : 5;
-    var paper = def.student; // ballpoint on paper: dark ink, a highlighter shadow
+    var paper = def.student && !brush; // ballpoint on paper: dark ink, a highlighter shadow
     this.shadow.setText(a.text).setScale(scale).setAngle(-8).setPosition(tx + 4, 178 + 4).setTint(paper ? col.b : col.b === 0xffffff || col.b === 0xf6ecd0 ? 0x000000 : col.b).setVisible(t >= 3);
     this.title.setText(a.text).setScale(scale).setAngle(-8).setPosition(tx, 178).setTint(paper ? INK : contrast(col.a)).setVisible(t >= 3);
-    this.names[0].setText(def.name).setScale(2).setAngle(-8).setPosition(tx - dir * 40, 128).setTint(col.b).setVisible(t >= 5);
+    this.names[0].setText(def.name).setScale(2).setAngle(-8).setPosition(tx - dir * 40, 128).setTint(brush ? 0xffffff : col.b).setVisible(t >= 5);
   };
 
   // Readable text colour on the main colour.
@@ -233,7 +272,11 @@
         : [{ x: mid + lean + slide, y: 0 }, { x: W + slide, y: 0 }, { x: W + slide, y: H }, { x: mid - lean + slide, y: H }];
       var fc = this.faces[side];
       fc.shape.fillStyle(0xffffff, 1); fc.shape.fillPoints(pts, true);
-      if (def.student) { // a notebook page: the slash is its torn edge
+      var vbrush = col.style === 'brush';
+      if (vbrush) {
+        var xa = side === 0 ? 10 : W - 10, xb = side === 0 ? mid + lean : mid - lean;
+        brushField(g, pts, xa + slide, xb + slide, 30, H - 120, col.b, def.order * 13 + side);
+      } else if (def.student) { // a notebook page: the slash is its torn edge
         var edge = function (y) { return mid + lean - 2 * lean * y / H + slide; };
         if (side === 0) notebook(g, function () { return slide; }, edge, 0, H, true);
         else notebook(g, edge, function () { return W + slide; }, 0, H, false);
@@ -247,11 +290,12 @@
       // Name and line on a strip along the bottom of each half.
       var nx = (side === 0 ? W * 0.25 : W * 0.75) + slide;
       this.top.fillStyle(col.b, 1); this.top.fillRect(Math.round(nx - 150), 254, 300, 4);
-      this.names[side].setText(def.name).setScale(3).setAngle(-6).setPosition(nx, 236).setTint(def.student ? INK : contrast(col.a)).setVisible(true);
+      var ink = def.student && !vbrush ? INK : contrast(col.a);
+      this.names[side].setText(def.name).setScale(3).setAngle(-6).setPosition(nx, 236).setTint(ink).setVisible(true);
       var wrapped = a.lines[side] ? FG.wrapText('"' + a.lines[side] + '"', 34) : [];
       for (var k = 0; k < 2; k++) {
         var lt = this.lines[side * 2 + k];
-        lt.setText(wrapped[k] || '').setScale(1).setAngle(0).setPosition(nx, 272 + k * 12).setTint(def.student ? INK : contrast(col.a)).setVisible(t > 20 && !!wrapped[k]);
+        lt.setText(wrapped[k] || '').setScale(1).setAngle(0).setPosition(nx, 272 + k * 12).setTint(ink).setVisible(t > 20 && !!wrapped[k]);
       }
     }
     // The slash between them, and VS.

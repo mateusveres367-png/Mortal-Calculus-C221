@@ -114,7 +114,7 @@
     signatureText: 'B+K drops him into his sketchbook stance (DOODLING): his next attack comes from a weird angle (P a hopping overhead from above, K a skidding low, H a cartwheel kick that launches). Paper Airplane flies out and curves, up (B+P) or diving (D+P, a low once it skims the floor); Eraser Flick (F+P) is a fast little high; Pass the Note (F+H) is a feint; Seat Swap (B+H) switches sides',
     bio: 'CREATIVE AND SNEAKY. ALWAYS MESSING AROUND IN THE BACK ROW.',
     signature: ['PAPER AIRPLANE', 'ERASER FLICK', 'RULER SNAP', 'DOODLE', 'SEAT SWAP'],
-    scale: 0.92, health: 170,
+    scale: 0.92, health: 190,
     walkF: 2.2, walkB: 1.6, dashSpeed: 8.2, dashFrames: 15, backdashSpeed: 9.6,
     jumpVy: 9.4, weight: 0.93, react: 1.15,
     walk: { lean: -1, bob: 1.0, rate: 0.22 },

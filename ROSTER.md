@@ -20,7 +20,7 @@ Each fighter's moves come from what they actually teach.
 
 | Student | Archetype | Nickname |
 | --- | --- | --- |
-| MATEUS | Balanced | "GNOME" (the student side's cover fighter) |
+| MATEUS | Balanced / Striker | "GNOME" (the student side's cover fighter) |
 | NICOLAS | Rushdown | "The Late Pass" |
 | MAX | Power / Grappler | "Heavy Course Load" |
 | JACK | Tricky / Zoner | "Back of the Classroom" |
@@ -108,7 +108,7 @@ Every fighter needs unique normals, launcher, throw, combo routes, stance, idle 
 
 **Moves:** Arithmetic Sequence (string that speeds up), Recursive Rush, Fibonacci Uppercut (launcher), Series Expansion (throw).
 
-**Style:** Punch-based rushdown, Muay Thai and boxing. Fast jabs, a cross, a dipping body hook, a slicing elbow, straight knees, low kicks, a liver shot and a hopping elbow; constant forward pressure. A low, hunched peekaboo stance. Short range but fast; he walks forward fast and backs up slowly.
+**Style:** Punch-based rushdown, a peekaboo boxer. Fast jabs, a cross, a dipping body hook, a slicing elbow, straight knees, low kicks, a liver shot and a hopping elbow; constant forward pressure. A low, hunched peekaboo stance. Short range but fast; he walks forward fast and backs up slowly.
 
 **Signature — Arithmetic Sequence:** his strings get faster with each hit, and once an attack connects (hit or block) he can dash-cancel its recovery (forward, forward) to keep the pressure on, once per string.
 
@@ -269,35 +269,55 @@ He teaches all the math classes and has been at El Camino for 29 years. **The bo
 
 # Students
 
-Five 10th graders. Character select has two tabs, **TEACHERS | STUDENTS** (Q/E, or tap a tab), and students and teachers fight each other in every mode. Students are slightly smaller than the teachers and fight scrappier: more improvised, with whatever school stuff is at hand (backpacks, pencils, paper airplanes, calculators). **Only students have projectiles** (one of their own on screen at a time). Their cut-ins are notebook paper with doodles in the margins, and their home stage is the **Lunch Quad** (tables, trash cans, backpacks, students eating in the background). **MATEUS is the cover fighter for the student side.**
+Five 10th graders. Character select has two tabs, **TEACHERS | STUDENTS** (Q/E, or tap a tab), and students and teachers fight each other in every mode. Students are slightly smaller than the teachers and fight scrappier: more improvised, with whatever school stuff is at hand (backpacks, pencils, paper airplanes, calculators). **Only students have projectiles** (one of their own on screen at a time), though MATEUS, a Muay Thai fighter, doesn't use one. Their cut-ins are notebook paper with doodles in the margins (MATEUS's are red brushstrokes on black), and their home stage is the **Lunch Quad** (tables, trash cans, backpacks, students eating in the background). **MATEUS is the cover fighter for the student side.**
 
 **Arcade as a student:** fight all the teachers, ending with WILSON. **Arcade as a teacher:** fight the students first, then the remaining teachers.
 
-## MATEUS "GNOME" — Balanced
+## MATEUS "GNOME" — Balanced / Striker
 
-**Moves:** Gnome Headbutt (fast mid), Garden Sweep (low), Got Gnomed (launcher: a tiny uppercut, and on a counter hit it pops them way up), Gnome Toss (projectile: a mini garden gnome, lobbed; it tumbles along the floor as a low once it lands), Pop-Up (vanishes into the ground and reappears next to them), Yard Work (throw).
+**Moves:** all eight limbs: fists, elbows, knees, shins.
+- Jab–Cross (P, P): sharp, snapping punches.
+- Rear Uppercut (D+P): short and powerful, his punish.
+- Teep (K): push kick to the stomach that knocks them back (and pins them at the wall).
+- Low Kick (D+K): rear-leg shin into the thigh. Land three and their walk slows for a while (leg damage).
+- Body Kick (F+K): rear-leg roundhouse to the ribs, with a loud thwack.
+- Head Kick (F+H): high roundhouse with the shin, big damage; on a counter hit it carries them into the wall.
+- Spinning Elbow (B+H): fast spinning back elbow; a counter hit does almost double damage, with a big screen flash.
+- Slashing Elbow (F+P): short horizontal elbow, plus on block, hard on the guard.
+- Knee (H): both hands reach for the head, the rear knee drives up the middle.
+- Jumping Knee (D+H): his launcher, a flying knee straight up the middle.
+- Superman Punch (F, F, P): a leaping cross out of a dash.
+- Check (press back just as a low kick lands): blocks it with the shin and staggers the kicker.
+- Air: Elbow Drop, Flying Knee, Axe Kick.
 
-**Style:** Scrappy trickster. Short, quick strikes from a little hunched, up-to-something stance; a headbutt, a front kick, a shovel-swing overhand; he's never quite where you left him.
+**Style:** Muay Thai. A tall, square stance: hands high, lead leg light and ready to check kicks, a rhythmic bounce on the balls of his feet. Every strike turns the hips and transfers the weight. Nothing like LEE, a boxer: MATEUS fights with all eight limbs, and his best range is clinch range.
 
-**Signature — Lawn Statue (B+H):** he freezes perfectly still, like a garden gnome. If the opponent attacks him while he's frozen, he pops out and counters (Gnomed, a launching headbutt). Hold H to stay frozen a little longer. Throws beat it.
+**Signature — The Clinch (P+K up close):** he locks a Thai clinch, hands behind their head, heads tied up. From the clinch: P a knee to the body (up to three, each one stronger), K an off-balance dump that knocks them down, H a jumping knee to the head that launches, back breaks off with a short elbow (he's plus). The opponent escapes with good timing (P right as it locks) or by mashing.
 
-**Ultimate — Gnome Army:** cut to a front lawn at dusk. Dozens of garden gnomes pop out of the ground. Whenever the opponent looks at them they freeze; when they turn away, the gnomes creep closer. Then they swarm, and the last one bonks them with a watering can. MATEUS was one of the gnomes the whole time.
+**Enhanced (1 bar):** Body Kick becomes three kicks; Spinning Elbow gets armor; in the clinch, the knees always reach three (P+K in the clinch, or during the grab).
 
-**KO finisher — You've Been Gnomed:** he sinks into the ground, pops up right behind them and taps their shoulder. They turn round: one hit. As they fall, a tiny garden gnome pops up next to them. "GNOMED" stamps the screen.
+**Ultimate — Eight Limbs:** he catches them in the clinch, the screen goes black and red, and eight strikes land in sequence, each named on screen as it hits: LEFT FIST, RIGHT FIST, LEFT ELBOW, RIGHT ELBOW, LEFT KNEE, RIGHT KNEE, LEFT SHIN, then a final RIGHT SHIN head kick with a huge impact freeze.
 
-**Look:** Medium-length wavy dark brown hair with curtain bangs, navy t-shirt. No hat.
+**KO finisher — Lights Out:** he steps back, the crowd goes silent, then a slow-motion flying knee. The opponent drops; he turns and walks away before they hit the floor, and "GNOMED." stamps the screen in red.
 
-**Personality:** Sneaky and smug. Pops up where you don't expect him, and loves the moment you realize you got gnomed.
+**Look:** Medium-length wavy dark brown hair with curtain bangs, navy t-shirt, red hand wraps, a red Muay Thai armband on his upper arm, athletic shorts, barefoot. Bounces lightly on the balls of his feet. Cut-ins in deep red and black, sharp brushstrokes.
 
-**Intro / taunt lines:**
-- "You've been gnomed."
-- "Don't look away."
-- "I was here the whole time."
+**Personality:** Calm, focused, a little cocky. Doesn't talk much during the fight, then says one cold line after a big hit.
+
+**Intro lines:**
+- "Hands up."
+- "You've been gnomed. You just don't know it yet."
+- "Let's go."
+
+**Taunt / quips:**
+- "Check that."
+- "Too slow."
+- "Again."
 
 **Victory lines:**
 - "Gnomed."
-- "Should've checked the garden."
-- "Small but deadly."
+- "Eight limbs. You had four."
+- "Should've checked the kick."
 
 ## NICOLAS "The Late Pass" — Rushdown
 

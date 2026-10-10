@@ -86,6 +86,14 @@
       case 'blazer': // LOPEZ tosses his blazer off behind him
         this.props.push({ x: x, y: y, vx: -ev.facing * 2.6, vy: -3.2, rot: 0, vr: -ev.facing * 0.18, life: 70, w: 14, h: 18, color: ev.color });
         return;
+      case 'check': // MATEUS's shin meets the kick: a red-white snap and splinters
+        this.flashes.push({ x: x, y: y, r: 18, life: 9, max: 9, color: 0xffffff, star: true });
+        this.flashes.push({ x: x, y: y, r: 14, life: 12, max: 12, color: 0xc8102e, ring: true });
+        for (var cp = 0; cp < 8; cp++) {
+          var ca = -Math.PI / 2 + (Math.random() - 0.5) * 2.4;
+          this.parts.push({ x: x, y: y, vx: Math.cos(ca) * 2.2 + ev.facing * 0.6, vy: Math.sin(ca) * 2.2, life: 14, max: 14, size: 2, color: cp % 2 ? 0xc8102e : 0xffffff });
+        }
+        return;
       case 'parry':
         this.flashes.push({ x: x, y: y, r: 22, life: 10, max: 10, color: 0xdff6ff, star: true });
         this.flashes.push({ x: x, y: y, r: 16, life: 14, max: 14, color: 0x5fd7ff, ring: true });
@@ -169,6 +177,8 @@
       if (ev.ch || kind === 'launch') this.chalkBurst(x, y, ev.facing);
       this.flashScreen(0xffffff, ev.ch ? 0.3 : 0.18, 4);
     }
+    // A counter-hit Spinning Elbow (MATEUS): the whole screen goes white, then red.
+    if (ev.ch && ev.move.chFlash) this.flashScreen(0xffffff, 0.85, 12);
   };
 
   // Each kind of blow has its own look:
@@ -484,8 +494,13 @@
         }
         else if (strength === 'heavy' || strength === 'launch') thump(0.34, 72, 26, 0.65); // a big hit: a low boom
         if (ev.ko) thump(0.6, 90, 30, 0.7);
+        // A shin kick (MATEUS): a loud, flat thwack on top.
+        if (ev.move && ev.move.thwack) { burst(0.035, 2600, 1.4, 0.7, 'bandpass'); burst(0.05, 1200, 1, 0.5); thump(0.09, 220, 90, 0.5); }
         break;
       }
+      case 'check': // shin on shin: a hard crack
+        burst(0.03, 3000, 3, 0.6, 'bandpass'); thump(0.1, 260, 120, 0.5); burst(0.08, 900, 1, 0.3);
+        break;
       case 'land':
       case 'tech':
         thump(0.12, 110, 40, 0.45);

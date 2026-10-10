@@ -900,6 +900,10 @@
       if (ev.type === 'prop') this.propUsed(ev);
       if (ev.type === 'ultstart') this.ultFlash = { t: 0, wi: ev.fighter, color: ev.color };
       if (ev.type === 'ultimate') this.startUltimate(ev);
+      // MATEUS: a checked kick, leg damage, the clinch.
+      if (ev.type === 'check') { this.spawnGlyph({ x: ev.x, y: 50, attacker: ev.attacker, text: 'CHECKED!', ch: true }); this.quip(ev.attacker, 0.5); }
+      if (ev.type === 'legdamage') this.spawnGlyph({ x: ev.x, y: 40, attacker: ev.attacker, text: 'LEG DAMAGE', ch: true });
+      if (ev.type === 'grab' && ev.clinch) this.spawnGlyph({ x: ev.x, y: 70, attacker: ev.attacker, text: 'CLINCH' });
       if (ev.type === 'ulthit') this.impact = { who: ev.defender, frames: 2, color: 0xffffff };
       if (ev.type === 'ultend') this.endUltimate(ev);
       FG.Sfx.play(ev);
@@ -1102,7 +1106,9 @@
   // A short line after a big combo or counter hit, `chance` of the time.
   FightScene.prototype.quip = function (i, chance) {
     var fi = this.match.fighters[i], b = this.bubbles[i];
-    if (b.visible || Math.random() > chance || !fi.def.talk) return;
+    if (!fi.def.talk) return;
+    if (fi.def.talk.quipChance != null) chance = fi.def.talk.quipChance; // MATEUS: one cold line, every time
+    if (b.visible || Math.random() > chance) return;
     var q = fi.def.talk.quips;
     b.show(fi.def.name, q[Math.floor(Math.random() * q.length)], 80);
   };
@@ -1235,6 +1241,7 @@
     }
     // Draw the fighter further into the background first.
     var order = f[0].z > f[1].z ? [0, 1] : f[1].z > f[0].z ? [1, 0] : (f[0].state === 'attack' ? [1, 0] : [0, 1]);
+    if (f[0].state === 'clinch') order = [1, 0]; else if (f[1].state === 'clinch') order = [0, 1]; // the clinch: his knees in front
     if (f[0]._drawBehind) order = [0, 1]; else if (f[1]._drawBehind) order = [1, 0];
     for (var i = 0; i < 2; i++) {
       var idx = order[i], fi = f[idx];
@@ -1329,8 +1336,8 @@
     g.restore();
   };
 
-  // A fighter who has vanished mid-teleport: MATEUS tunnels (a mound of dirt rushing
-  // along underground), JACK's seat swap is a flurry of loose paper.
+  // A fighter who has vanished mid-teleport: JACK's seat swap is a flurry of loose
+  // paper; any other teleport tunnels (a mound of dirt rushing along underground).
   FightScene.prototype.drawVanished = function (g, fi) {
     var tp = fi.move.teleport, u = (fi.moveFrame - tp.hide[0]) / Math.max(1, tp.hide[1] - tp.hide[0]), gy = C.GROUND_Y;
     if (tp.fx === 'paper') {

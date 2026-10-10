@@ -66,6 +66,72 @@ WILSON      50    56    65    65    63    58    58    52    -
 
 Rounds average 33 seconds; about 1% end on time.
 
+## MATEUS the Muay Thai fighter, and the CPU's dash-in fix
+
+MATEUS was rebuilt as a Muay Thai striker (the clinch, leg damage, the check; no projectile).
+Two seeds pooled (777 and 4242, 8736 matches), the spread is **41.8% to 59.5%**, and neither run
+lists a never-used move.
+
+| Fighter   | Seed 777 | Seed 4242 | Pooled |
+|-----------|---------:|----------:|-------:|
+| WILSON    | 61.1 | 57.9 | 59.5 |
+| BRINKHUS  | 58.7 | 57.2 | 58.0 |
+| NICOLAS   | 59.3 | 52.4 | 55.8 |
+| HUDSON    | 53.4 | 55.0 | 54.2 |
+| LEE       | 53.2 | 54.0 | 53.6 |
+| RAMOS     | 53.5 | 52.7 | 53.1 |
+| PEDERSEN  | 48.6 | 53.8 | 51.2 |
+| CHAI      | 49.0 | 46.6 | 47.8 |
+| LOPEZ     | 45.8 | 49.2 | 47.5 |
+| DALSASS   | 44.1 | 47.9 | 46.0 |
+| MIYASHIRO | 44.6 | 45.5 | 45.0 |
+| MAX       | 45.2 | 43.4 | 44.3 |
+| JACK      | 41.3 | 43.1 | 42.2 |
+| MATEUS    | 42.3 | 41.2 | 41.8 |
+
+Matchup grid, seed 777 (row wins % against column):
+
+```
+          PEDE  BRIN  CHAI  DALS  LEE  LOPE  MIYA  RAMO  WILS  MATE  NICO  MAX  JACK  HUDS
+PEDERSEN    -     52    50    52    48    25    29    52    42    67    42    79    58    35
+BRINKHUS    48    -     65    67    69    63    21    75    23    77    48    77    69    63
+CHAI        50    35    -     38    50    42    44    67    46    71    44    58    46    48
+DALSASS     48    33    63    -     46    42    40    35    23    50    52    50    54    38
+LEE         52    31    50    54    -     67    60    58    29    71    54    58    60    46
+LOPEZ       75    38    58    58    33    -     40    19    50    50    44    50    31    50
+MIYASHIRO   71    79    56    60    40    60    -     21    42    17    13    35    44    42
+RAMOS       48    25    33    65    42    81    79    -     44    52    48    48    71    60
+WILSON      58    77    54    77    71    50    58    56    -     73    48    65    50    56
+MATEUS      33    23    29    50    29    50    83    48    27    -     35    58    60    23
+NICOLAS     58    52    56    48    46    56    88    52    52    65    -     46    75    77
+MAX         21    23    42    50    42    50    65    52    35    42    54    -     77    35
+JACK        42    31    54    46    40    69    56    29    50    40    25    23    -     33
+HUDSON      65    38    52    63    54    50    58    40    44    77    23    65    67    - 
+```
+
+What changed on the way:
+
+- **A CPU bug: its dash-in never dashed** (src/engine/ai.js). When the CPU chose to dash in, it
+  set up a forward-forward script but never pressed the first forward, so it stood still for up
+  to 40 frames instead. Every fighter took that branch now and then (more for the dash-in
+  styles). Fixed: it presses the first tap at once. Rushdown got stronger and the zoners
+  weaker, which moved most of the numbers below.
+- **MATEUS** first came in at 6–18%. Most of it was his CPU style: he threw slow, punishable
+  heavies (the Head Kick, -10) from poking range and went for the clinch from outside grab
+  range. Now: spacing 70, pokes K / F+P / D+K / F+K, a clinch-and-strikes close game, walking
+  in for the clinch when it's just out of reach, no Head Kick or Spinning Elbow from range.
+  Spinning Elbow and Superman Punch are mids (too many of his strikes were highs that a crouch
+  ducked). Low Kick -12 → -10 on block. Health 182 → 220. Jab 7 → 8, Slashing Elbow 13 → 14,
+  Teep and Low Kick 11 → 12, clinch knees 8 / 10 / 13 → 9 / 11 / 14. Clinch escapes: 10 mashes
+  (each knee takes 1 back), or P within 12 frames of the lock.
+- **PEDERSEN** (66% after the fix): health 168 → 158; Base Hook (H) 22 → 20,
+  Exponential Haymaker (F+H) 26 → 24, Order of Magnitude (B+H) 18 → 16, throw 36 → 33. (Lower health would break
+  the rule that no route takes more than 40% of anyone's health.)
+- **BRINKHUS** (63%): health 166 → 158, jab 7 → 6.
+- **JACK** (34%: zoning against CPUs that now dash in): health 170 → 190.
+- balance.js counts the clinch follow-ups as used moves (they play from the clinch, not as
+  ordinary attacks).
+
 ## The student side (14 fighters)
 
 Adding the five students made it 14 fighters and 4368 matches per run (24 per pairing). Judged on

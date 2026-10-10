@@ -65,6 +65,10 @@
     this.projSerial = 0;       // which throw of a projectile move this is (the match matches them up)
     this.throwNow = null;      // a projectile to release this frame (read and cleared by the match)
     this.teleportNow = null;   // a teleport to make this frame (read and cleared by the match)
+    this.legHits = 0;          // MATEUS's Low Kick: kicks landed toward leg damage
+    this.legDamage = 0;        // ...and frames left of the slowed walk
+    this.clinchAct = null;     // MATEUS in the clinch: the follow-up playing { move, t }
+    this.checking = 0;         // MATEUS's Check: frames left of the shin-check pose
     this.clearComboFlags();
   };
 
@@ -174,6 +178,8 @@
     this.whiffed = false;
     if (this.calculated > 0) this.calculated--;
     if (this.boost > 0) this.boost--;
+    if (this.legDamage > 0) this.legDamage--;
+    if (this.checking > 0) this.checking--;
     if (this.feintPending > 0) this.feintPending--;
     this.stateFrame++;
     var s = this.state;
@@ -195,8 +201,8 @@
         }
         this.moveFrame++;
         if (!m.air) this.vx = (m.step && this.moveFrame >= m.step[0] && this.moveFrame <= m.step[1]) ? m.step[2] * this.facing : 0;
-        // Projectiles (students): released on their frame. Teleports (MATEUS's Pop-Up,
-        // JACK's Seat Swap): the match moves them next to the opponent on theirs.
+        // Projectiles (students): released on their frame. Teleports (JACK's Seat
+        // Swap): the match moves them next to the opponent on theirs.
         if (m.projectile && this.moveFrame === (m.projectile.at || m.startup)) this.throwNow = m;
         if (m.teleport && this.moveFrame === m.teleport.at) this.teleportNow = m.teleport;
         // A multi-hit move gets another hit in a few frames after each contact.
@@ -286,6 +292,8 @@
       case 'ko':
       case 'throwing':
       case 'thrown':
+      case 'clinch':    // the clinch (the match drives it)
+      case 'clinched':
       case 'cinematic': // an ultimate is playing (the match drives it)
         return;
       case 'land':
@@ -437,6 +445,9 @@
   Fighter.prototype.speedK = function () {
     return this.def.passive === '29years' && this.experience >= 1 ? C.YEARS_SPEED : 1;
   };
+
+  // Leg damage (MATEUS's Low Kick) slows the walk.
+  Fighter.prototype.legK = function () { return this.legDamage > 0 ? C.LEG_SLOW : 1; };
 
   Fighter.prototype.sidestepFrames = function () { return this.def.sidestepFrames || C.SIDESTEP_FRAMES; };
 
@@ -699,7 +710,7 @@
     }
     if (buf.forward(this.facing)) {
       if (this.state !== 'walkF') this.setState('walkF');
-      this.vx = d.walkF * this.speedK() * this.facing;
+      this.vx = d.walkF * this.speedK() * this.legK() * this.facing;
       return;
     }
     if (buf.back(this.facing)) {
@@ -710,7 +721,7 @@
         return;
       }
       if (this.state !== 'walkB') this.setState('walkB');
-      this.vx = -d.walkB * this.speedK() * this.facing;
+      this.vx = -d.walkB * this.speedK() * this.legK() * this.facing;
       return;
     }
     if (this.state !== 'idle') this.setState('idle');
@@ -719,8 +730,8 @@
 
   Fighter.prototype.physics = function (opp) {
     this.prevX = this.x;
-    if (this.state === 'throwing' || this.state === 'thrown') {
-      // Positions are driven by the throw script in the match.
+    if (this.state === 'throwing' || this.state === 'thrown' || this.state === 'clinch' || this.state === 'clinched') {
+      // Positions are driven by the throw (or clinch) script in the match.
       this.slide = 0;
     } else if (this.isAirborne()) {
       var juggled = this.state === 'juggle';
@@ -783,7 +794,7 @@
 
   Fighter.prototype.isInvulnerable = function () {
     switch (this.state) {
-      case 'getup': case 'ko': case 'thrown': case 'throwing': return true;
+      case 'getup': case 'ko': case 'thrown': case 'throwing': case 'clinch': case 'clinched': return true;
       case 'roll': return this.stateFrame <= C.ROLL_INVULN;
       case 'techroll': return this.stateFrame <= C.TECH_INVULN;
       case 'throwbreak': return this.stateFrame <= 6;

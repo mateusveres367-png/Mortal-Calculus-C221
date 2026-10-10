@@ -140,6 +140,29 @@
       if (this.breakRoll && match.frame - t.start === Math.min(8, Math.round(L.react / 2))) raw[t.move.breakBtn] = true;
       return raw;
     }
+    // --- The clinch (MATEUS). Held in it: slip it on time or mash out. Holding it:
+    // a plan of knees, then a finish (the launch, the dump or the elbow). ------------
+    var cl = match.clinch;
+    if (cl && cl.d === self.index) {
+      if (this.breakRoll === null) this.breakRoll = rnd() < L.breakThrow;
+      var ct = match.frame - cl.start;
+      if (this.breakRoll && ct === Math.min(6, Math.round(L.react / 2))) raw.p = true;
+      else if (ct > L.react && match.frame % 4 === 0 && rnd() < L.breakThrow + 0.2) raw['pkh'[(match.frame >> 2) % 3]] = true;
+      return raw;
+    }
+    if (cl && cl.a === self.index) {
+      if (!this.clinchPlan) {
+        var kn = 1 + Math.floor(rnd() * (1 + 2 * L.combo)), fin = rnd();
+        this.clinchPlan = { knees: Math.min(3, kn), finish: fin < 0.45 ? 'H' : fin < 0.8 ? 'K' : 'B', ex: this.mrng() < L.meter * 0.5 };
+      }
+      var cp = this.clinchPlan;
+      if (!cl.act && match.frame - cl.start >= C.CLINCH_LOCK) {
+        if (cp.ex && !cl.ex && self.meter >= C.METER_BAR) { cp.ex = false; return toRaw('P+K', self.facing); }
+        if (!cl.ex) return toRaw(cl.knees < cp.knees ? 'P' : cp.finish, self.facing);
+      }
+      return raw;
+    }
+    this.clinchPlan = null;
     this.breakRoll = null;
 
     // --- Juggled: maybe tech the landing. ------------------------------------------
@@ -261,7 +284,9 @@
           block: rnd() < L.block,
           // Lows need a read; highs can be ducked.
           low: low ? rnd() < L.lowRead : (m.level === 'high' && rnd() < L.lowRead * 0.3),
-          step: !m.tracks && m.startup >= (st.sidestep ? 12 : 16) && rnd() < L.sidestep * (st.sidestep || 1)
+          step: !m.tracks && m.startup >= (st.sidestep ? 12 : 16) && rnd() < L.sidestep * (st.sidestep || 1),
+          // Style: MATEUS checks low kicks with his shin (back, pressed as it lands).
+          check: low && self.def.check && /^(low|sweep|kick|roundhouse)$/.test(m.motion) && rnd() < (st.check || 0) * L.lowRead
         };
       }
       var gd = this.guard, st = self.def.ai || {};
@@ -295,6 +320,11 @@
         raw.ssIn = true;
         return raw;
       }
+      if (gd.check && self.actionable) {
+        // Hands off until the kick is about to land, then back.
+        if (opp.move.startup - opp.moveFrame <= 3) raw[backKey] = true;
+        return raw;
+      }
       if (gd.block) { raw[backKey] = true; raw.down = gd.low; self.holdGuard = true; return raw; }
     } else if (!attacking(opp)) {
       this.guard = null;
@@ -321,6 +351,8 @@
 
     // --- Neutral: walk, poke, pressure, throw. ------------------------------------
     if (this.walk && match.frame < this.walk.until) {
+      // Walking in for a grab (MATEUS's clinch): take it once in range.
+      if (this.walk.then && dist <= this.walk.reach && self.actionable) { var then = this.walk.then; this.walk = null; return toRaw(then, self.facing); }
       raw[this.walk.dir === 'fwd' ? fwdKey : backKey] = true;
       if (this.walk.dir === 'back') self.holdGuard = false;
       if (match.frame < this.nextThink) return raw;
@@ -419,7 +451,9 @@
     if (roll < a * 0.5 + (st.dashIn || 0) * 0.4) {
       var dp = {}; dp[0] = 'F'; dp[2] = 'F';
       if (moves.dashP && dist < 150 && rnd() < 0.3) dp[8] = 'P'; // straight into the dash attack
-      this.startScript(dp, match, self); return raw;
+      this.startScript(dp, match, self);
+      this.script.fired[0] = true;
+      return toRaw('F', self.facing); // the first tap now (the script presses the second)
     }
     this.walk = { dir: 'fwd', until: match.frame + 16 + Math.floor(rnd() * 20) };
     return raw;
@@ -429,6 +463,9 @@
   // DALSASS-style feints (start it, tap back to cancel, then mix up).
   AI.prototype.styleAttack = function (tok, match, self) {
     var st = self.def.ai || {}, rnd = this.rng;
+    // A clinch (MATEUS) from just outside grab range: walk in and take it.
+    var gm = self.def.moves.throw, gr = gm && gm.clinch ? reach(self, gm) * self.def.scale + 4 : 0, opp = match.fighters[1 - self.index];
+    if (tok === 'P+K' && gr && Math.abs(opp.x - self.x) > gr) { this.walk = { dir: 'fwd', until: match.frame + 24, then: 'P+K', reach: gr }; this.nextThink = match.frame + 24; return FG.emptyRaw(); }
     // 'F+H>H': a move and its follow-up (DALSASS's feint into the drop), 8 frames apart.
     if (tok.indexOf('>') > 0) {
       var parts = tok.split('>'), sc = {};

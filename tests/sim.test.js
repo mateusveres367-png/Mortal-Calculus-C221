@@ -1436,6 +1436,14 @@ defs.forEach(function (d) {
     exIds.forEach(function (id) {
       var base = d.moves[id], ex = d.moves[id + 'EX'], tag = d.name + ' ' + id + '+: ';
       check(tag + 'labelled with a +', ex && ex.label === base.label + '+' && ex.exText, ex && ex.label);
+      if (ex.clinchEx) {
+        // MATEUS's enhanced clinch: the grab powers up, then the knees reach three on their own.
+        var cx = enhanced(d, id, FG.C.METER_BAR, { opp: S }), cxPlain = enhanced(d, id, 0, { opp: S });
+        check(tag + 'P+K powers it up', cx.ev.some(function (e) { return e.type === 'enhance' && e.move === ex; }) && cx.m.fighters[0].meter < FG.C.METER_BAR, cx.ev.map(function (e) { return e.type; }));
+        check(tag + 'the knees reach three', cx.hits.map(function (h) { return h.move.id; }).join() === 'clinchKnee1,clinchKnee2,clinchKnee3', cx.hits.map(function (h) { return h.move.id; }));
+        check(tag + 'no meter: the clinch, no knees', cxPlain.ev.some(function (e) { return e.type === 'grab'; }) && !cxPlain.hits.length && cxPlain.ev.every(function (e) { return e.type !== 'enhance'; }));
+        return;
+      }
       var r = enhanced(d, id, FG.C.METER_BAR);
       var en = r.ev.filter(function (e) { return e.type === 'enhance'; });
       check(tag + 'P+K powers it up', en.length === 1 && en[0].move === ex, r.ev.map(function (e) { return e.type; }));
@@ -1756,9 +1764,10 @@ defs.forEach(function (d) {
   var PLANNED = ['mateus', 'nicolas', 'max', 'jack', 'hudson'];
   check('the students are the ones in ROSTER.md', teachers.length === 9 && students.length >= 1 && students.every(function (s, k) { return s.id === PLANNED[k]; }), students.map(function (s) { return s.id; }));
   check('students are smaller than every teacher', students.every(function (s) { return teachers.every(function (t) { return s.scale < t.scale; }); }), students.map(function (s) { return s.scale; }));
+  // Only students throw things (MATEUS, a Muay Thai fighter, doesn't).
   check('only students throw projectiles', defs.every(function (d) {
     var has = Object.keys(d.moves).some(function (id) { return !!d.moves[id].projectile; });
-    return d.side === 'student' ? has : !has;
+    return d.side === 'student' ? has || d.id === 'mateus' : !has;
   }));
   // Every student's projectiles: frame data at point-blank range like any strike.
   students.forEach(function (d) {
@@ -1778,53 +1787,99 @@ defs.forEach(function (d) {
     });
   });
 
-  // Gnome Toss: it flies, lands, and tumbles along the floor as a low.
-  var m = setup(MA, P, 300); m.fighters[1].holdGuard = true; // guard in place
-  var e = evs(m, 140, function (i) { return [i === 0 ? { p: true, left: true } : {}, { right: true }]; });
-  check('gnome toss: a projectile leaves his hand', e.some(function (x) { return x.type === 'projectile' && x.kind === 'gnome'; }), types(e));
-  check('gnome toss: rolling along the floor it beats a standing guard', e.some(function (x) { return x.type === 'hit' && x.projectile === 'gnome' && x.level === 'low'; }), e.filter(function (x) { return x.type === 'hit' || x.type === 'block'; }).map(function (x) { return x.type + ':' + x.level; }));
-  m = setup(MA, P, 300); m.fighters[1].holdGuard = true;
-  e = evs(m, 140, function (i) { return [i === 0 ? { p: true, left: true } : {}, i >= 50 ? { right: true, down: true } : {}]; });
-  check('gnome toss: a crouching guard blocks it on the floor', e.some(function (x) { return x.type === 'block' && x.projectile === 'gnome'; }), types(e));
-  // One at a time: with the gnome still out, B+P is a jab.
-  m = setup(MA, P, 400); evs(m, 20, function (i) { return [i === 0 ? { p: true, left: true } : {}]; });
-  check('gnome toss: one on screen at a time', m.projectiles.length === 1, m.projectiles.length);
+  // Projectiles in general (NICOLAS's backpack): one at a time, a sidestep dodges it, two
+  // cancel out, a parry knocks it away.
+  var NI = FG.fighterById('nicolas'), LO = FG.fighterById('lopez');
+  var m = setup(NI, P, 400), e;
+  evs(m, 20, function (i) { return [i === 0 ? { p: true, left: true } : {}]; });
+  check('projectiles: one on screen at a time', m.projectiles.length === 1, m.projectiles.length);
   m.fighters[0].setState('idle');
   evs(m, 1, function () { return [{ p: true, left: true }]; });
-  check('gnome toss: with one out, B+P is a jab', m.fighters[0].move && m.fighters[0].move.id === 'jab', m.fighters[0].move && m.fighters[0].move.id);
-  // A sidestep lets it go by.
-  m = setup(MA, P, 70); e = evs(m, 80, function (i) { return [i === 0 ? { p: true, left: true } : {}, i === 12 ? { ssIn: true } : {}]; });
+  check('projectiles: with one out, B+P is a jab', m.fighters[0].move && m.fighters[0].move.id === 'jab', m.fighters[0].move && m.fighters[0].move.id);
+  m = setup(NI, P, 90); e = evs(m, 80, function (i) { return [i === 0 ? { p: true, left: true } : {}, i === 12 ? { ssIn: true } : {}]; });
   check('a sidestep dodges a projectile', !e.some(function (x) { return x.type === 'hit' || x.type === 'block'; }), types(e));
-  // Two projectiles that meet cancel out.
-  m = setup(MA, MA, 300); e = evs(m, 120, function (i) { return [i === 0 ? { p: true, left: true } : {}, i === 0 ? { p: true, right: true } : {}]; });
+  m = setup(NI, NI, 300); e = evs(m, 120, function (i) { return [i === 0 ? { p: true, left: true } : {}, i === 0 ? { p: true, right: true } : {}]; });
   check('two projectiles cancel each other out', e.some(function (x) { return x.type === 'clash'; }) && !e.some(function (x) { return x.type === 'hit'; }), types(e));
-  // Lawn Statue knocks one away.
-  m = setup(MA, MA, 160); e = evs(m, 120, function (i) { return [i === 0 ? { p: true, left: true } : {}, i >= 10 && i < 60 ? { h: true, right: true } : {}]; });
-  check('lawn statue knocks a projectile away', e.some(function (x) { return x.type === 'deflect'; }) && m.fighters[1].health === MA.health, [types(e), m.fighters[1].health]);
-  // Highs sail over a crouch, lows can't be blocked standing (checked above).
+  m = setup(NI, LO, 160); e = evs(m, 120, function (i) { return [i === 0 ? { p: true, left: true } : {}, i >= 10 && i < 60 ? { h: true, right: true } : {}]; });
+  check('a parry knocks a projectile away', e.some(function (x) { return x.type === 'deflect'; }) && m.fighters[1].health === LO.health, [types(e), m.fighters[1].health]);
 
-  // Lawn Statue: attack him while he's frozen and he pops out and counters; a throw beats it.
-  m = setup(MA, P, 44); e = evs(m, 80, function (i) { return [i < 30 ? { h: true, left: true } : {}, i === 8 ? { p: true } : {}]; });
-  var pr = e.filter(function (x) { return x.type === 'parry'; })[0];
-  check('lawn statue: a strike into it gets countered', pr && pr.counter === 'statuePop' && e.some(function (x) { return x.type === 'hit' && x.attacker === 0 && x.move.id === 'statuePop'; }), types(e));
-  m = setup(MA, P, 44); var held = 0;
-  evs(m, 60, function (i, mm) { if (mm.fighters[0].state === 'attack' && mm.fighters[0].move.id === 'bH') held = i; return [{ h: true, left: true }]; });
-  check('lawn statue: holding H keeps him frozen longer', held > MA.moves.bH.total, held);
-  m = setup(MA, P, 40); e = evs(m, 80, function (i) { return [i < 30 ? { h: true, left: true } : {}, i === 8 ? { p: true, k: true } : {}]; });
-  check('lawn statue: a throw beats it', e.some(function (x) { return x.type === 'grab' && x.attacker === 1; }) && !e.some(function (x) { return x.type === 'parry'; }), types(e));
+  // MATEUS: a Muay Thai fighter, so no projectile.
+  check('MATEUS throws nothing', Object.keys(MA.moves).every(function (id) { return !MA.moves[id].projectile; }));
 
-  // Pop-Up: gone underground (no hurtbox), then right next to them, on the same side.
-  m = setup(MA, P, 260); var hidden = false, x0 = m.fighters[0].x;
-  e = evs(m, 60, function (i, mm) { if (mm.fighters[0].state === 'attack' && mm.fighters[0].moveFrame === 12 && !mm.fighters[0].hurtboxes().length) hidden = true; return [i === 0 ? { p: true, down: true } : {}]; });
-  var tp = e.filter(function (x) { return x.type === 'teleport'; })[0];
-  check('pop-up: vanishes underground', hidden);
-  check('pop-up: comes up right in front of them', tp && !tp.behind && Math.abs(tp.opp - tp.x) < 45 && tp.x < tp.opp, tp);
-  check('pop-up: and hits them', e.some(function (x) { return x.type === 'hit' && x.move.id === 'dP'; }), types(e));
-  // Enhanced: behind them, sides switched.
-  m = setup(MA, P, 260); m.fighters[0].meter = 100;
-  e = evs(m, 60, function (i) { return [i === 0 ? { p: true, down: true } : i === 3 ? { p: true, k: true } : {}]; });
-  tp = e.filter(function (x) { return x.type === 'teleport'; })[0];
-  check('pop-up+: comes up behind them', tp && tp.behind && m.fighters[0].x > m.fighters[1].x, tp);
+  // THE CLINCH: P+K up close locks it; P knees (up to three, each stronger), K dumps
+  // them, H launches, back breaks off with an elbow (and he's plus).
+  function clinch(plan, opp, oppPlan, meter) {
+    var mm = setup(MA, opp || P, 40); if (meter) mm.fighters[0].meter = meter;
+    var out = evs(mm, 220, function (i) { return [plan[i] ? FG.parseInput(plan[i]) : {}, oppPlan && oppPlan[i] ? FG.parseInput(oppPlan[i]) : {}]; });
+    var hits = out.filter(function (x) { return x.type === 'hit' && x.attacker === 0; });
+    return { m: mm, e: out, hits: hits, ids: hits.map(function (x) { return x.move.id; }) };
+  }
+  var cr = clinch({ 0: 'P+K' });
+  var grab = cr.e.filter(function (x) { return x.type === 'grab'; })[0];
+  check('clinch: P+K up close locks it (not a throw)', grab && grab.clinch && cr.ids.length === 0, types(cr.e));
+  cr = clinch({ 0: 'P+K', 14: 'P', 36: 'P', 58: 'P', 80: 'P', 100: 'P' });
+  check('clinch: P knees, up to three', cr.ids.join() === 'clinchKnee1,clinchKnee2,clinchKnee3', cr.ids);
+  check('clinch: each knee stronger', cr.hits.length === 3 && MA.moves.clinchKnee1.damage < MA.moves.clinchKnee2.damage && MA.moves.clinchKnee2.damage < MA.moves.clinchKnee3.damage, cr.hits.map(function (h) { return h.damage; }));
+  check('clinch: a true combo', cr.hits.every(function (h, k) { return h.hits === k + 1; }), cr.hits.map(function (h) { return h.hits; }));
+  cr = clinch({ 0: 'P+K', 14: 'P', 50: 'K' });
+  check('clinch: K dumps them on the floor', cr.ids.join() === 'clinchKnee1,clinchDump' && cr.hits[1].knockdown, cr.ids);
+  cr = clinch({ 0: 'P+K', 14: 'H' });
+  check('clinch: H is a jumping knee that launches', cr.ids.join() === 'clinchLaunch' && cr.hits[0].launch, cr.ids);
+  cr = clinch({ 0: 'P+K', 14: 'B' });
+  check('clinch: back breaks off with an elbow', cr.ids.join() === 'clinchElbow', cr.ids);
+  check('clinch: ...and he is plus', cr.m.lastResult[0] && cr.m.lastResult[0].adv === MA.moves.clinchElbow.hit.adv, cr.m.lastResult[0]);
+  // Getting out: P right as it locks, or mashing.
+  cr = clinch({ 0: 'P+K', 16: 'P', 38: 'P' }, P, { 14: 'P' });
+  check('clinch: P on time slips it', cr.e.some(function (x) { return x.type === 'break'; }) && cr.ids.length === 0, types(cr.e));
+  var mash = {}; for (var mi = 30; mi < 200; mi += 4) mash[mi] = 'PKH'[Math.floor(mi / 4) % 3];
+  cr = clinch({ 0: 'P+K', 30: 'P', 60: 'P', 90: 'P' }, P, mash);
+  check('clinch: mashing fights out of it', cr.e.some(function (x) { return x.type === 'break'; }) && cr.ids.length < 3, cr.ids);
+  // Enhanced: P+K in the clinch for a bar: the knees reach three, mashing or not.
+  cr = clinch({ 0: 'P+K', 14: 'P+K' }, P, mash, FG.C.METER_BAR);
+  check('clinch+: P+K for a bar, the knees always reach three', cr.ids.join() === 'clinchKnee1,clinchKnee2,clinchKnee3' && cr.e.some(function (x) { return x.type === 'enhance'; }) && cr.m.fighters[0].meter < FG.C.METER_BAR, [cr.ids, cr.m.fighters[0].meter]);
+  // The training dummy's BREAKS setting slips it too.
+  var dmc = new FG.Dummy(); FG.Dummy.OPTIONS.breaks.forEach(function (o, k) { if (o.id === 'on') dmc.settings.breaks = k; });
+  m = setup(MA, P, 40); e = evs(m, 60, function (i, mm) { return [i === 0 ? { p: true, k: true } : {}, dmc.input(mm.fighters[1], mm.fighters[0], mm)]; });
+  check('clinch: the dummy with BREAKS on slips it', e.some(function (x) { return x.type === 'break'; }), types(e));
+  cr = clinch({ 0: 'P+K' });
+  check('clinch: left alone, it comes apart', cr.e.some(function (x) { return x.type === 'break'; }) && !cr.m.clinch, types(cr.e));
+
+  // Low Kick: three that land slow their walk; two don't.
+  function lowKicks(n) {
+    var mm = setup(MA, P, 50), out = [];
+    for (var k = 0; k < n; k++) {
+      out = out.concat(evs(mm, 60, function (i) { return [i === 0 ? { k: true, down: true } : {}]; }));
+      mm.fighters[0].x = mm.fighters[1].x - 50; // back in range
+    }
+    var p2 = mm.fighters[1]; p2.setState('idle'); p2.stun = 0;
+    evs(mm, 4, function () { return [{}, { left: true }]; }); // P2 walks forward (toward P1)
+    return { e: out, vx: Math.abs(p2.vx), m: mm };
+  }
+  var two = lowKicks(2), three = lowKicks(3);
+  check('low kick: three that land are leg damage', three.e.some(function (x) { return x.type === 'legdamage'; }) && !two.e.some(function (x) { return x.type === 'legdamage'; }), [types(three.e)]);
+  check('low kick: leg damage slows their walk', three.vx < two.vx * 0.8 && three.m.fighters[1].legDamage > 0, [three.vx, two.vx]);
+
+  // Check: back pressed just as a low kick lands takes it on the shin; the kicker staggers.
+  m = setup(P, MA, 44); var lowAt = P.moves.low.startup;
+  e = evs(m, 60, function (i) { return [i === 0 ? { k: true, down: true } : {}, i >= lowAt - 4 && i < lowAt + 6 ? { right: true } : {}]; });
+  var ck = e.filter(function (x) { return x.type === 'check'; })[0];
+  check('check: back as the low kick lands', ck && ck.attacker === 1 && m.fighters[1].health === MA.health, types(e));
+  check('check: the kicker staggers, he is free first', m.lastResult[1] && m.lastResult[1].kind === 'CHECK' && m.lastResult[1].adv > 10, m.lastResult[1]);
+  m = setup(P, MA, 44);
+  e = evs(m, 60, function (i) { return [i === 0 ? { k: true, down: true } : {}, { right: true }]; });
+  check('check: holding back all along is not a check (the low still hits)', !e.some(function (x) { return x.type === 'check'; }) && e.some(function (x) { return x.type === 'hit' && x.attacker === 0; }), types(e));
+
+  // Spinning Elbow: a counter hit hits enormously hard.
+  var BR = FG.fighterById('brinkhus');
+  m = setup(MA, BR, 44);
+  e = evs(m, 60, function (i) { return [i === 4 ? { h: true, left: true } : {}, i === 0 ? { h: true } : {}]; });
+  var se = e.filter(function (x) { return x.type === 'hit' && x.attacker === 0; })[0];
+  check('spinning elbow: counter hit does almost double', se && se.ch && se.damage === Math.round(MA.moves.bH.damage * MA.moves.bH.chDamage), se && [se.ch, se.damage]);
+  // Head Kick: a counter hit carries them into the wall.
+  m = setup(MA, BR, 44); m.fighters[1].x = FG.C.WALL_R - 110; m.fighters[0].x = m.fighters[1].x - 44;
+  e = evs(m, 80, function (i) { return [i === 0 ? { h: true, right: true } : {}, i === 2 ? { h: true } : {}]; });
+  var hk = e.filter(function (x) { return x.type === 'hit' && x.attacker === 0; })[0];
+  check('head kick: a counter hit carries them into the wall', hk && hk.ch && e.some(function (x) { return x.type === 'wallsplat'; }), types(e));
 
   // JACK: the paper airplane curves up, the nose dive skims the floor as a low, and Seat
   // Swap switches sides.

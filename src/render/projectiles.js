@@ -1,6 +1,5 @@
 // Drawing the students' projectiles (match.projectiles, see src/engine/projectiles.js),
 // each kind its own little pixel prop, plus their effects and sounds:
-//   gnome     MATEUS: a mini garden gnome, tumbling end over end, then rolling
 //   backpack  NICOLAS: a backpack, spinning flat out
 //   bomb      MAX: a stuffed bookbag lobbed high; it bursts into books where it lands
 //   plane     JACK: a paper airplane, nosing along its flight path
@@ -24,18 +23,6 @@
   }
 
   var DRAW = {
-    gnome: function (g, p, t) {
-      var cx = p.x, cy = GY - p.y - p.h / 2, k = p.w / 10;
-      var ang = p.y > 0 ? p.spin * p.dir : p.spin * p.dir * 1.4; // end over end, then rolling
-      shape(g, cx, cy, ang, p.dir, k, [
-        [-4, 1, 8, 6, 0x2a5fb8],          // blue coat
-        [-4, 6, 3, 2, 0x5a3a1e], [1, 6, 3, 2, 0x5a3a1e], // boots
-        [-3, -3, 6, 4, 0xf0c8a0],         // face
-        [-4, -1, 8, 4, 0xf4f4f0],         // the beard
-        [-4, -5, 8, 2, 0xc0302a], [-3, -8, 6, 3, 0xc0302a], [-1, -11, 3, 3, 0xd8403a], // the red hat
-        [1, -2, 1, 1, 0x111111], [2, 0, 2, 1, 0xe08a7a]  // an eye, the nose
-      ]);
-    },
     backpack: function (g, p) {
       var cx = p.x, cy = GY - p.y - p.h / 2, k = p.w / 16, ang = p.spin * p.dir * 0.8;
       shape(g, cx, cy, ang, p.dir, k, [
@@ -116,9 +103,10 @@
         this.flashes.push({ x: x, y: y, r: 18, life: 9, max: 9, color: 0x5fd7ff, ring: true });
         for (i = 0; i < 6; i++) this.parts.push({ x: x, y: y, vx: (Math.random() - 0.5) * 4, vy: -1 - Math.random() * 3, life: 14, max: 14, size: 2, color: 0xbfe6ff });
         return;
-      case 'teleport': // dirt flying where he went down and where he comes up
+      case 'teleport': // where they vanished and where they reappear: loose paper (JACK), or dirt
+        var paperFx = ev.fx === 'paper';
         [ev.from, ev.x].forEach(function (tx, k) {
-          for (var j = 0; j < 7; j++) this.parts.push({ x: tx + (Math.random() - 0.5) * 16, y: GY - 2, vx: (Math.random() - 0.5) * 3, vy: -1.5 - Math.random() * 3, life: 18 + k * 4, max: 22, size: 2 + (j % 2), color: j % 3 ? 0x6a4a2a : 0x3a7a3a });
+          for (var j = 0; j < 7; j++) this.parts.push({ x: tx + (Math.random() - 0.5) * 16, y: paperFx ? GY - 40 : GY - 2, vx: (Math.random() - 0.5) * 3, vy: -1.5 - Math.random() * 3, life: 18 + k * 4, max: 22, size: 2 + (j % 2), color: paperFx ? (j % 2 ? 0xf4f4ec : 0xd8d8d0) : (j % 3 ? 0x6a4a2a : 0x3a7a3a) });
         }, this);
         return;
       case 'burst': // a bookbag bursting: books and loose paper everywhere
@@ -151,7 +139,7 @@
       case 'deflect':
         S.synth(function (s) { s.osc({ dur: 0.1, f0: 1500, f1: 1100, gain: 0.08, type: 'triangle' }); s.noise({ dur: 0.06, freq: 5000, q: 3, gain: 0.1 }); });
         return;
-      case 'teleport': // down into the dirt, and back up
+      case 'teleport': // gone, and back
         S.synth(function (s) { s.noise({ dur: 0.14, freq: 500, q: 0.8, gain: 0.18, type: 'lowpass' }); s.osc({ dur: 0.18, f0: 300, f1: 900, gain: 0.05, type: 'triangle', at: 0.05 }); });
         return;
       case 'burst':

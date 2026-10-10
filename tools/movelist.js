@@ -90,11 +90,13 @@ FG.ROSTER.forEach(function (d) {
       notes.unshift('projectile: ' + how + (pj.lowBelow != null && pj.ground !== 'slide' ? ', a low when it dips under ' + pj.lowBelow + ' px' : '') + ', range ' + (pj.range || 600));
     }
     if (m.teleport) notes.unshift('teleport: gone frames ' + m.teleport.hide[0] + '-' + m.teleport.hide[1] + ', reappears ' + (m.teleport.to === 'behind' ? 'behind them' : 'in front of them') + ' on frame ' + m.teleport.at);
-    var noHit = !m.box && !pj;
+    var clinchMove = /^CLINCH/.test(m.cmd); // MATEUS's clinch follow-ups: no hitbox, the clinch lands them
+    var noHit = !m.box && !pj && !clinchMove;
     var level = m.throw ? 'throw' : noHit ? '—' : m.level;
     var frameCols = noHit ? [m.total + ' total', '', ''] : [m.startup, m.active, m.recovery];
     var adv = m.throw || m.air || noHit ? ['', '', ''] : [fmt(m.block), result(m.hit), result(m.ch)];
     if (pj) frameCols = [m.startup, 'projectile', m.recovery];
+    if (clinchMove) { adv = ['', m.clinchKnee ? 'holds the clinch' : result(m.hit), '']; notes.unshift('lands from the clinch (can\'t be blocked)'); }
     out.push('| ' + [m.cmd, title(m.label), level].concat(frameCols, adv, [noHit ? '' : m.damage, notes.join(', ')]).join(' | ') + ' |');
   });
   out.push('');
@@ -104,7 +106,7 @@ FG.ROSTER.forEach(function (d) {
     out.push('');
     exIds.forEach(function (id) {
       var b = d.moves[id], x = d.moves[id + FG.EX_SUFFIX];
-      var dmg = x.multi ? (x.multi + 1) + ' hits of ' + x.damage : x.damage + ' damage (from ' + b.damage + ')';
+      var dmg = x.clinchEx ? 'P+K in the clinch also works; the opponent can\'t escape until the third knee lands' : x.multi ? (x.multi + 1) + ' hits of ' + x.damage : x.damage + ' damage (from ' + b.damage + ')';
       if (x.projectile && b.projectile && x.projectile !== b.projectile) dmg += ', a bigger or faster projectile';
       if (x.teleport && b.teleport && x.teleport.to !== b.teleport.to) dmg += ', reappears ' + (x.teleport.to === 'behind' ? 'behind them' : 'in front');
       var res = result(x.hit) !== result(b.hit) ? ', hit: ' + result(x.hit) : '';
@@ -134,7 +136,7 @@ FG.ROSTER.forEach(function (d) {
   d.combos.forEach(function (c) {
     var how = c.plan ? 'frames: ' + Object.keys(c.plan).map(function (f) { return c.plan[f] + ' @' + f; }).join(', ') : 'each input as soon as you can act';
     if (c.hold) how += '; hold ' + c.hold.map(function (h) { return h[2] + ' @' + h[0] + '-' + h[1]; }).join(', ');
-    out.push('- **' + title(c.name) + (c.meter ? ' (' + c.meter + (c.meter > 1 ? ' bars' : ' bar') + ')' : '') + ':** ' + c.notation.replace(/\b([A-Z]{2,})\b/g, function (w) { return ['UP', 'AIR'].indexOf(w) >= 0 ? w.toLowerCase() : w === 'AT' || w === 'THE' || w === 'WALL' || w === 'ON' || w === 'GROUND' || w === 'BOUND' ? w.toLowerCase() : w; }) + ' (' + how + ')');
+    out.push('- **' + title(c.name) + (c.meter ? ' (' + c.meter + (c.meter > 1 ? ' bars' : ' bar') + ')' : '') + ':** ' + c.notation.replace(/\b([A-Z]{2,})\b/g, function (w) { return ['UP', 'AIR'].indexOf(w) >= 0 ? w.toLowerCase() : w === 'AT' || w === 'THE' || w === 'WALL' || w === 'ON' || w === 'GROUND' || w === 'BOUND' || w === 'CLOSE' ? w.toLowerCase() : w; }) + ' (' + how + ')');
   });
   out.push('');
 });

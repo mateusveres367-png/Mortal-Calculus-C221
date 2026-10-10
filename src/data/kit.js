@@ -89,7 +89,8 @@
   // Enhanced specials: a special with `ex` gets a powered-up version, moves[id + 'EX'],
   // that P+K turns it into during its startup for one bar of Grade meter.
   //   ex: { text, damage (multiplier, default 1.3), multi (extra hits), armor: { hits },
-  //         hit / ch (new results; launch: true launches like their launcher), wallSplat }
+  //         hit / ch (new results; launch: true launches like their launcher), wallSplat,
+  //         clinchEx (a clinch grab whose knees always reach three) }
   // Extra hits come every MULTI_GAP frames (the active frames grow to fit them); only
   // the last one has the move's real result (the others keep the opponent in hitstun).
   // Armor covers the rest of the startup and the first active frame (so it wins trades).
@@ -117,6 +118,7 @@
     if (x.projectile) m.projectile = Object.assign({}, base.projectile, x.projectile); // a bigger, faster throw
     if (x.teleport) m.teleport = Object.assign({}, base.teleport, x.teleport);
     if (x.invuln) m.invuln = x.invuln;
+    if (x.clinchEx) m.clinchEx = true; // MATEUS's enhanced clinch: the knees always reach three
     // The animation: the strike re-fires for each extra hit, then the recovery plays late.
     if (extra) {
       var end = base.startup + base.active - 1, a = base.anim, strike = null, wind = null, out = [];
@@ -204,7 +206,7 @@
   //   'D+H, UP, AIR P, AIR K' -> ['D+H', 'UP, AIR P', 'AIR K'] (UP, dash taps and RUN join the next hit)
   // and pulls out a setup condition ('AT THE WALL', 'BLOCK THEIR JAB', ...).
   // A route can also list its own `steps` and `setup`.
-  var SETUPS = [/^AT THE WALL:\s*/, /^BLOCK THEIR JAB,\s*/, /^THEY WHIFF A JAB,\s*/, /^THEY ATTACK:\s*/];
+  var SETUPS = [/^AT THE WALL:\s*/, /^UP CLOSE:\s*/, /^BLOCK THEIR JAB,\s*/, /^THEY WHIFF A JAB,\s*/, /^THEY ATTACK:\s*/];
   FG.comboSteps = function (combo) {
     if (combo.steps) return { setup: combo.setup || '', steps: combo.steps.slice() };
     var text = combo.notation, setup = '';

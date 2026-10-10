@@ -61,6 +61,17 @@
       if (j < 14) p[j + 1] -= bob; // knees bend as the body dips
       if (j === 14 || j === 18) p[j + 1] -= bob * 0.5;
     }
+    // On the balls of the feet (MATEUS): the body rises and settles in rhythm while the
+    // feet stay down, and the light lead foot comes off the floor now and then.
+    if (ia.hop) {
+      var up = (1 + Math.sin(ph)) * 0.5 * ia.hop;
+      for (var q = 0; q < 14; q += 2) p[q + 1] += up;
+      p[15] += up * 0.6; p[19] += up * 0.6;
+    }
+    if (ia.leadLift) {
+      var lf = Math.pow(Math.max(0, Math.sin(ph * 0.5)), 6) * ia.leadLift;
+      p[17] += lf; p[15] += lf * 0.6;
+    }
     return p;
   }
 
@@ -73,6 +84,8 @@
     }
     if (f._gesture && s === 'idle') return keyframed(def, f._gesture.anim, f._gesture.t);
     var P = function (n) { return getPose(def, n); };
+    // Check (MATEUS): the lead shin up, taking a low kick.
+    if (f.checking > 0 && def.poses.check && (s === 'blockstun' || s === 'idle' || s === 'walkF' || s === 'walkB')) return lerp(P('idle'), P('check'), Math.min(1, f.checking / 5));
     switch (s) {
       case 'attack': return keyframed(def, f.move.anim, f.moveFrame);
       case 'walkF':
@@ -84,6 +97,8 @@
         var lean = (s === 'walkF' ? 1 : -1) * (wk.lean != null ? wk.lean : 1.5);
         for (var i = 2; i <= 12; i += 2) p[i] += lean * (p[i + 1] - p[1]) / 30;
         if (wk.bob) { var wb = Math.abs(Math.sin(t * (wk.rate || 0.2))) * wk.bob; for (var j = 1; j <= 13; j += 2) p[j] -= wb; }
+        // Leg damage (MATEUS's Low Kicks): a limp, dipping on every other step.
+        if (f.legDamage > 0) { var lp = Math.max(0, Math.sin(t * 0.18)) * 3.5; for (var lj = 1; lj <= 13; lj += 2) p[lj] -= lp; }
         return p;
       }
       case 'crouch': return P('crouch');
@@ -124,6 +139,16 @@
         return lerp(end, P('idle'), Math.min(1, (tf - slam) / (C.THROW_END_FRAME - slam)));
       }
       case 'thrown': return f.stateFrame <= C.THROW_BREAK_WINDOW ? P('hit_mid') : P('juggle');
+      // The clinch (MATEUS): his follow-up playing, or holding on, weight shifting side to side.
+      case 'clinch': {
+        if (f.clinchAct) return keyframed(def, f.clinchAct.move.anim, Math.max(1, f.clinchAct.t));
+        return lerp(P('clinch'), P('clinch2'), (1 + Math.sin(f.stateFrame * 0.13)) * 0.5);
+      }
+      // Held in it: head pulled down, folding over each knee.
+      case 'clinched': {
+        var hu = f.clinchHurt > 0 ? f.clinchHurt / 12 : 0;
+        return lerp(lerp(P('idle'), P('hit_mid'), 0.65 + Math.sin(f.stateFrame * 0.13) * 0.08), P('hit_mid'), hu);
+      }
       case 'down':
       case 'ko': return P('down');
       case 'getup': {
@@ -501,6 +526,17 @@
       if (sleeves === 'long') { limb(sh, e, 7, sl); limb(e, h, 6, sl); }
       else if (sleeves === 'rolled') { limb(sh, e, 7, sl); limb(e, h, 6, sk); part(e, h, 0, 0.3, 7, shade(sl, 0.9)); }
       else { limb(e, h, 6, sk); part(sh, e, 0, 0.62, 8, sl); }
+      if (look.armband && !back) { // a Muay Thai armband round the lead arm, its tails hanging
+        part(sh, e, 0.66, 0.78, 8.5, look.armband);
+        g.lineStyle(Math.max(1, Math.round(1.2 * s)), c(shade(look.armband, 0.75)), 1);
+        var ax = X(sh) + (X(e) - X(sh)) * 0.72, ay = Y(sh) + (Y(e) - Y(sh)) * 0.72;
+        g.lineBetween(ax, ay, ax - dir * 2 * s, ay + 5 * s); g.lineBetween(ax, ay, ax + dir * 1 * s, ay + 6 * s);
+      }
+      if (look.wraps) { // hand wraps: the hand and the wrist bound in red
+        part(e, h, 0.62, 1, 6.5, back ? shade(look.wraps, 0.8) : look.wraps);
+        block(h, 7.5, 7.5, back ? shade(look.wraps, 0.8) : look.wraps);
+        return;
+      }
       if (look.wristband) { // red-white-red band at the wrist
         part(e, h, 0.68, 0.76, 7, look.wristband[0]); part(e, h, 0.76, 0.83, 7, look.wristband[1]); part(e, h, 0.83, 0.9, 7, look.wristband[0]);
       }
@@ -511,7 +547,12 @@
     // Joint indices: 0 hip, 1 chest, 2 head, 3 fElbow, 4 fHand, 5 bElbow, 6 bHand, 7 fKnee, 8 fFoot, 9 bKnee, 10 bFoot
     // Back limbs first, in darker shades.
     var legsBack = shade(look.legs, 0.72);
-    limb(14, 9, 9, legsBack); limb(9, 10, 7, legsBack);
+    // Athletic shorts (look.shorts): bare knees and shins below them.
+    function leg(hip, knee, foot, col, sk) {
+      if (look.shorts) { limb(hip, knee, 8, sk); limb(knee, foot, 6.5, sk); part(hip, knee, 0, 0.62, 10, col); }
+      else { limb(hip, knee, 9, col); limb(knee, foot, 7, col); }
+    }
+    leg(14, 9, 10, legsBack, skinBack);
     block(10, shoeW - 1, shoeH - 1, shade(look.shoes, 0.7), true);
     arm(5, 6, true);
 
@@ -638,7 +679,7 @@
     if (look.hair.style === 'bowl') drawBowl(g, f, hdx, hdy, s, dir, c(look.hair.color), look.hair.color, flash == null);
 
     // Front limbs on top.
-    limb(13, 7, 9, look.legs); limb(7, 8, 7, look.legs);
+    leg(13, 7, 8, look.legs, skin);
     block(8, shoeW, shoeH, look.shoes, true);
     arm(3, 4, false);
   };

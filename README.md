@@ -4,7 +4,7 @@ A retro, Tekken-inspired 2D/2.5D fighting game themed around the El Camino Real 
 
 ## Status
 
-**Phase 7 — modes and screens (playable).** All nine fighters from [`ROSTER.md`](ROSTER.md): **PEDERSEN** (power, math analysis; the cover fighter), **BRINKHUS** (balanced, Algebra 1), **CHAI** (technical, geometry), **DALSASS** (tricky, triangles and proofs), **LEE** (rushdown, sequences), **LOPEZ** (defensive, calculus), **MIYASHIRO** (spacing, Algebra 2), **RAMOS** (grappler, matrices) and **WILSON** (veteran master, every subject; the arcade boss). And on the **student side**, 10th graders: **MATEUS** "Gnome" (balanced; the student side's cover fighter), **NICOLAS** "The Late Pass" (rushdown), **MAX** "Heavy Course Load" (power and grappling, a charge move with armor) and **JACK** "Back of the Classroom" (tricky zoner: paper airplanes that curve, an eraser flick, a feint and a teleport) and **HUDSON** "Calculator Kid" (defensive and technical: a parry into a counter, the longest poke on his side, and a string that does the math on every hit) (see [`ROSTER.md`](ROSTER.md)). No two fight alike: each has their own style, stance, movement, weight, hit reactions and signature mechanic.
+**Phase 7 — modes and screens (playable).** All nine fighters from [`ROSTER.md`](ROSTER.md): **PEDERSEN** (power, math analysis; the cover fighter), **BRINKHUS** (balanced, Algebra 1), **CHAI** (technical, geometry), **DALSASS** (tricky, triangles and proofs), **LEE** (rushdown, sequences), **LOPEZ** (defensive, calculus), **MIYASHIRO** (spacing, Algebra 2), **RAMOS** (grappler, matrices) and **WILSON** (veteran master, every subject; the arcade boss). And on the **student side**, 10th graders: **MATEUS** "Gnome" (Muay Thai striker; the student side's cover fighter), **NICOLAS** "The Late Pass" (rushdown), **MAX** "Heavy Course Load" (power and grappling, a charge move with armor) and **JACK** "Back of the Classroom" (tricky zoner: paper airplanes that curve, an eraser flick, a feint and a teleport) and **HUDSON** "Calculator Kid" (defensive and technical: a parry into a counter, the longest poke on his side, and a string that does the math on every hit) (see [`ROSTER.md`](ROSTER.md)). No two fight alike: each has their own style, stance, movement, weight, hit reactions and signature mechanic.
 
 What's in the game so far:
 
@@ -37,7 +37,7 @@ What's in the game so far:
 - **Modes and screens (phase 7):**
   - a late-90s arcade title screen: the faculty lot at sunset, PEDERSEN in sunglasses leaning on his red sports car with a smoking cigar, the other seven in silhouette behind him catching rim light in their colours, a chrome MORTAL CALCULUS logo that slams in with a red C221 stamp, PRESS START, CRT scanlines and a synth-rock loop (Web Audio). The menu: **Arcade**, **Detention**, **Timed Test**, **VS CPU**, **Versus**, **Training**, **Records**, **Options**. Leave it for 15 seconds and the attract demo plays three short CPU vs CPU clips with cut-ins, then comes back; any key ends it
   - character select with pixel portraits on two tabs, **TEACHERS | STUDENTS** (`Q`/`E` or tap a tab; player 2 in versus `[`/`]`); both players pick at the same time in versus; then stage select with a live, panning preview of each stage (or RANDOM)
-  - **The student side:** 10th graders, a little smaller than the teachers, who fight scrappier with whatever school stuff is at hand. Only students have **projectiles** (a garden gnome, a backpack...): one of their own on screen at a time; sidestep them, block them at the right height, cancel them with your own, or knock them away with a parry. Students and teachers fight each other in every mode. Their cut-ins are pages of notebook paper with doodles in the margins
+  - **The student side:** 10th graders, a little smaller than the teachers, who fight scrappier with whatever school stuff is at hand. Only students have **projectiles** (a backpack, a paper airplane...): one of their own on screen at a time; sidestep them, block them at the right height, cancel them with your own, or knock them away with a parry. Students and teachers fight each other in every mode. Their cut-ins are pages of notebook paper with doodles in the margins (MATEUS's are red brushstrokes on black)
   - **Arcade:** one CPU opponent at a time on their home stage, WILSON last (as a teacher, the students first, then the rest of the department; as a student, all nine teachers); win to see who's next, lose and you get a 10-second CONTINUE?; beat everyone for the ending
   - **Versus:** player 1 against player 2 on one keyboard
   - **Detention** (survival): one opponent after another at random, one round each, on a single health bar that only refills 30% after each win; the CPU gets tougher as you go, and the win screen keeps count of how many you've beaten (your best is in Records)
@@ -139,6 +139,7 @@ Every fighter uses the same input layout. What each input does, and its frame da
 | `P` / `K` / `H` in the air | air attacks that chain on hit; air `H` bounds |
 | `P`+`K` / back + `P`+`K` | front throw (break with `P`) / reverse throw (break with `K`) |
 | forward + `P`+`K` | command grab (RAMOS's Identity): unbreakable |
+| `P`+`K` up close (MATEUS) | the clinch: then `P` knees, `K` dump, `H` jumping knee, back elbow; escape with `P` as it locks, or mash |
 | hold the button | charge moves (PEDERSEN's Order of Magnitude) |
 | while knocked down | up gets up, back or forward rolls, a sidestep key rolls sideways, `K` or `P` does a wake-up kick |
 | just before landing from a juggle | `P`, `K` or `H` tech rolls (not after sweeps, bounds or wall splats) |
@@ -157,7 +158,7 @@ Every fighter uses the same input layout. What each input does, and its frame da
   - **PEDERSEN — Horsepower:** on go the sunglasses; he revs his red sports car and drives straight across the stage into them; they bounce off the hood, the car skids to a stop, and he leans out of the window with his line.
   - **RAMOS — Max Incline:** a grab, then a 24-hour gym: a treadmill cranked to max, sparks, the speed climbing, his bowl cut flapping; he launches off the end, crashes back into the stage, and finishes with a flying tackle and a slam.
   - **WILSON — Tenure:** the stage goes dark but for a chalkboard; he writes one equation in silence while 29 years of classes flicker past, a hit on every year; he caps the marker, turns around, and they're already down.
-  - **MATEUS — Gnome Army:** dozens of garden gnomes pop out of the ground; they freeze whenever the opponent looks at them and swarm when they turn away, and the last one bonks them with a watering can.
+  - **MATEUS — Eight Limbs:** he catches them in the clinch, the screen goes black and red, and eight strikes land, each named as it hits: LEFT FIST, RIGHT FIST, LEFT ELBOW, RIGHT ELBOW, LEFT KNEE, RIGHT KNEE, LEFT SHIN, and a RIGHT SHIN head kick with a huge impact freeze.
   - **NICOLAS — Five-Minute Passing Period:** the bell rings and a huge LED clock counts down 5:00 at hyperspeed while he hits them from both sides at once, the hallway crowd rushing past; at 0:00 a flying shoulder into the far wall. "Made it."
   - **MAX — Finals Week:** a calendar of exams slams up, the sky goes dark and textbooks rain down on them into a mountain; he climbs it and body-slams them into the pile.
   - **JACK — Paper Airplane Squadron:** the back row of an empty classroom; he folds planes at hyperspeed, launches the stack, and they fly in formation (a V, a loop) before dive-bombing them; the last one has his doodle on the wing.
@@ -189,7 +190,7 @@ The fighters, and what they teach:
   - **Tangent Step:** sidestep, then `P` for a spinning hook kick (or `K` for a low). Her sidestep is the quickest and deepest in the game, and she attacks out of it almost at once; it stays off the line until it hits.
   - **Reflection Counter** (back + `H`) parries highs and mids during frames 2–10, then counters at once. Lows and throws beat it, and a whiffed parry is punishable.
   - **Arc Launcher** (down + `H`) and **Transformation** (throw). She winces apologetically after landing a big hit and offers a hand up when she wins.
-- **LEE** (rushdown; geometry, Algebra 1 & 2: sequences) — Muay Thai and boxing from a low, hunched peekaboo stance:
+- **LEE** (rushdown; geometry, Algebra 1 & 2: sequences) — a boxer, from a low, hunched peekaboo stance:
   - **Arithmetic Sequence** (`P, P, P`, then `P` for an elbow or `K` for a low kick) gets faster with every hit.
   - **Dash cancel:** once an attack connects (hit or block), forward, forward cancels its recovery into a dash (once per string).
   - **Recursive Rush** (forward + `P`) repeats on hit when you press `P` again, up to three times.
@@ -212,9 +213,9 @@ The fighters, and what they teach:
   - **Identity** (forward + `P`+`K`) is a command grab: slower, but it can't be broken and takes crouching opponents too.
   - **Transpose Toss** (down + `H`) is his launcher, and dash then `P` is a shoulder charge.
 
-The students (10th graders; only they have projectiles, `B`+`P` for everyone):
+The students (10th graders; only they have projectiles, `B`+`P` for everyone but MATEUS):
 
-- **MATEUS** "Gnome" (balanced) — sneaky and smug, the student side's cover fighter. **Lawn Statue** (back + `H`, hold to stay frozen) counters any strike (throws beat it); **Gnome Toss** lobs a mini gnome that tumbles along the floor as a low; **Pop-Up** (down + `P`) sinks into the ground and comes up next to them.
+- **MATEUS** "Gnome" (balanced / striker) — Muay Thai, the student side's cover fighter: calm, a little cocky, all eight limbs from a tall, square stance. **The Clinch** (`P`+`K` up close) locks his hands behind their head: `P` knees (up to three, each stronger), `K` dumps them, `H` is a jumping knee that launches, back breaks off with an elbow; they escape with `P` right as it locks, or by mashing. **Low Kick** (down + `K`) stacks leg damage (three slow their walk); **Check** (press back just as a low kick lands) takes it on the shin and staggers the kicker; **Spinning Elbow** (back + `H`) hits almost twice as hard on a counter; **Head Kick** (forward + `H`) carries them into the wall on a counter; **Superman Punch** out of a dash.
 - **NICOLAS** "The Late Pass" (rushdown) — the fastest dash in the game (forward, forward again chains another), **Bell Sprint** (`F, F, P`), the **Tardy Rush** string (`P, P, K, K`), **Skip Day** (`P` out of a sidestep) and a straight **Backpack Toss**.
 - **MAX** "Heavy Course Load" (power / grappler) — **Course Load** (forward + `H`, hold to charge) has armor through its windup; **Study Hall** (down + `K`) stomps them even when they're down; **Bookbag Bomb** is a lob that bursts where it lands; **Backpack Slam** is his throw.
 - **JACK** "Back of the Classroom" (tricky zoner) — **Paper Airplane** curves up (back + `P`) or dives (down + `P`, a low once it skims the floor); **Eraser Flick** (forward + `P`) is a fast high; **Doodle** (back + `K`) is a stance with three odd-angle follow-ups; **Pass the Note** (forward + `H`) is a feint; **Seat Swap** (back + `H`) teleports behind them.
@@ -233,7 +234,7 @@ The students (10th graders; only they have projectiles, `B`+`P` for everyone):
 | MIYASHIRO | Calculated: a glowing parabola, one strike at the exact point, into the whiteboard | `D, F, K` |
 | RAMOS | Cardio Finale: grabs them, runs a full lap of the stage carrying them, slams, hair flip | `F, D, F, P` |
 | WILSON | Class Dismissed: checks his watch, one clean strike, the bell rings, and he walks off without looking back | `D, B, H` |
-| MATEUS | You've Been Gnomed: sinks underground, taps their shoulder from behind, one hit, a tiny gnome pops up, GNOMED | `D, U, P` |
+| MATEUS | Lights Out: he steps back, the crowd goes silent, a slow-motion flying knee; he walks away before they hit the floor, GNOMED. | `B, B, K` |
 | NICOLAS | Tardy: the bell rings, he sprints right past them, they spin and drop, a TARDY SLIP | `F, F, F, K` |
 | MAX | All-Nighter: a suplex, then he falls asleep on top of them, snoring, at 3:00 AM | `D, D, H` |
 | JACK | Back Row: folds a giant paper airplane, rides it into them and lands it perfectly; three 10s | `B, D, F, K` |

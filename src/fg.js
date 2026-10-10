@@ -80,6 +80,22 @@ FG.C = {
   THROW_END_FRAME: 46,
   THROW_BREAK_FRAMES: 16,
 
+  // The clinch (MATEUS): his front throw locks a Thai clinch instead of throwing.
+  CLINCH_LOCK: 8,          // frames after the lock before his first follow-up comes out
+  CLINCH_BREAK_WINDOW: 12, // press P this soon after the lock to slip it (like a throw break)
+  CLINCH_MASH: 10,         // ...or mash P / K / H this many times to fight out of it
+  CLINCH_KNEE_RELIEF: 1,   // each knee that lands knocks this much out of the mashing
+  CLINCH_HOLD: 90,         // frames he can hold it without doing anything before it comes apart
+  CLINCH_GAP: 30,          // how close the clinch holds them (scaled by his size)
+  // Leg damage (MATEUS's Low Kick): LEG_HITS kicks slow the walk for LEG_FRAMES.
+  LEG_HITS: 3,
+  LEG_FRAMES: 360,
+  LEG_SLOW: 0.6,
+  // Check (MATEUS): press back as a low kick lands to check it with the shin.
+  CHECK_WINDOW: 8,
+  CHECK_STUN: 22,          // the kicker staggers this long (he recovers in CHECK_RECOVER)
+  CHECK_RECOVER: 4,
+
   // MIYASHIRO's Calculated: after an opponent whiffs, his next hit within this
   // many frames does extra damage.
   CALCULATED_FRAMES: 150,

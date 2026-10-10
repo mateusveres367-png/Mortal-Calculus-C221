@@ -18,8 +18,8 @@ Every fighter's combo routes, and what the combo feel pass changed. The routes l
 | --- | --- | --- | --- | --- | --- |
 | SQUARED | easy | P, P | 2 | - | 23 |
 | LOGARITHMIC JUGGLE | medium | D+H, P, P, H | 4 | - | 51 |
-| EXPONENTIAL GROWTH | medium | AT THE WALL: H, D+H | 2 | - | 39 |
-| OVERDRIVE LAUNCH | medium | F+H, P+K, P, P, H | 4 | 1 bar | 65 |
+| EXPONENTIAL GROWTH | medium | AT THE WALL: H, D+H | 2 | - | 37 |
+| OVERDRIVE LAUNCH | medium | F+H, P+K, P, P, H | 4 | 1 bar | 62 |
 | TOWER OF POWERS | hard | D+H, UP, AIR K, AIR H, D+K ON THE GROUND | 4 | - | 59 |
 | EXPONENTIAL OVERDRIVE | hard | P, D, D/F, F+P+K+H | 2 | 3 bars | 60 |
 
@@ -27,13 +27,13 @@ Every fighter's combo routes, and what the combo feel pass changed. The routes l
 
 | Route | Level | Inputs | Hits | Meter | Damage |
 | --- | --- | --- | --- | --- | --- |
-| DISTRIBUTIVE PROPERTY | easy | P, K, K | 3 | - | 29 |
+| DISTRIBUTIVE PROPERTY | easy | P, K, K | 3 | - | 28 |
 | LONG ARMS | easy | F+P, P, H | 3 | - | 29 |
-| SOLVE FOR X JUGGLE | medium | D+H, P, P, H | 4 | - | 42 |
-| ISOLATE THE VARIABLE | medium | AT THE WALL: H, P, P, D+H | 4 | - | 40 |
-| EXPANDED FORM | medium | H, P+K, P, P, H | 4 | 1 bar | 52 |
+| SOLVE FOR X JUGGLE | medium | D+H, P, P, H | 4 | - | 41 |
+| ISOLATE THE VARIABLE | medium | AT THE WALL: H, P, P, D+H | 4 | - | 38 |
+| EXPANDED FORM | medium | H, P+K, P, P, H | 4 | 1 bar | 51 |
 | POINT-SLOPE SPIKE | hard | D+H, UP, AIR P, AIR K, AIR H, K | 5 | - | 52 |
-| ORDER OF OPERATIONS | hard | P, D, D/F, F+P+K+H | 2 | 3 bars | 58 |
+| ORDER OF OPERATIONS | hard | P, D, D/F, F+P+K+H | 2 | 3 bars | 57 |
 
 ### CHAI (technical, geometry)
 
@@ -116,16 +116,18 @@ Every fighter's combo routes, and what the combo feel pass changed. The routes l
 | VERTICAL ASYMPTOTE | hard | D+H, UP, AIR P, AIR K, AIR H, K | 5 | - | 48 |
 | TENURE | hard | P, D, D/F, F+P+K+H | 2 | 3 bars | 57 |
 
-### MATEUS (balanced, gnomes)
+### MATEUS (balanced, eight limbs)
 
 | Route | Level | Inputs | Hits | Meter | Damage |
 | --- | --- | --- | --- | --- | --- |
-| TWO-STEP | easy | P, P, H | 3 | - | 28 |
-| HEADS UP | easy | F+P, P, H | 3 | - | 34 |
-| GOT GNOMED | medium | D+H, P, P, H | 4 | - | 41 |
-| WHEELBARROW PLUS | medium | F+P, P+K, P, P, H | 5 | 1 bar | 46 |
-| GARDEN PARTY | hard | D+H, UP, AIR P, AIR K, AIR H, D+K | 5 | - | 49 |
-| GNOME ARMY | hard | P, D, D/F, F+P+K+H | 2 | 3 bars | 59 |
+| JAB, CROSS, BODY KICK | easy | P, P, F+K | 3 | - | 32 |
+| TWO AND A KNEE | easy | P, P, H | 3 | - | 29 |
+| JUMPING KNEE | medium | D+H, P, P, H | 4 | - | 42 |
+| CLINCH KNEES | medium | UP CLOSE: P+K, P, P, H | 3 | - | 33 |
+| THREE KICKS | medium | F+K, P+K | 3 | 1 bar | 29 |
+| KNEES TO THREE | medium | UP CLOSE: P+K, P+K, H | 4 | 1 bar | 43 |
+| TEEP, HEAD KICK, AIR | hard | AT THE WALL: K, F+H, UP, AIR K, AIR H | 4 | - | 54 |
+| EIGHT LIMBS | hard | UP CLOSE: D, D/F, F+P+K+H | 1 | 3 bars | 51 |
 
 ### NICOLAS (rushdown, passing period)
 

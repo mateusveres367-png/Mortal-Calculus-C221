@@ -117,6 +117,9 @@
       raw.p = false; raw.k = false;
       raw[t.move.breakBtn] = true;
     }
+    // ...and MATEUS's clinch (P on time slips it).
+    var cl = match && match.clinch;
+    if (this.get('breaks') === 'on' && cl && cl.d === self.index && match.frame - cl.start === 6) { raw.k = false; raw.h = false; raw.p = true; }
 
     // --- Knockdown recovery -----------------------------------------------------
     var recovery = this.get('recovery');
