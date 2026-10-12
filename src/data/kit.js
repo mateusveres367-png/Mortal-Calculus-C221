@@ -55,8 +55,14 @@
 
   // The two sides of character select: TEACHERS (orders 1-9) and STUDENTS (10th
   // graders: smaller, scrappier, and the only ones with projectiles).
-  FG.SIDES = ['teacher', 'student'];
-  FG.rosterSide = function (side) { return FG.ROSTER.filter(function (d) { return d.side === side; }); };
+  // The student side is switched off for now: the five students are still defined (and
+  // tested in tests/sim.test.js), but no menu, ladder, demo or records screen offers them.
+  // Set this to true to bring them back (the STUDENTS tab and its keypad return with it).
+  FG.STUDENTS_ENABLED = false;
+  FG.SIDES = FG.STUDENTS_ENABLED ? ['teacher', 'student'] : ['teacher'];
+  FG.rosterSide = function (side) { return FG.ROSTER.filter(function (d) { return d.side === side && FG.SIDES.indexOf(side) >= 0; }); };
+  // Everyone the game offers (FG.ROSTER also has the students while they're switched off).
+  FG.playableRoster = function () { return FG.ROSTER.filter(function (d) { return FG.SIDES.indexOf(d.side) >= 0; }); };
 
   FG.fighterById = function (id) {
     for (var i = 0; i < FG.ROSTER.length; i++) if (FG.ROSTER[i].id === id) return FG.ROSTER[i];

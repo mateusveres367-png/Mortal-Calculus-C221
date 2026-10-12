@@ -88,7 +88,7 @@
     this.name.setText(random ? 'RANDOM' : def.name);
     this.place.setText(random ? '' : def.place);
     this.desc.setText(random ? 'ANY STAGE. MATH IS EVERYWHERE.' : def.desc);
-    var homes = random ? [] : FG.ROSTER.filter(function (f) { return f.homeStage === id; }).map(function (f) { return f.name; });
+    var homes = random ? [] : FG.playableRoster().filter(function (f) { return f.homeStage === id; }).map(function (f) { return f.name; });
     this.home.setText(homes.length ? 'HOME OF ' + homes.join(' AND ') : '');
     if (this.level) {
       this.levelText.setText('< CPU: ' + FG.AI_LEVELS[this.level].name + ' >');

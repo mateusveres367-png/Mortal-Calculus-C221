@@ -13,7 +13,7 @@
 
   // Scene data for attract clip n: a random matchup on a random stage.
   FG.attractClip = function (n) {
-    var r = FG.ROSTER, a = Math.floor(Math.random() * r.length), b = (a + 1 + Math.floor(Math.random() * (r.length - 1))) % r.length;
+    var r = FG.playableRoster(), a = Math.floor(Math.random() * r.length), b = (a + 1 + Math.floor(Math.random() * (r.length - 1))) % r.length;
     return { mode: 'attract', clip: n, p1: r[a].id, p2: r[b].id, stage: FG.STAGES[Math.floor(Math.random() * FG.STAGES.length)].id };
   };
 
@@ -29,7 +29,7 @@
     this.level = data.level || null;
     this.arcade = data.arcade || null;
     this.clip = data.clip || 0;
-    var roster = FG.ROSTER;
+    var roster = FG.playableRoster();
     this.ids = { p1: data.p1 || roster[0].id, p2: data.p2 || roster[Math.min(1, roster.length - 1)].id };
     // The stage: picked on stage select, or player 2's home stage.
     this.stageId = data.stage || FG.fighterById(this.ids.p2).homeStage || 'classroom';

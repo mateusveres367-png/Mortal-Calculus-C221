@@ -39,7 +39,8 @@
       if (d) { self2.tab[side] = d.side; self2.cursor[side] = Math.max(0, FG.rosterSide(d.side).indexOf(d)); }
     });
     // The STUDENTS tab is locked until its code has been entered (the keypad below).
-    if (!FG.studentsUnlocked()) for (var ls = 0; ls < 2; ls++) if (this.tab[ls] === 'student') { this.tab[ls] = 'teacher'; this.cursor[ls] = 0; }
+    // (With the student side switched off, FG.STUDENTS_ENABLED, there's no STUDENTS tab at all.)
+    for (var ls = 0; ls < 2; ls++) if (this.tab[ls] === 'student' && (!FG.STUDENTS_ENABLED || !FG.studentsUnlocked())) { this.tab[ls] = 'teacher'; this.cursor[ls] = 0; }
     this.view = this.tab[0]; // the tab the grid shows
     this.chosen = [null, null];
     this.outfit = [0, 0]; // the outfit each side wears (unlocked by winning with that fighter)
@@ -61,7 +62,7 @@
     // The tabs: TEACHERS | STUDENTS, over the grid. Tap one to switch.
     this.tabG = this.add.graphics().setDepth(4);
     this.tabs = FG.SIDES.map(function (side, k) {
-      var x = C.VIEW_W / 2 + (k ? 44 : -44);
+      var x = C.VIEW_W / 2 + (FG.SIDES.length < 2 ? 0 : k ? 44 : -44);
       var t = FG.text(self, x, 145, TAB_NAME[side], 'w').setOrigin(0.5, 0).setDepth(5);
       var zone = self.add.zone(x, 150, 84, 18).setInteractive({ useHandCursor: true });
       zone.on('pointerdown', function () { FG.Sfx.unlock(); self.setTab(self.activeSide(), side); });
@@ -140,7 +141,7 @@
   // Switch a side's tab (TEACHERS / STUDENTS); the grid follows. A locked STUDENTS tab
   // opens the keypad instead.
   SelectScene.prototype.setTab = function (side, tab) {
-    if (this.pad.open) return;
+    if (this.pad.open || FG.SIDES.indexOf(tab) < 0) return; // (a side that's switched off)
     if (this.chosen[side] && this.mode === 'versus') return;
     if (tab === 'student' && this.tab[side] !== 'student' && !FG.studentsUnlocked()) { this.openKeypad(side); return; }
     if (this.tab[side] !== tab) { this.tab[side] = tab; this.cursor[side] = 0; FG.Sfx.ui('move'); }
@@ -164,7 +165,7 @@
       act = P1KEYS[code] || P2KEYS[code] || (code === 'Enter' ? 'ok' : null);
       if (!act) return;
     }
-    if (act === 'prevTab' || act === 'nextTab') { this.setTab(side, this.tab[side] === 'teacher' ? 'student' : 'teacher'); return; }
+    if (act === 'prevTab' || act === 'nextTab') { if (FG.SIDES.length > 1) this.setTab(side, this.tab[side] === 'teacher' ? 'student' : 'teacher'); return; }
     this.view = this.tab[side];
     if (act === 'ok') { this.confirm(side); return; }
     if (act === 'back') { this.back(side); return; }
@@ -240,7 +241,7 @@
     else if (m === 'versus') txt = (this.chosen[0] ? 'P1 READY' : 'P1 CHOOSING') + '      ' + (this.chosen[1] ? 'P2 READY' : 'P2 CHOOSING');
     else { txt = this.step === 0 ? 'PLAYER 1: CHOOSE YOUR FIGHTER' : m === 'cpu' ? "CHOOSE THE CPU'S FIGHTER" : 'CHOOSE YOUR OPPONENT'; col = this.step === 0 ? 'pf_c' : 'pf_r'; }
     this.stepText.setText(txt).setFont(col);
-    this.footer.setText(m === 'versus' ? 'P1: WASD+J (K UNDO) Q/E TAB   P2: ARROWS+NUM1 (NUM2 UNDO) [ ] TAB   ESC BACK' : 'ARROWS MOVE   Q/E TEACHERS/STUDENTS   Z/X OUTFIT   ENTER CONFIRM   ESC BACK');
+    this.footer.setText(m === 'versus' ? (FG.SIDES.length > 1 ? 'P1: WASD+J (K UNDO) Q/E TAB   P2: ARROWS+NUM1 (NUM2 UNDO) [ ] TAB   ESC BACK' : 'P1: WASD+J (K UNDO)   P2: ARROWS+NUM1 (NUM2 UNDO)   ESC BACK') : (FG.SIDES.length > 1 ? 'ARROWS MOVE   Q/E TEACHERS/STUDENTS   Z/X OUTFIT   ENTER CONFIRM   ESC BACK' : 'ARROWS MOVE   Z/X OUTFIT   ENTER CONFIRM   ESC BACK'));
     // Only the shown tab's cards.
     FG.SIDES.forEach(function (side) {
       self.cards[side].forEach(function (cd) { var on = side === self.view; cd.g.setVisible(on); cd.name.setVisible(on); if (cd.zone.input) cd.zone.input.enabled = on && !self.pad.open; });
@@ -488,7 +489,7 @@
   // in a row), on one health bar that only partly refills between fights.
   FG.detentionRun = function (p1) { return { kind: 'detention', p1: p1, beaten: 0, health: null, meter: 0, last: null }; };
   FG.detentionFight = function (run) {
-    var pool = FG.ROSTER.filter(function (d) { return d.id !== run.last; });
+    var pool = FG.playableRoster().filter(function (d) { return d.id !== run.last; });
     var p2 = pool[Math.floor(Math.random() * pool.length)].id;
     run.last = p2;
     return { mode: 'detention', p1: run.p1, p2: p2, stage: FG.fighterById(p2).homeStage, arcade: run };

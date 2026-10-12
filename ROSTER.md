@@ -273,6 +273,8 @@ Five 10th graders. Character select has two tabs, **TEACHERS | STUDENTS** (Q/E, 
 
 **Arcade as a student:** fight all the teachers, ending with WILSON. **Arcade as a teacher:** fight the students first, then the remaining teachers.
 
+> **The students are switched off in the game for now** (`FG.STUDENTS_ENABLED` in `src/data/kit.js`): they are still defined and tested, but no menu offers them.
+
 ## MATEUS "GNOME" — Balanced / Striker
 
 **Moves:** all eight limbs: fists, elbows, knees, shins.

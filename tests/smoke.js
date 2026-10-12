@@ -404,7 +404,7 @@ try { playwright = require('playwright'); } catch (e) {
     var srun = FG.arcadeRun('mateus');
     var run = FG.arcadeRun('brinkhus');
     window.FG_SCENE.scene.start('ladder', run);
-    return { n: run.ladder.length, want: FG.ROSTER.length, studentsFirst: run.ladder.slice(0, FG.rosterSide('student').length).every(function (id) { return FG.fighterById(id).side === 'student'; }),
+    return { n: run.ladder.length, want: FG.playableRoster().length, studentsFirst: run.ladder.slice(0, FG.rosterSide('student').length).every(function (id) { return FG.fighterById(id).side === 'student'; }),
       student: srun.ladder.length === 9 && srun.ladder[8] === 'wilson' && srun.ladder.every(function (id) { return FG.fighterById(id).side === 'teacher'; }),
       mirror: run.ladder.indexOf('brinkhus') >= 0, last: run.ladder[run.ladder.length - 1], before: run.ladder[run.ladder.length - 2],
       levels: run.ladder.map(function (id, i) { return FG.arcadeLevel(i, run.ladder.length); }) };
@@ -422,15 +422,21 @@ try { playwright = require('playwright'); } catch (e) {
   await page.waitForFunction(function () { return window.FG_SELECT && window.FG_SELECT.sys.isActive() && window.FG_SELECT.mode === 'arcade' && window.FG_SELECT.t > 5; }, null, { timeout: 15000 });
   var lock = await page.evaluate(function () {
     var s = window.FG_SELECT; s.tab[0] = 'teacher'; s.cursor[0] = FG.rosterSide('teacher').length - 1; s.refresh(); s.confirm(0);
-    return { still: s.sys.isActive() && !s.leaving, name: s.previews[0].name.text, msg: s.lockMsg > 0, cards: s.cards.teacher.length, students: s.cards.student.length === FG.rosterSide('student').length && s.cards.student.length > 0 };
+    return { still: s.sys.isActive() && !s.leaving, name: s.previews[0].name.text, msg: s.lockMsg > 0, cards: s.cards.teacher.length, students: FG.STUDENTS_ENABLED ? s.cards.student.length === FG.rosterSide('student').length && s.cards.student.length > 0 : !s.cards.student && s.tabs.length === 1 };
   });
   await page.screenshot({ path: path.join(out, '10-select-locked.png') });
   var lockOk = lock.still && lock.name === '???' && lock.msg && lock.cards === 9 && lock.students;
 
   // Student mode: the STUDENTS tab opens a keypad; a wrong code is ACCESS DENIED, 0620 opens
-  // the tab (and it's remembered in this browser).
+  // the tab (and it's remembered in this browser). With the student side switched off
+  // (FG.STUDENTS_ENABLED), there is no tab to open and no keypad.
   var studentPad = await page.evaluate(function () {
-    var s = window.FG_SELECT, r = {};
+    var s = window.FG_SELECT, r = { enabled: FG.STUDENTS_ENABLED };
+    if (!FG.STUDENTS_ENABLED) {
+      s.setTab(0, 'student'); s.key('KeyE');
+      r.off = !s.pad.open && s.tab[0] === 'teacher' && s.view === 'teacher' && FG.playableRoster().every(function (d) { return !d.student; });
+      return r;
+    }
     r.lockedAtFirst = !FG.studentsUnlocked();
     s.setTab(0, 'student');
     r.opened = s.pad.open && s.tab[0] === 'teacher';
@@ -443,8 +449,8 @@ try { playwright = require('playwright'); } catch (e) {
     return r;
   });
   await page.screenshot({ path: path.join(out, '10-select-keypad.png') });
-  await page.waitForFunction(function () { var s = window.FG_SELECT; return !s.pad.open && s.tab[0] === 'student'; }, null, { timeout: 15000 });
-  var padOk = studentPad.lockedAtFirst && studentPad.opened && studentPad.denied && studentPad.granted && studentPad.stored;
+  if (studentPad.enabled) await page.waitForFunction(function () { var s = window.FG_SELECT; return !s.pad.open && s.tab[0] === 'student'; }, null, { timeout: 15000 });
+  var padOk = studentPad.enabled ? studentPad.lockedAtFirst && studentPad.opened && studentPad.denied && studentPad.granted && studentPad.stored : studentPad.off;
 
   // The arcade ending.
   await page.evaluate(function () { window.FG_TITLE.scene.start('ending', { p1: 'pedersen', ladder: ['a', 'b'], continues: 1, started: Date.now() - 65000 }); });

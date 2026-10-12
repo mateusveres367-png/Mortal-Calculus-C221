@@ -86,7 +86,7 @@
     { id: 'detention', name: 'DETENTION SURVIVOR', how: 'BEAT 5 IN DETENTION', test: function () { return P.detentionBest >= 5; } },
     { id: 'speed', name: 'SPEED READER', how: 'FINISH THE TIMED TEST IN UNDER 6 MINUTES', test: function () { return P.timedBest > 0 && P.timedBest < 6 * 60 * 1000; } },
     { id: 'dean', name: "DEAN'S LIST", how: 'WIN 25 MATCHES', test: function () { return totalWins() >= 25; } },
-    { id: 'faculty', name: 'FACULTY LOUNGE', how: 'WIN WITH ALL NINE FIGHTERS', test: function () { return FG.ROSTER.every(function (d) { return (P.wins[d.id] || 0) > 0; }); } },
+    { id: 'faculty', name: 'FACULTY LOUNGE', how: 'WIN WITH ALL NINE FIGHTERS', test: function () { return FG.playableRoster().every(function (d) { return (P.wins[d.id] || 0) > 0; }); } },
     { id: 'valedictorian', name: 'VALEDICTORIAN', how: 'BEAT ARCADE MODE', test: function () { return P.arcadeClears >= 1; } },
     { id: 'tenure', name: 'TENURED', how: 'WIN 100 MATCHES', test: function () { return totalWins() >= 100; } }
   ];

@@ -215,7 +215,7 @@
     this.ped._props = { shades: true, cigar: true, glint: -1, puff: false };
     this.smoke = [];
     // Everyone else.
-    var others = FG.ROSTER.filter(function (d) { return d.id !== ped.id; }).slice(0, SIL_X.length);
+    var others = FG.playableRoster().filter(function (d) { return d.id !== ped.id; }).slice(0, SIL_X.length);
     this.sils = others.map(function (d, k) {
       var p = FG.puppet(d, SIL_X[k], SIL_X[k] < W / 2 ? 1 : -1);
       return { p: p, rim: RIM[d.id] || (d.cutIn ? d.cutIn.b : 0xffffff), flash: 0 };
